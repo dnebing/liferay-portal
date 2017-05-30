@@ -883,6 +883,8 @@ public class ProjectTemplatesTest {
 
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/init.jsp");
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/view.jsp");
+		_testExists(
+			gradleProjectDir, "src/main/webapp/WEB-INF/jsp/say_hello.jsp");
 
 		_testContains(
 			gradleProjectDir,
@@ -930,6 +932,8 @@ public class ProjectTemplatesTest {
 
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/init.jsp");
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/view.jsp");
+		_testExists(
+			gradleProjectDir, "src/main/webapp/WEB-INF/jsp/say_hello.jsp");
 
 		_testContains(
 			gradleProjectDir,
@@ -955,6 +959,8 @@ public class ProjectTemplatesTest {
 
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/init.jsp");
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/view.jsp");
+		_testExists(
+			gradleProjectDir, "src/main/webapp/WEB-INF/jsp/say_hello.jsp");
 
 		_testContains(
 			gradleProjectDir,
@@ -979,6 +985,8 @@ public class ProjectTemplatesTest {
 
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/init.jsp");
 		_testExists(gradleProjectDir, "src/main/webapp/WEB-INF/jsp/view.jsp");
+		_testExists(
+			gradleProjectDir, "src/main/webapp/WEB-INF/jsp/say_hello.jsp");
 
 		_testContains(
 			gradleProjectDir,
