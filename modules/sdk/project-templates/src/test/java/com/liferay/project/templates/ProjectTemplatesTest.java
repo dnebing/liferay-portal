@@ -438,21 +438,21 @@ public class ProjectTemplatesTest {
 	public void testBuildTemplateMVCPortlet() throws Exception {
 		_testBuildTemplatePortlet(
 			"mvc-portlet", "MVCPortlet", "META-INF/resources/init.jsp",
-			"META-INF/resources/view.jsp");
+			"META-INF/resources/view.jsp", "META-INF/resources/say_hello.jsp");
 	}
 
 	@Test
 	public void testBuildTemplateMVCPortletWithPackage() throws Exception {
 		_testBuildTemplatePortletWithPackage(
 			"mvc-portlet", "MVCPortlet", "META-INF/resources/init.jsp",
-			"META-INF/resources/view.jsp");
+			"META-INF/resources/view.jsp", "META-INF/resources/say_hello.jsp");
 	}
 
 	@Test
 	public void testBuildTemplateMVCPortletWithPortletName() throws Exception {
 		_testBuildTemplatePortletWithPortletName(
 			"mvc-portlet", "MVCPortlet", "META-INF/resources/init.jsp",
-			"META-INF/resources/view.jsp");
+			"META-INF/resources/view.jsp", "META-INF/resources/say_hello.jsp");
 	}
 
 	@Test
@@ -461,7 +461,7 @@ public class ProjectTemplatesTest {
 
 		_testBuildTemplatePortletWithPortletSuffix(
 			"mvc-portlet", "MVCPortlet", "META-INF/resources/init.jsp",
-			"META-INF/resources/view.jsp");
+			"META-INF/resources/view.jsp", "META-INF/resources/say_hello.jsp");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -1910,6 +1910,10 @@ public class ProjectTemplatesTest {
 			gradleProjectDir, "src/main/java/foo/portlet/FooPortlet.java",
 			"javax.portlet.name=\" + FooPortletKeys.Foo",
 			"public class FooPortlet extends " + portletClassName + " {");
+		_testContains(
+			gradleProjectDir,
+			"src/main/java/foo/portlet/action/SayHelloMVCActionCommand.java",
+			"javax.portlet.name=\" + FooPortletKeys.Foo");
 
 		File mavenProjectDir = _buildTemplateWithMaven(
 			template, "foo", "-DclassName=Foo", "-Dpackage=foo");
@@ -1943,6 +1947,10 @@ public class ProjectTemplatesTest {
 			gradleProjectDir,
 			"src/main/java/com/liferay/test/portlet/FooPortlet.java",
 			"public class FooPortlet extends " + portletClassName + " {");
+		_testContains(
+			gradleProjectDir,
+			"src/main/java/com/liferay/test/portlet/action/SayHelloMVCActionCommand.java",
+			"javax.portlet.name=\" + FooPortletKeys.Foo");
 
 		File mavenProjectDir = _buildTemplateWithMaven(
 			template, "foo", "-DclassName=Foo", "-Dpackage=com.liferay.test");
@@ -1975,6 +1983,10 @@ public class ProjectTemplatesTest {
 			gradleProjectDir,
 			"src/main/java/portlet/portlet/PortletPortlet.java",
 			"public class PortletPortlet extends " + portletClassName + " {");
+		_testContains(
+			gradleProjectDir,
+			"src/main/java/portlet/portlet/action/SayHelloMVCActionCommand.java",
+			"javax.portlet.name=\" + PortletPortletKeys.Portlet");
 
 		File mavenProjectDir = _buildTemplateWithMaven(
 			template, "portlet", "-DclassName=Portlet", "-Dpackage=portlet");
@@ -2008,6 +2020,10 @@ public class ProjectTemplatesTest {
 			gradleProjectDir,
 			"src/main/java/portlet/portlet/portlet/PortletPortlet.java",
 			"public class PortletPortlet extends " + portletClassName + " {");
+		_testContains(
+			gradleProjectDir,
+			"src/main/java/portlet/portlet/portlet/action/SayHelloMVCActionCommand.java",
+			"javax.portlet.name=\" + PortletPortletKeys.Portlet");
 
 		File mavenProjectDir = _buildTemplateWithMaven(
 			template, "portlet-portlet", "-DclassName=Portlet",
