@@ -369,7 +369,7 @@ public class ProjectTemplatesTest {
 
 		File gradleProjectDir = _testBuildTemplatePortletWithPackage(
 			"freemarker-portlet", "FreeMarkerPortlet", "templates/init.ftl",
-			"templates/view.ftl");
+			"templates/view.ftl", "templates/say_hello.ftl");
 
 		_testStartsWith(
 			gradleProjectDir, "src/main/resources/templates/view.ftl",
@@ -382,7 +382,7 @@ public class ProjectTemplatesTest {
 
 		File gradleProjectDir = _testBuildTemplatePortletWithPortletName(
 			"freemarker-portlet", "FreeMarkerPortlet", "templates/init.ftl",
-			"templates/view.ftl");
+			"templates/view.ftl", "templates/say_hello.ftl");
 
 		_testStartsWith(
 			gradleProjectDir, "src/main/resources/templates/view.ftl",
@@ -395,7 +395,7 @@ public class ProjectTemplatesTest {
 
 		File gradleProjectDir = _testBuildTemplatePortletWithPortletSuffix(
 			"freemarker-portlet", "FreeMarkerPortlet", "templates/init.ftl",
-			"templates/view.ftl");
+			"templates/view.ftl", "templates/say_hello.ftl");
 
 		_testStartsWith(
 			gradleProjectDir, "src/main/resources/templates/view.ftl",
