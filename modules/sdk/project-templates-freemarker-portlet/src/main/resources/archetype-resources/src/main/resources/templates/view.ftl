@@ -15,11 +15,19 @@
 
 	<@aui["fieldset-group"] markupView="lexicon">
 		<@aui["fieldset"]>
-			<@aui["input"] label="${artifactId}.please-enter-your-name" name="inputName" type="text" />
+			<@aui["input"]
+				label="${artifactId}.please-enter-your-name"
+				name="inputName"
+				type="text"
+			/>
 		</@>
 	</@>
 
 	<@aui["button-row"]>
-		<@aui["button"] cssClass="btn-lg" type="submit" value="${artifactId}.say-hello" />
+		<@aui["button"]
+			cssClass="btn-lg"
+			type="submit"
+			value="${artifactId}.say-hello"
+		/>
 	</@>
 </@>
