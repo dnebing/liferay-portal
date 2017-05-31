@@ -11,7 +11,7 @@
 <aui:form action="<%= sayHelloUrl %>" method="post" name="fm">
 	<aui:fieldset-group markupView="lexicon">
 		<aui:fieldset>
-			<aui:input label="${artifactId}.name-entry" name="inputName" type="text" />
+			<aui:input label="${artifactId}.please-enter-your-name" name="inputName" type="text" />
 		</aui:fieldset>
 	</aui:fieldset-group>
 
