@@ -1,12 +1,18 @@
 package ${package}.portlet;
 
+import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
@@ -31,7 +37,7 @@ public class ${className}PortletViewController {
 
 		// hide the success message.
 
-		hideDefaultSuccessMessage(request);
+		_hideDefaultSuccessMessage(request);
 
 		response.setRenderParameter("name", name);
 	}
@@ -87,4 +93,10 @@ public class ${className}PortletViewController {
 		return buffer.toString();
 	}
 
+	private void _hideDefaultSuccessMessage(PortletRequest portletRequest) {
+		SessionMessages.add(
+			portletRequest,
+			PortalUtil.getPortletId(portletRequest) +
+				".hideDefaultSuccessMessage");
+	}
 }

@@ -2,9 +2,17 @@ package ${package}.portlet;
 
 import ${package}.constants.${className}PortletKeys;
 
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.util.bridges.freemarker.FreeMarkerPortlet;
 
+import java.io.IOException;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
+import javax.portlet.PortletException;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -31,7 +39,7 @@ public class ${className}Portlet extends FreeMarkerPortlet {
 
 	@Override
 	public void processAction(
-		ActionRequest actionRequest, ActionResponse actionResponse)
+			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException, PortletException {
 
 		try {
@@ -47,13 +55,12 @@ public class ${className}Portlet extends FreeMarkerPortlet {
 		}
 		catch (Exception e) {
 			if ((e instanceof OSGiException) ||
-			(e instanceof PrincipalException)) {
+					(e instanceof PrincipalException)) {
 
 				SessionErrors.add(actionRequest, e.getClass().getName());
 			}
 		}
 	}
-
 
 	/**
 	 * capitalizeFully: Capitalizes first letter of all words in given string.
