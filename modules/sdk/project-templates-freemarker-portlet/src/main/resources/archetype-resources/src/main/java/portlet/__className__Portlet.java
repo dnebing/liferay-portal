@@ -60,27 +60,33 @@ public class ${className}Portlet extends FreeMarkerPortlet {
 	 * @param str String to capitalize.
 	 * @return String The fully capitalized string.
 	 */
-	public String capitalizeFully(String str) {
-		if (str == null || str.length() == 0) {
+	private String _capitalizeFully(String str) {
+		if ((str == null) || (str.length() == 0)) {
 			return str;
 		}
+
 		int strLen = str.length();
 		str = str.toLowerCase();
 		StringBuffer buffer = new StringBuffer(strLen);
 		boolean capitalizeNext = true;
+
 		for (int i = 0; i < strLen; i++) {
 			char ch = str.charAt(i);
 
 			if (Character.isWhitespace(ch)) {
 				buffer.append(ch);
 				capitalizeNext = true;
-			} else if (capitalizeNext) {
+			}
+			else if (capitalizeNext) {
 				buffer.append(Character.toTitleCase(ch));
 				capitalizeNext = false;
-			} else {
+			}
+			else {
 				buffer.append(ch);
 			}
 		}
+
 		return buffer.toString();
 	}
+
 }

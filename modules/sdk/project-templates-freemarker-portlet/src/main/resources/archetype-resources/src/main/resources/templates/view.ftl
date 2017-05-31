@@ -7,20 +7,16 @@
 	<@portlet["param"] name="mvcPath" value="/say_hello.ftl" />
 </@>
 
-<${symbol_pound}assign userName = ParamUtil.getString(requet, "name", "") />
-
 <@aui["form"] action=(sayHelloUrl) enctype="multipart/form-data" method="post" name="fm">
-	<@aui["input"] name=(Constants.CMD) type="hidden" value="sayHello" />
-
 	<@aui["layout"]>
 
 	<@aui["fieldset-group"] markupView="lexicon">
 		<@aui["fieldset"]>
-			<@aui["input"] label="name.entry" name="userName" type="text" value=(userName) />
+			<@aui["input"] label="name.entry" name="inputName" type="text" />
 		</@>
 	</@>
 
 	<@aui["button-row"]>
-		<@aui["button"] cssClass="btn-lg" type="submit" value="say-hello" />
+		<@aui["button"] cssClass="btn-lg" type="submit" value="${artifactId}.say-hello" />
 	</@>
 </@>

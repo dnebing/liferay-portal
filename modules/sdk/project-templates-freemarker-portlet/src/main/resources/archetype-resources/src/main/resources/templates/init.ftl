@@ -7,7 +7,6 @@
 <#assign portlet = PortletJspTagLibs["/META-INF/liferay-portlet.tld"] />
 
 <#assign ParamUtil = staticUtil["com.liferay.portal.kernel.util.ParamUtil"] />
-<#assign Constants = staticUtil["com.liferay.portal.kernel.util.Constants"] />
 
 <@liferay_theme["defineObjects"] />
 
