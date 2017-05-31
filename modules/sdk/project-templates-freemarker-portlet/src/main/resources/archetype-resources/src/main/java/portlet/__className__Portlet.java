@@ -54,11 +54,7 @@ public class ${className}Portlet extends FreeMarkerPortlet {
 			sendRedirect(actionRequest, actionResponse);
 		}
 		catch (Exception e) {
-			if ((e instanceof OSGiException) ||
-					(e instanceof PrincipalException)) {
-
-				SessionErrors.add(actionRequest, e.getClass().getName());
-			}
+			SessionErrors.add(actionRequest, e.getMessage());
 		}
 	}
 
