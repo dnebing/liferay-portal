@@ -34,10 +34,10 @@ public class SayHelloMVCActionCommand extends BaseMVCActionCommand {
 	protected void doProcessAction(
 		ActionRequest request, ActionResponse response) throws Exception {
 
-		String name = ParamUtil.getString(request, "userName", "");
+		String inputName = ParamUtil.getString(request, "inputName", "");
 
 		// fix the capitalization on the name
-		name = capitalizeFully(name);
+		String name = capitalizeFully(inputName);
 
 		// hide the success message.
 		hideDefaultSuccessMessage(request);

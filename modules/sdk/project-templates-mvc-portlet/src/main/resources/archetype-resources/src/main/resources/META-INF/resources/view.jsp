@@ -17,7 +17,7 @@
 
 	<aui:fieldset-group markupView="lexicon">
 		<aui:fieldset>
-			<aui:input label="name.entry" name="userName" type="text" value="<%= name %>" />
+			<aui:input label="${artifactId}.name-entry" name="inputName" type="text" />
 		</aui:fieldset>
 	</aui:fieldset-group>
 
