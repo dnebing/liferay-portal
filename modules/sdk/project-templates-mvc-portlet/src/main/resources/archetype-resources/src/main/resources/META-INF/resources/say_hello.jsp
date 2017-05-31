@@ -1,4 +1,3 @@
-
 <%@ include file="/init.jsp" %>
 
 <%
@@ -8,4 +7,3 @@
 <p>
 	<b><liferay-ui:message key="${artifactId}.hello" arguments="<%= name %>" /></b>
 </p>
-
