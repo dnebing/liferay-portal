@@ -8,20 +8,14 @@
 	<portlet:param name="action" value="sayHello" />
 </portlet:actionURL>
 
-<%
-	String name = ParamUtil.getString(request, "userName", "");
-%>
-
 <aui:form action="<%= sayHelloUrl %>" method="post" name="fm">
-	<aui:input name="<%= Constants.CMD %>" type="hidden" value="sayHello" />
-
 	<aui:fieldset-group markupView="lexicon">
 		<aui:fieldset>
-			<aui:input label="name.entry" name="userName" type="text" value="<%= name %>" />
+			<aui:input label="${artifactId}.please-enter-your-name" name="inputName" type="text" />
 		</aui:fieldset>
 	</aui:fieldset-group>
 
 	<aui:button-row>
-		<aui:button cssClass="btn-lg" type="submit" value="say-hello" />
+		<aui:button cssClass="btn-lg" type="submit" value="${artifactId}.say-hello" />
 	</aui:button-row>
 </aui:form>

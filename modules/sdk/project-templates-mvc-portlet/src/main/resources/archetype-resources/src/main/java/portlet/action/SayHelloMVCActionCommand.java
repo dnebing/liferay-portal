@@ -1,13 +1,15 @@
 package ${package}.portlet.action;
 
 import ${package}.constants.${className}PortletKeys;
+
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
-import org.osgi.service.component.annotations.Component;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * class SayHelloMVCActionCommand: Handles the say hello action.
@@ -32,14 +34,17 @@ public class SayHelloMVCActionCommand extends BaseMVCActionCommand {
 	 */
 	@Override
 	protected void doProcessAction(
-		ActionRequest request, ActionResponse response) throws Exception {
+			ActionRequest request, ActionResponse response)
+		throws Exception {
 
 		String inputName = ParamUtil.getString(request, "inputName", "");
 
 		// fix the capitalization on the name
-		String name = capitalizeFully(inputName);
+
+		String name = _capitalizeFully(inputName);
 
 		// hide the success message.
+
 		hideDefaultSuccessMessage(request);
 
 		response.setRenderParameter("mvcPath", "/say_hello.jsp");
@@ -51,27 +56,33 @@ public class SayHelloMVCActionCommand extends BaseMVCActionCommand {
 	 * @param str String to capitalize.
 	 * @return String The fully capitalized string.
 	 */
-	public String capitalizeFully(String str) {
-		if (str == null || str.length() == 0) {
+	private String _capitalizeFully(String str) {
+		if ((str == null) || (str.length() == 0)) {
 			return str;
 		}
+
 		int strLen = str.length();
 		str = str.toLowerCase();
 		StringBuffer buffer = new StringBuffer(strLen);
 		boolean capitalizeNext = true;
+
 		for (int i = 0; i < strLen; i++) {
 			char ch = str.charAt(i);
 
 			if (Character.isWhitespace(ch)) {
 				buffer.append(ch);
 				capitalizeNext = true;
-			} else if (capitalizeNext) {
+			}
+			else if (capitalizeNext) {
 				buffer.append(Character.toTitleCase(ch));
 				capitalizeNext = false;
-			} else {
+			}
+			else {
 				buffer.append(ch);
 			}
 		}
+
 		return buffer.toString();
 	}
+
 }

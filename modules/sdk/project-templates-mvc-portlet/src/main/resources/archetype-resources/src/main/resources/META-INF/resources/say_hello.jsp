@@ -1,9 +1,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
-	String name = ParamUtil.getString(request, "name", "");
+String name = ParamUtil.getString(request, "name", "");
 %>
 
 <p>
-	<b><liferay-ui:message key="${artifactId}.hello" arguments="<%= name %>" /></b>
+	<b><liferay-ui:message arguments="<%= name %>" key="${artifactId}.hello" /></b>
 </p>
