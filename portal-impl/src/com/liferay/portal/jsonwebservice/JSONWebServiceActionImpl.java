@@ -14,6 +14,7 @@
 
 package com.liferay.portal.jsonwebservice;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceAction;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceActionMapping;
@@ -25,6 +26,7 @@ import com.liferay.portal.kernel.util.CamelCaseUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MethodParameter;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
 
 import java.lang.reflect.Array;
@@ -34,9 +36,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import jodd.bean.BeanCopy;
 import jodd.bean.BeanUtil;
@@ -46,6 +50,13 @@ import jodd.typeconverter.TypeConverterManager;
 
 import jodd.util.NameValue;
 import jodd.util.ReflectUtil;
+import org.apache.poi.ss.formula.functions.T;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+import javax.validation.executable.ExecutableValidator;
 
 /**
  * @author Igor Spasic
@@ -60,7 +71,16 @@ public class JSONWebServiceActionImpl implements JSONWebServiceAction {
 		_jsonWebServiceActionConfig = jsonWebServiceActionConfig;
 		_jsonWebServiceActionParameters = jsonWebServiceActionParameters;
 		_jsonWebServiceNaming = jsonWebServiceNaming;
+
+		/* LPS-74823: Declare the executor validator instance, is thread safe
+		              and can be reused. */
+		_validatorFactory = Validation.buildDefaultValidatorFactory();
+		_executableValidator =
+			_validatorFactory.getValidator().forExecutables();
 	}
+
+	private ValidatorFactory _validatorFactory;
+	private ExecutableValidator _executableValidator;
 
 	@Override
 	public JSONWebServiceActionMapping getJSONWebServiceActionMapping() {
@@ -406,6 +426,40 @@ public class JSONWebServiceActionImpl implements JSONWebServiceAction {
 			_log.isWarnEnabled()) {
 
 			_log.warn("Invoking deprecated method " + actionMethod.getName());
+		}
+
+		/* LPS-74823: Invoke the JSR-380 validator on the gathered data. */
+		Set<ConstraintViolation<T>> constraintViolations =
+			_executableValidator.validateParameters(
+				(T) actionObject, actionMethod, parameters);
+
+		if (SetUtil.isNotEmpty(constraintViolations)) {
+			// parameter constraint violations found
+
+			// log violations
+			if (_log.isWarnEnabled()) {
+				_log.warn("Constraint violations for jsonws call " +
+					_jsonWebServiceActionConfig.getContextName() + ' ' +
+					_jsonWebServiceActionConfig.getContextPath());
+
+				Iterator<ConstraintViolation<T>> constraintViolationIterator =
+					constraintViolations.iterator();
+				int idx = 0;
+
+				while (constraintViolationIterator.hasNext()) {
+					ConstraintViolation<T> constraintViolation =
+						constraintViolationIterator.next();
+
+					idx ++;
+
+					_log.warn(idx + ". " + constraintViolation);
+				}
+			}
+
+			// throw as an exception to get failure back to client
+			throw new PortalException(
+				"JSON Web Service parameter constraint violation(s)",
+				new ConstraintViolationException(constraintViolations));
 		}
 
 		return actionMethod.invoke(actionObject, parameters);
