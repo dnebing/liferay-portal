@@ -1890,6 +1890,19 @@
 				</licenses>
 			</library>
 			<library>
+				<file-name>lib/portal/javax.el.jar</file-name>
+				<version>3.0.1-b08</version>
+				<project-name>Glassfish JSR-341 Unified EL Implementation</project-name>
+				<project-url>http://uel.java.net/</project-url>
+				<licenses>
+					<license>
+						<license-name>CDDL + GPLv2 with classpath exception</license-name>
+						<license-url>http://glassfish.dev.java.net/nonav/public/CDDL+GPL.html</license-url>
+					</license>
+				</licenses>
+				<comments>Dependency of hibernate-validator, the JSR-380 Reference Implementation.</comments>
+			</library>
+			<library>
 				<file-name>lib/portal/jaxen.jar</file-name>
 				<version>1.1.1</version>
 				<project-name>Jaxen</project-name>
