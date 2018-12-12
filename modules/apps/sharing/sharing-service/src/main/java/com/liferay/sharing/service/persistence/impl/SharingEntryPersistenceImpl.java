@@ -50,6 +50,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
+import java.sql.Timestamp;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -178,6 +180,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	public List<SharingEntry> findByUuid(String uuid, int start, int end,
 		OrderByComparator<SharingEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -201,7 +205,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SharingEntry sharingEntry : list) {
-					if (!Objects.equals(uuid, sharingEntry.getUuid())) {
+					if (!uuid.equals(sharingEntry.getUuid())) {
 						list = null;
 
 						break;
@@ -225,10 +229,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -409,6 +410,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	public SharingEntry[] findByUuid_PrevAndNext(long sharingEntryId,
 		String uuid, OrderByComparator<SharingEntry> orderByComparator)
 		throws NoSuchEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		SharingEntry sharingEntry = findByPrimaryKey(sharingEntryId);
 
 		Session session = null;
@@ -454,10 +457,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -577,6 +577,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -590,10 +592,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -707,6 +706,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	@Override
 	public SharingEntry fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -732,10 +733,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -819,6 +817,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -832,10 +832,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -976,6 +973,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	public List<SharingEntry> findByUuid_C(String uuid, long companyId,
 		int start, int end, OrderByComparator<SharingEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1003,7 +1002,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SharingEntry sharingEntry : list) {
-					if (!Objects.equals(uuid, sharingEntry.getUuid()) ||
+					if (!uuid.equals(sharingEntry.getUuid()) ||
 							(companyId != sharingEntry.getCompanyId())) {
 						list = null;
 
@@ -1028,10 +1027,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1231,6 +1227,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 		String uuid, long companyId,
 		OrderByComparator<SharingEntry> orderByComparator)
 		throws NoSuchEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		SharingEntry sharingEntry = findByPrimaryKey(sharingEntryId);
 
 		Session session = null;
@@ -1276,10 +1274,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1405,6 +1400,8 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1418,10 +1415,7 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2982,6 +2976,540 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	}
 
 	private static final String _FINDER_COLUMN_TOUSERID_TOUSERID_2 = "sharingEntry.toUserId = ?";
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_EXPIRATIONDATE =
+		new FinderPath(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
+			SharingEntryModelImpl.FINDER_CACHE_ENABLED, SharingEntryImpl.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByExpirationDate",
+			new String[] {
+				Date.class.getName(),
+				
+			Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
+			});
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_COUNT_BY_EXPIRATIONDATE =
+		new FinderPath(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
+			SharingEntryModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "countByExpirationDate",
+			new String[] { Date.class.getName() });
+
+	/**
+	 * Returns all the sharing entries where expirationDate &lt; &#63;.
+	 *
+	 * @param expirationDate the expiration date
+	 * @return the matching sharing entries
+	 */
+	@Override
+	public List<SharingEntry> findByExpirationDate(Date expirationDate) {
+		return findByExpirationDate(expirationDate, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the sharing entries where expirationDate &lt; &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link SharingEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param expirationDate the expiration date
+	 * @param start the lower bound of the range of sharing entries
+	 * @param end the upper bound of the range of sharing entries (not inclusive)
+	 * @return the range of matching sharing entries
+	 */
+	@Override
+	public List<SharingEntry> findByExpirationDate(Date expirationDate,
+		int start, int end) {
+		return findByExpirationDate(expirationDate, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the sharing entries where expirationDate &lt; &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link SharingEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param expirationDate the expiration date
+	 * @param start the lower bound of the range of sharing entries
+	 * @param end the upper bound of the range of sharing entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching sharing entries
+	 */
+	@Override
+	public List<SharingEntry> findByExpirationDate(Date expirationDate,
+		int start, int end, OrderByComparator<SharingEntry> orderByComparator) {
+		return findByExpirationDate(expirationDate, start, end,
+			orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the sharing entries where expirationDate &lt; &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link SharingEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param expirationDate the expiration date
+	 * @param start the lower bound of the range of sharing entries
+	 * @param end the upper bound of the range of sharing entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching sharing entries
+	 */
+	@Override
+	public List<SharingEntry> findByExpirationDate(Date expirationDate,
+		int start, int end, OrderByComparator<SharingEntry> orderByComparator,
+		boolean retrieveFromCache) {
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_EXPIRATIONDATE;
+		finderArgs = new Object[] {
+				_getTime(expirationDate),
+				
+				start, end, orderByComparator
+			};
+
+		List<SharingEntry> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<SharingEntry>)finderCache.getResult(finderPath,
+					finderArgs, this);
+
+			if ((list != null) && !list.isEmpty()) {
+				for (SharingEntry sharingEntry : list) {
+					if ((expirationDate.getTime() <= sharingEntry.getExpirationDate()
+																	 .getTime())) {
+						list = null;
+
+						break;
+					}
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(3 +
+						(orderByComparator.getOrderByFields().length * 2));
+			}
+			else {
+				query = new StringBundler(3);
+			}
+
+			query.append(_SQL_SELECT_SHARINGENTRY_WHERE);
+
+			boolean bindExpirationDate = false;
+
+			if (expirationDate == null) {
+				query.append(_FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_1);
+			}
+			else {
+				bindExpirationDate = true;
+
+				query.append(_FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_2);
+			}
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else
+			 if (pagination) {
+				query.append(SharingEntryModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindExpirationDate) {
+					qPos.add(new Timestamp(expirationDate.getTime()));
+				}
+
+				if (!pagination) {
+					list = (List<SharingEntry>)QueryUtil.list(q, getDialect(),
+							start, end, false);
+
+					Collections.sort(list);
+
+					list = Collections.unmodifiableList(list);
+				}
+				else {
+					list = (List<SharingEntry>)QueryUtil.list(q, getDialect(),
+							start, end);
+				}
+
+				cacheResult(list);
+
+				finderCache.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first sharing entry in the ordered set where expirationDate &lt; &#63;.
+	 *
+	 * @param expirationDate the expiration date
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching sharing entry
+	 * @throws NoSuchEntryException if a matching sharing entry could not be found
+	 */
+	@Override
+	public SharingEntry findByExpirationDate_First(Date expirationDate,
+		OrderByComparator<SharingEntry> orderByComparator)
+		throws NoSuchEntryException {
+		SharingEntry sharingEntry = fetchByExpirationDate_First(expirationDate,
+				orderByComparator);
+
+		if (sharingEntry != null) {
+			return sharingEntry;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("expirationDate=");
+		msg.append(expirationDate);
+
+		msg.append("}");
+
+		throw new NoSuchEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the first sharing entry in the ordered set where expirationDate &lt; &#63;.
+	 *
+	 * @param expirationDate the expiration date
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching sharing entry, or <code>null</code> if a matching sharing entry could not be found
+	 */
+	@Override
+	public SharingEntry fetchByExpirationDate_First(Date expirationDate,
+		OrderByComparator<SharingEntry> orderByComparator) {
+		List<SharingEntry> list = findByExpirationDate(expirationDate, 0, 1,
+				orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last sharing entry in the ordered set where expirationDate &lt; &#63;.
+	 *
+	 * @param expirationDate the expiration date
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching sharing entry
+	 * @throws NoSuchEntryException if a matching sharing entry could not be found
+	 */
+	@Override
+	public SharingEntry findByExpirationDate_Last(Date expirationDate,
+		OrderByComparator<SharingEntry> orderByComparator)
+		throws NoSuchEntryException {
+		SharingEntry sharingEntry = fetchByExpirationDate_Last(expirationDate,
+				orderByComparator);
+
+		if (sharingEntry != null) {
+			return sharingEntry;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("expirationDate=");
+		msg.append(expirationDate);
+
+		msg.append("}");
+
+		throw new NoSuchEntryException(msg.toString());
+	}
+
+	/**
+	 * Returns the last sharing entry in the ordered set where expirationDate &lt; &#63;.
+	 *
+	 * @param expirationDate the expiration date
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching sharing entry, or <code>null</code> if a matching sharing entry could not be found
+	 */
+	@Override
+	public SharingEntry fetchByExpirationDate_Last(Date expirationDate,
+		OrderByComparator<SharingEntry> orderByComparator) {
+		int count = countByExpirationDate(expirationDate);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<SharingEntry> list = findByExpirationDate(expirationDate,
+				count - 1, count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the sharing entries before and after the current sharing entry in the ordered set where expirationDate &lt; &#63;.
+	 *
+	 * @param sharingEntryId the primary key of the current sharing entry
+	 * @param expirationDate the expiration date
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next sharing entry
+	 * @throws NoSuchEntryException if a sharing entry with the primary key could not be found
+	 */
+	@Override
+	public SharingEntry[] findByExpirationDate_PrevAndNext(
+		long sharingEntryId, Date expirationDate,
+		OrderByComparator<SharingEntry> orderByComparator)
+		throws NoSuchEntryException {
+		SharingEntry sharingEntry = findByPrimaryKey(sharingEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SharingEntry[] array = new SharingEntryImpl[3];
+
+			array[0] = getByExpirationDate_PrevAndNext(session, sharingEntry,
+					expirationDate, orderByComparator, true);
+
+			array[1] = sharingEntry;
+
+			array[2] = getByExpirationDate_PrevAndNext(session, sharingEntry,
+					expirationDate, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected SharingEntry getByExpirationDate_PrevAndNext(Session session,
+		SharingEntry sharingEntry, Date expirationDate,
+		OrderByComparator<SharingEntry> orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(4 +
+					(orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		query.append(_SQL_SELECT_SHARINGENTRY_WHERE);
+
+		boolean bindExpirationDate = false;
+
+		if (expirationDate == null) {
+			query.append(_FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_1);
+		}
+		else {
+			bindExpirationDate = true;
+
+			query.append(_FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(SharingEntryModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (bindExpirationDate) {
+			qPos.add(new Timestamp(expirationDate.getTime()));
+		}
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(sharingEntry);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<SharingEntry> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the sharing entries where expirationDate &lt; &#63; from the database.
+	 *
+	 * @param expirationDate the expiration date
+	 */
+	@Override
+	public void removeByExpirationDate(Date expirationDate) {
+		for (SharingEntry sharingEntry : findByExpirationDate(expirationDate,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+			remove(sharingEntry);
+		}
+	}
+
+	/**
+	 * Returns the number of sharing entries where expirationDate &lt; &#63;.
+	 *
+	 * @param expirationDate the expiration date
+	 * @return the number of matching sharing entries
+	 */
+	@Override
+	public int countByExpirationDate(Date expirationDate) {
+		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_EXPIRATIONDATE;
+
+		Object[] finderArgs = new Object[] { _getTime(expirationDate) };
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(2);
+
+			query.append(_SQL_COUNT_SHARINGENTRY_WHERE);
+
+			boolean bindExpirationDate = false;
+
+			if (expirationDate == null) {
+				query.append(_FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_1);
+			}
+			else {
+				bindExpirationDate = true;
+
+				query.append(_FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_2);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindExpirationDate) {
+					qPos.add(new Timestamp(expirationDate.getTime()));
+				}
+
+				count = (Long)q.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_1 = "sharingEntry.expirationDate IS NULL";
+	private static final String _FINDER_COLUMN_EXPIRATIONDATE_EXPIRATIONDATE_2 = "sharingEntry.expirationDate < ?";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_TU_C = new FinderPath(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
 			SharingEntryModelImpl.FINDER_CACHE_ENABLED, SharingEntryImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTU_C",
@@ -5506,6 +6034,9 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	public SharingEntryPersistenceImpl() {
 		setModelClass(SharingEntry.class);
 
+		setModelImplClass(SharingEntryImpl.class);
+		setEntityCacheEnabled(SharingEntryModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -6177,54 +6708,6 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	/**
 	 * Returns the sharing entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the sharing entry
-	 * @return the sharing entry, or <code>null</code> if a sharing entry with the primary key could not be found
-	 */
-	@Override
-	public SharingEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
-				SharingEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SharingEntry sharingEntry = (SharingEntry)serializable;
-
-		if (sharingEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				sharingEntry = (SharingEntry)session.get(SharingEntryImpl.class,
-						primaryKey);
-
-				if (sharingEntry != null) {
-					cacheResult(sharingEntry);
-				}
-				else {
-					entityCache.putResult(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
-						SharingEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SharingEntryModelImpl.ENTITY_CACHE_ENABLED,
-					SharingEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return sharingEntry;
-	}
-
-	/**
-	 * Returns the sharing entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param sharingEntryId the primary key of the sharing entry
 	 * @return the sharing entry, or <code>null</code> if a sharing entry with the primary key could not be found
 	 */
@@ -6524,6 +7007,11 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return SharingEntryModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -6547,6 +7035,15 @@ public class SharingEntryPersistenceImpl extends BasePersistenceImpl<SharingEntr
 	protected EntityCache entityCache;
 	@ServiceReference(type = FinderCache.class)
 	protected FinderCache finderCache;
+
+	private Long _getTime(Date date) {
+		if (date == null) {
+			return null;
+		}
+
+		return date.getTime();
+	}
+
 	private static final String _SQL_SELECT_SHARINGENTRY = "SELECT sharingEntry FROM SharingEntry sharingEntry";
 	private static final String _SQL_SELECT_SHARINGENTRY_WHERE_PKS_IN = "SELECT sharingEntry FROM SharingEntry sharingEntry WHERE sharingEntryId IN (";
 	private static final String _SQL_SELECT_SHARINGENTRY_WHERE = "SELECT sharingEntry FROM SharingEntry sharingEntry WHERE ";

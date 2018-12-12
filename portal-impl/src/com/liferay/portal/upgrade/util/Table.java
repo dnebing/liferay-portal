@@ -306,9 +306,8 @@ public class Table {
 
 			return StringUtil.trim(createSQL.substring(x, y));
 		}
-		else {
-			return _tableName;
-		}
+
+		return _tableName;
 	}
 
 	public int[] getOrder() {
@@ -340,9 +339,8 @@ public class Table {
 
 			return "select * from " + _tableName;
 		}
-		else {
-			return _selectSQL;
-		}
+
+		return _selectSQL;
 	}
 
 	public String getTableName() {
@@ -412,8 +410,8 @@ public class Table {
 
 						String line = null;
 
-						while ((line =
-									unsyncBufferedReader.readLine()) != null) {
+						while ((line = unsyncBufferedReader.readLine()) !=
+									null) {
 
 							if (sb.length() != 0) {
 								sb.append(_SAFE_TABLE_NEWLINE_CHARACTER);

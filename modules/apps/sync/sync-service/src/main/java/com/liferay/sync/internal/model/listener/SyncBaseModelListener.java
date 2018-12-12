@@ -20,7 +20,6 @@ import com.liferay.petra.concurrent.NoticeableExecutorService;
 import com.liferay.petra.executor.PortalExecutorManager;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Disjunction;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
@@ -72,23 +71,14 @@ public abstract class SyncBaseModelListener<T extends BaseModel<T>>
 			_getActionableDynamicQuery(roleId);
 
 		actionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.
-				PerformActionMethod<ResourcePermission>() {
+			(ResourcePermission resourcePermission) -> {
+				SyncDLObject syncDLObject = getSyncDLObject(resourcePermission);
 
-				@Override
-				public void performAction(
-					ResourcePermission resourcePermission) {
-
-					SyncDLObject syncDLObject = getSyncDLObject(
-						resourcePermission);
-
-					if (syncDLObject == null) {
-						return;
-					}
-
-					updateSyncDLObject(syncDLObject);
+				if (syncDLObject == null) {
+					return;
 				}
 
+				updateSyncDLObject(syncDLObject);
 			});
 
 		TransactionCommitCallbackUtil.registerCallback(
@@ -118,28 +108,19 @@ public abstract class SyncBaseModelListener<T extends BaseModel<T>>
 			_getActionableDynamicQuery(roleId);
 
 		actionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.
-				PerformActionMethod<ResourcePermission>() {
+			(ResourcePermission resourcePermission) -> {
+				SyncDLObject syncDLObject = getSyncDLObject(resourcePermission);
 
-				@Override
-				public void performAction(
-					ResourcePermission resourcePermission) {
-
-					SyncDLObject syncDLObject = getSyncDLObject(
-						resourcePermission);
-
-					if (syncDLObject == null) {
-						return;
-					}
-
-					Date date = new Date();
-
-					syncDLObject.setModifiedTime(date.getTime());
-					syncDLObject.setLastPermissionChangeDate(date);
-
-					syncDLObjectLocalService.updateSyncDLObject(syncDLObject);
+				if (syncDLObject == null) {
+					return;
 				}
 
+				Date date = new Date();
+
+				syncDLObject.setModifiedTime(date.getTime());
+				syncDLObject.setLastPermissionChangeDate(date);
+
+				syncDLObjectLocalService.updateSyncDLObject(syncDLObject);
 			});
 
 		TransactionCommitCallbackUtil.registerCallback(
@@ -200,32 +181,24 @@ public abstract class SyncBaseModelListener<T extends BaseModel<T>>
 			resourcePermissionLocalService.getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Disjunction disjunction =
-						RestrictionsFactoryUtil.disjunction();
+				Property nameProperty = PropertyFactoryUtil.forName("name");
 
-					Property nameProperty = PropertyFactoryUtil.forName("name");
+				disjunction.add(nameProperty.eq(DLFileEntry.class.getName()));
+				disjunction.add(nameProperty.eq(DLFolder.class.getName()));
 
-					disjunction.add(
-						nameProperty.eq(DLFileEntry.class.getName()));
-					disjunction.add(nameProperty.eq(DLFolder.class.getName()));
+				dynamicQuery.add(disjunction);
 
-					dynamicQuery.add(disjunction);
+				Property roleIdProperty = PropertyFactoryUtil.forName("roleId");
 
-					Property roleIdProperty = PropertyFactoryUtil.forName(
-						"roleId");
+				dynamicQuery.add(roleIdProperty.eq(roleId));
 
-					dynamicQuery.add(roleIdProperty.eq(roleId));
+				Property viewActionIdProperty = PropertyFactoryUtil.forName(
+					"viewActionId");
 
-					Property viewActionIdProperty = PropertyFactoryUtil.forName(
-						"viewActionId");
-
-					dynamicQuery.add(viewActionIdProperty.eq(true));
-				}
-
+				dynamicQuery.add(viewActionIdProperty.eq(true));
 			});
 
 		return actionableDynamicQuery;

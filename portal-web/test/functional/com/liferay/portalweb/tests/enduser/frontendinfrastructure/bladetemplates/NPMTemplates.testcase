@@ -1,0 +1,173 @@
+<definition component-name="portal-project-template">
+	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
+	<property name="testray.main.component.name" value="Project Templates" />
+
+	<set-up>
+		<execute macro="TestCase#setUpPortalInstance" />
+
+		<execute macro="User#firstLoginPG" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+	</set-up>
+
+	<tear-down>
+		<execute macro="Page#tearDownCP" />
+	</tear-down>
+
+	<command name="AngularTemplateSmoke" priority="4">
+		<property name="project.templates" value="angular" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#AngularTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmAngular" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="Hello world!" />
+			<var name="portletName" value="NpmAngular" />
+		</execute>
+	</command>
+
+	<command name="BillboardjsTemplateSmoke" priority="4">
+		<property name="project.templates" value="billboardjs" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#BillboardjsTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmBillboardjs" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="data1data2" />
+			<var name="portletName" value="NpmBillboardjs" />
+		</execute>
+
+		<var name="key_portletName" value="npmbillboardjs" />
+
+		<execute function="AssertElementPresent" locator1="NPMTemplates#BILLBOARDJS_BODY" />
+	</command>
+
+	<command name="IsomorphicTemplateSmoke" priority="4">
+		<property name="project.templates" value="isomorphic" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#IsomorphicTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmIsomorphic" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="" />
+			<var name="portletName" value="NpmIsomorphic" />
+		</execute>
+	</command>
+
+	<command name="JQueryTemplateSmoke" priority="4">
+		<property name="project.templates" value="jquery" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#JQueryTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmJquery" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="Hello World!" />
+			<var name="portletName" value="NpmJquery" />
+		</execute>
+	</command>
+
+	<command name="MetaljsTemplateSmoke" priority="4">
+		<property name="project.templates" value="metaljs" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#MetaljsTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmMetaljs" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="Hello World!" />
+			<var name="portletName" value="NpmMetaljs" />
+		</execute>
+	</command>
+
+	<command name="ReactTemplateSmoke" priority="4">
+		<property name="project.templates" value="react" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#ReactTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmReact" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="Hello World!" />
+			<var name="portletName" value="NpmReact" />
+		</execute>
+	</command>
+
+	<command name="SimpleTemplateSmoke" priority="4">
+		<property name="project.templates" value="simple" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#SimpleTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmSimple" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="Hello World!" />
+			<var name="portletName" value="NpmSimple" />
+		</execute>
+	</command>
+
+	<command name="VuejsTemplateSmoke" priority="4">
+		<property name="project.templates" value="vuejs" />
+		<property name="test.name.skip.portal.instance" value="NPMTemplates#VuejsTemplateSmoke" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Templates Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="NpmVuejs" />
+		</execute>
+
+		<execute macro="Portlet#viewPG">
+			<var name="portletBody" value="Hello World!" />
+			<var name="portletName" value="NpmVuejs" />
+		</execute>
+	</command>
+</definition>

@@ -21,7 +21,7 @@ import com.liferay.apio.architect.resource.NestedCollectionResource;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.apio.architect.routes.NestedCollectionRoutes;
 import com.liferay.content.space.apio.architect.identifier.ContentSpaceIdentifier;
-import com.liferay.dynamic.data.lists.model.DDLRecordSet;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
@@ -35,18 +35,17 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Provides the information necessary to expose Structure resources associated
- * to a DDMStructure through a web API. The resources are mapped from the
- * internal model {@code DDMStructure}.
+ * Provides the information necessary to expose structure resources through a
+ * web API associated with a {@code DDMStructure}. The resources are mapped from
+ * the internal model {@code DDMStructure}.
  *
  * @author Paulo Cruz
- * @review
  */
-@Component
+@Component(service = NestedCollectionResource.class)
 public class FormStructureNestedCollectionResource
 	implements NestedCollectionResource
 		<DDMStructure, Long, StructureIdentifier, Long,
-			ContentSpaceIdentifier> {
+		 ContentSpaceIdentifier> {
 
 	@Override
 	public NestedCollectionRoutes<DDMStructure, Long, Long> collectionRoutes(
@@ -86,7 +85,7 @@ public class FormStructureNestedCollectionResource
 		Pagination pagination, Long groupId) {
 
 		ClassName className = _classNameService.fetchClassName(
-			DDLRecordSet.class.getName());
+			DDMFormInstance.class.getName());
 
 		List<DDMStructure> ddmStructures =
 			_ddmStructureLocalService.getStructures(

@@ -34,13 +34,12 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.navigation.admin.constants.SiteNavigationAdminPortletKeys;
-import com.liferay.site.navigation.admin.web.internal.constants.SiteNavigationAdminWebKeys;
 import com.liferay.site.navigation.admin.web.internal.security.permission.resource.SiteNavigationPermission;
 import com.liferay.site.navigation.admin.web.internal.util.SiteNavigationMenuPortletUtil;
 import com.liferay.site.navigation.constants.SiteNavigationActionKeys;
 import com.liferay.site.navigation.model.SiteNavigationMenu;
-import com.liferay.site.navigation.service.SiteNavigationMenuLocalServiceUtil;
-import com.liferay.site.navigation.service.SiteNavigationMenuServiceUtil;
+import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
+import com.liferay.site.navigation.service.SiteNavigationMenuService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemType;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.staging.StagingGroupHelper;
@@ -62,16 +61,18 @@ public class SiteNavigationAdminDisplayContext {
 	public SiteNavigationAdminDisplayContext(
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
-		HttpServletRequest request) {
+		HttpServletRequest request,
+		SiteNavigationMenuItemTypeRegistry siteNavigationMenuItemTypeRegistry,
+		SiteNavigationMenuLocalService siteNavigationMenuLocalService,
+		SiteNavigationMenuService siteNavigationMenuService) {
 
 		_liferayPortletRequest = liferayPortletRequest;
 		_liferayPortletResponse = liferayPortletResponse;
 		_request = request;
-
 		_siteNavigationMenuItemTypeRegistry =
-			(SiteNavigationMenuItemTypeRegistry)_request.getAttribute(
-				SiteNavigationAdminWebKeys.
-					SITE_NAVIGATION_MENU_ITEM_TYPE_REGISTRY);
+			siteNavigationMenuItemTypeRegistry;
+		_siteNavigationMenuLocalService = siteNavigationMenuLocalService;
+		_siteNavigationMenuService = siteNavigationMenuService;
 	}
 
 	public List<DropdownItem> getActionDropdownItems() {
@@ -216,8 +217,8 @@ public class SiteNavigationAdminDisplayContext {
 		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		return SiteNavigationMenuLocalServiceUtil.
-			fetchPrimarySiteNavigationMenu(themeDisplay.getScopeGroupId());
+		return _siteNavigationMenuLocalService.fetchPrimarySiteNavigationMenu(
+			themeDisplay.getScopeGroupId());
 	}
 
 	public String getSearchActionURL() {
@@ -255,23 +256,21 @@ public class SiteNavigationAdminDisplayContext {
 		int menusCount = 0;
 
 		if (Validator.isNotNull(getKeywords())) {
-			menus = SiteNavigationMenuServiceUtil.getSiteNavigationMenus(
+			menus = _siteNavigationMenuService.getSiteNavigationMenus(
 				themeDisplay.getScopeGroupId(), getKeywords(),
 				searchContainer.getStart(), searchContainer.getEnd(),
 				orderByComparator);
 
-			menusCount =
-				SiteNavigationMenuServiceUtil.getSiteNavigationMenusCount(
-					themeDisplay.getScopeGroupId(), getKeywords());
+			menusCount = _siteNavigationMenuService.getSiteNavigationMenusCount(
+				themeDisplay.getScopeGroupId(), getKeywords());
 		}
 		else {
-			menus = SiteNavigationMenuServiceUtil.getSiteNavigationMenus(
+			menus = _siteNavigationMenuService.getSiteNavigationMenus(
 				themeDisplay.getScopeGroupId(), searchContainer.getStart(),
 				searchContainer.getEnd(), orderByComparator);
 
-			menusCount =
-				SiteNavigationMenuServiceUtil.getSiteNavigationMenusCount(
-					themeDisplay.getScopeGroupId());
+			menusCount = _siteNavigationMenuService.getSiteNavigationMenusCount(
+				themeDisplay.getScopeGroupId());
 		}
 
 		searchContainer.setResults(menus);
@@ -287,7 +286,7 @@ public class SiteNavigationAdminDisplayContext {
 			return null;
 		}
 
-		return SiteNavigationMenuServiceUtil.fetchSiteNavigationMenu(
+		return _siteNavigationMenuService.fetchSiteNavigationMenu(
 			getSiteNavigationMenuId());
 	}
 
@@ -367,12 +366,12 @@ public class SiteNavigationAdminDisplayContext {
 	}
 
 	public boolean isShowAddButton() {
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		if (!hasEditPermission()) {
 			return false;
 		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		if (SiteNavigationPermission.contains(
 				themeDisplay.getPermissionChecker(),
@@ -472,6 +471,9 @@ public class SiteNavigationAdminDisplayContext {
 	private Long _siteNavigationMenuId;
 	private final SiteNavigationMenuItemTypeRegistry
 		_siteNavigationMenuItemTypeRegistry;
+	private final SiteNavigationMenuLocalService
+		_siteNavigationMenuLocalService;
 	private String _siteNavigationMenuName;
+	private final SiteNavigationMenuService _siteNavigationMenuService;
 
 }

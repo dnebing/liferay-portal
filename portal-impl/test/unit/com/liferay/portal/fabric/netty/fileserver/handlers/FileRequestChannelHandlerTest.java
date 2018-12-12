@@ -14,14 +14,14 @@
 
 package com.liferay.portal.fabric.netty.fileserver.handlers;
 
+import com.liferay.petra.io.BigEndianCodec;
+import com.liferay.petra.io.StreamUtil;
+import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
+import com.liferay.petra.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.fabric.netty.fileserver.CompressionLevel;
 import com.liferay.portal.fabric.netty.fileserver.FileRequest;
 import com.liferay.portal.fabric.netty.fileserver.FileResponse;
-import com.liferay.portal.kernel.io.BigEndianCodec;
-import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
-import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
-import com.liferay.portal.kernel.util.StreamUtil;
 
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.FileRegion;
@@ -236,8 +236,8 @@ public class FileRequestChannelHandlerTest {
 	private byte[] _readFileRegion(FileRegion fileRegion) throws IOException {
 		try (UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
 				new UnsyncByteArrayOutputStream();
-			WritableByteChannel writableByteChannel =
-				Channels.newChannel(unsyncByteArrayOutputStream)) {
+			WritableByteChannel writableByteChannel = Channels.newChannel(
+				unsyncByteArrayOutputStream)) {
 
 			while (fileRegion.transfered() < fileRegion.count()) {
 				fileRegion.transferTo(

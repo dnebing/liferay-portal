@@ -63,7 +63,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcellus Tavares
  * @author Eduardo Lundgren
  */
-@Component(immediate = true)
+@Component(immediate = true, service = DDL.class)
 public class DDLImpl implements DDL {
 
 	/**
@@ -109,13 +109,14 @@ public class DDLImpl implements DDL {
 			ddmStructure, ddmFormValues);
 
 		for (Field field : fields) {
-			String fieldName = field.getName();
-			String fieldType = field.getType();
 			Object[] fieldValues = getFieldValues(field, locale);
 
 			if (fieldValues.length == 0) {
 				continue;
 			}
+
+			String fieldName = field.getName();
+			String fieldType = field.getType();
 
 			Stream<Object> fieldValuesStream = Arrays.stream(fieldValues);
 
@@ -166,9 +167,8 @@ public class DDLImpl implements DDL {
 
 							return String.valueOf(fieldValueDate.getTime());
 						}
-						else {
-							return String.valueOf(fieldValue);
-						}
+
+						return String.valueOf(fieldValue);
 					});
 
 				jsonObject.put(

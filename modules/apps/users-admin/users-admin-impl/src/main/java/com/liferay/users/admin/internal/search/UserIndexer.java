@@ -14,7 +14,6 @@
 
 package com.liferay.users.admin.internal.search;
 
-import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.NoSuchContactException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -109,7 +108,6 @@ public class UserIndexer extends BaseIndexer<User> {
 		}
 
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			String key = entry.getKey();
 			Object value = entry.getValue();
 
 			if (value == null) {
@@ -127,7 +125,7 @@ public class UserIndexer extends BaseIndexer<User> {
 			}
 
 			addContextQueryParams(
-				contextBooleanFilter, searchContext, key, value);
+				contextBooleanFilter, searchContext, entry.getKey(), value);
 		}
 	}
 
@@ -401,27 +399,20 @@ public class UserIndexer extends BaseIndexer<User> {
 		indexableActionableDynamicQuery.setCompanyId(companyId);
 		indexableActionableDynamicQuery.setIndexWriterHelper(indexWriterHelper);
 		indexableActionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<User>() {
+			(User user) -> {
+				if (!user.isDefaultUser()) {
+					try {
+						Document document = getDocument(user);
 
-				@Override
-				public void performAction(User user) {
-					if (!user.isDefaultUser()) {
-						try {
-							Document document = getDocument(user);
-
-							indexableActionableDynamicQuery.addDocuments(
-								document);
-						}
-						catch (PortalException pe) {
-							if (_log.isWarnEnabled()) {
-								_log.warn(
-									"Unable to index user " + user.getUserId(),
-									pe);
-							}
+						indexableActionableDynamicQuery.addDocuments(document);
+					}
+					catch (PortalException pe) {
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"Unable to index user " + user.getUserId(), pe);
 						}
 					}
 				}
-
 			});
 		indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
 

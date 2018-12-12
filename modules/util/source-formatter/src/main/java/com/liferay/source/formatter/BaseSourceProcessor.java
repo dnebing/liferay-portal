@@ -305,8 +305,9 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		Set<String> modifiedMessages = new TreeSet<>();
 
 		String newContent = format(
-			file, fileName, absolutePath, content, content, modifiedContents,
-			modifiedMessages, 0);
+			file, fileName, absolutePath, content, content,
+			new ArrayList<>(_sourceChecks), modifiedContents, modifiedMessages,
+			0);
 
 		return processFormattedFile(
 			file, fileName, content, newContent, modifiedMessages);
@@ -314,16 +315,20 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 
 	protected String format(
 			File file, String fileName, String absolutePath, String content,
-			String originalContent, Set<String> modifiedContents,
-			Set<String> modifiedMessages, int count)
+			String originalContent, List<SourceCheck> sourceChecks,
+			Set<String> modifiedContents, Set<String> modifiedMessages,
+			int count)
 		throws Exception {
 
 		_sourceFormatterMessagesMap.remove(fileName);
 
 		_checkUTF8(file, fileName);
 
-		String newContent = _processSourceChecks(
-			file, fileName, absolutePath, content, modifiedMessages);
+		SourceChecksResult sourceChecksResult = _processSourceChecks(
+			file, fileName, absolutePath, content, sourceChecks,
+			modifiedMessages);
+
+		String newContent = sourceChecksResult.getContent();
 
 		if ((newContent == null) || content.equals(newContent)) {
 			return newContent;
@@ -352,9 +357,16 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 			count = 0;
 		}
 
+		SourceCheck sourceCheck =
+			sourceChecksResult.getMostRecentProcessedSourceCheck();
+
+		sourceChecks.remove(sourceCheck);
+
+		sourceChecks.add(0, sourceCheck);
+
 		return format(
 			file, fileName, absolutePath, newContent, originalContent,
-			modifiedContents, modifiedMessages, count);
+			sourceChecks, modifiedContents, modifiedMessages, count);
 	}
 
 	protected List<String> getAllFileNames() {
@@ -424,14 +436,13 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 	}
 
 	protected boolean hasGeneratedTag(String content) {
-		if (_containsUnquoted(content, "@generated") ||
-			_containsUnquoted(content, "$ANTLR")) {
+		if (SourceUtil.containsUnquoted(content, "@generated") ||
+			SourceUtil.containsUnquoted(content, "$ANTLR")) {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected void postFormat() throws Exception {
@@ -604,22 +615,6 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		return false;
 	}
 
-	private boolean _containsUnquoted(String s, String text) {
-		int x = -1;
-
-		while (true) {
-			x = s.indexOf(text, x + 1);
-
-			if (x == -1) {
-				return false;
-			}
-
-			if (!ToolsUtil.isInsideQuotes(s, x)) {
-				return true;
-			}
-		}
-	}
-
 	private void _format(String fileName) throws Exception {
 		if (!_isMatchPath(fileName)) {
 			addProgressStatusUpdate(
@@ -755,15 +750,15 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 		}
 	}
 
-	private String _processSourceChecks(
+	private SourceChecksResult _processSourceChecks(
 			File file, String fileName, String absolutePath, String content,
-			Set<String> modifiedMessages)
+			List<SourceCheck> sourceChecks, Set<String> modifiedMessages)
 		throws Exception {
 
 		SourceChecksResult sourceChecksResult =
 			SourceChecksUtil.processSourceChecks(
 				file, fileName, absolutePath, content, modifiedMessages,
-				_isModulesFile(absolutePath), _sourceChecks,
+				_isModulesFile(absolutePath), sourceChecks,
 				_sourceFormatterSuppressions,
 				_sourceFormatterArgs.isShowDebugInformation());
 
@@ -773,7 +768,7 @@ public abstract class BaseSourceProcessor implements SourceProcessor {
 			processMessage(fileName, sourceFormatterMessage);
 		}
 
-		return sourceChecksResult.getContent();
+		return sourceChecksResult;
 	}
 
 	private List<String> _allFileNames;

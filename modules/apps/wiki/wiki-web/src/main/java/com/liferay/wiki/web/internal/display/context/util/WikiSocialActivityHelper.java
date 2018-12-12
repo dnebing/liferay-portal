@@ -73,9 +73,8 @@ public class WikiSocialActivityHelper {
 
 			return "/wiki/page_activity_page_action.jsp";
 		}
-		else {
-			return StringPool.BLANK;
-		}
+
+		return StringPool.BLANK;
 	}
 
 	public String getSocialActivityDescription(
@@ -123,8 +122,8 @@ public class WikiSocialActivityHelper {
 				label = "x-removed-the-attachment-x";
 			}
 			else if (type ==
-						 SocialActivityConstants.
-							 TYPE_RESTORE_ATTACHMENT_FROM_TRASH) {
+						SocialActivityConstants.
+							TYPE_RESTORE_ATTACHMENT_FROM_TRASH) {
 
 				label = "x-restored-the-attachment-x";
 			}
@@ -209,13 +208,11 @@ public class WikiSocialActivityHelper {
 					resourceBundle, "x-updated-the-page-to-version-x",
 					new Object[] {userName, titleURL}, false);
 			}
-			else {
-				return StringPool.BLANK;
-			}
-		}
-		else {
+
 			return StringPool.BLANK;
 		}
+
+		return StringPool.BLANK;
 	}
 
 	public String getSocialActivityIcon(SocialActivity socialActivity) {
@@ -225,7 +222,7 @@ public class WikiSocialActivityHelper {
 			return "icon-paperclip";
 		}
 		else if (type ==
-					 SocialActivityConstants.TYPE_MOVE_ATTACHMENT_TO_TRASH) {
+					SocialActivityConstants.TYPE_MOVE_ATTACHMENT_TO_TRASH) {
 
 			return "icon-remove";
 		}
@@ -233,8 +230,8 @@ public class WikiSocialActivityHelper {
 			return "icon-trash";
 		}
 		else if (type ==
-					 SocialActivityConstants.
-						 TYPE_RESTORE_ATTACHMENT_FROM_TRASH) {
+					SocialActivityConstants.
+						TYPE_RESTORE_ATTACHMENT_FROM_TRASH) {
 
 			return "icon-undo";
 		}
@@ -247,9 +244,8 @@ public class WikiSocialActivityHelper {
 		else if (type == WikiActivityKeys.UPDATE_PAGE) {
 			return "icon-edit";
 		}
-		else {
-			return StringPool.BLANK;
-		}
+
+		return StringPool.BLANK;
 	}
 
 	public boolean isSocialActivitySupported(SocialActivity socialActivity) {

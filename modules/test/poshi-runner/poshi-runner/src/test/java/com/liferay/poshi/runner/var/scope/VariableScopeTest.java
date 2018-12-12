@@ -14,52 +14,19 @@
 
 package com.liferay.poshi.runner.var.scope;
 
-import com.liferay.poshi.runner.PoshiRunner;
-import com.liferay.poshi.runner.PoshiRunnerContext;
-import com.liferay.poshi.runner.selenium.SeleniumUtil;
+import com.liferay.poshi.runner.PoshiRunnerTestCase;
 
-import java.io.File;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Kenji Heigel
  */
-public class VariableScopeTest extends TestCase {
-
-	public void runPoshiTest(String testName) throws Exception {
-		PoshiRunner poshiRunner = new PoshiRunner("LocalFile." + testName);
-
-		poshiRunner.setUp();
-
-		poshiRunner.test();
-	}
+public class VariableScopeTest extends PoshiRunnerTestCase {
 
 	@Before
 	public void setUp() throws Exception {
-		_testBaseDir = new File(_TEST_BASE_DIR_NAME);
-
-		if (!_testBaseDir.exists()) {
-			throw new RuntimeException(
-				"Test directory does not exist: " + _TEST_BASE_DIR_NAME);
-		}
-
-		String[] poshiFileNames = ArrayUtils.addAll(
-			PoshiRunnerContext.POSHI_SUPPORT_FILE_INCLUDES,
-			PoshiRunnerContext.POSHI_TEST_FILE_INCLUDES);
-
-		PoshiRunnerContext.readFiles(poshiFileNames, _TEST_BASE_DIR_NAME);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		SeleniumUtil.stopSelenium();
+		setUpPoshiRunner(_TEST_BASE_DIR_NAME);
 	}
 
 	@Test
@@ -72,9 +39,17 @@ public class VariableScopeTest extends TestCase {
 		runPoshiTest("VariableScope#RootVarInheritance");
 	}
 
+	@Test
+	public void testAssertStaticMacroVarInheritance() throws Exception {
+		runPoshiTest("VariableScope#MacroStaticVarInheritance");
+	}
+
+	@Test
+	public void testAssertStaticTestVarInheritance() throws Exception {
+		runPoshiTest("VariableScope#TestCaseStaticVarInheritance");
+	}
+
 	private static final String _TEST_BASE_DIR_NAME =
 		"src/test/resources/com/liferay/poshi/runner/dependencies/var/scope";
-
-	private File _testBaseDir;
 
 }

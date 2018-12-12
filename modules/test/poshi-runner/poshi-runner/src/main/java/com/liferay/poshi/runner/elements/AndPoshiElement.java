@@ -14,8 +14,11 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.dom4j.Attribute;
 import org.dom4j.Element;
@@ -37,7 +40,8 @@ public class AndPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new AndPoshiElement(parentPoshiElement, poshiScript);
@@ -47,7 +51,9 @@ public class AndPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		for (String poshiScriptSnippet : getPoshiScriptSnippets(poshiScript)) {
 			add(PoshiNodeFactory.newPoshiNode(this, poshiScriptSnippet));
 		}
@@ -80,7 +86,8 @@ public class AndPoshiElement extends PoshiElement {
 	}
 
 	protected AndPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}
@@ -90,10 +97,15 @@ public class AndPoshiElement extends PoshiElement {
 		return "and";
 	}
 
+	@Override
+	protected Pattern getConditionPattern() {
+		return _conditionPattern;
+	}
+
 	protected List<String> getPoshiScriptSnippets(String poshiScript) {
 		List<String> poshiScriptSnippets = new ArrayList<>();
 
-		for (String condition : poshiScript.split(" && ")) {
+		for (String condition : poshiScript.split("&&")) {
 			condition = getParentheticalContent(condition);
 
 			poshiScriptSnippets.add(condition);
@@ -105,23 +117,12 @@ public class AndPoshiElement extends PoshiElement {
 	private boolean _isElementType(
 		PoshiElement parentPoshiElement, String poshiScript) {
 
-		if (!isConditionValidInParent(parentPoshiElement)) {
-			return false;
-		}
-
-		poshiScript = poshiScript.trim();
-
-		if (poshiScript.startsWith("!") || poshiScript.startsWith("else")) {
-			return false;
-		}
-
-		if (poshiScript.contains(" && ")) {
-			return true;
-		}
-
-		return false;
+		return isConditionElementType(parentPoshiElement, poshiScript);
 	}
 
 	private static final String _ELEMENT_NAME = "and";
+
+	private static final Pattern _conditionPattern = Pattern.compile(
+		"^(?!!|else)[\\s\\S]*&&[\\s\\S]*$", Pattern.DOTALL);
 
 }

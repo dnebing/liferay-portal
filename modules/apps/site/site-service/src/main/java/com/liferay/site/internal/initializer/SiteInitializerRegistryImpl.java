@@ -37,9 +37,10 @@ import org.osgi.service.component.annotations.Deactivate;
 /**
  * @author Alessio Antonio Rendina
  */
-@Component(immediate = true)
+@Component(immediate = true, service = SiteInitializerRegistry.class)
 public class SiteInitializerRegistryImpl implements SiteInitializerRegistry {
 
+	@Override
 	public SiteInitializer getSiteInitializer(String key) {
 		if (Validator.isNull(key)) {
 			return null;
@@ -59,10 +60,12 @@ public class SiteInitializerRegistryImpl implements SiteInitializerRegistry {
 		return serviceWrapper.getService();
 	}
 
+	@Override
 	public List<SiteInitializer> getSiteInitializers(long companyId) {
 		return getSiteInitializers(companyId, false);
 	}
 
+	@Override
 	public List<SiteInitializer> getSiteInitializers(
 		long companyId, boolean active) {
 

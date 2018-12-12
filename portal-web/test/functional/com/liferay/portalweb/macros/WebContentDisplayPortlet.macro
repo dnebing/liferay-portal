@@ -97,7 +97,7 @@
 
 				<execute function="ClickNoError" locator1="WCEditWebContent#EDIT_TEMPLATE" />
 
-				<execute function="Confirm" value1="Editing the current template deletes all unsaved content." />
+				<execute function="AssertConfirm" value1="Editing the current template deletes all unsaved content." />
 			</else>
 		</if>
 
@@ -320,19 +320,13 @@
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
-	<command name="tearDownScopePG">
-		<execute macro="WebContentDisplayPortlet#configureScopePG">
-			<var name="scopeSelection" value="Liferay" />
-		</execute>
-	</command>
-
 	<command name="undoMoveToRecycleBin">
 		<execute function="AssertClick" locator1="Link#UNDO" value1="Undo" />
 	</command>
 
 	<command name="viewAllSettingsEnabledPG">
 		<execute function="AssertTextEquals#assertPartialText" locator1="Icon#PRINT" value1="Print" />
-		<execute function="AssertTextEquals#assertPartialText" locator1="Comments#SUBSCRIBE_TO_COMMENTS_LINK" value1="Subscribe to Comments" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="Button#SUBSCRIBE" value1="Subscribe" />
 
 		<var name="key_assetTitle" value="${relatedAssetTitle}" />
 
@@ -381,8 +375,24 @@
 		<execute function="AssertClick" locator1="Pagination#PREVIOUS_LINK" value1="Previous" />
 	</command>
 
+	<command name="viewDefaultMessage">
+		<execute macro="Alert#viewInfoMessageSpecific">
+			<var name="infoMessage" value="This application is not visible to users yet" />
+		</execute>
+
+		<execute macro="Alert#viewInfoMessageSpecific">
+			<var name="infoMessage" value="Select Web Content to make it visible" />
+		</execute>
+	</command>
+
 	<command name="viewDeletedArticle">
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#ERROR_3" value1="The selected web content no longer exists" />
+		<execute macro="Alert#viewWarningSpecific">
+			<var name="warningMessage" value="The selected web content no longer exists." />
+		</execute>
+
+		<execute macro="Alert#viewWarningSpecific">
+			<var name="warningMessage" value="Do you want to Select Another Web Content?" />
+		</execute>
 	</command>
 
 	<command name="viewEnabledFileTypesPGViaWCD">
@@ -396,10 +406,6 @@
 
 	<command name="viewImageFieldViaWCD">
 		<execute function="SikuliAssertElementPresent" locator1="WCD#WEB_CONTENT_IMAGE_PNG" />
-	</command>
-
-	<command name="viewNoPermissionPG">
-		<execute function="AssertTextEquals" locator1="Message#ERROR" value1="You do not have the roles required to access this portlet." />
 	</command>
 
 	<command name="viewRecycleBinMessage">

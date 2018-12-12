@@ -178,6 +178,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	@Override
 	public List<MDRRule> findByUuid(String uuid, int start, int end,
 		OrderByComparator<MDRRule> orderByComparator, boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -201,7 +203,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MDRRule mdrRule : list) {
-					if (!Objects.equals(uuid, mdrRule.getUuid())) {
+					if (!uuid.equals(mdrRule.getUuid())) {
 						list = null;
 
 						break;
@@ -225,10 +227,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -409,6 +408,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	public MDRRule[] findByUuid_PrevAndNext(long ruleId, String uuid,
 		OrderByComparator<MDRRule> orderByComparator)
 		throws NoSuchRuleException {
+		uuid = Objects.toString(uuid, "");
+
 		MDRRule mdrRule = findByPrimaryKey(ruleId);
 
 		Session session = null;
@@ -454,10 +455,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -577,6 +575,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -590,10 +590,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -707,6 +704,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	@Override
 	public MDRRule fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -732,10 +731,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -819,6 +815,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -832,10 +830,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -977,6 +972,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	public List<MDRRule> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<MDRRule> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1004,7 +1001,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MDRRule mdrRule : list) {
-					if (!Objects.equals(uuid, mdrRule.getUuid()) ||
+					if (!uuid.equals(mdrRule.getUuid()) ||
 							(companyId != mdrRule.getCompanyId())) {
 						list = null;
 
@@ -1029,10 +1026,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1229,6 +1223,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	public MDRRule[] findByUuid_C_PrevAndNext(long ruleId, String uuid,
 		long companyId, OrderByComparator<MDRRule> orderByComparator)
 		throws NoSuchRuleException {
+		uuid = Objects.toString(uuid, "");
+
 		MDRRule mdrRule = findByPrimaryKey(ruleId);
 
 		Session session = null;
@@ -1274,10 +1270,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1403,6 +1396,8 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1416,10 +1411,7 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1978,6 +1970,9 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	public MDRRulePersistenceImpl() {
 		setModelClass(MDRRule.class);
 
+		setModelImplClass(MDRRuleImpl.class);
+		setEntityCacheEnabled(MDRRuleModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -2423,53 +2418,6 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	/**
 	 * Returns the mdr rule with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the mdr rule
-	 * @return the mdr rule, or <code>null</code> if a mdr rule with the primary key could not be found
-	 */
-	@Override
-	public MDRRule fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-				MDRRuleImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		MDRRule mdrRule = (MDRRule)serializable;
-
-		if (mdrRule == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mdrRule = (MDRRule)session.get(MDRRuleImpl.class, primaryKey);
-
-				if (mdrRule != null) {
-					cacheResult(mdrRule);
-				}
-				else {
-					entityCache.putResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-						MDRRuleImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(MDRRuleModelImpl.ENTITY_CACHE_ENABLED,
-					MDRRuleImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return mdrRule;
-	}
-
-	/**
-	 * Returns the mdr rule with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ruleId the primary key of the mdr rule
 	 * @return the mdr rule, or <code>null</code> if a mdr rule with the primary key could not be found
 	 */
@@ -2765,6 +2713,11 @@ public class MDRRulePersistenceImpl extends BasePersistenceImpl<MDRRule>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

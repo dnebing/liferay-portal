@@ -17,12 +17,12 @@
 		<if>
 			<equals arg1="${enableDisplaySettingsShowSearch}" arg2="true" />
 			<then>
-				<execute function="Check" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_SHOW_SEARCH_CHECKBOX" />
+				<execute function="Check" locator1="Checkbox#SHOW_SEARCH_CHECKBOX" />
 			</then>
 			<elseif>
 				<equals arg1="${enableDisplaySettingsShowSearch}" arg2="false" />
 				<then>
-					<execute function="Uncheck" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_SHOW_SEARCH_CHECKBOX" />
+					<execute function="Uncheck" locator1="Checkbox#SHOW_SEARCH_CHECKBOX" />
 				</then>
 			</elseif>
 		</if>
@@ -99,7 +99,7 @@
 
 		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
-		<execute function="AssertClick" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_ROOT_FOLDER_SELECT_BUTTON" value1="Select" />
+		<execute function="AssertClick" locator1="Button#SELECT" value1="Select" />
 
 		<execute function="SelectFrame" value1="relative=top" />
 
@@ -158,9 +158,9 @@
 			</then>
 		</if>
 
-		<execute function="AssertChecked" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_SHOW_SEARCH_CHECKBOX" />
+		<execute function="AssertChecked" locator1="Checkbox#SHOW_SEARCH_CHECKBOX" />
 		<execute function="AssertTextEquals#assertValue" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_MAXIMUM_ENTRIES_TO_DISPLAY_SELECT" value1="20" />
-		<execute function="AssertChecked" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_SHOW_SEARCH_CHECKBOX" />
+		<execute function="AssertChecked" locator1="Checkbox#SHOW_SEARCH_CHECKBOX" />
 
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
@@ -177,18 +177,5 @@
 
 		<execute function="AssertTextEquals#assertTextCaseInsensitive" locator1="Home#SITE_ADMINISTRATION_PORTLET_TITLE" value1="Documents and Media" />
 		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="There are no documents or media files in this folder." />
-	</command>
-
-	<command name="viewRootFolderPG">
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletName" value="${portletName}" />
-			<var name="portletOption" value="Configuration" />
-		</execute>
-
-		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
-
-		<execute function="AssertTextEquals" locator1="DocumentsAndMediaConfiguration#DISPLAY_SETTINGS_ROOT_FOLDER_FIELD" value1="${dmFolderName}" />
-
-		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 </definition>

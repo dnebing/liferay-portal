@@ -35,7 +35,7 @@ public class RoleConstants {
 	public static final String NAME_INVALID_CHARACTERS =
 		StringPool.COMMA + StringPool.SPACE + StringPool.STAR;
 
-	public static final String NAME_LABEL = "role-key";
+	public static final String NAME_LABEL = "role-name";
 
 	public static final String NAME_RESERVED_WORDS = StringPool.NULL;
 
@@ -64,14 +64,17 @@ public class RoleConstants {
 
 	public static final String SITE_OWNER = "Site Owner";
 
-	public static final String[] SYSTEM_ORGANIZATION_ROLES =
-		{ORGANIZATION_ADMINISTRATOR, ORGANIZATION_OWNER, ORGANIZATION_USER};
+	public static final String[] SYSTEM_ORGANIZATION_ROLES = {
+		ORGANIZATION_ADMINISTRATOR, ORGANIZATION_OWNER, ORGANIZATION_USER
+	};
 
-	public static final String[] SYSTEM_ROLES =
-		{ADMINISTRATOR, GUEST, OWNER, POWER_USER, RoleConstants.USER};
+	public static final String[] SYSTEM_ROLES = {
+		ADMINISTRATOR, GUEST, OWNER, POWER_USER, RoleConstants.USER
+	};
 
-	public static final String[] SYSTEM_SITE_ROLES =
-		{SITE_ADMINISTRATOR, SITE_MEMBER, SITE_OWNER};
+	public static final String[] SYSTEM_SITE_ROLES = {
+		SITE_ADMINISTRATOR, SITE_MEMBER, SITE_OWNER
+	};
 
 	public static final int TYPE_ORGANIZATION = 3;
 
@@ -87,16 +90,19 @@ public class RoleConstants {
 
 	public static final String TYPE_SITE_LABEL = "site";
 
-	public static final int[] TYPES_ORGANIZATION_AND_REGULAR =
-		{TYPE_REGULAR, TYPE_ORGANIZATION};
+	public static final int[] TYPES_ORGANIZATION_AND_REGULAR = {
+		TYPE_REGULAR, TYPE_ORGANIZATION
+	};
 
-	public static final int[] TYPES_ORGANIZATION_AND_REGULAR_AND_SITE =
-		{TYPE_REGULAR, TYPE_ORGANIZATION, TYPE_SITE};
+	public static final int[] TYPES_ORGANIZATION_AND_REGULAR_AND_SITE = {
+		TYPE_REGULAR, TYPE_ORGANIZATION, TYPE_SITE
+	};
 
 	public static final int[] TYPES_REGULAR = {TYPE_REGULAR};
 
-	public static final int[] TYPES_REGULAR_AND_SITE =
-		{TYPE_REGULAR, TYPE_SITE};
+	public static final int[] TYPES_REGULAR_AND_SITE = {
+		TYPE_REGULAR, TYPE_SITE
+	};
 
 	public static final String USER = "User";
 
@@ -122,9 +128,8 @@ public class RoleConstants {
 		else if (type == TYPE_SITE) {
 			return TYPE_SITE_LABEL;
 		}
-		else {
-			return TYPE_REGULAR_LABEL;
-		}
+
+		return TYPE_REGULAR_LABEL;
 	}
 
 }

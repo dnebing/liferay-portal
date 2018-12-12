@@ -1802,12 +1802,11 @@ public class CalendarBookingLocalServiceImpl
 
 			serviceContext.setAttribute("sendNotification", Boolean.TRUE);
 
-			int workflowAction = GetterUtil.getInteger(
-				serviceContext.getAttribute("workflowAction"));
-
 			if (childCalendarBookingMap.containsKey(calendarId)) {
 				CalendarBooking oldChildCalendarBooking =
 					childCalendarBookingMap.get(calendarId);
+				int workflowAction = GetterUtil.getInteger(
+					serviceContext.getAttribute("workflowAction"));
 
 				if ((calendarBooking.getStartTime() ==
 						oldChildCalendarBooking.getStartTime()) &&
@@ -1828,7 +1827,7 @@ public class CalendarBookingLocalServiceImpl
 				notificationTemplateType = NotificationTemplateType.DECLINE;
 			}
 			else if (childCalendarBookingMap.containsKey(
-						 childCalendarBooking.getCalendarId())) {
+						childCalendarBooking.getCalendarId())) {
 
 				notificationTemplateType = NotificationTemplateType.UPDATE;
 			}
@@ -1848,9 +1847,8 @@ public class CalendarBookingLocalServiceImpl
 		else if (isCustomCalendarResource(calendarResource)) {
 			return groupLocalService.getGroup(calendarResource.getGroupId());
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	protected String getExtraDataJSON(CalendarBooking calendarBooking) {
@@ -2540,8 +2538,6 @@ public class CalendarBookingLocalServiceImpl
 		for (NotificationRecipient notificationRecipient :
 				notificationRecipients) {
 
-			User user = notificationRecipient.getUser();
-
 			long startTime = calendarBooking.getStartTime();
 
 			if (nowTime > startTime) {
@@ -2559,7 +2555,7 @@ public class CalendarBookingLocalServiceImpl
 					calendarBooking.getFirstReminderNotificationType();
 			}
 			else if (_isInCheckInterval(
-						 deltaTime, calendarBooking.getSecondReminder())) {
+						deltaTime, calendarBooking.getSecondReminder())) {
 
 				notificationType =
 					calendarBooking.getSecondReminderNotificationType();
@@ -2568,6 +2564,8 @@ public class CalendarBookingLocalServiceImpl
 			if (notificationType == null) {
 				continue;
 			}
+
+			User user = notificationRecipient.getUser();
 
 			NotificationSender notificationSender =
 				NotificationSenderFactory.getNotificationSender(

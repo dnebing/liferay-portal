@@ -130,8 +130,8 @@ public class CleanServiceBuilderCommand extends BaseCommand {
 	private void _deleteReleaseRows(Connection connection) throws SQLException {
 		String sql = "delete from Release_ where servletContextName = ?";
 
-		try (PreparedStatement preparedStatement =
-				connection.prepareStatement(sql)) {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(
+				sql)) {
 
 			preparedStatement.setString(1, _servletContextName);
 
@@ -145,8 +145,8 @@ public class CleanServiceBuilderCommand extends BaseCommand {
 
 		String sql = "delete from ServiceComponent where buildNamespace = ?";
 
-		try (PreparedStatement preparedStatement =
-				connection.prepareStatement(sql)) {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(
+				sql)) {
 
 			preparedStatement.setString(1, namespace);
 
@@ -195,29 +195,29 @@ public class CleanServiceBuilderCommand extends BaseCommand {
 		return false;
 	}
 
-	private static final Set<String> _badTableNames = new HashSet<>();
+	private static final Set<String> _badTableNames = new HashSet<String>() {
+		{
+			ClassLoader classLoader =
+				CleanServiceBuilderCommand.class.getClassLoader();
 
-	static {
-		ClassLoader classLoader =
-			CleanServiceBuilderCommand.class.getClassLoader();
+			try (BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(
+						classLoader.getResourceAsStream(
+							"com/liferay/portal/tools/service/builder" +
+								"/dependencies/bad_table_names.txt"),
+						StandardCharsets.UTF_8))) {
 
-		try (BufferedReader bufferedReader = new BufferedReader(
-				new InputStreamReader(
-					classLoader.getResourceAsStream(
-						"com/liferay/portal/tools/service/builder" +
-							"/dependencies/bad_table_names.txt"),
-					StandardCharsets.UTF_8))) {
+				String line = null;
 
-			String line = null;
-
-			while ((line = bufferedReader.readLine()) != null) {
-				_badTableNames.add(line);
+				while ((line = bufferedReader.readLine()) != null) {
+					add(line);
+				}
+			}
+			catch (IOException ioe) {
+				throw new ExceptionInInitializerError(ioe);
 			}
 		}
-		catch (IOException ioe) {
-			throw new ExceptionInInitializerError(ioe);
-		}
-	}
+	};
 
 	@Parameter(
 		converter = FileConverter.class, description = "The service.xml file.",

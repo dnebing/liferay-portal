@@ -14,36 +14,57 @@
 
 package com.liferay.structured.content.apio.architect.sort;
 
+import com.liferay.portal.kernel.util.ListUtil;
+
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Models a Sort param for sorting structured content by different fields and
- * sort directives.
+ * Models a sort parameter for sorting structured content by different fields
+ * and sort directives.
  *
- * @author Cristina González
- * @review
+ * @author     Cristina González
+ * @deprecated As of Judson (7.1.x), replaced by {@link
+ *             com.liferay.portal.odata.sort.Sort}
  */
+@Deprecated
 public class Sort {
 
+	public static final Sort EMPTY_SORT = new Sort();
+
 	/**
-	 * Creates a new Sort from a list of sort fields.
+	 * Returns an empty sort.
 	 *
-	 * @param  sortFields - list of sort fields
-	 * @review
+	 * @return the empty sort
+	 */
+	public static Sort emptySort() {
+		return EMPTY_SORT;
+	}
+
+	/**
+	 * Creates a new sort from the sort fields.
+	 *
+	 * @param sortFields the sort fields
 	 */
 	public Sort(List<SortField> sortFields) {
+		if (ListUtil.isEmpty(sortFields)) {
+			throw new InvalidSortException("Sort fields is empty");
+		}
+
 		_sortFields = Collections.unmodifiableList(sortFields);
 	}
 
 	/**
-	 * Returns the list of sort fields.
+	 * Returns the sort fields.
 	 *
-	 * @return - the list of sort fields
-	 * @review
+	 * @return the sort fields
 	 */
 	public List<SortField> getSortFields() {
 		return _sortFields;
+	}
+
+	private Sort() {
+		_sortFields = Collections.emptyList();
 	}
 
 	private final List<SortField> _sortFields;

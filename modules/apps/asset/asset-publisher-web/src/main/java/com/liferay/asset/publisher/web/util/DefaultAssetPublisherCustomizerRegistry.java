@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 /**
  * @author Pavel Savinov
  */
-@Component(immediate = true)
+@Component(immediate = true, service = AssetPublisherCustomizerRegistry.class)
 public class DefaultAssetPublisherCustomizerRegistry
 	implements AssetPublisherCustomizerRegistry {
 
@@ -64,8 +64,7 @@ public class DefaultAssetPublisherCustomizerRegistry
 			assetPublisherCustomizer.getPortletId());
 	}
 
-	private final
-		Map<String, AssetPublisherCustomizer> _assetPublisherCustomizers =
-			new ConcurrentHashMap<>();
+	private final Map<String, AssetPublisherCustomizer>
+		_assetPublisherCustomizers = new ConcurrentHashMap<>();
 
 }

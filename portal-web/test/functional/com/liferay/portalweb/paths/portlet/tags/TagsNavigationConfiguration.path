@@ -28,16 +28,6 @@
 	<td>//input[contains(@id,'showAssetCount')]</td>
 	<td></td>
 </tr>
-<tr>
-	<td>DISPLAY_TEMPLATE_SELECT</td>
-	<td>//select[contains(@id,'displayStyle')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CLOSE_BUTTON</td>
-	<td>//button[contains(@class,'btn close close-content')]</td>
-	<td></td>
-</tr>
 </tbody>
 </table>
 </body>

@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Deactivate;
 /**
  * @author Michael Bradford
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class ThemeContributorExtender extends AbstractExtender {
 
 	@Activate
@@ -113,8 +113,8 @@ public class ThemeContributorExtender extends AbstractExtender {
 			URL entryURL = bundle.getEntry("/package.json");
 
 			if (entryURL != null) {
-				try (Reader reader =
-						new InputStreamReader(entryURL.openStream())) {
+				try (Reader reader = new InputStreamReader(
+						entryURL.openStream())) {
 
 					JSONTokener jsonTokener = new JSONTokener(reader);
 
@@ -176,10 +176,8 @@ public class ThemeContributorExtender extends AbstractExtender {
 		if (cssResourcePaths.isEmpty() && jsResourcePaths.isEmpty()) {
 			return null;
 		}
-		else {
-			return new BundleWebResourcesImpl(
-				cssResourcePaths, jsResourcePaths);
-		}
+
+		return new BundleWebResourcesImpl(cssResourcePaths, jsResourcePaths);
 	}
 
 	private Logger _logger;

@@ -696,6 +696,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	@Override
 	public FriendlyURLEntryLocalization fetchByFriendlyURLEntryId_LanguageId(
 		long friendlyURLEntryId, String languageId, boolean retrieveFromCache) {
+		languageId = Objects.toString(languageId, "");
+
 		Object[] finderArgs = new Object[] { friendlyURLEntryId, languageId };
 
 		Object result = null;
@@ -724,10 +726,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 			boolean bindLanguageId = false;
 
-			if (languageId == null) {
-				query.append(_FINDER_COLUMN_FRIENDLYURLENTRYID_LANGUAGEID_LANGUAGEID_1);
-			}
-			else if (languageId.equals("")) {
+			if (languageId.isEmpty()) {
 				query.append(_FINDER_COLUMN_FRIENDLYURLENTRYID_LANGUAGEID_LANGUAGEID_3);
 			}
 			else {
@@ -813,6 +812,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	@Override
 	public int countByFriendlyURLEntryId_LanguageId(long friendlyURLEntryId,
 		String languageId) {
+		languageId = Objects.toString(languageId, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_FRIENDLYURLENTRYID_LANGUAGEID;
 
 		Object[] finderArgs = new Object[] { friendlyURLEntryId, languageId };
@@ -828,10 +829,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 			boolean bindLanguageId = false;
 
-			if (languageId == null) {
-				query.append(_FINDER_COLUMN_FRIENDLYURLENTRYID_LANGUAGEID_LANGUAGEID_1);
-			}
-			else if (languageId.equals("")) {
+			if (languageId.isEmpty()) {
 				query.append(_FINDER_COLUMN_FRIENDLYURLENTRYID_LANGUAGEID_LANGUAGEID_3);
 			}
 			else {
@@ -970,6 +968,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	@Override
 	public FriendlyURLEntryLocalization fetchByG_C_U(long groupId,
 		long classNameId, String urlTitle, boolean retrieveFromCache) {
+		urlTitle = Objects.toString(urlTitle, "");
+
 		Object[] finderArgs = new Object[] { groupId, classNameId, urlTitle };
 
 		Object result = null;
@@ -1001,10 +1001,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 			boolean bindUrlTitle = false;
 
-			if (urlTitle == null) {
-				query.append(_FINDER_COLUMN_G_C_U_URLTITLE_1);
-			}
-			else if (urlTitle.equals("")) {
+			if (urlTitle.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_C_U_URLTITLE_3);
 			}
 			else {
@@ -1092,6 +1089,8 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	 */
 	@Override
 	public int countByG_C_U(long groupId, long classNameId, String urlTitle) {
+		urlTitle = Objects.toString(urlTitle, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_C_U;
 
 		Object[] finderArgs = new Object[] { groupId, classNameId, urlTitle };
@@ -1109,10 +1108,7 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 			boolean bindUrlTitle = false;
 
-			if (urlTitle == null) {
-				query.append(_FINDER_COLUMN_G_C_U_URLTITLE_1);
-			}
-			else if (urlTitle.equals("")) {
+			if (urlTitle.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_C_U_URLTITLE_3);
 			}
 			else {
@@ -1165,6 +1161,9 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 
 	public FriendlyURLEntryLocalizationPersistenceImpl() {
 		setModelClass(FriendlyURLEntryLocalization.class);
+
+		setModelImplClass(FriendlyURLEntryLocalizationImpl.class);
+		setEntityCacheEnabled(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1594,56 +1593,6 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 	/**
 	 * Returns the friendly url entry localization with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the friendly url entry localization
-	 * @return the friendly url entry localization, or <code>null</code> if a friendly url entry localization with the primary key could not be found
-	 */
-	@Override
-	public FriendlyURLEntryLocalization fetchByPrimaryKey(
-		Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-				FriendlyURLEntryLocalizationImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		FriendlyURLEntryLocalization friendlyURLEntryLocalization = (FriendlyURLEntryLocalization)serializable;
-
-		if (friendlyURLEntryLocalization == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				friendlyURLEntryLocalization = (FriendlyURLEntryLocalization)session.get(FriendlyURLEntryLocalizationImpl.class,
-						primaryKey);
-
-				if (friendlyURLEntryLocalization != null) {
-					cacheResult(friendlyURLEntryLocalization);
-				}
-				else {
-					entityCache.putResult(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-						FriendlyURLEntryLocalizationImpl.class, primaryKey,
-						nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(FriendlyURLEntryLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-					FriendlyURLEntryLocalizationImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return friendlyURLEntryLocalization;
-	}
-
-	/**
-	 * Returns the friendly url entry localization with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param friendlyURLEntryLocalizationId the primary key of the friendly url entry localization
 	 * @return the friendly url entry localization, or <code>null</code> if a friendly url entry localization with the primary key could not be found
 	 */
@@ -1939,6 +1888,11 @@ public class FriendlyURLEntryLocalizationPersistenceImpl
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

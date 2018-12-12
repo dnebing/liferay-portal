@@ -21,7 +21,15 @@
 			<var name="rowEntry" value="${rowEntry}" />
 		</execute>
 
-		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<if>
+			<isset var="confirmationText" />
+			<then>
+				<execute function="AssertConfirm" value1="${confirmationText}" />
+			</then>
+			<else>
+				<execute function="Confirm" />
+			</else>
+		</if>
 
 		<if>
 			<isset var="failure" />
@@ -45,7 +53,24 @@
 	</command>
 
 	<command name="gotoAdd">
+		<var method="PropsUtil#get('browser.type')" name="browserType" />
+
+		<if>
+			<equals arg1="${browserType}" arg2="chrome" />
+			<then>
+				<execute macro="LexiconEntry#waitForManagementBar" />
+			</then>
+		</if>
+
 		<execute function="Click" locator1="Button#PLUS" />
+	</command>
+
+	<command name="gotoAddDropdownMenuItem">
+		<execute macro="LexiconEntry#gotoAdd" />
+
+		<execute macro="DropdownMenuItem#click">
+			<var name="menuItem" value="${menuItem}" />
+		</execute>
 	</command>
 
 	<command name="gotoAddMenuItem">
@@ -139,14 +164,6 @@
 		</execute>
 	</command>
 
-	<command name="gotoHeaderMenuItemNoError">
-		<execute function="Click" locator1="Icon#HEADER_VERTICAL_ELLIPSIS" />
-
-		<execute macro="MenuItem#clickNoError">
-			<var name="menuItem" value="${menuItem}" />
-		</execute>
-	</command>
-
 	<command name="openEntryMenu">
 		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#ROW_VERTICAL_ELLIPSIS">
 			<var name="key_rowEntry" value="${rowEntry}" />
@@ -175,5 +192,53 @@
 		<execute function="AssertElementNotPresent" locator1="ContentRow#ENTRY_CONTENT_ENTRY_NAME">
 			<var name="key_rowEntry" value="${rowEntry}" />
 		</execute>
+	</command>
+
+	<command name="viewNoEntryMenu">
+		<execute function="AssertElementNotPresent" locator1="Icon#ROW_VERTICAL_ELLIPSIS">
+			<var name="key_rowEntry" value="${rowEntry}" />
+		</execute>
+	</command>
+
+	<command name="viewNoEntryMenuItem">
+		<execute macro="LexiconEntry#openEntryMenu">
+			<var name="rowEntry" value="${rowEntry}" />
+		</execute>
+
+		<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM">
+			<var name="key_menuItem" value="${menuItem}" />
+		</execute>
+	</command>
+
+	<command name="waitForManagementBar">
+		<execute function="AssertVisible" locator1="ManagementBar#MANAGEMENT_BAR" />
+
+		<var name="javaScript"><![CDATA[
+var managementBar = Liferay.component(document.querySelector("nav.management-bar").parentNode.id);
+
+if (managementBar !== undefined) {
+	if (managementBar.wasRendered) {
+		return 'ready';
+	}
+	else {
+		return 'pending';
+	}
+}
+else {
+	return 'pending';
+}
+		]]></var>
+		<var name="managementBarReady" value="" />
+
+		<while max-iterations="30">
+			<not>
+				<equals arg1="${managementBarReady}" arg2="ready" />
+			</not>
+			<then>
+				<var method="selenium#getEval(${javaScript})" name="managementBarReady" />
+
+				<execute function="Pause" locator1="1000" />
+			</then>
+		</while>
 	</command>
 </definition>

@@ -25,19 +25,40 @@ public interface IndexRequestExecutor {
 	public AnalyzeIndexResponse executeIndexRequest(
 		AnalyzeIndexRequest analyzeIndexRequest);
 
+	public CloseIndexResponse executeIndexRequest(
+		CloseIndexRequest closeIndexRequest);
+
+	public CreateIndexResponse executeIndexRequest(
+		CreateIndexRequest createIndexRequest);
+
+	public DeleteIndexResponse executeIndexRequest(
+		DeleteIndexRequest deleteIndexRequest);
+
 	public FlushIndexResponse executeIndexRequest(
 		FlushIndexRequest flushIndexRequest);
 
 	public GetFieldMappingIndexResponse executeIndexRequest(
 		GetFieldMappingIndexRequest getFieldMappingIndexRequest);
 
+	public GetIndexIndexResponse executeIndexRequest(
+		GetIndexIndexRequest getIndexIndexRequest);
+
 	public GetMappingIndexResponse executeIndexRequest(
 		GetMappingIndexRequest getMappingIndexRequest);
+
+	public IndicesExistsIndexResponse executeIndexRequest(
+		IndicesExistsIndexRequest indicesExistsIndexRequest);
+
+	public OpenIndexResponse executeIndexRequest(
+		OpenIndexRequest openIndexRequest);
 
 	public PutMappingIndexResponse executeIndexRequest(
 		PutMappingIndexRequest putMappingIndexRequest);
 
 	public RefreshIndexResponse executeIndexRequest(
 		RefreshIndexRequest refreshIndexRequest);
+
+	public UpdateIndexSettingsIndexResponse executeIndexRequest(
+		UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest);
 
 }

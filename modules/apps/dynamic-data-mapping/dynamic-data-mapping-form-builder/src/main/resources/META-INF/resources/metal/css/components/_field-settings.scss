@@ -1,0 +1,17 @@
+$c: '.ddm-field-settings';
+
+#{$c} {
+	.tab-content > div {
+		> .tab-pane {
+			display: none;
+		}
+
+		> .active {
+			display: block;
+		}
+	}
+
+	.alloy-editor {
+		width: 100%;
+	}
+}

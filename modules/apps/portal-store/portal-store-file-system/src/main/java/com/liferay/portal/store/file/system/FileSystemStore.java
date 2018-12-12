@@ -19,7 +19,6 @@ import com.liferay.document.library.kernel.exception.NoSuchFileException;
 import com.liferay.document.library.kernel.store.BaseStore;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.document.library.kernel.util.DLUtil;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.convert.documentlibrary.FileSystemStoreRootDirException;
@@ -39,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +50,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -62,7 +63,10 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	configurationPid = "com.liferay.portal.store.file.system.configuration.FileSystemStoreConfiguration",
 	configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true,
-	property = "store.type=com.liferay.portal.store.file.system.FileSystemStore",
+	property = {
+		"service.ranking:Integer=0",
+		"store.type=com.liferay.portal.store.file.system.FileSystemStore"
+	},
 	service = Store.class
 )
 public class FileSystemStore extends BaseStore {
@@ -132,9 +136,8 @@ public class FileSystemStore extends BaseStore {
 		}
 
 		try {
-			toFileNameVersionFile.createNewFile();
-
-			FileUtil.copyFile(fromFileNameVersionFile, toFileNameVersionFile);
+			fileSystemHelper.copy(
+				fromFileNameVersionFile, toFileNameVersionFile);
 		}
 		catch (IOException ioe) {
 			throw new SystemException(ioe);
@@ -380,14 +383,7 @@ public class FileSystemStore extends BaseStore {
 
 		File parentFile = fileNameDir.getParentFile();
 
-		boolean renamed = FileUtil.move(fileNameDir, newFileNameDir);
-
-		if (!renamed) {
-			throw new SystemException(
-				StringBundler.concat(
-					"File name directory was not renamed from ",
-					fileNameDir.getPath(), " to ", newFileNameDir.getPath()));
-		}
+		fileSystemHelper.move(fileNameDir, newFileNameDir);
 
 		deleteEmptyAncestors(companyId, repositoryId, parentFile);
 	}
@@ -419,14 +415,7 @@ public class FileSystemStore extends BaseStore {
 
 		File parentFile = fileNameDir.getParentFile();
 
-		boolean renamed = FileUtil.move(fileNameDir, newFileNameDir);
-
-		if (!renamed) {
-			throw new SystemException(
-				StringBundler.concat(
-					"File name directory was not renamed from ",
-					fileNameDir.getPath(), " to ", newFileNameDir.getPath()));
-		}
+		fileSystemHelper.move(fileNameDir, newFileNameDir);
 
 		deleteEmptyAncestors(companyId, repositoryId, parentFile);
 	}
@@ -475,19 +464,11 @@ public class FileSystemStore extends BaseStore {
 				companyId, repositoryId, fileName, toVersionLabel);
 		}
 
-		boolean renamed = FileUtil.move(
-			fromFileNameVersionFile, toFileNameVersionFile);
-
-		if (!renamed) {
-			throw new SystemException(
-				StringBundler.concat(
-					"File name version file was not renamed from ",
-					fromFileNameVersionFile.getPath(), " to ",
-					toFileNameVersionFile.getPath()));
-		}
+		fileSystemHelper.move(fromFileNameVersionFile, toFileNameVersionFile);
 	}
 
 	@Activate
+	@Modified
 	protected void activate(Map<String, Object> properties) {
 		_fileSystemStoreConfiguration = ConfigurableUtil.createConfigurable(
 			FileSystemStoreConfiguration.class, properties);
@@ -499,6 +480,9 @@ public class FileSystemStore extends BaseStore {
 		}
 
 		initializeRootDir();
+
+		fileSystemHelper = new FileSystemHelper(
+			_fileSystemStoreConfiguration.useHardLinks(), getRootDirPath());
 	}
 
 	protected void deleteEmptyAncestors(File file) {
@@ -552,10 +536,7 @@ public class FileSystemStore extends BaseStore {
 
 		File repositoryDir = getRepositoryDir(companyId, repositoryId);
 
-		File fileNameDir = new File(
-			repositoryDir + StringPool.SLASH + fileName);
-
-		return fileNameDir;
+		return new File(repositoryDir + StringPool.SLASH + fileName);
 	}
 
 	protected void getFileNames(
@@ -589,10 +570,7 @@ public class FileSystemStore extends BaseStore {
 
 		File fileNameDir = getFileNameDir(companyId, repositoryId, fileName);
 
-		File fileNameVersionFile = new File(
-			fileNameDir + StringPool.SLASH + version);
-
-		return fileNameVersionFile;
+		return new File(fileNameDir + StringPool.SLASH + version);
 	}
 
 	protected String getHeadVersionLabel(
@@ -646,6 +624,10 @@ public class FileSystemStore extends BaseStore {
 		return _fileSystemStoreConfiguration.rootDir();
 	}
 
+	protected Path getRootDirPath() {
+		return _rootDir.toPath();
+	}
+
 	protected void initializeRootDir() {
 		String path = getRootDirName();
 
@@ -671,6 +653,7 @@ public class FileSystemStore extends BaseStore {
 	}
 
 	protected ConfigurationAdmin configurationAdmin;
+	protected FileSystemHelper fileSystemHelper;
 
 	private static volatile FileSystemStoreConfiguration
 		_fileSystemStoreConfiguration;
@@ -695,9 +678,8 @@ public class FileSystemStore extends BaseStore {
 
 				return true;
 			}
-			else {
-				return false;
-			}
+
+			return false;
 		}
 
 		@Override
@@ -705,8 +687,8 @@ public class FileSystemStore extends BaseStore {
 			return (int)(_companyId * 11 + _repositoryId);
 		}
 
-		private long _companyId;
-		private long _repositoryId;
+		private final long _companyId;
+		private final long _repositoryId;
 
 	}
 

@@ -14,6 +14,8 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.List;
 
 import org.dom4j.Attribute;
@@ -36,7 +38,8 @@ public class ArgPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new ArgPoshiElement(parentPoshiElement, poshiScript);
@@ -46,13 +49,15 @@ public class ArgPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
-		addAttribute("value", getSingleQuotedContent(poshiScript));
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
+		addAttribute("value", getDoubleQuotedContent(poshiScript));
 	}
 
 	@Override
 	public String toPoshiScript() {
-		return "\'" + attributeValue("value") + "\'";
+		return doubleQuoteContent(attributeValue("value"));
 	}
 
 	protected ArgPoshiElement() {
@@ -67,7 +72,8 @@ public class ArgPoshiElement extends PoshiElement {
 	}
 
 	protected ArgPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}
@@ -86,7 +92,7 @@ public class ArgPoshiElement extends PoshiElement {
 
 		poshiScript = poshiScript.trim();
 
-		if (!poshiScript.startsWith("\'")) {
+		if (!poshiScript.startsWith("\"")) {
 			return false;
 		}
 

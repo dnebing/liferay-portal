@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cxf.rs.security.oauth2.common.Client;
 import org.apache.cxf.rs.security.oauth2.common.UserSubject;
 import org.apache.cxf.rs.security.oauth2.grants.owner.ResourceOwnerLoginHandler;
 
@@ -41,12 +42,14 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Carlos Sierra Andrés
  */
-@Component
+@Component(service = ResourceOwnerLoginHandler.class)
 public class LiferayResourceOwnerLoginHandler
 	implements ResourceOwnerLoginHandler {
 
 	@Override
-	public UserSubject createSubject(String login, String password) {
+	public UserSubject createSubject(
+		Client client, String login, String password) {
+
 		try {
 			User user = authenticateUser(login, password);
 

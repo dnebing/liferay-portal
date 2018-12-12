@@ -28,7 +28,15 @@ import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.OrganizationLocalServiceUtil;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
+import com.liferay.portal.kernel.service.UserGroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
+import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
+import com.liferay.portal.kernel.service.permission.UserGroupPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -40,7 +48,9 @@ import com.liferay.portal.kernel.util.StringUtil;
 import java.text.DateFormat;
 import java.text.Format;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
 
 import javax.portlet.PortletPreferences;
@@ -48,6 +58,7 @@ import javax.portlet.PortletURL;
 
 /**
  * @author Adolfo Pérez
+ * @author Roberto Díaz
  */
 public class DefaultAnnouncementsDisplayContext
 	implements AnnouncementsDisplayContext {
@@ -103,7 +114,7 @@ public class DefaultAnnouncementsDisplayContext
 				_announcementsRequestHelper.getUser());
 		}
 
-		scopes.put(Long.valueOf(0), new long[] {0});
+		scopes.put(0L, new long[] {0});
 
 		return scopes;
 	}
@@ -119,6 +130,70 @@ public class DefaultAnnouncementsDisplayContext
 	}
 
 	@Override
+	public List<Group> getGroups() throws PortalException {
+		if (!isCustomizeAnnouncementsDisplayed() ||
+			StringUtil.equals(
+				_announcementsRequestHelper.getPortletId(),
+				AnnouncementsPortletKeys.ANNOUNCEMENTS_ADMIN)) {
+
+			return AnnouncementsUtil.getGroups(
+				_announcementsRequestHelper.getThemeDisplay());
+		}
+
+		List<Group> selectedGroups = new ArrayList<>();
+
+		String[] selectedScopeGroupIds = StringUtil.split(
+			getSelectedScopeGroupIds());
+
+		for (String selectedScopeGroupId : selectedScopeGroupIds) {
+			long groupId = Long.valueOf(selectedScopeGroupId);
+
+			if (GroupPermissionUtil.contains(
+					_announcementsRequestHelper.getPermissionChecker(), groupId,
+					ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+
+				selectedGroups.add(GroupLocalServiceUtil.getGroup(groupId));
+			}
+		}
+
+		return selectedGroups;
+	}
+
+	@Override
+	public List<Organization> getOrganizations() throws PortalException {
+		if (!isCustomizeAnnouncementsDisplayed() ||
+			StringUtil.equals(
+				_announcementsRequestHelper.getPortletId(),
+				AnnouncementsPortletKeys.ANNOUNCEMENTS_ADMIN)) {
+
+			return AnnouncementsUtil.getOrganizations(
+				_announcementsRequestHelper.getThemeDisplay());
+		}
+
+		List<Organization> selectedOrganizations = new ArrayList<>();
+
+		String[] selectedScopeOrganizationIds = StringUtil.split(
+			getSelectedScopeOrganizationIds());
+
+		for (String selectedScopeOrganizationId :
+				selectedScopeOrganizationIds) {
+
+			long organizationId = Long.valueOf(selectedScopeOrganizationId);
+
+			if (OrganizationPermissionUtil.contains(
+					_announcementsRequestHelper.getPermissionChecker(),
+					organizationId, ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+
+				selectedOrganizations.add(
+					OrganizationLocalServiceUtil.getOrganization(
+						organizationId));
+			}
+		}
+
+		return selectedOrganizations;
+	}
+
+	@Override
 	public int getPageDelta() {
 		PortletPreferences portletPreferences =
 			_announcementsRequestHelper.getPortletPreferences();
@@ -126,6 +201,36 @@ public class DefaultAnnouncementsDisplayContext
 		return GetterUtil.getInteger(
 			portletPreferences.getValue(
 				"pageDelta", String.valueOf(SearchContainer.DEFAULT_DELTA)));
+	}
+
+	@Override
+	public List<Role> getRoles() throws PortalException {
+		if (!isCustomizeAnnouncementsDisplayed() ||
+			StringUtil.equals(
+				_announcementsRequestHelper.getPortletId(),
+				AnnouncementsPortletKeys.ANNOUNCEMENTS_ADMIN)) {
+
+			return AnnouncementsUtil.getRoles(
+				_announcementsRequestHelper.getThemeDisplay());
+		}
+
+		List<Role> selectedRoles = new ArrayList<>();
+
+		String[] selectedScopeRoleIds = StringUtil.split(
+			getSelectedScopeRoleIds());
+
+		for (String selectedScopeRoleId : selectedScopeRoleIds) {
+			Role role = RoleLocalServiceUtil.getRole(
+				Long.valueOf(selectedScopeRoleId));
+
+			if (AnnouncementsUtil.hasManageAnnouncementsPermission(
+					role, _announcementsRequestHelper.getPermissionChecker())) {
+
+				selectedRoles.add(role);
+			}
+		}
+
+		return selectedRoles;
 	}
 
 	@Override
@@ -144,6 +249,37 @@ public class DefaultAnnouncementsDisplayContext
 		tabs1URL.setParameter("tabs1", _announcementsRequestHelper.getTabs1());
 
 		return tabs1URL.toString();
+	}
+
+	@Override
+	public List<UserGroup> getUserGroups() throws PortalException {
+		if (!isCustomizeAnnouncementsDisplayed() ||
+			StringUtil.equals(
+				_announcementsRequestHelper.getPortletId(),
+				AnnouncementsPortletKeys.ANNOUNCEMENTS_ADMIN)) {
+
+			return AnnouncementsUtil.getUserGroups(
+				_announcementsRequestHelper.getThemeDisplay());
+		}
+
+		List<UserGroup> selectedUserGroups = new ArrayList<>();
+
+		String[] selectedScopeUserGroupIds = StringUtil.split(
+			getSelectedScopeUserGroupIds());
+
+		for (String selectedScopeUserGroupId : selectedScopeUserGroupIds) {
+			long userGroupId = Long.valueOf(selectedScopeUserGroupId);
+
+			if (UserGroupPermissionUtil.contains(
+					_announcementsRequestHelper.getPermissionChecker(),
+					userGroupId, ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+
+				selectedUserGroups.add(
+					UserGroupLocalServiceUtil.getUserGroup(userGroupId));
+			}
+		}
+
+		return selectedUserGroups;
 	}
 
 	@Override

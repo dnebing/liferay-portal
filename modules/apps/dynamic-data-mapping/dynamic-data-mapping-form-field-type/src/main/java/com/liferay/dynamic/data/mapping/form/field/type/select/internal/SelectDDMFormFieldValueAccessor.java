@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Locale;
+import java.util.function.IntFunction;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,11 +38,17 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true, property = "ddm.form.field.type.name=select",
-	service =
-		{DDMFormFieldValueAccessor.class, SelectDDMFormFieldValueAccessor.class}
+	service = {
+		DDMFormFieldValueAccessor.class, SelectDDMFormFieldValueAccessor.class
+	}
 )
 public class SelectDDMFormFieldValueAccessor
 	implements DDMFormFieldValueAccessor<JSONArray> {
+
+	@Override
+	public IntFunction<JSONArray[]> getArrayGeneratorIntFunction() {
+		return JSONArray[]::new;
+	}
 
 	@Override
 	public JSONArray getValue(

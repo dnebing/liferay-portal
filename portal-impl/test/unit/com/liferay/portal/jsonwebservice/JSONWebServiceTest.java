@@ -21,12 +21,14 @@ import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.test.util.PropsTestUtil;
+import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.util.ProxyUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,7 +46,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * @author Igor Spasic
  */
-@PrepareForTest({ServiceContextFactory.class, PropsUtil.class})
+@PrepareForTest(ServiceContextFactory.class)
 @RunWith(PowerMockRunner.class)
 public class JSONWebServiceTest extends BaseJSONWebServiceTestCase {
 
@@ -73,14 +75,7 @@ public class JSONWebServiceTest extends BaseJSONWebServiceTestCase {
 
 				}));
 
-		mockStatic(PropsUtil.class);
-
-		when(
-			PropsUtil.getArray(
-				PropsKeys.JSONWS_WEB_SERVICE_INVALID_HTTP_METHODS)
-		).thenReturn(
-			null
-		);
+		PropsTestUtil.setProps(Collections.emptyMap());
 
 		initPortalServices();
 
@@ -271,6 +266,28 @@ public class JSONWebServiceTest extends BaseJSONWebServiceTestCase {
 
 		Assert.assertEquals(
 			ServiceContext.class.getName(), jsonWebServiceAction.invoke());
+	}
+
+	@Test
+	public void testEnumParameter() throws Exception {
+		MockHttpServletRequest mockHttpServletRequest = createHttpRequest(
+			"/camelfoo/add-isolation/isolation/DEFAULT");
+
+		JSONWebServiceAction jsonWebServiceAction = lookupJSONWebServiceAction(
+			mockHttpServletRequest);
+
+		jsonWebServiceAction.invoke();
+	}
+
+	@Test
+	public void testEnumReturnValue() throws Exception {
+		MockHttpServletRequest mockHttpServletRequest = createHttpRequest(
+			"/camelfoo/get-isolation");
+
+		JSONWebServiceAction jsonWebServiceAction = lookupJSONWebServiceAction(
+			mockHttpServletRequest);
+
+		Assert.assertEquals(Isolation.DEFAULT, jsonWebServiceAction.invoke());
 	}
 
 	@Test

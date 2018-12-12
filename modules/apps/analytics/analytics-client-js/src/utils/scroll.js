@@ -23,8 +23,8 @@ function getDocumentHeight() {
 function getDimensions(element) {
 	if (element) {
 		const boundingClientRect = element.getBoundingClientRect();
-		const {height, top} = boundingClientRect;
-		return {height, top};
+		const {bottom, height, top} = boundingClientRect;
+		return {bottom, height, top};
 	}
 	const height = getDocumentHeight();
 	const top = getCurrentScrollPosition();
@@ -42,20 +42,32 @@ class ScrollTracker {
 		this.stepsReached = null;
 	}
 
-	getDepth(element) {
-		const {top, height} = getDimensions(element);
+	getDepthValue(element) {
+		const {bottom, height, top} = getDimensions(element);
+		const visibleArea = window.innerHeight;
+		let depthValue = (visibleArea - top) / height;
 
-		let depth = 0;
-
-		if (element) {
-			depth = -top / height;
-		} else {
-			const visibleArea = window.innerHeight;
-
-			depth = (top + visibleArea) / height;
+		if (top <= 0 && bottom >= 0) {
+			depthValue = visibleArea / (height + top);
+		} else if (!element) {
+			depthValue = (top + visibleArea) / height;
 		}
 
-		return Math.round(depth * 100);
+		return depthValue;
+	}
+
+	/**
+	 * Calculates the depth of the element on the page. If the
+	 * element is not passed as a parameter the calculation must be
+	 * performed to get the page depth
+	 * @param {object} element The Blog DOM element
+	 * @return {number} depth percentage from 0 to 100
+	 */
+	getDepth(element) {
+		const value = this.getDepthValue(element);
+		const depth = Math.round(value * 100);
+
+		return Math.min(Math.max(depth, 0), 100);
 	}
 
 	/**

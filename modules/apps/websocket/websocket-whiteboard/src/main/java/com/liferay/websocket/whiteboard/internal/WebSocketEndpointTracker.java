@@ -46,7 +46,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * @author Cristina González
  * @author Manuel de la Peña
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class WebSocketEndpointTracker {
 
 	@Activate
@@ -121,8 +121,8 @@ public class WebSocketEndpointTracker {
 								endpointInstance.getClass();
 
 							if (endpointInstanceClass.equals(
-									ServerEndpointConfigWrapper.
-										NullEndpoint.class)) {
+									ServerEndpointConfigWrapper.NullEndpoint.
+										class)) {
 
 								serverEndpointConfigWrapper.override(
 									decoders, encoders, subprotocol);

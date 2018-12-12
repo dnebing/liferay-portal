@@ -28,6 +28,10 @@
 		</layout>
 	</appender>
 
+	<category name="aQute.bnd.osgi">
+		<priority value="WARN" />
+	</category>
+
 	<category name="com.browseengine.bobo">
 		<priority value="ERROR" />
 	</category>
@@ -42,6 +46,10 @@
 
 	<category name="com.liferay">
 		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.bean.portlet">
+		<priority value="INFO" />
 	</category>
 
 	<category name="com.liferay.jdbc">
@@ -81,7 +89,7 @@
 	</category>
 
 	<category name="com.liferay.portal.bootstrap.ModuleFrameworkImpl">
-		<priority value="WARN" />
+		<priority value="INFO" />
 	</category>
 
 	<category name="com.liferay.portal.captcha.CaptchaImpl">
@@ -249,6 +257,14 @@
 	</category>
 
 	<category name="com.liferay.portal.image.SpriteProcessorImpl">
+		<priority value="WARN" />
+	</category>
+
+	<category name="com.liferay.portal.internal.servlet.MainServlet">
+		<priority value="WARN" />
+	</category>
+
+	<category name="com.liferay.portal.json.jabsorb.serializer.LiferayJSONDeserializationWhitelist">
 		<priority value="WARN" />
 	</category>
 
@@ -564,10 +580,6 @@
 		<priority value="WARN" />
 	</category>
 
-	<category name="com.liferay.portal.servlet.MainServlet">
-		<priority value="WARN" />
-	</category>
-
 	<category name="com.liferay.portal.servlet.PortalSessionCreator">
 		<priority value="ERROR" />
 	</category>
@@ -658,6 +670,10 @@
 
 	<category name="com.liferay.portal.spring.context.PortalApplicationContext">
 		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.spring.context.PortalContextLoaderListener">
+		<priority value="INFO" />
 	</category>
 
 	<category name="com.liferay.portal.spring.context.PortletApplicationContext">
@@ -976,6 +992,10 @@
 		<priority value="ERROR" />
 	</category>
 
+	<category name="com.zaxxer.hikari">
+		<priority value="WARN" />
+	</category>
+
 	<category name="de.hunsicker">
 		<priority value="ERROR" />
 	</category>
@@ -1010,6 +1030,10 @@
 
 	<category name="net.sf.hibernate">
 		<priority value="ERROR" />
+	</category>
+
+	<category name="org.apache.aries.jax.rs.whiteboard.activator.CxfJaxrsBundleActivator">
+		<priority value="WARN" />
 	</category>
 
 	<category name="org.apache.axis">

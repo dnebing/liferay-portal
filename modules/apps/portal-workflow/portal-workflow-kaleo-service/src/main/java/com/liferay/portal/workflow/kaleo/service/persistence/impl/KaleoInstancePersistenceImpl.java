@@ -2320,6 +2320,8 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 	public List<KaleoInstance> findByCN_CPK(String className, long classPK,
 		int start, int end, OrderByComparator<KaleoInstance> orderByComparator,
 		boolean retrieveFromCache) {
+		className = Objects.toString(className, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2347,7 +2349,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoInstance kaleoInstance : list) {
-					if (!Objects.equals(className, kaleoInstance.getClassName()) ||
+					if (!className.equals(kaleoInstance.getClassName()) ||
 							(classPK != kaleoInstance.getClassPK())) {
 						list = null;
 
@@ -2372,10 +2374,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 			boolean bindClassName = false;
 
-			if (className == null) {
-				query.append(_FINDER_COLUMN_CN_CPK_CLASSNAME_1);
-			}
-			else if (className.equals("")) {
+			if (className.isEmpty()) {
 				query.append(_FINDER_COLUMN_CN_CPK_CLASSNAME_3);
 			}
 			else {
@@ -2575,6 +2574,8 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 		String className, long classPK,
 		OrderByComparator<KaleoInstance> orderByComparator)
 		throws NoSuchInstanceException {
+		className = Objects.toString(className, "");
+
 		KaleoInstance kaleoInstance = findByPrimaryKey(kaleoInstanceId);
 
 		Session session = null;
@@ -2620,10 +2621,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 		boolean bindClassName = false;
 
-		if (className == null) {
-			query.append(_FINDER_COLUMN_CN_CPK_CLASSNAME_1);
-		}
-		else if (className.equals("")) {
+		if (className.isEmpty()) {
 			query.append(_FINDER_COLUMN_CN_CPK_CLASSNAME_3);
 		}
 		else {
@@ -2749,6 +2747,8 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 	 */
 	@Override
 	public int countByCN_CPK(String className, long classPK) {
+		className = Objects.toString(className, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_CN_CPK;
 
 		Object[] finderArgs = new Object[] { className, classPK };
@@ -2762,10 +2762,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 			boolean bindClassName = false;
 
-			if (className == null) {
-				query.append(_FINDER_COLUMN_CN_CPK_CLASSNAME_1);
-			}
-			else if (className.equals("")) {
+			if (className.isEmpty()) {
 				query.append(_FINDER_COLUMN_CN_CPK_CLASSNAME_3);
 			}
 			else {
@@ -2937,6 +2934,8 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 		Date completionDate, int start, int end,
 		OrderByComparator<KaleoInstance> orderByComparator,
 		boolean retrieveFromCache) {
+		kaleoDefinitionName = Objects.toString(kaleoDefinitionName, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2969,7 +2968,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoInstance kaleoInstance : list) {
 					if ((companyId != kaleoInstance.getCompanyId()) ||
-							!Objects.equals(kaleoDefinitionName,
+							!kaleoDefinitionName.equals(
 								kaleoInstance.getKaleoDefinitionName()) ||
 							(kaleoDefinitionVersion != kaleoInstance.getKaleoDefinitionVersion()) ||
 							!Objects.equals(completionDate,
@@ -2999,10 +2998,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 			boolean bindKaleoDefinitionName = false;
 
-			if (kaleoDefinitionName == null) {
-				query.append(_FINDER_COLUMN_C_KDN_KDV_CD_KALEODEFINITIONNAME_1);
-			}
-			else if (kaleoDefinitionName.equals("")) {
+			if (kaleoDefinitionName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_KDN_KDV_CD_KALEODEFINITIONNAME_3);
 			}
 			else {
@@ -3251,6 +3247,8 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 		int kaleoDefinitionVersion, Date completionDate,
 		OrderByComparator<KaleoInstance> orderByComparator)
 		throws NoSuchInstanceException {
+		kaleoDefinitionName = Objects.toString(kaleoDefinitionName, "");
+
 		KaleoInstance kaleoInstance = findByPrimaryKey(kaleoInstanceId);
 
 		Session session = null;
@@ -3302,10 +3300,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 		boolean bindKaleoDefinitionName = false;
 
-		if (kaleoDefinitionName == null) {
-			query.append(_FINDER_COLUMN_C_KDN_KDV_CD_KALEODEFINITIONNAME_1);
-		}
-		else if (kaleoDefinitionName.equals("")) {
+		if (kaleoDefinitionName.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_KDN_KDV_CD_KALEODEFINITIONNAME_3);
 		}
 		else {
@@ -3456,6 +3451,8 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 	@Override
 	public int countByC_KDN_KDV_CD(long companyId, String kaleoDefinitionName,
 		int kaleoDefinitionVersion, Date completionDate) {
+		kaleoDefinitionName = Objects.toString(kaleoDefinitionName, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_KDN_KDV_CD;
 
 		Object[] finderArgs = new Object[] {
@@ -3474,10 +3471,7 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 			boolean bindKaleoDefinitionName = false;
 
-			if (kaleoDefinitionName == null) {
-				query.append(_FINDER_COLUMN_C_KDN_KDV_CD_KALEODEFINITIONNAME_1);
-			}
-			else if (kaleoDefinitionName.equals("")) {
+			if (kaleoDefinitionName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_KDN_KDV_CD_KALEODEFINITIONNAME_3);
 			}
 			else {
@@ -3553,6 +3547,9 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 
 	public KaleoInstancePersistenceImpl() {
 		setModelClass(KaleoInstance.class);
+
+		setModelImplClass(KaleoInstanceImpl.class);
+		setEntityCacheEnabled(KaleoInstanceModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -4040,54 +4037,6 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 	/**
 	 * Returns the kaleo instance with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kaleo instance
-	 * @return the kaleo instance, or <code>null</code> if a kaleo instance with the primary key could not be found
-	 */
-	@Override
-	public KaleoInstance fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KaleoInstanceModelImpl.ENTITY_CACHE_ENABLED,
-				KaleoInstanceImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KaleoInstance kaleoInstance = (KaleoInstance)serializable;
-
-		if (kaleoInstance == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoInstance = (KaleoInstance)session.get(KaleoInstanceImpl.class,
-						primaryKey);
-
-				if (kaleoInstance != null) {
-					cacheResult(kaleoInstance);
-				}
-				else {
-					entityCache.putResult(KaleoInstanceModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoInstanceImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KaleoInstanceModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoInstanceImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kaleoInstance;
-	}
-
-	/**
-	 * Returns the kaleo instance with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kaleoInstanceId the primary key of the kaleo instance
 	 * @return the kaleo instance, or <code>null</code> if a kaleo instance with the primary key could not be found
 	 */
@@ -4379,6 +4328,11 @@ public class KaleoInstancePersistenceImpl extends BasePersistenceImpl<KaleoInsta
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

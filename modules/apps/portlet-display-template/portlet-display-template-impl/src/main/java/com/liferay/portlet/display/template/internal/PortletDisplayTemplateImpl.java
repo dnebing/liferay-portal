@@ -78,17 +78,12 @@ import org.osgi.service.component.annotations.Reference;
  * @author Raymond Augé
  * @author Leonardo Barros
  */
-@Component(immediate = true)
+@Component(immediate = true, service = PortletDisplayTemplate.class)
 public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 
 	@Override
 	public DDMTemplate fetchDDMTemplate(long groupId, String displayStyle) {
 		try {
-			Group group = _groupLocalService.getGroup(groupId);
-
-			Group companyGroup = _groupLocalService.getCompanyGroup(
-				group.getCompanyId());
-
 			String uuid = getDDMTemplateKey(displayStyle);
 
 			if (Validator.isNull(uuid)) {
@@ -107,6 +102,11 @@ public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 					_log.debug(pe, pe);
 				}
 			}
+
+			Group group = _groupLocalService.getGroup(groupId);
+
+			Group companyGroup = _groupLocalService.getCompanyGroup(
+				group.getCompanyId());
 
 			try {
 				return _ddmTemplateLocalService.getDDMTemplateByUuidAndGroupId(
@@ -212,8 +212,6 @@ public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 		long groupId, long classNameId, String displayStyle,
 		boolean useDefault) {
 
-		long portletDisplayDDMTemplateGroupId = getDDMTemplateGroupId(groupId);
-
 		DDMTemplate portletDisplayDDMTemplate = null;
 
 		if (displayStyle.startsWith(DISPLAY_STYLE_PREFIX)) {
@@ -222,7 +220,7 @@ public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 			if (Validator.isNotNull(ddmTemplateKey)) {
 				portletDisplayDDMTemplate =
 					_ddmTemplateLocalService.fetchTemplate(
-						portletDisplayDDMTemplateGroupId, classNameId,
+						getDDMTemplateGroupId(groupId), classNameId,
 						ddmTemplateKey, true);
 			}
 		}
@@ -246,11 +244,9 @@ public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 
 		long portletDisplayDDMTemplateId = 0;
 
-		long portletDisplayDDMTemplateGroupId = getDDMTemplateGroupId(groupId);
-
 		if (displayStyle.startsWith(DISPLAY_STYLE_PREFIX)) {
 			DDMTemplate portletDisplayDDMTemplate = fetchDDMTemplate(
-				portletDisplayDDMTemplateGroupId, displayStyle);
+				getDDMTemplateGroupId(groupId), displayStyle);
 
 			if (portletDisplayDDMTemplate != null) {
 				portletDisplayDDMTemplateId =
@@ -424,10 +420,8 @@ public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 		contextObjects.put(
 			PortletDisplayTemplateConstants.LOCALE, request.getLocale());
 
-		RenderRequest renderRequest = null;
-
 		if (portletRequest instanceof RenderRequest) {
-			renderRequest = (RenderRequest)portletRequest;
+			RenderRequest renderRequest = (RenderRequest)portletRequest;
 
 			contextObjects.put(
 				PortletDisplayTemplateConstants.RENDER_REQUEST, renderRequest);
@@ -440,10 +434,8 @@ public class PortletDisplayTemplateImpl implements PortletDisplayTemplate {
 				resourceRequest);
 		}
 
-		RenderResponse renderResponse = null;
-
 		if (portletResponse instanceof RenderResponse) {
-			renderResponse = (RenderResponse)portletResponse;
+			RenderResponse renderResponse = (RenderResponse)portletResponse;
 
 			contextObjects.put(
 				PortletDisplayTemplateConstants.RENDER_RESPONSE,

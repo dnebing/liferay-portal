@@ -30,19 +30,7 @@
 
 		<var name="key_assetType" value="${assetType}" />
 
-		<execute function="AssertClick" locator1="AssetRelatedAssets#RELATED_ASSETS_SELECT_MENULIST_ASSET" value1="${assetType}" />
-	</command>
-
-	<command name="gotoWebContentSelectionCP">
-		<execute macro="WebContentNavigator#gotoAddCP" />
-
-		<execute macro="Panel#expandPanel">
-			<var name="panel" value="Related Assets" />
-		</execute>
-
-		<execute macro="RelatedAssets#_selectAssetType">
-			<var name="assetType" value="${assetType}" />
-		</execute>
+		<execute function="AssertClick" locator1="APConfiguration#ASSET_SELECTION_MANUAL_ASSET_ENTRIES_ASSET" value1="${assetType}" />
 	</command>
 
 	<command name="selectAsset">
@@ -56,9 +44,13 @@
 
 		<var name="key_assetTitle" value="${assetTitle}" />
 
-		<execute function="AssertClick" locator1="AssetRelatedAssets#ASSET_TABLE_CHOOSE" value1="${assetTitle}" />
+		<execute function="Click" locator1="AssetRelatedAssets#ASSET_TABLE_CHECKBOX">
+			<var name="key_assetTitle" value="${assetTitle}" />
+		</execute>
 
 		<execute function="SelectFrame" value1="relative=top" />
+
+		<execute macro="Button#clickAdd" />
 	</command>
 
 	<command name="viewDefaultPG">

@@ -134,6 +134,10 @@ public class WebDriverUtil extends PropsValues {
 			chromeOptions.addArguments(PropsValues.BROWSER_CHROME_BIN_ARGS);
 		}
 
+		if (Validator.isNotNull(PropsValues.BROWSER_CHROME_BIN_FILE)) {
+			chromeOptions.setBinary(PropsValues.BROWSER_CHROME_BIN_FILE);
+		}
+
 		return new ChromeDriver(chromeOptions);
 	}
 

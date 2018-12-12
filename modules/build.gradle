@@ -1,9 +1,16 @@
 import com.liferay.gradle.util.FileUtil
 import com.liferay.gradle.util.GradleUtil
+import com.liferay.gradle.util.copy.StripPathSegmentsAction
 
 import java.util.concurrent.ConcurrentSkipListSet
 
 import org.apache.tools.ant.filters.ReplaceTokens
+
+import org.gradle.plugins.ide.api.XmlFileContentMerger
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
+import org.gradle.plugins.ide.eclipse.model.EclipseClasspath
+import org.gradle.plugins.ide.eclipse.model.EclipseModel
 
 buildscript {
 	apply from: rootProject.file("build-buildscript.gradle"), to: buildscript
@@ -14,14 +21,14 @@ ext {
 		"biz.aQute.bnd.version": "3.5.0",
 		"com.liferay.ant.bnd.version": "2.0.52",
 		"com.liferay.css.builder.version": "2.1.2",
-		"com.liferay.gradle.plugins.css.builder.version": "2.2.2",
-		"com.liferay.gradle.plugins.theme.builder.version": "2.0.4",
-		"com.liferay.gradle.plugins.version": "3.12.109",
-		"com.liferay.gradle.plugins.workspace.version": "1.10.7",
-		"com.liferay.portal.tools.bundle.support.version": "3.2.1",
-		"com.liferay.portal.tools.service.builder.version": "1.0.237",
-		"com.liferay.portal.tools.soy.builder.version": "3.0.1",
-		"com.liferay.portal.tools.theme.builder.version": "1.1.5"
+		"com.liferay.gradle.plugins.css.builder.version": "2.2.4",
+		"com.liferay.gradle.plugins.theme.builder.version": "2.0.5",
+		"com.liferay.gradle.plugins.version": "3.13.26",
+		"com.liferay.gradle.plugins.workspace.version": "1.10.13",
+		"com.liferay.portal.tools.bundle.support.version": "3.2.7",
+		"com.liferay.portal.tools.service.builder.version": "1.0.248",
+		"com.liferay.portal.tools.soy.builder.version": "3.0.4",
+		"com.liferay.portal.tools.theme.builder.version": "1.1.6"
 	]
 }
 
@@ -47,12 +54,14 @@ if (Boolean.getBoolean("build.bnd.print.enabled") && System.getenv("JENKINS_HOME
 
 buildDir = new File(rootDir.parentFile, "build")
 
-for (String gradleVersion in ["2.5", "2.14"]) {
-	String gradleDistributionURL = "https://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
-	String suffix = gradleVersion.replace('.', '')
+for (String gradleVersion in ["2.5", "2.14", "4.10.2"]) {
+	String gradleDistributionURL = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+	String suffix = gradleVersion.replace(".", "")
 
 	tasks.create(name: "extractGradleApi${suffix}", type: Copy) {
 		description = "Extracts the Gradle ${gradleVersion} JAR files into a temporary directory."
+
+		eachFile new StripPathSegmentsAction(1)
 
 		from {
 			zipTree(FileUtil.get(project, gradleDistributionURL))
@@ -61,7 +70,22 @@ for (String gradleVersion in ["2.5", "2.14"]) {
 		include "gradle-${gradleVersion}/lib/**/*.jar"
 
 		includeEmptyDirs = false
-		into buildDir
+		into new File(buildDir, "gradle-${gradleVersion}")
+	}
+
+	tasks.create(name: "extractGradleSources${suffix}", type: Copy) {
+		description = "Extracts the Gradle ${gradleVersion} sources into a temporary directory."
+
+		eachFile new StripPathSegmentsAction(2)
+
+		from {
+			zipTree(FileUtil.get(project, gradleDistributionURL))
+		}
+
+		include "gradle-${gradleVersion}/src/**"
+
+		includeEmptyDirs = false
+		into new File(buildDir, "gradle-${gradleVersion}-sources")
 	}
 }
 
@@ -93,6 +117,19 @@ gradle.beforeProject {
 					replacement = forcedUpdateVersion
 				}
 			}
+
+			pluginManager.withPlugin("eclipse") {
+				if (tasks.eclipse.ext.has("gradleVersion")) {
+					String gradleVersion = tasks.eclipse.ext.get("gradleVersion")
+
+					tasks.eclipse {
+						dependsOn compileJava
+						dependsOn rootProject.tasks.getByName("extractGradleSources" + gradleVersion.replace(".", ""))
+
+						_updateGradleSourcePaths(gradleVersion, project.extensions.getByType(EclipseModel.class))
+					}
+				}
+			}
 		}
 
 		printProjectPath {
@@ -102,8 +139,25 @@ gradle.beforeProject {
 		}
 
 		if (project.path.startsWith(":sdk:project-templates:project-templates-")) {
+			task generateSampleProject(type:JavaExec)
+
 			buildCSS {
 				enabled = false
+			}
+
+			configurations {
+				projectTemplatesMain
+			}
+
+			dependencies {
+				projectTemplatesMain project.project(":sdk:project-templates:project-templates")
+			}
+
+			generateSampleProject {
+				args "--archetypes-dirs", jar.archivePath.parent, "--destination", "${buildDir}", "--template", project.name.replaceFirst("project-templates-", ""), "--template-version", version
+				classpath = configurations.projectTemplatesMain
+				dependsOn jar
+				main = "com.liferay.project.templates.ProjectTemplates"
 			}
 
 			processResources {
@@ -186,7 +240,7 @@ gradle.beforeProject {
 
 			if (gradle.hasProperty("testClassGroupIndex")) {
 				configure([test, testIntegration]) {
-					include gradle.testClasses
+					include _getTestClasses(it)
 
 					jvmArgs "-Dtest.class.group.index=" + gradle.testClassGroupIndex
 					jvmArgs "-Dtest.class.groups=" + gradle.testClassGroups
@@ -290,12 +344,12 @@ gradle.taskGraph.useFilter {
 		}
 	}
 	else if (task.name == "test") {
-		if (!_hasTestClasses(task.project, "src/test/java")) {
+		if (!_hasTestClasses(task, "src/test/java")) {
 			return false
 		}
 	}
 	else if (task.name == "testIntegration") {
-		if (!_hasTestClasses(task.project, "src/testIntegration/java")) {
+		if (!_hasTestClasses(task, "src/testIntegration/java")) {
 			return false
 		}
 	}
@@ -319,7 +373,27 @@ private File _getRootDir(File dir, String markerFileName) {
 	}
 }
 
-private boolean _hasTestClasses(Project project, String testClassesDirName) {
+private List<String> _getTestClasses(Task task) {
+	return task.project.gradle.testClasses.collect {
+		String testClass ->
+
+		if (testClass.startsWith("/modules/")) {
+			String projectPath = task.project.path.replace(':' as char, '/' as char)
+
+			String javaPath = "/modules" + projectPath + "/src/" + task.name + "/java/"
+
+			if (testClass.startsWith(javaPath)) {
+				testClass = testClass.replace(javaPath, "")
+			}
+		}
+
+		return testClass
+	}
+}
+
+private boolean _hasTestClasses(Task task, String testClassesDirName) {
+	Project project = task.project
+
 	File testClassesDir = project.file(testClassesDirName)
 
 	if (!testClassesDir.exists()) {
@@ -327,8 +401,10 @@ private boolean _hasTestClasses(Project project, String testClassesDirName) {
 	}
 
 	if (project.gradle.hasProperty("testClassGroupIndex")) {
-		List<String> testJavaClasses = project.gradle.testClasses.collect {
-			it.replace ".class", ".java"
+		List<String> testJavaClasses = _getTestClasses(task).collect {
+			String testClass ->
+
+			return testClass.replace(".class", ".java")
 		}
 
 		FileTree testJavaClassesFileTree = project.fileTree(dir: testClassesDir, includes: testJavaClasses)
@@ -339,4 +415,49 @@ private boolean _hasTestClasses(Project project, String testClassesDirName) {
 	}
 
 	return true
+}
+
+private void _updateGradleSourcePaths(String gradleVersion, EclipseModel eclipseModel) {
+	EclipseClasspath eclipseClasspath = eclipseModel.getClasspath()
+
+	XmlFileContentMerger xmlFileContentMerger = eclipseClasspath.getFile()
+
+	xmlFileContentMerger.whenMerged(
+		{
+			Classpath classpath ->
+
+			for (ClasspathEntry classpathEntry : classpath.getEntries()) {
+				if (classpathEntry.hasProperty("sourcepath")) {
+					continue
+				}
+
+				String kind = classpathEntry.getKind()
+
+				if (!kind.equals("lib")) {
+					continue
+				}
+
+				String path = classpathEntry.getPath()
+
+				if (!path.contains("/gradle-" + gradleVersion + "/lib/")) {
+					continue
+				}
+
+				String fileName = path.substring(path.lastIndexOf("/") + 1)
+
+				if (!fileName.startsWith("gradle-")) {
+					continue
+				}
+
+				String dirName = fileName.substring(7, fileName.length() - (gradleVersion.length() + 5))
+
+				File sourcesDir = new File(rootProject.buildDir, "gradle-" + gradleVersion + "-sources/" + dirName)
+
+				if (sourcesDir.exists()) {
+					classpathEntry.putAt("sourcePath", fileReference(sourcesDir))
+
+					logger.info "Added sourcePath {}", sourcesDir
+				}
+			}
+		})
 }

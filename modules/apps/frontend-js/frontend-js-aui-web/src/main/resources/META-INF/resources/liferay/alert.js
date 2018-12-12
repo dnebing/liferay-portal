@@ -13,7 +13,7 @@ AUI.add(
 
 					closeableNode: {
 						valueFn: function() {
-							return A.Node.create('<button class="close" type="button">' + Liferay.Util.getLexiconIconTpl('times', 'icon-monospaced') + '</button>');
+							return A.Node.create('<button aria-label="' + Liferay.Language.get("close") + '" class="close" type="button">' + Liferay.Util.getLexiconIconTpl('times', 'icon-monospaced') + '</button>');
 						}
 					},
 
@@ -61,6 +61,8 @@ AUI.add(
 							boundingBox.on('mouseenter', instance._cancelHide, instance),
 							boundingBox.on('mouseleave', instance._onMouseLeave, instance)
 						];
+
+						boundingBox.attr('role', 'alert');
 
 						Alert.superclass.bindUI.call(this);
 					},

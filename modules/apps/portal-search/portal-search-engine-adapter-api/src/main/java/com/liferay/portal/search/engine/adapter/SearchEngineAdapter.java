@@ -16,6 +16,7 @@ package com.liferay.portal.search.engine.adapter;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.search.engine.adapter.cluster.ClusterRequest;
 import com.liferay.portal.search.engine.adapter.cluster.ClusterResponse;
 import com.liferay.portal.search.engine.adapter.document.DocumentRequest;
@@ -24,6 +25,8 @@ import com.liferay.portal.search.engine.adapter.index.IndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndexResponse;
 import com.liferay.portal.search.engine.adapter.search.SearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchResponse;
+import com.liferay.portal.search.engine.adapter.snapshot.SnapshotRequest;
+import com.liferay.portal.search.engine.adapter.snapshot.SnapshotResponse;
 
 /**
  * @author Michael C. Han
@@ -40,5 +43,10 @@ public interface SearchEngineAdapter {
 	public <U extends IndexResponse> U execute(IndexRequest<U> indexRequest);
 
 	public <V extends SearchResponse> V execute(SearchRequest<V> searchRequest);
+
+	public <W extends SnapshotResponse> W execute(
+		SnapshotRequest<W> snapshotRequest);
+
+	public String getQueryString(Query query);
 
 }

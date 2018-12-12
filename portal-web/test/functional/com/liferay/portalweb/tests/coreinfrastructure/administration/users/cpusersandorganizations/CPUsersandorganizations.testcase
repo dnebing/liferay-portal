@@ -557,7 +557,6 @@
 
 		<execute macro="Suborganization#addCP">
 			<var name="orgName" value="Organization Name" />
-			<var name="orgType" value="Organization" />
 			<var name="suborgName" value="Suborganization Name" />
 		</execute>
 
@@ -1520,6 +1519,9 @@
 	</command>
 
 	<command name="EditUserSite" priority="5">
+		<property name="app.server.types" value="jboss,resin,tcserver,tomcat,weblogic,websphere,wildfly" />
+		<property name="database.types" value="db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase" />
+		<property name="environment.acceptance" value="true" />
 		<property name="portal.acceptance" value="true" />
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -2231,7 +2233,7 @@
 
 		<execute function="Pause" locator1="5000" />
 
-		<var method="selenium#getElementValue(UsersAndOrganizationsEditUser#DETAILS_USER_ID_FIELD)" name="userId" />
+		<var method="selenium#getElementValue('UsersAndOrganizationsEditUser#DETAILS_USER_ID_FIELD')" name="userId" />
 
 		<execute macro="Api#apiJsonwsUserView" />
 
@@ -2264,7 +2266,7 @@
 		<execute function="AssertValue" locator1="UsersAndOrganizationsEditUser#DETAILS_USER_ID_FIELD" value1="${userId}" />
 		<execute function="AssertValue" locator1="UsersAndOrganizationsEditUser#DETAILS_FIRST_NAME_FIELD" value1="test1" />
 		<execute function="AssertValue" locator1="UsersAndOrganizationsEditUser#DETAILS_LAST_NAME_FIELD" value1="test1" />
-		<execute function="AssertValue" locator1="UsersAndOrganizationsEditUser#DETAILS_EMAIL_ADDRESS_FIELD" value1="test1@liferay.com" />
+		<execute function="AssertValue" locator1="AdvancedSearch#EMAIL_ADDRESS_FIELD" value1="test1@liferay.com" />
 		<execute function="AssertValue" locator1="UsersAndOrganizationsEditUser#DETAILS_SCREEN_NAME_FIELD" value1="test1" />
 		<execute function="AssertValue" locator1="UsersAndOrganizationsEditUser#DETAILS_BIRTHDAY_FIELD" value1="11/24/1984" />
 	</command>

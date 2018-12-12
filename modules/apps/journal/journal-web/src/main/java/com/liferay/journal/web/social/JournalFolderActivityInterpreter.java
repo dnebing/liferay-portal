@@ -79,19 +79,17 @@ public class JournalFolderActivityInterpreter
 			if (Validator.isNull(groupName)) {
 				return "activity-journal-folder-move-to-trash";
 			}
-			else {
-				return "activity-journal-folder-move-to-trash-in";
-			}
+
+			return "activity-journal-folder-move-to-trash-in";
 		}
 		else if (activityType ==
-					 SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
+					SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
 
 			if (Validator.isNull(groupName)) {
 				return "activity-journal-folder-restore-from-trash";
 			}
-			else {
-				return "activity-journal-folder-restore-from-trash-in";
-			}
+
+			return "activity-journal-folder-restore-from-trash-in";
 		}
 
 		return null;
@@ -108,8 +106,9 @@ public class JournalFolderActivityInterpreter
 			activity.getGroupId(), activity.getClassPK(), actionId);
 	}
 
-	private static final String[] _CLASS_NAMES =
-		{JournalFolder.class.getName()};
+	private static final String[] _CLASS_NAMES = {
+		JournalFolder.class.getName()
+	};
 
 	@Reference(
 		target = "(model.class.name=com.liferay.journal.model.JournalFolder)"

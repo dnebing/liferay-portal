@@ -451,6 +451,10 @@ public class RetryWebElementImpl extends RemoteWebElement {
 		}
 	}
 
+	protected String getLocator() {
+		return _locator;
+	}
+
 	private void _refreshWebElement(Throwable throwable) {
 		System.out.println("\n" + throwable.getMessage());
 		System.out.println(

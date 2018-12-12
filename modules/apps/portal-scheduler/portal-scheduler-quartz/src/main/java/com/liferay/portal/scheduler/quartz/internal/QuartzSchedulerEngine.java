@@ -352,13 +352,13 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 		throws SchedulerException {
 
 		try {
-			Scheduler scheduler = getScheduler(storageType);
-
 			Trigger quartzTrigger = (Trigger)trigger.getWrappedTrigger();
 
 			if (quartzTrigger == null) {
 				return;
 			}
+
+			Scheduler scheduler = getScheduler(storageType);
 
 			description = fixMaxLength(
 				description, _descriptionMaxLength, storageType);
@@ -717,9 +717,8 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 		if (storageType == StorageType.PERSISTED) {
 			return _persistedScheduler;
 		}
-		else {
-			return _memoryScheduler;
-		}
+
+		return _memoryScheduler;
 	}
 
 	protected StorageType getStorageType(String groupName) {
@@ -797,13 +796,14 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 					continue;
 				}
 
-				JobDetail jobDetail = _persistedScheduler.getJobDetail(jobKey);
-
-				JobDataMap jobDataMap = jobDetail.getJobDataMap();
-
-				Message message = getMessage(jobDataMap);
-
 				if (_schedulerEngineHelper != null) {
+					JobDetail jobDetail = _persistedScheduler.getJobDetail(
+						jobKey);
+
+					JobDataMap jobDataMap = jobDetail.getJobDataMap();
+
+					Message message = getMessage(jobDataMap);
+
 					_schedulerEngineHelper.auditSchedulerJobs(
 						message, TriggerState.EXPIRED);
 				}
@@ -888,22 +888,22 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 
 		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 
-		TriggerKey triggerKey = new TriggerKey(
-			jobKey.getName(), jobKey.getGroup());
-
 		if (jobDetail == null) {
 			return;
 		}
 
-		JobDataMap jobDataMap = jobDetail.getJobDataMap();
-
-		JobState jobState = getJobState(jobDataMap);
+		TriggerKey triggerKey = new TriggerKey(
+			jobKey.getName(), jobKey.getGroup());
 
 		Trigger trigger = scheduler.getTrigger(triggerKey);
 
 		if (trigger == null) {
 			return;
 		}
+
+		JobDataMap jobDataMap = jobDetail.getJobDataMap();
+
+		JobState jobState = getJobState(jobDataMap);
 
 		jobState.setTriggerDate(SchedulerEngine.END_TIME, new Date());
 		jobState.setTriggerDate(

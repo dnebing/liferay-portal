@@ -77,8 +77,17 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	public FragmentEntry addFragmentEntry(FragmentEntry fragmentEntry);
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String name, int type, int status,
+		ServiceContext serviceContext) throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String name, int status,
 		ServiceContext serviceContext) throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String name, long previewFileEntryId,
+		int type, int status, ServiceContext serviceContext)
+		throws PortalException;
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String name, long previewFileEntryId,
@@ -86,11 +95,26 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String fragmentEntryKey, String name,
+		int type, int status, ServiceContext serviceContext)
+		throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String fragmentEntryKey, String name,
 		int status, ServiceContext serviceContext) throws PortalException;
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String fragmentEntryKey, String name,
+		long previewFileEntryId, int type, int status,
+		ServiceContext serviceContext) throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String fragmentEntryKey, String name,
 		long previewFileEntryId, int status, ServiceContext serviceContext)
+		throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String name, String css, String html,
+		String js, int type, int status, ServiceContext serviceContext)
 		throws PortalException;
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
@@ -100,13 +124,28 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String name, String css, String html,
+		String js, long previewFileEntryId, int type, int status,
+		ServiceContext serviceContext) throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String name, String css, String html,
 		String js, long previewFileEntryId, int status,
+		ServiceContext serviceContext) throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String fragmentEntryKey, String name,
+		String css, String html, String js, int type, int status,
 		ServiceContext serviceContext) throws PortalException;
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String fragmentEntryKey, String name,
 		String css, String html, String js, int status,
 		ServiceContext serviceContext) throws PortalException;
+
+	public FragmentEntry addFragmentEntry(long userId, long groupId,
+		long fragmentCollectionId, String fragmentEntryKey, String name,
+		String css, String html, String js, long previewFileEntryId, int type,
+		int status, ServiceContext serviceContext) throws PortalException;
 
 	public FragmentEntry addFragmentEntry(long userId, long groupId,
 		long fragmentCollectionId, String fragmentEntryKey, String name,
@@ -152,6 +191,7 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -160,6 +200,7 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -174,6 +215,7 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -190,6 +232,7 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -199,6 +242,7 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -208,6 +252,7 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 
@@ -349,6 +394,9 @@ public interface FragmentEntryLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public String[] getTempFileNames(long userId, long groupId,
 		String folderName) throws PortalException;
+
+	public FragmentEntry moveFragmentEntry(long fragmentEntryId,
+		long fragmentCollectionId) throws PortalException;
 
 	/**
 	* Updates the fragment entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.

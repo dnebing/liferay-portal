@@ -16,12 +16,18 @@
 
 <%@ include file="/dynamic_include/init.jsp" %>
 
+<%
+String redirect = ParamUtil.getString(renderRequest, "redirect");
+%>
+
 <portlet:renderURL var="openIdConnectURL" windowState="<%= WindowState.MAXIMIZED.toString() %>">
+	<portlet:param name="saveLastPath" value="<%= Boolean.FALSE.toString() %>" />
 	<portlet:param name="mvcRenderCommandName" value="<%= OpenIdConnectWebKeys.OPEN_ID_CONNECT_REQUEST_ACTION_NAME %>" />
+	<portlet:param name="redirect" value="<%= redirect %>" />
 </portlet:renderURL>
 
 <liferay-ui:icon
 	message="openid-connect"
-	src='<%= themeDisplay.getPathThemeImages() + "/common/openid_connect.gif" %>'
+	src='<%= themeDisplay.getPathThemeImages() + "/common/openid.gif" %>'
 	url="<%= openIdConnectURL %>"
 />

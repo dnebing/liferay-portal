@@ -33,15 +33,13 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Sergio González
  */
-@Component(immediate = true, service = TiffOrientationTransformer.class)
 public class TiffOrientationTransformer {
 
-	public RenderedImage transform(Supplier<InputStream> inputStreamSupplier)
+	public static RenderedImage transform(
+			Supplier<InputStream> inputStreamSupplier)
 		throws PortalException {
 
 		try {
@@ -60,7 +58,7 @@ public class TiffOrientationTransformer {
 		}
 	}
 
-	private Optional<Integer> _getTiffOrientationValue(
+	private static Optional<Integer> _getTiffOrientationValue(
 			Supplier<InputStream> inputStreamSupplier)
 		throws PortalException {
 
@@ -89,7 +87,7 @@ public class TiffOrientationTransformer {
 		return Optional.empty();
 	}
 
-	private RenderedImage _transform(
+	private static RenderedImage _transform(
 			Supplier<InputStream> inputStreamSupplier, int tiffOrientationValue)
 		throws IOException {
 
@@ -103,13 +101,13 @@ public class TiffOrientationTransformer {
 			return ImageToolUtil.flipHorizontal(renderedImage);
 		}
 		else if (tiffOrientationValue ==
-					 _ORIENTATION_VALUE_MIRROR_HORIZONTAL_ROTATE_90_CW) {
+					_ORIENTATION_VALUE_MIRROR_HORIZONTAL_ROTATE_90_CW) {
 
 			return ImageToolUtil.flipVertical(
 				ImageToolUtil.rotate(renderedImage, 90));
 		}
 		else if (tiffOrientationValue ==
-					 _ORIENTATION_VALUE_MIRROR_HORIZONTAL_ROTATE_270_CW) {
+					_ORIENTATION_VALUE_MIRROR_HORIZONTAL_ROTATE_270_CW) {
 
 			return ImageToolUtil.flipVertical(
 				ImageToolUtil.rotate(renderedImage, 270));

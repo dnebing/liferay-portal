@@ -178,6 +178,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	public List<PollsVote> findByUuid(String uuid, int start, int end,
 		OrderByComparator<PollsVote> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -201,7 +203,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (PollsVote pollsVote : list) {
-					if (!Objects.equals(uuid, pollsVote.getUuid())) {
+					if (!uuid.equals(pollsVote.getUuid())) {
 						list = null;
 
 						break;
@@ -225,10 +227,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -409,6 +408,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	public PollsVote[] findByUuid_PrevAndNext(long voteId, String uuid,
 		OrderByComparator<PollsVote> orderByComparator)
 		throws NoSuchVoteException {
+		uuid = Objects.toString(uuid, "");
+
 		PollsVote pollsVote = findByPrimaryKey(voteId);
 
 		Session session = null;
@@ -454,10 +455,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -577,6 +575,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -590,10 +590,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -707,6 +704,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	@Override
 	public PollsVote fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -732,10 +731,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -819,6 +815,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -832,10 +830,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -976,6 +971,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	public List<PollsVote> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<PollsVote> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1003,7 +1000,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (PollsVote pollsVote : list) {
-					if (!Objects.equals(uuid, pollsVote.getUuid()) ||
+					if (!uuid.equals(pollsVote.getUuid()) ||
 							(companyId != pollsVote.getCompanyId())) {
 						list = null;
 
@@ -1028,10 +1025,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1230,6 +1224,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	public PollsVote[] findByUuid_C_PrevAndNext(long voteId, String uuid,
 		long companyId, OrderByComparator<PollsVote> orderByComparator)
 		throws NoSuchVoteException {
+		uuid = Objects.toString(uuid, "");
+
 		PollsVote pollsVote = findByPrimaryKey(voteId);
 
 		Session session = null;
@@ -1275,10 +1271,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1404,6 +1397,8 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1417,10 +1412,7 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -3019,6 +3011,9 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	public PollsVotePersistenceImpl() {
 		setModelClass(PollsVote.class);
 
+		setModelImplClass(PollsVoteImpl.class);
+		setEntityCacheEnabled(PollsVoteModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -3523,54 +3518,6 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	/**
 	 * Returns the polls vote with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the polls vote
-	 * @return the polls vote, or <code>null</code> if a polls vote with the primary key could not be found
-	 */
-	@Override
-	public PollsVote fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(PollsVoteModelImpl.ENTITY_CACHE_ENABLED,
-				PollsVoteImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		PollsVote pollsVote = (PollsVote)serializable;
-
-		if (pollsVote == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				pollsVote = (PollsVote)session.get(PollsVoteImpl.class,
-						primaryKey);
-
-				if (pollsVote != null) {
-					cacheResult(pollsVote);
-				}
-				else {
-					entityCache.putResult(PollsVoteModelImpl.ENTITY_CACHE_ENABLED,
-						PollsVoteImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(PollsVoteModelImpl.ENTITY_CACHE_ENABLED,
-					PollsVoteImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return pollsVote;
-	}
-
-	/**
-	 * Returns the polls vote with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param voteId the primary key of the polls vote
 	 * @return the polls vote, or <code>null</code> if a polls vote with the primary key could not be found
 	 */
@@ -3867,6 +3814,11 @@ public class PollsVotePersistenceImpl extends BasePersistenceImpl<PollsVote>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

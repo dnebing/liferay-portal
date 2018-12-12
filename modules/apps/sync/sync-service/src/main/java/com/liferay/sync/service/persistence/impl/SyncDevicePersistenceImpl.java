@@ -179,6 +179,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	public List<SyncDevice> findByUuid(String uuid, int start, int end,
 		OrderByComparator<SyncDevice> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -202,7 +204,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SyncDevice syncDevice : list) {
-					if (!Objects.equals(uuid, syncDevice.getUuid())) {
+					if (!uuid.equals(syncDevice.getUuid())) {
 						list = null;
 
 						break;
@@ -226,10 +228,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -410,6 +409,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	public SyncDevice[] findByUuid_PrevAndNext(long syncDeviceId, String uuid,
 		OrderByComparator<SyncDevice> orderByComparator)
 		throws NoSuchDeviceException {
+		uuid = Objects.toString(uuid, "");
+
 		SyncDevice syncDevice = findByPrimaryKey(syncDeviceId);
 
 		Session session = null;
@@ -455,10 +456,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -578,6 +576,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -591,10 +591,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -730,6 +727,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	public List<SyncDevice> findByUuid_C(String uuid, long companyId,
 		int start, int end, OrderByComparator<SyncDevice> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -757,7 +756,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SyncDevice syncDevice : list) {
-					if (!Objects.equals(uuid, syncDevice.getUuid()) ||
+					if (!uuid.equals(syncDevice.getUuid()) ||
 							(companyId != syncDevice.getCompanyId())) {
 						list = null;
 
@@ -782,10 +781,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -985,6 +981,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 		String uuid, long companyId,
 		OrderByComparator<SyncDevice> orderByComparator)
 		throws NoSuchDeviceException {
+		uuid = Objects.toString(uuid, "");
+
 		SyncDevice syncDevice = findByPrimaryKey(syncDeviceId);
 
 		Session session = null;
@@ -1030,10 +1028,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1159,6 +1154,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1172,10 +1169,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1810,6 +1804,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	public List<SyncDevice> findByC_U(long companyId, String userName,
 		int start, int end, OrderByComparator<SyncDevice> orderByComparator,
 		boolean retrieveFromCache) {
+		userName = Objects.toString(userName, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1858,10 +1854,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			boolean bindUserName = false;
 
-			if (userName == null) {
-				query.append(_FINDER_COLUMN_C_U_USERNAME_1);
-			}
-			else if (userName.equals("")) {
+			if (userName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_U_USERNAME_3);
 			}
 			else {
@@ -2059,6 +2052,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 		long companyId, String userName,
 		OrderByComparator<SyncDevice> orderByComparator)
 		throws NoSuchDeviceException {
+		userName = Objects.toString(userName, "");
+
 		SyncDevice syncDevice = findByPrimaryKey(syncDeviceId);
 
 		Session session = null;
@@ -2106,10 +2101,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 		boolean bindUserName = false;
 
-		if (userName == null) {
-			query.append(_FINDER_COLUMN_C_U_USERNAME_1);
-		}
-		else if (userName.equals("")) {
+		if (userName.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_U_USERNAME_3);
 		}
 		else {
@@ -2233,6 +2225,8 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	 */
 	@Override
 	public int countByC_U(long companyId, String userName) {
+		userName = Objects.toString(userName, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U;
 
 		Object[] finderArgs = new Object[] { companyId, userName };
@@ -2248,10 +2242,7 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 			boolean bindUserName = false;
 
-			if (userName == null) {
-				query.append(_FINDER_COLUMN_C_U_USERNAME_1);
-			}
-			else if (userName.equals("")) {
+			if (userName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_U_USERNAME_3);
 			}
 			else {
@@ -2301,6 +2292,9 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 
 	public SyncDevicePersistenceImpl() {
 		setModelClass(SyncDevice.class);
+
+		setModelImplClass(SyncDeviceImpl.class);
+		setEntityCacheEnabled(SyncDeviceModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -2710,54 +2704,6 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	/**
 	 * Returns the sync device with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the sync device
-	 * @return the sync device, or <code>null</code> if a sync device with the primary key could not be found
-	 */
-	@Override
-	public SyncDevice fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SyncDeviceModelImpl.ENTITY_CACHE_ENABLED,
-				SyncDeviceImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SyncDevice syncDevice = (SyncDevice)serializable;
-
-		if (syncDevice == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				syncDevice = (SyncDevice)session.get(SyncDeviceImpl.class,
-						primaryKey);
-
-				if (syncDevice != null) {
-					cacheResult(syncDevice);
-				}
-				else {
-					entityCache.putResult(SyncDeviceModelImpl.ENTITY_CACHE_ENABLED,
-						SyncDeviceImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SyncDeviceModelImpl.ENTITY_CACHE_ENABLED,
-					SyncDeviceImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return syncDevice;
-	}
-
-	/**
-	 * Returns the sync device with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param syncDeviceId the primary key of the sync device
 	 * @return the sync device, or <code>null</code> if a sync device with the primary key could not be found
 	 */
@@ -3054,6 +3000,11 @@ public class SyncDevicePersistenceImpl extends BasePersistenceImpl<SyncDevice>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

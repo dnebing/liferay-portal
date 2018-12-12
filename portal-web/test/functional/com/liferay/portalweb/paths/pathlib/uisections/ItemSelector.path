@@ -35,8 +35,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>NAVIGATION_BACK</td>
-	<td>//button[contains(@class,'close') and not(contains(@hidden,'hidden'))]//span[contains(@class,'glyphicon')]</td>
+	<td>SITES_NAVIGATION</td>
+	<td>//ul[contains(@aria-label,'Document Selector')]//a[contains(.,'sites')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_SELECTOR</td>
+	<td>//div[contains(@class,'card-col-content')]/span[contains(@class,'lfr-card-title-text')]/a[contains(@title,'${key_siteName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -69,22 +74,6 @@
 <tr>
 	<td>FILE_INFO_ICON</td>
 	<td>//div[contains(@class,'image-viewer-focused')]//span[contains(@class,'item-viewer-icon-info')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--SIDEBAR-->
-<tr>
-	<td>SIDEBAR_HEADER</td>
-	<td>//div[@class='sidebar-header']//a[contains(.,'File Info')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SIDEBAR_CONTENT</td>
-	<td>//div[@class='tab-content']//p[contains(.,'${key_fileDetail}')]</td>
 	<td></td>
 </tr>
 <tr>

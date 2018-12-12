@@ -100,6 +100,7 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 		}
 	}
 
+	@Override
 	public void setValidate(boolean validate) {
 		_validate = validate;
 	}
@@ -514,7 +515,6 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 				String roleType = GetterUtil.getString(
 					roleReceipientElement.elementTextTrim("role-type"),
 					RoleConstants.TYPE_REGULAR_LABEL);
-				String name = roleReceipientElement.elementTextTrim("name");
 
 				RoleRecipient roleRecipient = null;
 
@@ -522,6 +522,8 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 					roleRecipient = new RoleRecipient(roleId, roleType);
 				}
 				else {
+					String name = roleReceipientElement.elementTextTrim("name");
+
 					roleRecipient = new RoleRecipient(name, roleType);
 
 					boolean autoCreate = GetterUtil.getBoolean(
@@ -809,13 +811,13 @@ public class XMLWorkflowModelParser implements WorkflowModelParser {
 	protected void parseTransition(Definition definition, Element nodeElement) {
 		String sourceName = nodeElement.elementTextTrim("name");
 
-		Node sourceNode = definition.getNode(sourceName);
-
 		Element transitionsElement = nodeElement.element("transitions");
 
 		if (transitionsElement == null) {
 			return;
 		}
+
+		Node sourceNode = definition.getNode(sourceName);
 
 		List<Element> transitionElements = transitionsElement.elements(
 			"transition");

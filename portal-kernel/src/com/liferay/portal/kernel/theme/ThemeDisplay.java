@@ -19,6 +19,7 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.admin.kernel.util.PortalMyAccountApplicationType;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
 import com.liferay.mobile.device.rules.kernel.MDRRuleGroupInstance;
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -50,7 +51,6 @@ import com.liferay.portal.kernel.service.LayoutFriendlyURLLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
@@ -844,9 +844,8 @@ public class ThemeDisplay
 		else if (_scopeGroup.isLayout()) {
 			return LayoutLocalServiceUtil.getLayout(_scopeGroup.getClassPK());
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	/**
@@ -1134,6 +1133,10 @@ public class ThemeDisplay
 		return _ajax;
 	}
 
+	public boolean isAsync() {
+		return _async;
+	}
+
 	/**
 	 * @deprecated As of Judson (7.1.x), with no direct replacement
 	 */
@@ -1352,6 +1355,10 @@ public class ThemeDisplay
 
 	public void setAjax(boolean ajax) {
 		_ajax = ajax;
+	}
+
+	public void setAsync(boolean async) {
+		_async = async;
 	}
 
 	public void setCDNBaseURL(String cdnBase) {
@@ -2016,6 +2023,7 @@ public class ThemeDisplay
 	private Account _account;
 	private boolean _addSessionIdToURL;
 	private boolean _ajax;
+	private boolean _async;
 	private String _cdnBaseURL;
 	private String _cdnDynamicResourcesHost = StringPool.BLANK;
 	private String _cdnHost = StringPool.BLANK;

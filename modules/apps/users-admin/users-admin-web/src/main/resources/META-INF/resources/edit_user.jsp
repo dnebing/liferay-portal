@@ -17,11 +17,17 @@
 <%@ include file="/init.jsp" %>
 
 <%
+String backURL = ParamUtil.getString(request, "backURL");
+
 User selUser = PortalUtil.getSelectedUser(request);
 
 PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
 portletURL.setParameter("mvcRenderCommandName", "/users_admin/edit_user");
+
+if (Validator.isNotNull(backURL)) {
+	portletURL.setParameter("backURL", backURL);
+}
 
 if (selUser != null) {
 	portletURL.setParameter("p_u_i_d", String.valueOf(selUser.getUserId()));
@@ -29,7 +35,9 @@ if (selUser != null) {
 %>
 
 <liferay-frontend:screen-navigation
+	containerCssClass="col-lg-8"
 	context="<%= selUser %>"
 	key="<%= UserFormConstants.SCREEN_NAVIGATION_KEY_USERS %>"
+	navCssClass="col-lg-3"
 	portletURL="<%= portletURL %>"
 />

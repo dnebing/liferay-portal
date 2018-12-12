@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.aopalliance.intercept.MethodInvocation;
@@ -36,6 +35,10 @@ import org.aopalliance.intercept.MethodInvocation;
  */
 public class IndexableAdvice
 	extends AnnotationChainableMethodAdvice<Indexable> {
+
+	public IndexableAdvice() {
+		super(Indexable.class);
+	}
 
 	@Override
 	public void afterReturning(MethodInvocation methodInvocation, Object result)
@@ -61,32 +64,14 @@ public class IndexableAdvice
 			return;
 		}
 
-		Indexable indexable = findAnnotation(methodInvocation);
-
-		if (indexable == _nullIndexable) {
-			return;
-		}
-
 		Method method = methodInvocation.getMethod();
 
 		Class<?> returnType = method.getReturnType();
-
-		if (!BaseModel.class.isAssignableFrom(returnType)) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					methodInvocation + " does not have a valid return type");
-			}
-
-			return;
-		}
 
 		Indexer<Object> indexer = IndexerRegistryUtil.getIndexer(
 			returnType.getName());
 
 		if (indexer == null) {
-			serviceBeanAopCacheManager.removeMethodInterceptor(
-				methodInvocation, this);
-
 			return;
 		}
 
@@ -114,6 +99,8 @@ public class IndexableAdvice
 			}
 		}
 
+		Indexable indexable = findAnnotation(methodInvocation);
+
 		if (indexable.type() == IndexableType.DELETE) {
 			indexer.delete(result);
 		}
@@ -123,25 +110,25 @@ public class IndexableAdvice
 	}
 
 	@Override
-	public Indexable getNullAnnotation() {
-		return _nullIndexable;
+	public boolean isEnabled(Class<?> targetClass, Method method) {
+		if (!super.isEnabled(targetClass, method)) {
+			return false;
+		}
+
+		Class<?> returnType = method.getReturnType();
+
+		if (!BaseModel.class.isAssignableFrom(returnType)) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(method + " does not have a valid return type");
+			}
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		IndexableAdvice.class);
-
-	private static final Indexable _nullIndexable = new Indexable() {
-
-		@Override
-		public Class<? extends Annotation> annotationType() {
-			return Indexable.class;
-		}
-
-		@Override
-		public IndexableType type() {
-			return null;
-		}
-
-	};
 
 }

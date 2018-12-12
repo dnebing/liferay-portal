@@ -88,7 +88,8 @@ public class EditImageConfigurationEntryMVCActionCommand
 		boolean autoModifiedUuid = false;
 
 		if (automaticUuid) {
-			String normalizedName = FriendlyURLNormalizerUtil.normalize(name);
+			String normalizedName =
+				FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(name);
 
 			newUuid = _getAutomaticUuid(
 				themeDisplay.getCompanyId(), normalizedName, uuid);
@@ -142,14 +143,12 @@ public class EditImageConfigurationEntryMVCActionCommand
 				boolean addHighResolution = ParamUtil.getBoolean(
 					actionRequest, "addHighResolution");
 
-				AMImageConfigurationEntry
-					highResolutionAMImageConfigurationEntry = null;
-
 				if (addHighResolution) {
-					highResolutionAMImageConfigurationEntry =
-						_addHighResolutionConfigurationEntry(
-							themeDisplay.getCompanyId(),
-							amImageConfigurationEntry);
+					AMImageConfigurationEntry
+						highResolutionAMImageConfigurationEntry =
+							_addHighResolutionConfigurationEntry(
+								themeDisplay.getCompanyId(),
+								amImageConfigurationEntry);
 
 					SessionMessages.add(
 						actionRequest, "highResolutionConfigurationEntryAdded",

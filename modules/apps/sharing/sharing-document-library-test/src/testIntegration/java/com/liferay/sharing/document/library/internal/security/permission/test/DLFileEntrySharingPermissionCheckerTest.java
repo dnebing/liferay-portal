@@ -48,7 +48,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
-import com.liferay.sharing.constants.SharingEntryActionKey;
+import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.security.permission.SharingPermissionChecker;
 
 import java.util.Arrays;
@@ -109,14 +109,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_user);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_user, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_user, permissionChecker)) {
 
 			Assert.assertTrue(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.ADD_DISCUSSION)));
+					Arrays.asList(SharingEntryAction.ADD_DISCUSSION)));
 		}
 	}
 
@@ -125,14 +125,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_user);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_user, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_user, permissionChecker)) {
 
 			Assert.assertTrue(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.UPDATE)));
+					Arrays.asList(SharingEntryAction.UPDATE)));
 		}
 	}
 
@@ -141,14 +141,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_user);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_user, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_user, permissionChecker)) {
 
 			Assert.assertTrue(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.VIEW)));
+					Arrays.asList(SharingEntryAction.VIEW)));
 		}
 	}
 
@@ -162,14 +162,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.ADD_DISCUSSION);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.UPDATE)));
+					Arrays.asList(SharingEntryAction.UPDATE)));
 		}
 	}
 
@@ -183,14 +183,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.ADD_DISCUSSION);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.VIEW)));
+					Arrays.asList(SharingEntryAction.VIEW)));
 		}
 	}
 
@@ -204,14 +204,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.ADD_DISCUSSION);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertTrue(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.ADD_DISCUSSION)));
+					Arrays.asList(SharingEntryAction.ADD_DISCUSSION)));
 		}
 	}
 
@@ -222,14 +222,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_groupUser);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.ADD_DISCUSSION)));
+					Arrays.asList(SharingEntryAction.ADD_DISCUSSION)));
 		}
 	}
 
@@ -240,14 +240,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_groupUser);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.UPDATE)));
+					Arrays.asList(SharingEntryAction.UPDATE)));
 		}
 	}
 
@@ -258,14 +258,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_groupUser);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.VIEW)));
+					Arrays.asList(SharingEntryAction.VIEW)));
 		}
 	}
 
@@ -279,14 +279,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.UPDATE);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.ADD_DISCUSSION)));
+					Arrays.asList(SharingEntryAction.ADD_DISCUSSION)));
 		}
 	}
 
@@ -300,14 +300,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.UPDATE);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.VIEW)));
+					Arrays.asList(SharingEntryAction.VIEW)));
 		}
 	}
 
@@ -321,14 +321,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.UPDATE);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertTrue(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.UPDATE)));
+					Arrays.asList(SharingEntryAction.UPDATE)));
 		}
 	}
 
@@ -342,14 +342,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.VIEW);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.ADD_DISCUSSION)));
+					Arrays.asList(SharingEntryAction.ADD_DISCUSSION)));
 		}
 	}
 
@@ -363,14 +363,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.VIEW);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertFalse(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.UPDATE)));
+					Arrays.asList(SharingEntryAction.UPDATE)));
 		}
 	}
 
@@ -382,14 +382,14 @@ public class DLFileEntrySharingPermissionCheckerTest {
 		try (AddDLFileEntryResourcePermission addDLFileEntryResourcePermission =
 				new AddDLFileEntryResourcePermission(
 					_powerUserRole, ActionKeys.VIEW);
-			ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+			ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertTrue(
 				_sharingPermissionChecker.hasPermission(
 					permissionChecker, _fileEntry.getFileEntryId(),
 					_fileEntry.getGroupId(),
-					Arrays.asList(SharingEntryActionKey.VIEW)));
+					Arrays.asList(SharingEntryAction.VIEW)));
 		}
 	}
 

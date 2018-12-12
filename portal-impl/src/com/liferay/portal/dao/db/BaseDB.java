@@ -33,9 +33,9 @@ import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -331,7 +331,9 @@ public abstract class BaseDB implements DB {
 	public void runSQLTemplate(String path, boolean failOnError)
 		throws IOException, NamingException, SQLException {
 
-		ClassLoader classLoader = ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader classLoader = currentThread.getContextClassLoader();
 
 		InputStream is = classLoader.getResourceAsStream(
 			"com/liferay/portal/tools/sql/dependencies/" + path);
@@ -392,6 +394,10 @@ public abstract class BaseDB implements DB {
 
 			String line = null;
 
+			Thread currentThread = Thread.currentThread();
+
+			ClassLoader classLoader = currentThread.getContextClassLoader();
+
 			while ((line = unsyncBufferedReader.readLine()) != null) {
 				if (line.isEmpty() || line.startsWith("##")) {
 					continue;
@@ -407,9 +413,6 @@ public abstract class BaseDB implements DB {
 					}
 
 					String includeFileName = line.substring(pos + 1, end);
-
-					ClassLoader classLoader =
-						ClassLoaderUtil.getContextClassLoader();
 
 					InputStream is = classLoader.getResourceAsStream(
 						"com/liferay/portal/tools/sql/dependencies/" +
@@ -511,12 +514,12 @@ public abstract class BaseDB implements DB {
 	public void setSupportsStringCaseSensitiveQuery(
 		boolean supportsStringCaseSensitiveQuery) {
 
-		if (_log.isInfoEnabled()) {
+		if (_log.isDebugEnabled()) {
 			if (supportsStringCaseSensitiveQuery) {
-				_log.info("Database supports case sensitive queries");
+				_log.debug("Database supports case sensitive queries");
 			}
 			else {
-				_log.info("Database does not support case sensitive queries");
+				_log.debug("Database does not support case sensitive queries");
 			}
 		}
 
@@ -824,7 +827,7 @@ public abstract class BaseDB implements DB {
 				}
 			}
 			else if (!tablesSQLLowerCase.contains(
-						 CREATE_TABLE + tableNameLowerCase + " (")) {
+						CREATE_TABLE + tableNameLowerCase + " (")) {
 
 				continue;
 			}
@@ -851,13 +854,15 @@ public abstract class BaseDB implements DB {
 			return StringPool.BLANK;
 		}
 
-		ClassLoader classLoader = ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader classLoader = currentThread.getContextClassLoader();
 
 		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
 		try {
-			ClassLoaderUtil.setContextClassLoader(
-				ClassLoaderUtil.getPortalClassLoader());
+			currentThread.setContextClassLoader(
+				PortalClassLoaderUtil.getClassLoader());
 
 			StringTemplateResource stringTemplateResource =
 				new StringTemplateResource(templateId, templateContent);
@@ -871,7 +876,7 @@ public abstract class BaseDB implements DB {
 			template.processTemplate(unsyncStringWriter);
 		}
 		finally {
-			ClassLoaderUtil.setContextClassLoader(classLoader);
+			currentThread.setContextClassLoader(classLoader);
 		}
 
 		// Trim insert statements because it breaks MySQL Query Browser
@@ -931,9 +936,8 @@ public abstract class BaseDB implements DB {
 		if (type == BARE) {
 			return "-bare";
 		}
-		else {
-			return StringPool.BLANK;
-		}
+
+		return StringPool.BLANK;
 	}
 
 	protected abstract String[] getTemplate();
@@ -965,9 +969,8 @@ public abstract class BaseDB implements DB {
 		if (FileUtil.exists(fileName)) {
 			return FileUtil.read(fileName);
 		}
-		else {
-			return StringPool.BLANK;
-		}
+
+		return StringPool.BLANK;
 	}
 
 	protected String readSQL(String fileName, String comments, String eol)
@@ -1169,11 +1172,13 @@ public abstract class BaseDB implements DB {
 
 	protected static final String DROP_PRIMARY_KEY = "drop primary key";
 
-	protected static final String[] RENAME_TABLE_TEMPLATE =
-		{"@old-table@", "@new-table@"};
+	protected static final String[] RENAME_TABLE_TEMPLATE = {
+		"@old-table@", "@new-table@"
+	};
 
-	protected static final String[] REWORD_TEMPLATE =
-		{"@table@", "@old-column@", "@new-column@", "@type@", "@nullable@"};
+	protected static final String[] REWORD_TEMPLATE = {
+		"@table@", "@old-column@", "@new-column@", "@type@", "@nullable@"
+	};
 
 	protected static final String[] TEMPLATE = {
 		"##", "TRUE", "FALSE", "'01/01/1970'", "CURRENT_TIMESTAMP", " BLOB",

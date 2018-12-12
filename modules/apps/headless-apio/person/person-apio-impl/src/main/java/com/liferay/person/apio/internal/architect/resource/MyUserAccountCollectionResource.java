@@ -30,6 +30,8 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.UserService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.site.apio.architect.identifier.WebSiteIdentifier;
+import com.liferay.workflow.apio.architect.identifier.ReusableWorkflowTaskIdentifier;
+import com.liferay.workflow.apio.architect.identifier.WorkflowTaskIdentifier;
 
 import java.util.Arrays;
 
@@ -39,14 +41,13 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Provides the information necessary to expose MyUserAccount resources through
- * a web API. The resources are mapped from the internal model {@link
+ * Provides the information necessary to expose {@code MyUserAccount} resources
+ * through a web API. The resources are mapped from the internal model {@code
  * UserWrapper}.
  *
  * @author Eduardo Perez
- * @review
  */
-@Component(immediate = true)
+@Component(immediate = true, service = CollectionResource.class)
 public class MyUserAccountCollectionResource
 	implements CollectionResource<UserWrapper, Long, MyUserAccountIdentifier> {
 
@@ -61,7 +62,7 @@ public class MyUserAccountCollectionResource
 
 	@Override
 	public String getName() {
-		return "myUserAccount";
+		return "my-user-account";
 	}
 
 	@Override
@@ -84,7 +85,15 @@ public class MyUserAccountCollectionResource
 		userWrapperFirstStep.addRelatedCollection(
 			"myOrganizations", OrganizationIdentifier.class);
 		userWrapperFirstStep.addRelatedCollection(
-			"myWebsites", WebSiteIdentifier.class);
+			"myWebSites", WebSiteIdentifier.class);
+		userWrapperFirstStep.addRelatedCollection(
+			"tasksAssignedToMe", WorkflowTaskIdentifier.class,
+			__ -> ReusableWorkflowTaskIdentifier.create(
+				ReusableWorkflowTaskIdentifier.WorkflowTaskType.TO_ME));
+		userWrapperFirstStep.addRelatedCollection(
+			"tasksAssignedToMyRoles", WorkflowTaskIdentifier.class,
+			__ -> ReusableWorkflowTaskIdentifier.create(
+				ReusableWorkflowTaskIdentifier.WorkflowTaskType.TO_MY_ROLES));
 
 		return userWrapperFirstStep.build();
 	}

@@ -15,6 +15,10 @@
 package com.liferay.portal.settings.web.internal.portlet.action;
 
 import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.orm.Disjunction;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.AccountNameException;
 import com.liferay.portal.kernel.exception.AddressCityException;
 import com.liferay.portal.kernel.exception.AddressStreetException;
@@ -29,9 +33,12 @@ import com.liferay.portal.kernel.exception.NoSuchListTypeException;
 import com.liferay.portal.kernel.exception.NoSuchRegionException;
 import com.liferay.portal.kernel.exception.PhoneNumberException;
 import com.liferay.portal.kernel.exception.PhoneNumberExtensionException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.WebsiteURLException;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Address;
 import com.liferay.portal.kernel.model.EmailAddress;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Phone;
 import com.liferay.portal.kernel.model.Website;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseFormMVCActionCommand;
@@ -39,14 +46,21 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.service.CompanyService;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropertiesParamUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.settings.constants.PortalSettingsPortletKeys;
+import com.liferay.portal.settings.web.internal.exception.RequiredLocaleException;
 import com.liferay.users.admin.kernel.util.UsersAdminUtil;
 
 import java.util.List;
@@ -136,6 +150,10 @@ public class EditCompanyMVCActionCommand extends BaseFormMVCActionCommand {
 	protected void doValidateForm(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
+
+		_validateDefaultLanguage(actionRequest);
+
+		_validateAvailableLanguages(actionRequest);
 	}
 
 	@Reference(unbind = "-")
@@ -196,8 +214,92 @@ public class EditCompanyMVCActionCommand extends BaseFormMVCActionCommand {
 		_portal.resetCDNHosts();
 	}
 
+	private void _validateAvailableLanguages(ActionRequest actionRequest)
+		throws PortalException {
+
+		UnicodeProperties properties = PropertiesParamUtil.getProperties(
+			actionRequest, "settings--");
+
+		String newLanguageIds = properties.getProperty(PropsKeys.LOCALES);
+
+		if (Validator.isNull(newLanguageIds)) {
+			return;
+		}
+
+		long companyId = _portal.getCompanyId(actionRequest);
+
+		String[] removedLanguageIds = ArrayUtil.filter(
+			LocaleUtil.toLanguageIds(
+				LanguageUtil.getCompanyAvailableLocales(companyId)),
+			languageId -> !StringUtil.contains(
+				newLanguageIds, languageId, StringPool.COMMA));
+
+		if (ArrayUtil.isEmpty(removedLanguageIds)) {
+			return;
+		}
+
+		DynamicQuery dynamicQuery = _groupLocalService.dynamicQuery();
+
+		dynamicQuery.add(RestrictionsFactoryUtil.eq("companyId", companyId));
+		dynamicQuery.add(
+			RestrictionsFactoryUtil.like(
+				"typeSettings", "%inheritLocales=false%"));
+
+		Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
+
+		for (String removedLanguageId : removedLanguageIds) {
+			disjunction.add(
+				RestrictionsFactoryUtil.like(
+					"typeSettings", "%languageId=" + removedLanguageId + "%"));
+		}
+
+		dynamicQuery.add(disjunction);
+
+		List<Group> groups = _groupLocalService.dynamicQuery(dynamicQuery);
+
+		if (!groups.isEmpty()) {
+			SessionErrors.add(
+				actionRequest, RequiredLocaleException.class,
+				new RequiredLocaleException(groups));
+		}
+	}
+
+	private void _validateDefaultLanguage(ActionRequest actionRequest)
+		throws PortalException {
+
+		String languageId = ParamUtil.getString(actionRequest, "languageId");
+
+		if (Validator.isNull(languageId)) {
+			SessionErrors.add(
+				actionRequest, RequiredLocaleException.class,
+				new RequiredLocaleException(
+					"you-must-choose-a-default-language"));
+
+			return;
+		}
+
+		UnicodeProperties properties = PropertiesParamUtil.getProperties(
+			actionRequest, "settings--");
+
+		String newLanguageIds = properties.getProperty(PropsKeys.LOCALES);
+
+		if (Validator.isNull(newLanguageIds) ||
+			!StringUtil.contains(
+				newLanguageIds, languageId, StringPool.COMMA)) {
+
+			SessionErrors.add(
+				actionRequest, RequiredLocaleException.class,
+				new RequiredLocaleException(
+					"you-cannot-remove-a-language-that-is-the-current-" +
+						"default-language"));
+		}
+	}
+
 	private CompanyService _companyService;
 	private DLAppLocalService _dlAppLocalService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Portal _portal;

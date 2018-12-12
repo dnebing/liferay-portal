@@ -84,8 +84,9 @@ public class EditPublishConfigurationMVCActionCommand
 			actionRequest, "exportImportConfigurationId");
 
 		if (exportImportConfigurationId > 0) {
-			deleteExportImportConfigurationIds =
-				new long[] {exportImportConfigurationId};
+			deleteExportImportConfigurationIds = new long[] {
+				exportImportConfigurationId
+			};
 		}
 		else {
 			deleteExportImportConfigurationIds = StringUtil.split(
@@ -193,8 +194,8 @@ public class EditPublishConfigurationMVCActionCommand
 			_staging.publishLayouts(userId, exportImportConfiguration);
 		}
 		else if (exportImportConfiguration.getType() ==
-					 ExportImportConfigurationConstants.
-						 TYPE_PUBLISH_LAYOUT_REMOTE) {
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_LAYOUT_REMOTE) {
 
 			_staging.copyRemoteLayouts(exportImportConfiguration);
 		}
@@ -280,11 +281,9 @@ public class EditPublishConfigurationMVCActionCommand
 					updatePublishLayoutRemoteExportImportConfiguration(
 						actionRequest);
 			}
-			else {
-				return ExportImportConfigurationHelper.
-					addPublishLayoutRemoteExportImportConfiguration(
-						actionRequest);
-			}
+
+			return ExportImportConfigurationHelper.
+				addPublishLayoutRemoteExportImportConfiguration(actionRequest);
 		}
 		else {
 			if (exportImportConfigurationId > 0) {
@@ -292,11 +291,9 @@ public class EditPublishConfigurationMVCActionCommand
 					updatePublishLayoutLocalExportImportConfiguration(
 						actionRequest);
 			}
-			else {
-				return ExportImportConfigurationHelper.
-					addPublishLayoutLocalExportImportConfiguration(
-						actionRequest);
-			}
+
+			return ExportImportConfigurationHelper.
+				addPublishLayoutLocalExportImportConfiguration(actionRequest);
 		}
 	}
 

@@ -20,11 +20,13 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.tools.JavaImportsFormatter;
+import com.liferay.portal.tools.ToolsUtil;
 import com.liferay.source.formatter.checks.util.JavaSourceUtil;
 
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,11 @@ import java.util.regex.Pattern;
  * @author Hugo Huijser
  */
 public class JavaInnerClassImportsCheck extends BaseFileCheck {
+
+	public void setUpperCasePackageNames(String upperCasePackageNames) {
+		Collections.addAll(
+			_upperCasePackageNames, StringUtil.split(upperCasePackageNames));
+	}
 
 	@Override
 	protected String doProcess(
@@ -46,18 +53,30 @@ public class JavaInnerClassImportsCheck extends BaseFileCheck {
 		Matcher matcher = _innerClassImportPattern.matcher(content);
 
 		while (matcher.find()) {
+			String outerClassFullyQualifiedName = matcher.group(2);
+
+			if (_upperCasePackageNames.contains(outerClassFullyQualifiedName)) {
+				continue;
+			}
+
 			String innerClassName = matcher.group(4);
+			String innerClassFullyQualifiedName = matcher.group(1);
 			String outerClassName = matcher.group(3);
 
 			// Skip inner classes with long names, because it causes a lot of
 			// cases where we get long lines that are hard to resolve
 
-			if ((innerClassName.length() + outerClassName.length()) > 40) {
-				continue;
+			if (imports == null) {
+				imports = _getImports(content);
 			}
 
-			String innerClassFullyQualifiedName = matcher.group(1);
-			String outerClassFullyQualifiedName = matcher.group(2);
+			if ((innerClassName.length() + outerClassName.length()) > 40) {
+				content = _stripRedundantOuterClass(
+					content, innerClassName, innerClassFullyQualifiedName,
+					imports);
+
+				continue;
+			}
 
 			if (className == null) {
 				className = JavaSourceUtil.getClassName(fileName);
@@ -76,10 +95,6 @@ public class JavaInnerClassImportsCheck extends BaseFileCheck {
 				continue;
 			}
 
-			if (imports == null) {
-				imports = _getImports(content);
-			}
-
 			if (_isRedundantImport(
 					content, innerClassName, outerClassName,
 					outerClassFullyQualifiedName, imports)) {
@@ -87,6 +102,11 @@ public class JavaInnerClassImportsCheck extends BaseFileCheck {
 				return _formatInnerClassImport(
 					content, innerClassName, innerClassFullyQualifiedName,
 					outerClassName, outerClassFullyQualifiedName);
+			}
+			else {
+				content = _stripRedundantOuterClass(
+					content, innerClassName, innerClassFullyQualifiedName,
+					imports);
 			}
 		}
 
@@ -191,7 +211,65 @@ public class JavaInnerClassImportsCheck extends BaseFileCheck {
 			replacement);
 	}
 
-	private final Pattern _innerClassImportPattern = Pattern.compile(
+	private String _stripRedundantOuterClass(
+		String content, String innerClassName, String outerAndInnerClassName) {
+
+		Pattern pattern = Pattern.compile(
+			StringBundler.concat(
+				"\n(.*[^\\w\n.])", outerAndInnerClassName, "\\W"));
+
+		Matcher matcher = pattern.matcher(content);
+
+		while (matcher.find()) {
+			String lineStart = StringUtil.trimLeading(matcher.group(1));
+
+			if (lineStart.contains("//") ||
+				ToolsUtil.isInsideQuotes(content, matcher.end(1))) {
+
+				continue;
+			}
+
+			return StringUtil.replaceFirst(
+				content, outerAndInnerClassName, innerClassName,
+				matcher.end(1));
+		}
+
+		return content;
+	}
+
+	private String _stripRedundantOuterClass(
+		String content, String innerClassName,
+		String innerClassFullyQualifiedName, List<String> imports) {
+
+		Matcher matcher = _outerClassPattern.matcher(
+			innerClassFullyQualifiedName);
+
+		while (matcher.find()) {
+			int x = matcher.end();
+
+			if (x == innerClassFullyQualifiedName.length()) {
+				return content;
+			}
+
+			String outerClassFullyQualifiedName =
+				innerClassFullyQualifiedName.substring(0, x);
+
+			if (imports.contains(outerClassFullyQualifiedName)) {
+				content = _stripRedundantOuterClass(
+					content, innerClassName,
+					innerClassFullyQualifiedName.substring(
+						matcher.start() + 1));
+			}
+		}
+
+		return content;
+	}
+
+	private static final Pattern _innerClassImportPattern = Pattern.compile(
 		"\nimport (([\\w.]+\\.([A-Z]\\w+))\\.([A-Z]\\w+));");
+	private static final Pattern _outerClassPattern = Pattern.compile(
+		"\\.[A-Z]\\w+");
+
+	private final List<String> _upperCasePackageNames = new ArrayList<>();
 
 }

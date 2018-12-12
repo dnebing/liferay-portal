@@ -278,7 +278,7 @@ if (columnDisabled && customizable) {
 
 // Portlets cannot be moved unless they belong to the layout
 
-if (!layoutTypePortlet.hasPortletId(portletId)) {
+if (!layoutTypePortlet.hasPortletId(portletId, true)) {
 	showCloseIcon = false;
 	showMoveIcon = false;
 }
@@ -333,9 +333,7 @@ if (siteGroup.isStaged() && !siteGroup.isStagedRemotely() && !siteGroup.isStaged
 
 // Portlet decorate
 
-boolean tilesPortletDecorate = GetterUtil.getBoolean(TilesAttributeUtil.getTilesAttribute(pageContext, "portlet_decorate"), true);
-
-boolean portletDecorate = tilesPortletDecorate;
+boolean portletDecorate = true;
 
 Boolean portletDecorateObj = (Boolean)request.getAttribute(WebKeys.PORTLET_DECORATE);
 
@@ -826,12 +824,6 @@ if (group.isControlPanel()) {
 		portletDisplay.setShowConfigurationIcon(true);
 	}
 }
-
-// Make sure the Tiles context is reset for the next portlet
-
-if ((invokerPortlet != null) && (invokerPortlet.isStrutsPortlet() || invokerPortlet.isStrutsBridgePortlet())) {
-	request.removeAttribute(ComponentConstants.COMPONENT_CONTEXT);
-}
 %>
 
 <%@ include file="/html/portal/render_portlet-ext.jsp" %>
@@ -878,12 +870,6 @@ if (portlet.isActive() && portlet.isInclude() && portlet.isReady() && supportsMi
 
 		LogUtil.log(_log, e);
 	}
-}
-
-// Make sure the Tiles context is reset for the next portlet
-
-if ((invokerPortlet != null) && (invokerPortlet.isStrutsPortlet() || invokerPortlet.isStrutsBridgePortlet())) {
-	request.removeAttribute(ComponentConstants.COMPONENT_CONTEXT);
 }
 
 String portalProductMenuApplicationTypePortletId = PortletProviderUtil.getPortletId(PortalProductMenuApplicationType.ProductMenu.CLASS_NAME, PortletProvider.Action.VIEW);
@@ -969,106 +955,35 @@ Boolean renderPortletBoundary = GetterUtil.getBoolean(request.getAttribute(WebKe
 	<%
 	boolean useDefaultTemplate = liferayRenderResponse.getUseDefaultTemplate();
 
-	PortletRequestProcessor portletReqProcessor = (PortletRequestProcessor)portletCtx.getAttribute(WebKeys.PORTLET_STRUTS_PROCESSOR);
-
 	boolean addNotAjaxablePortlet = !portlet.isAjaxable() && cmd.equals("add");
 
-	if ((portletReqProcessor != null) && !addNotAjaxablePortlet) {
-		if (portletException) {
-			ActionMapping actionMapping = portletReqProcessor.processMapping(request, response, (String)portlet.getInitParams().get("view-action"));
+	liferayRenderRequest.setAttribute(WebKeys.PORTLET_CONTENT, bufferCacheServletResponse.getString());
 
-			ComponentDefinition definition = null;
+	String portletContentJSP = StringPool.BLANK;
 
-			if (actionMapping != null) {
-
-				// See action path /weather/view
-
-				String definitionName = actionMapping.getForward();
-
-				if (definitionName == null) {
-
-					// See action path /journal/view_articles
-
-					String[] definitionNames = actionMapping.findForwards();
-
-					for (int definitionNamesPos = 0; definitionNamesPos < definitionNames.length; definitionNamesPos++) {
-						if (definitionNames[definitionNamesPos].endsWith("view")) {
-							definitionName = definitionNames[definitionNamesPos];
-
-							break;
-						}
-					}
-
-					if (definitionName == null) {
-						definitionName = definitionNames[0];
-					}
-				}
-
-				definition = TilesUtil.getDefinition(definitionName, request, application);
-			}
-
-			String templatePath = StrutsUtil.TEXT_HTML_DIR + "/common/themes/portlet.jsp";
-
-			if (definition != null) {
-				templatePath = StrutsUtil.TEXT_HTML_DIR + definition.getPath();
-			}
-
-			request.setAttribute(WebKeys.PORTLET_CONTENT_JSP, "/portal/portlet_error.jsp");
-	%>
-
-			<liferay-util:include page="<%= templatePath %>" />
-
-		<%
-		}
-		else {
-			if (useDefaultTemplate || !portlet.isActive()) {
-				liferayRenderRequest.setAttribute(WebKeys.PORTLET_CONTENT, bufferCacheServletResponse.getString());
-
-				request.setAttribute(WebKeys.PORTLET_CONTENT_JSP, StringPool.BLANK);
-		%>
-
-				<liferay-util:include page='<%= StrutsUtil.TEXT_HTML_DIR + "/common/themes/portlet.jsp" %>' />
-
-	<%
-			}
-			else {
-				pageContext.getOut().write(bufferCacheServletResponse.getString());
-			}
-		}
+	if (!portlet.isReady()) {
+		portletContentJSP = "/portal/portlet_not_ready.jsp";
 	}
-	else {
-		liferayRenderRequest.setAttribute(WebKeys.PORTLET_CONTENT, bufferCacheServletResponse.getString());
 
-		String portletContentJSP = StringPool.BLANK;
-
-		if (!portlet.isReady()) {
-			portletContentJSP = "/portal/portlet_not_ready.jsp";
-		}
-
-		if (portletException) {
-			portletContentJSP = "/portal/portlet_error.jsp";
-		}
-
-		if (addNotAjaxablePortlet) {
-			portletContentJSP = "/portal/portlet_not_ajaxable.jsp";
-		}
-
-		request.setAttribute(WebKeys.PORTLET_CONTENT_JSP, portletContentJSP);
-	%>
-
-		<c:choose>
-			<c:when test="<%= useDefaultTemplate || portletException || addNotAjaxablePortlet %>">
-				<liferay-util:include page='<%= StrutsUtil.TEXT_HTML_DIR + "/common/themes/portlet.jsp" %>' />
-			</c:when>
-			<c:otherwise>
-				<%= liferayRenderRequest.getAttribute(WebKeys.PORTLET_CONTENT) %>
-			</c:otherwise>
-		</c:choose>
-
-	<%
+	if (portletException) {
+		portletContentJSP = "/portal/portlet_error.jsp";
 	}
+
+	if (addNotAjaxablePortlet) {
+		portletContentJSP = "/portal/portlet_not_ajaxable.jsp";
+	}
+
+	request.setAttribute(WebKeys.PORTLET_CONTENT_JSP, portletContentJSP);
 	%>
 
+	<c:choose>
+		<c:when test="<%= useDefaultTemplate || portletException || addNotAjaxablePortlet %>">
+			<liferay-util:include page='<%= StrutsUtil.TEXT_HTML_DIR + "/common/themes/portlet.jsp" %>' />
+		</c:when>
+		<c:otherwise>
+			<%= liferayRenderRequest.getAttribute(WebKeys.PORTLET_CONTENT) %>
+		</c:otherwise>
+	</c:choose>
 </c:if>
 
 <%

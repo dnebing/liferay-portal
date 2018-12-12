@@ -31,12 +31,7 @@
 </tr>
 <tr>
 	<td>CONTENT_TITLE</td>
-	<td>//div[@class='list-group-item']//h4[contains(.,'${key_assetTitle}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>POPOVER_CONTENT_TITLE</td>
-	<td>//div[contains(@class,'popover-content')]/div/div/div[contains(.,'${key_assetTitle}')]</td>
+	<td>//div[contains(@class,'list-group-item-content')]//*[contains(.,'${key_assetTitle}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -51,18 +46,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>COLLAPSED_CATEGORY</td>
-	<td>//div[contains(@class,'toggler-header-collapsed')]/div</td>
-	<td></td>
-</tr>
-<tr>
 	<td>ADD_PORTLET_DRAG_LINK</td>
 	<td>//span[contains(@data-search,'-${portletName}') and contains(@class,'drag-content-item')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ADD_PORTLET_LINK</td>
-	<td>//span[contains(@data-search,'-${portletName}') and contains(@class,'add-content-item')]</td>
+	<td>//*[contains(@data-search,'-${portletName}') and contains(@class,'add-content-item')]</td>
 	<td></td>
 </tr>
 <tr>

@@ -235,8 +235,6 @@ AUI.add(
 							image.attr('src', itemFileURL);
 						}
 
-						var returnType = link.attr('data-returnType');
-
 						if (itemFile.resolvedValue) {
 							link.setData('value', itemFile.resolvedValue);
 						}
@@ -387,11 +385,19 @@ AUI.add(
 							}
 						);
 
+						var editEntityBaseZIndex = Liferay.zIndex.WINDOW;
+
+						var iframeModalEl = window.parent.document.getElementsByClassName('dialog-iframe-modal');
+
+						if (iframeModalEl) {
+							editEntityBaseZIndex = window.getComputedStyle(iframeModalEl[0]).getPropertyValue('z-index');
+						}
+
 						Liferay.Util.editEntity(
 							{
 								dialog: {
 									destroyOnHide: true,
-									zIndex: Liferay.zIndex.WINDOW + 100
+									zIndex: editEntityBaseZIndex + 100
 								},
 								id: instance.get('id'),
 								stack: false,
@@ -417,7 +423,29 @@ AUI.add(
 					_onSaveEditSuccess: function(event) {
 						var instance = this;
 
+						var touchEnabled = A.UA.touchEnabled;
+
+						// LPS-82848
+
+						if (touchEnabled && instance._scrollView) {
+							instance._detachSwipeEvents();
+						}
+
 						instance.appendNewLink(event.data);
+
+						// LPS-82848
+
+						if (touchEnabled && instance._scrollView) {
+							instance._scrollView.destroy();
+
+							instance._scrollView = new A.ScrollView(instance.get('swipe'));
+
+							instance._plugPaginator();
+
+							instance._scrollView.render();
+
+							instance._attachSwipeEvents();
+						}
 					},
 
 					_populateImageMetadata: function(image, metadata) {

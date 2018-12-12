@@ -404,12 +404,12 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 		SolrDocument solrDocument, Document document, QueryConfig queryConfig,
 		QueryResponse queryResponse) {
 
-		Map<String, Map<String, List<String>>> highlights =
-			queryResponse.getHighlighting();
-
 		if (!queryConfig.isHighlightEnabled()) {
 			return;
 		}
+
+		Map<String, Map<String, List<String>>> highlights =
+			queryResponse.getHighlighting();
 
 		if (MapUtil.isEmpty(highlights)) {
 			return;
@@ -696,6 +696,8 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 		Query query, Hits hits, List<Document> documents, List<Float> scores) {
 
 		if (solrDocumentList == null) {
+			Collections.addAll(documents, hits.getDocs());
+
 			return;
 		}
 
@@ -808,6 +810,11 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 					queryResponse, group.getResult(), query, groupedHits);
 
 				hits.addGroupedHits(group.getGroupValue(), groupedHits);
+
+				Document[] docs = groupedHits.getDocs();
+
+				hits.setDocs(docs);
+				hits.setLength(docs.length);
 			}
 		}
 	}

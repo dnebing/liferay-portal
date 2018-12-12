@@ -1,8 +1,9 @@
-<definition component-name="portal-authentication-ee" ignore="true">
+<definition component-name="portal-authentication-ee">
 	<property name="portal.release" value="true" />
 	<property name="portal.upstream" value="true" />
 	<property name="app.server.bundles.size" value="1" />
 	<property name="databases.size" value="1" />
+	<property name="dummy.socket.proxy.disabled" value="true" />
 	<property name="osgi.app.includes" value="saml" />
 	<property name="plugins.deployment.type" value="osgi" />
 	<property name="test.run.environment" value="EE" />
@@ -15,6 +16,150 @@
 			<var name="rememberMeChecked" value="false" />
 		</execute>
 	</set-up>
+
+	<command name="AddUserInheritedRolesAsSAMLAttributeStatements" priority="5">
+		<property name="test.name.skip.portal.instance" value="SAML#AddUserInheritedRolesAsSAMLAttributeStatements" />
+
+		<execute macro="SAML#configureLiferaySAMLAsIdP">
+			<var name="samlEntityID" value="samlidp" />
+		</execute>
+
+		<execute macro="SAML#configureLiferaySAMLAsSP">
+			<var name="Attributes" value="siteRoles" />
+			<var name="nameIdentifierAttributeName" value="emailAddress" />
+			<var name="samlEntityID" value="samlsp" />
+			<var name="spURL" value="http://www.able.com:9080/" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Server Administration" />
+		</execute>
+
+		<execute macro="ServerAdministration#addCategoryLogLevels">
+			<var name="categoryName" value="com.liferay.saml.opensaml.integration" />
+			<var name="categoryPriority" value="DEBUG" />
+		</execute>
+
+		<execute macro="JSONRole#addSiteRole">
+			<var name="roleKey" value="TestSiteRole" />
+			<var name="roleTitle" value="TestSiteRole" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Sites" />
+		</execute>
+
+		<execute macro="Site#addBlankCP">
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="User Groups" />
+		</execute>
+
+		<execute macro="UserGroup#addCP">
+			<var name="userGroupName" value="UG UserGroup Name" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Members" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Memberships" />
+		</execute>
+
+		<execute macro="Site#assignUserGroupAsMemberCP">
+			<var name="siteName" value="Site Name" />
+			<var name="userGroupName" value="UG UserGroup Name" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Members" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Memberships" />
+		</execute>
+
+		<execute macro="Site#assignSiteRoleToUserGroup">
+			<var name="roleName" value="TestSiteRole" />
+			<var name="userGroupName" value="UG UserGroup Name" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="User Groups" />
+		</execute>
+
+		<execute macro="UserGroup#assignMemberCP">
+			<var name="userGroupName" value="UG UserGroup Name" />
+			<var name="userScreenName" value="test" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="User#gotoEditCP">
+			<var name="userScreenName" value="test" />
+		</execute>
+
+		<execute macro="User#viewUserInfomationRolesCP">
+			<var name="roleTitle" value="TestSiteRole" />
+			<var name="roleType" value="Inherited Site Roles" />
+		</execute>
+
+		<execute macro="User#logoutPG" />
+
+		<execute macro="User#viewLoggedOutPG" />
+
+		<execute macro="User#logoutPG">
+			<var name="specificURL" value="http://www.able.com:9080/" />
+		</execute>
+
+		<execute macro="User#viewLoggedOutPG" />
+
+		<execute macro="SAML#executeSPInitiatedSSO">
+			<var name="password" value="test" />
+			<var name="specificURL" value="http://www.able.com:9080/" />
+			<var name="userEmailAddress" value="test@liferay.com" />
+		</execute>
+
+		<execute macro="User#viewLoggedInPG">
+			<var name="userFirstName" value="Test" />
+			<var name="userLastName" value="Test" />
+		</execute>
+
+		<execute function="AssertConsoleTextPresent" value1="TestSiteRole" />
+	</command>
 
 	<command name="AssertSSOIdleSessionTakesPrecedenceOverIdPSessionTimeout" priority="4">
 		<property name="test.name.skip.portal.instance" value="CPSAML#AssertSSOIdleSessionTakesPrecedenceOverIdPSessionTimeout" />
@@ -218,13 +363,11 @@
 		</execute>
 
 		<execute macro="ServerAdministration#addCategoryLogLevels">
-			<var name="catagoryName" value="com.liferay.saml.opensaml.integration" />
+			<var name="categoryName" value="com.liferay.saml.opensaml.integration" />
 			<var name="categoryPriority" value="DEBUG" />
 		</execute>
 
-		<execute macro="User#logoutPG">
-			<var name="specificURL" value="http://www.able.com:9080" />
-		</execute>
+		<execute macro="User#logoutPG" />
 
 		<execute macro="User#viewLoggedOutPG" />
 
@@ -296,9 +439,6 @@
 			<var name="url" value="${maliciousURL}" />
 		</execute>
 
-		<execute function="AssertConsoleTextNotPresent" value1="java.lang.OutOfMemoryError" />
-		<execute function="AssertConsoleTextNotPresent" value1="GC overhead limit exceeded" />
-
 		<execute macro="WebContent#addCP">
 			<var name="webContentContent" value="Web Content Content" />
 			<var name="webContentTitle" value="Web Content Title" />
@@ -329,9 +469,6 @@
 			<var name="url" value="${maliciousURL}" />
 		</execute>
 
-		<execute function="AssertConsoleTextNotPresent" value1="java.lang.OutOfMemoryError" />
-		<execute function="AssertConsoleTextNotPresent" value1="GC overhead limit exceeded" />
-
 		<execute macro="WebContent#addCP">
 			<var name="webContentContent" value="Web Content Content 2" />
 			<var name="webContentTitle" value="Web Content Title 2" />
@@ -343,6 +480,7 @@
 	<command name="ViewIdPInitiatedSSO" priority="4">
 		<description message="Sign into portal by executing a IdP initiated SSO login. After a successful login, the IdP will redirect to the SP. If the same users with the same email address are present on both instances, it will authenticate and show the SP. SAML can authenticate across major portal versions, that is, the IdP can be Portal 6.1 EE GA3 and the SP can be Portal 6.2. EE GA1. For testing purposes, it is obvious if the authentication succeeds or fails if the IdP and SP are different portal versions." />
 
+		<property name="environment.acceptance" value="false" />
 		<property name="test.name.skip.portal.instance" value="CPSAML#ViewIdPInitiatedSSO" />
 
 		<execute macro="SAML#configureLiferaySAMLAsIdP">
@@ -482,7 +620,7 @@
 		</execute>
 
 		<execute macro="ServerAdministration#addCategoryLogLevels">
-			<var name="catagoryName" value="com.liferay.saml" />
+			<var name="categoryName" value="com.liferay.saml.opensaml.integration" />
 			<var name="categoryPriority" value="DEBUG" />
 		</execute>
 
@@ -500,17 +638,13 @@
 			<var name="userEmailAddress" value="test@liferay.com" />
 		</execute>
 
-		<var name="consoleText"><![CDATA[Sending SAML message &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;_&lt;saml2p:Response Destination=&quot;http://www.able.com:9080/c/portal/saml/acs&quot;]]></var>
-
-		<execute function="AssertConsoleTextPresent" value1="${consoleText}" />
-
 		<execute macro="User#logoutPG">
 			<var name="specificURL" value="http://www.able.com:9080" />
 		</execute>
 
 		<execute macro="User#viewLoggedOutPG" />
 
-		<execute function="AssertConsoleTextPresent" value1="Validation of protocol message signature succeeded, message type: {urn:oasis:names:tc:SAML:2.0:protocol}LogoutRequest" />
+		<execute function="AssertConsoleTextPresent" value1="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" />
 	</command>
 
 	<command name="ViewSingleLogoutWithMultipleSPs" priority="4">
@@ -529,6 +663,7 @@
 		</execute>
 
 		<execute macro="SAML#configureLiferaySAMLAsSP">
+			<var name="nameIdentifierAttributeName" value="emailAddress" />
 			<var name="samlEntityID" value="samlsp2" />
 			<var name="spURL" value="http://www.baker.com:10080" />
 		</execute>
@@ -595,6 +730,7 @@
 	<command name="ViewSPInitiatedSSO" priority="4">
 		<description message="Sign into portal by executing a SP initiated SSO login. This is done by clicking on the 'Sign In' link in the dockbar on the SP. After the SP is logged in, and if both instances has the same user and email address, the IdP will also be logged in." />
 
+		<property name="environment.acceptance" value="false" />
 		<property name="test.name.skip.portal.instance" value="CPSAML#ViewSPInitiatedSSO" />
 
 		<execute macro="SAML#configureLiferaySAMLAsIdP">

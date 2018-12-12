@@ -376,11 +376,11 @@ public class DLFileEntryFinderImpl
 		try {
 			session = openSession();
 
-			String sql = CustomSQLUtil.get(FIND_BY_DDM_STRUCTURE_IDS);
-
 			if ((ddmStructureIds == null) || (ddmStructureIds.length <= 0)) {
 				return Collections.emptyList();
 			}
+
+			String sql = CustomSQLUtil.get(FIND_BY_DDM_STRUCTURE_IDS);
 
 			if (groupId <= 0) {
 				sql = StringUtil.replace(
@@ -854,10 +854,10 @@ public class DLFileEntryFinderImpl
 			}
 		}
 
-		StringBundler sb = new StringBundler(12);
-
 		if (ListUtil.isNotEmpty(repositoryIds) ||
 			ListUtil.isNotEmpty(folderIds) || ArrayUtil.isNotEmpty(mimeTypes)) {
+
+			StringBundler sb = new StringBundler(12);
 
 			if (ListUtil.isNotEmpty(repositoryIds)) {
 				sb.append(WHERE_AND);
@@ -882,9 +882,8 @@ public class DLFileEntryFinderImpl
 
 			return StringUtil.replace(sql, "[$FOLDER_ID$]", sb.toString());
 		}
-		else {
-			return StringUtil.replace(sql, "[$FOLDER_ID$]", StringPool.BLANK);
-		}
+
+		return StringUtil.replace(sql, "[$FOLDER_ID$]", StringPool.BLANK);
 	}
 
 	protected String getFolderIds(List<Long> folderIds, String tableName) {

@@ -26,8 +26,8 @@ import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.Converter;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PreloadClassLoader;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -72,6 +72,14 @@ import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
  */
 public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 
+	public PortalHibernateConfiguration() {
+		Properties properties = new Properties();
+
+		properties.put("javax.persistence.validation.mode", "none");
+
+		setHibernateProperties(properties);
+	}
+
 	@Override
 	public SessionFactory buildSessionFactory() throws Exception {
 		setBeanClassLoader(getConfigurationClassLoader());
@@ -102,7 +110,7 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 
 			for (String className : _PRELOAD_CLASS_NAMES) {
 				ClassLoader portalClassLoader =
-					ClassLoaderUtil.getPortalClassLoader();
+					PortalClassLoaderUtil.getClassLoader();
 
 				Class<?> clazz = portalClassLoader.loadClass(className);
 
@@ -339,7 +347,8 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 	}
 
 	private static final String[] _PRELOAD_CLASS_NAMES =
-		PropsValues.SPRING_HIBERNATE_CONFIGURATION_PROXY_FACTORY_PRELOAD_CLASSLOADER_CLASSES;
+		PropsValues.
+			SPRING_HIBERNATE_CONFIGURATION_PROXY_FACTORY_PRELOAD_CLASSLOADER_CLASSES;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortalHibernateConfiguration.class);
@@ -358,10 +367,12 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 						proxyFactory,
 						(ProxyFactory pf) -> {
 							ClassLoader classLoader =
-								ClassLoaderUtil.getPortalClassLoader();
+								PortalClassLoaderUtil.getClassLoader();
+
+							Thread currentThread = Thread.currentThread();
 
 							ClassLoader contextClassLoader =
-								ClassLoaderUtil.getContextClassLoader();
+								currentThread.getContextClassLoader();
 
 							if (classLoader != contextClassLoader) {
 								classLoader = new PreloadClassLoader(

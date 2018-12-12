@@ -5,10 +5,14 @@ AUI.add(
 		var Lang = A.Lang;
 		var UA = A.UA;
 
+		var IE = UA.ie;
+
 		var Util = Liferay.Util;
 		var Window = Util.Window;
 
-		var IE9 = UA.ie == 9;
+		var IE9 = IE == 9;
+
+		var IE11 = IE == 11;
 
 		var setWidth = function(modal, width) {
 			if (IE9) {
@@ -156,8 +160,13 @@ AUI.add(
 							if (modal._opener) {
 								var openerInFrame = !!modal._opener.frameElement;
 
-								if (IE9 && openerInFrame) {
-									instance._syncWindowsUI();
+								if (openerInFrame) {
+									if (IE9) {
+										instance._syncWindowsUI();
+									}
+									else if (IE11) {
+										instance._resetFocus(modal);
+									}
 								}
 							}
 
@@ -404,6 +413,16 @@ AUI.add(
 
 					instance._map[id] = modal;
 					instance._map[id + instance.IFRAME_SUFFIX] = modal;
+				},
+
+				_resetFocus: function(modal) {
+					var contentBox = modal.get('contentBox');
+
+					var input = contentBox.one('input[type=text]');
+
+					if (input) {
+						input.getDOM().focus();
+					}
 				},
 
 				_setWindowDefaultSizeIfNeeded: function(modal) {

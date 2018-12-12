@@ -187,6 +187,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	public List<DDMFormInstance> findByUuid(String uuid, int start, int end,
 		OrderByComparator<DDMFormInstance> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -210,7 +212,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMFormInstance ddmFormInstance : list) {
-					if (!Objects.equals(uuid, ddmFormInstance.getUuid())) {
+					if (!uuid.equals(ddmFormInstance.getUuid())) {
 						list = null;
 
 						break;
@@ -234,10 +236,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -420,6 +419,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	public DDMFormInstance[] findByUuid_PrevAndNext(long formInstanceId,
 		String uuid, OrderByComparator<DDMFormInstance> orderByComparator)
 		throws NoSuchFormInstanceException {
+		uuid = Objects.toString(uuid, "");
+
 		DDMFormInstance ddmFormInstance = findByPrimaryKey(formInstanceId);
 
 		Session session = null;
@@ -465,10 +466,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -588,6 +586,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -601,10 +601,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -719,6 +716,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	@Override
 	public DDMFormInstance fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -744,10 +743,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -831,6 +827,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -844,10 +842,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -991,6 +986,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 		int start, int end,
 		OrderByComparator<DDMFormInstance> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1018,7 +1015,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMFormInstance ddmFormInstance : list) {
-					if (!Objects.equals(uuid, ddmFormInstance.getUuid()) ||
+					if (!uuid.equals(ddmFormInstance.getUuid()) ||
 							(companyId != ddmFormInstance.getCompanyId())) {
 						list = null;
 
@@ -1043,10 +1040,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1246,6 +1240,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 		String uuid, long companyId,
 		OrderByComparator<DDMFormInstance> orderByComparator)
 		throws NoSuchFormInstanceException {
+		uuid = Objects.toString(uuid, "");
+
 		DDMFormInstance ddmFormInstance = findByPrimaryKey(formInstanceId);
 
 		Session session = null;
@@ -1291,10 +1287,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1420,6 +1413,8 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1433,10 +1428,7 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2818,6 +2810,9 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	public DDMFormInstancePersistenceImpl() {
 		setModelClass(DDMFormInstance.class);
 
+		setModelImplClass(DDMFormInstanceImpl.class);
+		setEntityCacheEnabled(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -3280,54 +3275,6 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	/**
 	 * Returns the ddm form instance with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the ddm form instance
-	 * @return the ddm form instance, or <code>null</code> if a ddm form instance with the primary key could not be found
-	 */
-	@Override
-	public DDMFormInstance fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED,
-				DDMFormInstanceImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DDMFormInstance ddmFormInstance = (DDMFormInstance)serializable;
-
-		if (ddmFormInstance == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmFormInstance = (DDMFormInstance)session.get(DDMFormInstanceImpl.class,
-						primaryKey);
-
-				if (ddmFormInstance != null) {
-					cacheResult(ddmFormInstance);
-				}
-				else {
-					entityCache.putResult(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED,
-						DDMFormInstanceImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DDMFormInstanceModelImpl.ENTITY_CACHE_ENABLED,
-					DDMFormInstanceImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return ddmFormInstance;
-	}
-
-	/**
-	 * Returns the ddm form instance with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param formInstanceId the primary key of the ddm form instance
 	 * @return the ddm form instance, or <code>null</code> if a ddm form instance with the primary key could not be found
 	 */
@@ -3624,6 +3571,11 @@ public class DDMFormInstancePersistenceImpl extends BasePersistenceImpl<DDMFormI
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

@@ -157,6 +157,8 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 */
 	@Override
 	public MemberRequest fetchByKey(String key, boolean retrieveFromCache) {
+		key = Objects.toString(key, "");
+
 		Object[] finderArgs = new Object[] { key };
 
 		Object result = null;
@@ -181,10 +183,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 			boolean bindKey = false;
 
-			if (key == null) {
-				query.append(_FINDER_COLUMN_KEY_KEY_1);
-			}
-			else if (key.equals("")) {
+			if (key.isEmpty()) {
 				query.append(_FINDER_COLUMN_KEY_KEY_3);
 			}
 			else {
@@ -273,6 +272,8 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 */
 	@Override
 	public int countByKey(String key) {
+		key = Objects.toString(key, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_KEY;
 
 		Object[] finderArgs = new Object[] { key };
@@ -286,10 +287,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 			boolean bindKey = false;
 
-			if (key == null) {
-				query.append(_FINDER_COLUMN_KEY_KEY_1);
-			}
-			else if (key.equals("")) {
+			if (key.isEmpty()) {
 				query.append(_FINDER_COLUMN_KEY_KEY_3);
 			}
 			else {
@@ -1652,6 +1650,9 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	public MemberRequestPersistenceImpl() {
 		setModelClass(MemberRequest.class);
 
+		setModelImplClass(MemberRequestImpl.class);
+		setEntityCacheEnabled(MemberRequestModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -2112,54 +2113,6 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	/**
 	 * Returns the member request with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the member request
-	 * @return the member request, or <code>null</code> if a member request with the primary key could not be found
-	 */
-	@Override
-	public MemberRequest fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
-				MemberRequestImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		MemberRequest memberRequest = (MemberRequest)serializable;
-
-		if (memberRequest == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				memberRequest = (MemberRequest)session.get(MemberRequestImpl.class,
-						primaryKey);
-
-				if (memberRequest != null) {
-					cacheResult(memberRequest);
-				}
-				else {
-					entityCache.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
-						MemberRequestImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
-					MemberRequestImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return memberRequest;
-	}
-
-	/**
-	 * Returns the member request with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param memberRequestId the primary key of the member request
 	 * @return the member request, or <code>null</code> if a member request with the primary key could not be found
 	 */
@@ -2456,6 +2409,11 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

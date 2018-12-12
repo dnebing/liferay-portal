@@ -216,37 +216,20 @@ public abstract class BaseOrganizationMembershipPolicy
 			OrganizationLocalServiceUtil.getActionableDynamicQuery();
 
 		organizationActionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<Organization>() {
+			(Organization organization) -> {
+				verifyPolicy(organization);
 
-				@Override
-				public void performAction(Organization organization)
-					throws PortalException {
+				ActionableDynamicQuery userGroupRoleActionableDynamicQuery =
+					UserGroupRoleLocalServiceUtil.getActionableDynamicQuery();
 
-					verifyPolicy(organization);
+				userGroupRoleActionableDynamicQuery.setGroupId(
+					organization.getGroupId());
+				userGroupRoleActionableDynamicQuery.setPerformActionMethod(
+					(UserGroupRole userGroupRole) -> {
+						verifyPolicy(userGroupRole.getRole());
+					});
 
-					ActionableDynamicQuery userGroupRoleActionableDynamicQuery =
-						UserGroupRoleLocalServiceUtil.
-							getActionableDynamicQuery();
-
-					userGroupRoleActionableDynamicQuery.setGroupId(
-						organization.getGroupId());
-					userGroupRoleActionableDynamicQuery.setPerformActionMethod(
-						new ActionableDynamicQuery.
-							PerformActionMethod<UserGroupRole>() {
-
-							@Override
-							public void performAction(
-									UserGroupRole userGroupRole)
-								throws PortalException {
-
-								verifyPolicy(userGroupRole.getRole());
-							}
-
-						});
-
-					userGroupRoleActionableDynamicQuery.performActions();
-				}
-
+				userGroupRoleActionableDynamicQuery.performActions();
 			});
 
 		organizationActionableDynamicQuery.performActions();

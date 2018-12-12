@@ -49,7 +49,8 @@ import org.osgi.service.component.annotations.Modified;
  */
 @Component(
 	configurationPid = "com.liferay.document.library.configuration.DLConfiguration",
-	property = "upload.response.handler.system.default=true"
+	property = "upload.response.handler.system.default=true",
+	service = UploadResponseHandler.class
 )
 public class DefaultUploadResponseHandler implements UploadResponseHandler {
 
@@ -71,14 +72,14 @@ public class DefaultUploadResponseHandler implements UploadResponseHandler {
 			String errorMessage = StringPool.BLANK;
 			int errorType = 0;
 
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)portletRequest.getAttribute(
-					WebKeys.THEME_DISPLAY);
-
 			if (pe instanceof AntivirusScannerException) {
 				errorType =
 					ServletResponseConstants.SC_FILE_ANTIVIRUS_EXCEPTION;
 				AntivirusScannerException ase = (AntivirusScannerException)pe;
+
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)portletRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
 
 				errorMessage = themeDisplay.translate(ase.getMessageKey());
 			}

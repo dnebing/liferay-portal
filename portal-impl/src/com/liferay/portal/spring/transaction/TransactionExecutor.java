@@ -25,9 +25,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 public interface TransactionExecutor {
 
 	public Object execute(
-			PlatformTransactionManager platformTransactionManager,
 			TransactionAttributeAdapter transactionAttributeAdapter,
 			MethodInvocation methodInvocation)
 		throws Throwable;
+
+	public PlatformTransactionManager getPlatformTransactionManager();
 
 }

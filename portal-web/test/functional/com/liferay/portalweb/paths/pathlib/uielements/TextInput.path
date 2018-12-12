@@ -9,6 +9,11 @@
 </thead>
 <tbody>
 <tr>
+	<td>ADDRESS</td>
+	<td>//div[label[contains(.,'Address')]]/input</td>
+	<td></td>
+</tr>
+<tr>
 	<td>ALERT</td>
 	<td>//div[contains(@class,'has-error')]</td>
 	<td></td>
@@ -16,11 +21,6 @@
 <tr>
 	<td>ANSWER</td>
 	<td>//div[label[contains(.,'Answer')]]/input[@type='text']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BODY</td>
-	<td>//body</td>
 	<td></td>
 </tr>
 <tr>
@@ -34,18 +34,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>CURRENT_PARENT</td>
-	<td>//input[contains(@id,'currentParent')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>CURRENT_PASSWORD</td>
 	<td>//div[label[contains(.,'Current Password')]]/input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CURRENT_TITLE</td>
-	<td>//input[contains(@id,'currentTitle')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -109,6 +99,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>DDM</td>
+	<td>//div[@data-fieldname='${key_fieldName}']//input</td>
+	<td></td>
+</tr>
+<tr>
 	<td>EMAIL</td>
 	<td>//div[label[contains(.,'Email')]]/input[@type='text']</td>
 	<td></td>
@@ -119,13 +114,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>EMAIL_ADDRESS_PNG</td>
-	<td>portal/fields/email_address_field.png</td>
+	<td>EMAIL_FROM_ADDRESS</td>
+	<td>//input[contains(@id,'emailFromAddress')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>EXTENSION</td>
-	<td>//div[label[contains(.,'Extension')]]//input[@type='text']</td>
+	<td>EMAIL_FROM_NAME</td>
+	<td>//input[contains(@id,'emailFromName')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EMAIL_NOTIFICATIONS</td>
+	<td>//input[contains(@id,'AdminPortlet_emailNotifications')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EMAIL_RECIPIENT</td>
+	<td>//input[contains(@id,'AdminPortlet_emailDelivery')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -139,13 +144,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>EXPIRATION_DATE_TIME</td>
-	<td>//input[contains(@id,'expirationDateTime')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FACEBOOK</td>
-	<td>//div[label[contains(.,'Facebook')]]//input[@type='text']</td>
+	<td>EXTENSION</td>
+	<td>//div[label[contains(.,'Extension')]]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -169,11 +169,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>FROM</td>
-	<td>//div[label[contains(.,'From')]]//input[@type='number']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>GENERIC_TEXT_INPUT</td>
 	<td>//div[label[contains(.,'${key_fieldLabel}')]]//input[@type='text']</td>
 	<td></td>
@@ -189,18 +184,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>IMAGE_URL</td>
-	<td>//div[label[contains(.,'Image URL')]]//input[@type='text']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>INITIAL_URL</td>
 	<td>//input[contains(@id,'_initUrl')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>JABBER</td>
-	<td>//div[label[contains(.,'Jabber')]]//input[@type='text']</td>
 	<td></td>
 </tr>
 <tr>
@@ -221,16 +206,6 @@
 <tr>
 	<td>GOOGLE_CLIENT_ID</td>
 	<td>//input[contains(@id,'googleClientId')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>GOOGLE_CLIENT_SECRET</td>
-	<td>//input[contains(@id,'google-client-secret')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>KEYWORDS</td>
-	<td>//input[contains(@title,'keywords')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -299,11 +274,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>NEW_PARENT</td>
-	<td>//input[contains(@id,'newParent')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>NEW_PASSWORD</td>
 	<td>//div[label[contains(.,'New Password')]]/input</td>
 	<td></td>
@@ -320,13 +290,8 @@
 </tr>
 <tr>
 	<td>NUMBER</td>
-	<td>//div[label[contains(.,'Number')]]//input[@type='text']</td>
+	<td>//div[label[contains(.,'Number')]]/input</td>
 	<td></td>
-</tr>
-<tr>
-	<td>PAGE_NAME_FIELD</td>
-	<td>//span[contains(@class,'input-localized-input')]/input[contains(@id,'addLayoutName')]</td>
-	<td>New Page Name Field</td>
 </tr>
 <tr>
 	<td>PASSWORD</td>
@@ -334,8 +299,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>PASSWORD_PNG</td>
-	<td>portal/fields/password_field.png</td>
+	<td>PASSWORD_TYPE</td>
+	<td>//input[@type='password']</td>
 	<td></td>
 </tr>
 <tr>
@@ -364,23 +329,28 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SAML_METADATA_URL_FIELD</td>
+	<td>//input[contains(@id,'SamlAdminPortlet_metadataUrl')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SAML_NAME_FIELD</td>
+	<td>//input[contains(@id,'SamlAdminPortlet_name')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>PUBLIC_VIRTUAL_HOST_URL</td>
 	<td>//input[contains(@id,'publicVirtualHost')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>REGULAR_EXPRESSION</td>
-	<td>//div[label[contains(.,'Regular Expression')]]//input[@type='text']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>REVIEW_DATE</td>
-	<td>//input[contains(@id,'reviewDate')]</td>
+	<td>//div[label[contains(.,'Regular Expression')]]//textarea</td>
 	<td></td>
 </tr>
 <tr>
 	<td>REQUIRED_ALERT</td>
-	<td>//div[contains(@class,'has-error')]</td>
+	<td>//div[contains(@class,'has-error')] | //div[contains(@class,'has-error') and contains(.,'key_filedName')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -396,11 +366,6 @@
 <tr>
 	<td>SEARCH_2</td>
 	<td>xpath=(//input[@title='Search'])[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SELECT_FILES</td>
-	<td>//div[contains(@id,'uploaderContent') and contains(.,'Select Files')]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -425,7 +390,7 @@
 </tr>
 <tr>
 	<td>SKYPE</td>
-	<td>//div[label[contains(.,'Skype')]]//input[@type='text']</td>
+	<td>//div[label[contains(.,'Skype')]]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -439,18 +404,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>STRUCTURE</td>
-	<td>//div[label[contains(.,'Structure')]]/input[@type='text']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>SUBJECT</td>
 	<td>//input[contains(@id,'subject')] | //input[contains(@id,'Subject')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>TEXT_VERIFICATION</td>
-	<td>//div[label[contains(.,'Text Verification')]]//input[@type='text']</td>
+	<td>TEXT</td>
+	<td>//input[@type='text']</td>
 	<td></td>
 </tr>
 <tr>
@@ -459,23 +419,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>TITLE_LOCALIZED</td>
-	<td>//input[contains(@id,'title')]/../div[contains(.,'${key_languageName} Translation')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>TO</td>
-	<td>//div[label[contains(.,'To')]]//input[@type='input']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>TRACKBACKS</td>
 	<td>//input[contains(@id,'trackbacks')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>TRASH_ENTRIES_MAX_AGE</td>
-	<td>//input[contains(@id,'trashEntriesMaxAge')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -506,11 +451,6 @@
 <tr>
 	<td>WEB_ID</td>
 	<td>//input[contains(@id,'webId') and contains(@class,'input-text')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>YIM</td>
-	<td>//div[label[contains(.,'YIM')]]//input[@type='text']</td>
 	<td></td>
 </tr>
 </tbody>

@@ -18,9 +18,13 @@
 
 <%
 JournalDDMTemplateDisplayContext journalDDMTemplateDisplayContext = new JournalDDMTemplateDisplayContext(renderRequest, renderResponse);
-%>
 
-<liferay-ui:error exception="<%= RequiredTemplateException.MustNotDeleteTemplateReferencedByTemplateLinks.class %>" message="the-template-cannot-be-deleted-because-it-is-required-by-one-or-more-template-links" />
+DDMStructure ddmStructure = journalDDMTemplateDisplayContext.getDDMStructure();
+
+if (ddmStructure != null) {
+	renderResponse.setTitle(LanguageUtil.format(request, "templates-for-structure-x", ddmStructure.getName(locale)));
+}
+%>
 
 <clay:navigation-bar
 	inverted="<%= true %>"
@@ -43,11 +47,13 @@ JournalDDMTemplateDisplayContext journalDDMTemplateDisplayContext = new JournalD
 />
 
 <portlet:actionURL name="/journal/delete_ddm_template" var="deleteDDMTemplateURL">
-	<portlet:param name="mvcPath" value="/view_ddm_template.jsp" />
+	<portlet:param name="mvcPath" value="/view_ddm_templates.jsp" />
 </portlet:actionURL>
 
 <aui:form action="<%= deleteDDMTemplateURL %>" cssClass="container-fluid-1280" method="post" name="fm">
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+
+	<liferay-ui:error exception="<%= RequiredTemplateException.MustNotDeleteTemplateReferencedByTemplateLinks.class %>" message="the-template-cannot-be-deleted-because-it-is-required-by-one-or-more-template-links" />
 
 	<liferay-ui:search-container
 		id="ddmTemplates"
@@ -66,6 +72,7 @@ JournalDDMTemplateDisplayContext journalDDMTemplateDisplayContext = new JournalD
 				PortletURL rowURL = renderResponse.createRenderURL();
 
 				rowURL.setParameter("mvcPath", "/edit_ddm_template.jsp");
+				rowURL.setParameter("redirect", currentURL);
 				rowURL.setParameter("ddmTemplateId", String.valueOf(ddmTemplate.getTemplateId()));
 
 				rowHREF = rowURL.toString();
@@ -98,16 +105,16 @@ JournalDDMTemplateDisplayContext journalDDMTemplateDisplayContext = new JournalD
 				</c:choose>
 			</liferay-ui:search-container-column-text>
 
-			<c:if test="<%= journalDDMTemplateDisplayContext.getDDMStructure() == null %>">
+			<c:if test="<%= journalDDMTemplateDisplayContext.getClassPK() <= 0 %>">
 
 				<%
 				String ddmStructureName = StringPool.BLANK;
 
 				if (ddmTemplate.getClassPK() > 0) {
-					DDMStructure ddmStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(ddmTemplate.getClassPK());
+					DDMStructure curDDMStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(ddmTemplate.getClassPK());
 
-					if (ddmStructure != null) {
-						ddmStructureName = ddmStructure.getName(locale);
+					if (curDDMStructure != null) {
+						ddmStructureName = curDDMStructure.getName(locale);
 					}
 				}
 				%>

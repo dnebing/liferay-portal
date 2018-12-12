@@ -3,6 +3,7 @@ import PortletBase from 'frontend-js-web/liferay/PortletBase.es';
 import Soy from 'metal-soy';
 import templates from './Flags.soy';
 import {Config} from 'metal-state';
+import ClayButton from 'clay-button';
 
 /**
  * It opens a dialog where the user can flag the page.
@@ -106,7 +107,7 @@ class Flags extends PortletBase {
 					this._showConfirmationMessage = true;
 				}
 			}
-		).catch (
+		).catch(
 			() => {
 				this._showErrorMessage = true;
 			}
@@ -228,13 +229,13 @@ Flags.STATE = {
 	label: Config.bool().required(),
 
 	/**
-	 * Text to display next to the flag icon.
+	 * Text to display next to the flag icon or in the tooltip.
 	 * @instance
 	 * @memberof Flags
 	 * @type {String}
 	 */
 
-	message: Config.string().required(),
+	message: Config.string(),
 
 	/**
 	 * Path to Terms of Use.
@@ -291,15 +292,6 @@ Flags.STATE = {
 	 */
 
 	signedIn: Config.bool().required(),
-
-	/**
-	 * Title to show in the Modal.
-	 * @instance
-	 * @memberof Flags
-	 * @type {String}
-	 */
-
-	title: Config.string().required(),
 
 	/**
 	 * Uri to send the report fetch request.

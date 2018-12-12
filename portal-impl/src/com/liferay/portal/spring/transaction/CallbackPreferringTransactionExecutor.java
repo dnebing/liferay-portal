@@ -30,8 +30,62 @@ import org.springframework.transaction.support.TransactionCallback;
 public class CallbackPreferringTransactionExecutor
 	implements TransactionExecutor {
 
+	public CallbackPreferringTransactionExecutor(
+		PlatformTransactionManager platformTransactionManager) {
+
+		_platformTransactionManager = platformTransactionManager;
+	}
+
 	@Override
 	public Object execute(
+			TransactionAttributeAdapter transactionAttributeAdapter,
+			MethodInvocation methodInvocation)
+		throws Throwable {
+
+		return _execute(
+			_platformTransactionManager, transactionAttributeAdapter,
+			methodInvocation);
+	}
+
+	@Override
+	public PlatformTransactionManager getPlatformTransactionManager() {
+		return _platformTransactionManager;
+	}
+
+	protected TransactionCallback<Object> createTransactionCallback(
+		CallbackPreferringPlatformTransactionManager
+			callbackPreferringPlatformTransactionManager,
+		TransactionAttributeAdapter transactionAttributeAdapter,
+		MethodInvocation methodInvocation) {
+
+		return new CallbackPreferringTransactionCallback(
+			callbackPreferringPlatformTransactionManager,
+			transactionAttributeAdapter, methodInvocation);
+	}
+
+	protected static class ThrowableHolder {
+
+		public ThrowableHolder(Throwable throwable) {
+			_throwable = throwable;
+		}
+
+		public Throwable getThrowable() {
+			return _throwable;
+		}
+
+		private final Throwable _throwable;
+
+	}
+
+	protected static class ThrowableHolderException extends RuntimeException {
+
+		public ThrowableHolderException(Throwable cause) {
+			super(cause);
+		}
+
+	}
+
+	private Object _execute(
 			PlatformTransactionManager platformTransactionManager,
 			TransactionAttributeAdapter transactionAttributeAdapter,
 			MethodInvocation methodInvocation)
@@ -63,53 +117,7 @@ public class CallbackPreferringTransactionExecutor
 		}
 	}
 
-	protected TransactionCallback<Object> createTransactionCallback(
-		CallbackPreferringPlatformTransactionManager
-			callbackPreferringPlatformTransactionManager,
-		TransactionAttributeAdapter transactionAttributeAdapter,
-		MethodInvocation methodInvocation) {
-
-		return new CallbackPreferringTransactionCallback(
-			callbackPreferringPlatformTransactionManager,
-			transactionAttributeAdapter, methodInvocation);
-	}
-
-	/**
-	 * @deprecated As of Judson (7.1.x), replaced by {@link
-	 *             #createTransactionCallback(
-	 *             CallbackPreferringPlatformTransactionManager,
-	 *             TransactionAttributeAdapter, MethodInvocation)}
-	 */
-	@Deprecated
-	protected TransactionCallback<Object> createTransactionCallback(
-		TransactionAttributeAdapter transactionAttributeAdapter,
-		MethodInvocation methodInvocation) {
-
-		return new CallbackPreferringTransactionCallback(
-			null, transactionAttributeAdapter, methodInvocation);
-	}
-
-	protected static class ThrowableHolder {
-
-		public ThrowableHolder(Throwable throwable) {
-			_throwable = throwable;
-		}
-
-		public Throwable getThrowable() {
-			return _throwable;
-		}
-
-		private final Throwable _throwable;
-
-	}
-
-	protected static class ThrowableHolderException extends RuntimeException {
-
-		public ThrowableHolderException(Throwable cause) {
-			super(cause);
-		}
-
-	}
+	private final PlatformTransactionManager _platformTransactionManager;
 
 	private class CallbackPreferringTransactionCallback
 		implements TransactionCallback<Object> {
@@ -117,8 +125,10 @@ public class CallbackPreferringTransactionExecutor
 		@Override
 		public Object doInTransaction(TransactionStatus transactionStatus) {
 			TransactionStatusAdapter transactionStatusAdapter =
-				new TransactionStatusAdapter(
-					_platformTransactionManager, transactionStatus);
+				new TransactionStatusAdapter(transactionStatus);
+
+			TransactionExecutorThreadLocal.pushTransactionExecutor(
+				CallbackPreferringTransactionExecutor.this);
 
 			TransactionLifecycleManager.fireTransactionCreatedEvent(
 				_transactionAttributeAdapter, transactionStatusAdapter);
@@ -154,6 +164,8 @@ public class CallbackPreferringTransactionExecutor
 					TransactionLifecycleManager.fireTransactionCommittedEvent(
 						_transactionAttributeAdapter, transactionStatusAdapter);
 				}
+
+				TransactionExecutorThreadLocal.popTransactionExecutor();
 			}
 		}
 

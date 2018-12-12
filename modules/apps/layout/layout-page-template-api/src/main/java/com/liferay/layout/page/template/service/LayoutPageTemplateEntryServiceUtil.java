@@ -98,6 +98,12 @@ public class LayoutPageTemplateEntryServiceUtil {
 				   .fetchLayoutPageTemplateEntry(layoutPageTemplateEntryId);
 	}
 
+	public static com.liferay.layout.page.template.model.LayoutPageTemplateEntry fetchLayoutPageTemplateEntryByUuidAndGroupId(
+		String uuid, long groupId) {
+		return getService()
+				   .fetchLayoutPageTemplateEntryByUuidAndGroupId(uuid, groupId);
+	}
+
 	/**
 	* @deprecated As of Judson (7.1.x), with no direct replacement
 	*/
@@ -156,6 +162,13 @@ public class LayoutPageTemplateEntryServiceUtil {
 		return getService()
 				   .getLayoutPageTemplateEntries(groupId, type, start, end,
 			orderByComparator);
+	}
+
+	public static java.util.List<com.liferay.layout.page.template.model.LayoutPageTemplateEntry> getLayoutPageTemplateEntries(
+		long groupId, long classNameId, int type, boolean defaultTemplate) {
+		return getService()
+				   .getLayoutPageTemplateEntries(groupId, classNameId, type,
+			defaultTemplate);
 	}
 
 	public static java.util.List<com.liferay.layout.page.template.model.LayoutPageTemplateEntry> getLayoutPageTemplateEntries(

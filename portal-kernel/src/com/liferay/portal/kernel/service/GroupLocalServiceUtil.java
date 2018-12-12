@@ -542,13 +542,100 @@ public class GroupLocalServiceUtil {
 	* Returns all the active or inactive groups associated with the company.
 	*
 	* @param companyId the primary key of the company
-	* @param active whether to return only active groups, or only inactive
+	* @param active whether to return only active groups or only inactive
 	groups
-	* @return the active or inactive groups associated with the company
+	* @return the active or inactive groups
 	*/
 	public static java.util.List<com.liferay.portal.kernel.model.Group> getActiveGroups(
 		long companyId, boolean active) {
 		return getService().getActiveGroups(companyId, active);
+	}
+
+	/**
+	* Returns the active or inactive groups associated with the company and,
+	* optionally, the main site.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end -
+	* start</code> instances. <code>start</code> and <code>end</code> are not
+	* primary keys, they are indexes in the result set. Thus, <code>0</code>
+	* refers to the first result in the set. Setting both <code>start</code>
+	* and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	* result set.
+	* </p>
+	*
+	* @param companyId the primary key of the company
+	* @param site whether the group is associated with a main site
+	* @param active whether to return only active groups or only inactive
+	groups
+	* @param start the lower bound of the range of groups to return
+	* @param end the upper bound of the range of groups to return (not
+	inclusive)
+	* @param obc the comparator to order the groups (optionally
+	<code>null</code>)
+	* @return the active or inactive groups
+	*/
+	public static java.util.List<com.liferay.portal.kernel.model.Group> getActiveGroups(
+		long companyId, boolean site, boolean active, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portal.kernel.model.Group> obc) {
+		return getService()
+				   .getActiveGroups(companyId, site, active, start, end, obc);
+	}
+
+	/**
+	* Returns the active or inactive groups associated with the company.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end -
+	* start</code> instances. <code>start</code> and <code>end</code> are not
+	* primary keys, they are indexes in the result set. Thus, <code>0</code>
+	* refers to the first result in the set. Setting both <code>start</code>
+	* and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	* result set.
+	* </p>
+	*
+	* @param companyId the primary key of the company
+	* @param active whether to return only active groups or only inactive
+	groups
+	* @param start the lower bound of the range of groups to return
+	* @param end the upper bound of the range of groups to return (not
+	inclusive)
+	* @param obc the comparator to order the groups (optionally
+	<code>null</code>)
+	* @return the active or inactive groups
+	*/
+	public static java.util.List<com.liferay.portal.kernel.model.Group> getActiveGroups(
+		long companyId, boolean active, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portal.kernel.model.Group> obc) {
+		return getService().getActiveGroups(companyId, active, start, end, obc);
+	}
+
+	/**
+	* Returns the number of active or inactive groups associated with the
+	* company.
+	*
+	* @param companyId the primary key of the company
+	* @param active whether to count only active groups or only inactive
+	groups
+	* @return the number of active or inactive groups
+	*/
+	public static int getActiveGroupsCount(long companyId, boolean active) {
+		return getService().getActiveGroupsCount(companyId, active);
+	}
+
+	/**
+	* Returns the number of active or inactive groups associated with the
+	* company.
+	*
+	* @param companyId the primary key of the company
+	* @param active whether to count only active groups or only inactive
+	groups
+	* @param site whether the group is to be associated with a main site
+	* @return the number of active or inactive groups
+	*/
+	public static int getActiveGroupsCount(long companyId, boolean active,
+		boolean site) {
+		return getService().getActiveGroupsCount(companyId, active, site);
 	}
 
 	/**
@@ -715,6 +802,13 @@ public class GroupLocalServiceUtil {
 	}
 
 	public static java.util.List<com.liferay.portal.kernel.model.Group> getGroups(
+		long companyId, long parentGroupId, String name, boolean site,
+		int start, int end) {
+		return getService()
+				   .getGroups(companyId, parentGroupId, name, site, start, end);
+	}
+
+	public static java.util.List<com.liferay.portal.kernel.model.Group> getGroups(
 		long companyId, String treePath, boolean site) {
 		return getService().getGroups(companyId, treePath, site);
 	}
@@ -785,6 +879,11 @@ public class GroupLocalServiceUtil {
 	public static int getGroupsCount(long companyId, long parentGroupId,
 		boolean site) {
 		return getService().getGroupsCount(companyId, parentGroupId, site);
+	}
+
+	public static int getGroupsCount(long companyId, long parentGroupId,
+		String name, boolean site) {
+		return getService().getGroupsCount(companyId, parentGroupId, name, site);
 	}
 
 	/**

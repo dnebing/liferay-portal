@@ -15,6 +15,7 @@
 package com.liferay.portal.service.permission;
 
 import com.liferay.exportimport.kernel.staging.permission.StagingPermissionUtil;
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -36,7 +37,6 @@ import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.service.permission.PortletPermission;
-import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.PortletCategoryKeys;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.sites.kernel.util.SitesUtil;
@@ -685,15 +685,9 @@ public class PortletPermissionImpl implements PortletPermission {
 
 		String portletId = portlet.getPortletId();
 
-		String name = null;
-		String resourcePermissionPrimKey = null;
-
 		if (layout == null) {
-			name = portletId;
-			resourcePermissionPrimKey = portletId;
-
 			return permissionChecker.hasPermission(
-				groupId, name, resourcePermissionPrimKey, actionId);
+				groupId, portletId, portletId, actionId);
 		}
 
 		Group group = null;
@@ -749,7 +743,8 @@ public class PortletPermissionImpl implements PortletPermission {
 			}
 		}
 
-		resourcePermissionPrimKey = getPrimaryKey(layout.getPlid(), portletId);
+		String resourcePermissionPrimKey = getPrimaryKey(
+			layout.getPlid(), portletId);
 
 		if (strict) {
 			return permissionChecker.hasPermission(

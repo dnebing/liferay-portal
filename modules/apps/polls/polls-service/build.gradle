@@ -1,6 +1,3 @@
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
-
 buildService {
 	apiDir = "../polls-api/src/main/java"
 	testDir = "../polls-test/src/testIntegration/java"
@@ -24,6 +21,7 @@ dependencies {
 	compileOnly project(":apps:staging:staging-api")
 	compileOnly project(":apps:xstream:xstream-configurator-api")
 	compileOnly project(":core:petra:petra-function")
+	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-string")
 	compileOnly project(":core:registry-api")
 }

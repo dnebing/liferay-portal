@@ -176,6 +176,8 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	@Override
 	public List<Lock> findByUuid(String uuid, int start, int end,
 		OrderByComparator<Lock> orderByComparator, boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -199,7 +201,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Lock lock : list) {
-					if (!Objects.equals(uuid, lock.getUuid())) {
+					if (!uuid.equals(lock.getUuid())) {
 						list = null;
 
 						break;
@@ -223,10 +225,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -403,6 +402,8 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	@Override
 	public Lock[] findByUuid_PrevAndNext(long lockId, String uuid,
 		OrderByComparator<Lock> orderByComparator) throws NoSuchLockException {
+		uuid = Objects.toString(uuid, "");
+
 		Lock lock = findByPrimaryKey(lockId);
 
 		Session session = null;
@@ -447,10 +448,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -570,6 +568,8 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -583,10 +583,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -722,6 +719,8 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	public List<Lock> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<Lock> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -749,7 +748,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Lock lock : list) {
-					if (!Objects.equals(uuid, lock.getUuid()) ||
+					if (!uuid.equals(lock.getUuid()) ||
 							(companyId != lock.getCompanyId())) {
 						list = null;
 
@@ -774,10 +773,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -971,6 +967,8 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	public Lock[] findByUuid_C_PrevAndNext(long lockId, String uuid,
 		long companyId, OrderByComparator<Lock> orderByComparator)
 		throws NoSuchLockException {
+		uuid = Objects.toString(uuid, "");
+
 		Lock lock = findByPrimaryKey(lockId);
 
 		Session session = null;
@@ -1016,10 +1014,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1145,6 +1140,8 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1158,10 +1155,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1813,6 +1807,9 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	@Override
 	public Lock fetchByC_K(String className, String key,
 		boolean retrieveFromCache) {
+		className = Objects.toString(className, "");
+		key = Objects.toString(key, "");
+
 		Object[] finderArgs = new Object[] { className, key };
 
 		Object result = null;
@@ -1838,10 +1835,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindClassName = false;
 
-			if (className == null) {
-				query.append(_FINDER_COLUMN_C_K_CLASSNAME_1);
-			}
-			else if (className.equals("")) {
+			if (className.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_K_CLASSNAME_3);
 			}
 			else {
@@ -1852,10 +1846,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindKey = false;
 
-			if (key == null) {
-				query.append(_FINDER_COLUMN_C_K_KEY_1);
-			}
-			else if (key.equals("")) {
+			if (key.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_K_KEY_3);
 			}
 			else {
@@ -1939,6 +1930,9 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	 */
 	@Override
 	public int countByC_K(String className, String key) {
+		className = Objects.toString(className, "");
+		key = Objects.toString(key, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_K;
 
 		Object[] finderArgs = new Object[] { className, key };
@@ -1952,10 +1946,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindClassName = false;
 
-			if (className == null) {
-				query.append(_FINDER_COLUMN_C_K_CLASSNAME_1);
-			}
-			else if (className.equals("")) {
+			if (className.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_K_CLASSNAME_3);
 			}
 			else {
@@ -1966,10 +1957,7 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 			boolean bindKey = false;
 
-			if (key == null) {
-				query.append(_FINDER_COLUMN_C_K_KEY_1);
-			}
-			else if (key.equals("")) {
+			if (key.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_K_KEY_3);
 			}
 			else {
@@ -2023,6 +2011,9 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 
 	public LockPersistenceImpl() {
 		setModelClass(Lock.class);
+
+		setModelImplClass(LockImpl.class);
+		setEntityCacheEnabled(LockModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -2422,53 +2413,6 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	/**
 	 * Returns the lock with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the lock
-	 * @return the lock, or <code>null</code> if a lock with the primary key could not be found
-	 */
-	@Override
-	public Lock fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(LockModelImpl.ENTITY_CACHE_ENABLED,
-				LockImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Lock lock = (Lock)serializable;
-
-		if (lock == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				lock = (Lock)session.get(LockImpl.class, primaryKey);
-
-				if (lock != null) {
-					cacheResult(lock);
-				}
-				else {
-					entityCache.putResult(LockModelImpl.ENTITY_CACHE_ENABLED,
-						LockImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(LockModelImpl.ENTITY_CACHE_ENABLED,
-					LockImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return lock;
-	}
-
-	/**
-	 * Returns the lock with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param lockId the primary key of the lock
 	 * @return the lock, or <code>null</code> if a lock with the primary key could not be found
 	 */
@@ -2764,6 +2708,11 @@ public class LockPersistenceImpl extends BasePersistenceImpl<Lock>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

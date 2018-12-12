@@ -217,6 +217,10 @@ public class ReleaseInfo {
 
 	public static final int RELEASE_7_1_0_BUILD_NUMBER = 7100;
 
+	public static final int RELEASE_7_1_1_BUILD_NUMBER = 7101;
+
+	public static final int RELEASE_7_1_2_BUILD_NUMBER = 7102;
+
 	public static final int RELEASE_7_1_10_BUILD_NUMBER = 7110;
 
 	public static final Date getBuildDate() {
@@ -268,13 +272,13 @@ public class ReleaseInfo {
 		return _VERSION;
 	}
 
-	private static final String _BUILD = "7100";
+	private static final String _BUILD = "7102";
 
 	private static final int _BUILD_NUMBER = GetterUtil.getInteger(_BUILD);
 
 	private static final String _CODE_NAME = "Judson";
 
-	private static final String _DATE = "July 2, 2018";
+	private static final String _DATE = "January 7, 2019";
 
 	private static final String _NAME = "Liferay Community Edition Portal";
 
@@ -288,9 +292,9 @@ public class ReleaseInfo {
 
 	private static final String _VENDOR = "Liferay, Inc.";
 
-	private static final String _VERSION = "7.1.0";
+	private static final String _VERSION = "7.1.2";
 
-	private static final String _VERSION_DISPLAY_NAME = "7.1.0 CE GA1";
+	private static final String _VERSION_DISPLAY_NAME = "7.1.2 CE GA3";
 
 	private static String _releaseInfo;
 	private static String _serverInfo;

@@ -382,11 +382,11 @@ public class LiferaySerializer extends AbstractSerializer {
 						fieldName = fieldName.substring(1);
 					}
 
-					Object value = null;
-
 					if (!serializableJSONObject.has(fieldName)) {
 						continue;
 					}
+
+					Object value = null;
 
 					try {
 						value = ser.unmarshall(
@@ -422,8 +422,9 @@ public class LiferaySerializer extends AbstractSerializer {
 
 	private static final Class<?>[] _JSON_CLASSES = {JSONObject.class};
 
-	private static final Class<?>[] _SERIALIZABLE_CLASSES =
-		{Serializable.class};
+	private static final Class<?>[] _SERIALIZABLE_CLASSES = {
+		Serializable.class
+	};
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		LiferaySerializer.class);

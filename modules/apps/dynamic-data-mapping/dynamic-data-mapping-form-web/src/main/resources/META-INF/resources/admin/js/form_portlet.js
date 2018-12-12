@@ -144,7 +144,8 @@ AUI.add(
 							formBuilder._layoutBuilder.after('layout-builder:moveStart', A.bind(instance._afterFormBuilderLayoutBuilderMoveStart, instance)),
 							instance.one('.back-url-link').on('click', A.bind('_onBack', instance)),
 							instance.one('#save').on('click', A.bind('_onSaveButtonClick', instance)),
-							Liferay.on('destroyPortlet', A.bind('_onDestroyPortlet', instance))
+							Liferay.on('destroyPortlet', A.bind('_onDestroyPortlet', instance)),
+							instance.get('ruleBuilder').on('*:saveRule', A.bind('_autosave', instance, true))
 						);
 
 						if (instance._isFormView()) {
@@ -391,7 +392,7 @@ AUI.add(
 										footer: [
 											{
 												cssClass: 'btn-secondary',
-												label: Liferay.Language.get('leave'),
+												label: Liferay.Language.get('leave-page'),
 												on: {
 													click: function() {
 														confirm.call(instance, dialog);
@@ -588,7 +589,9 @@ AUI.add(
 													}
 												);
 
-												callback.call();
+												if (callback) {
+													callback.call();
+												}
 											}
 										},
 										data: formData,
@@ -607,7 +610,9 @@ AUI.add(
 								);
 							}
 							else {
-								callback.call();
+								if (callback) {
+									callback.call();
+								}
 							}
 						}
 					},
@@ -792,7 +797,7 @@ AUI.add(
 					_isSameState: function(state1, state2) {
 						var instance = this;
 
-						return AUI._.isEqual(
+						return Liferay.Util.isEqual(
 							state1,
 							state2,
 							function(value1, value2, key) {

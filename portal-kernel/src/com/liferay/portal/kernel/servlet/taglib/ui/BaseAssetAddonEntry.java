@@ -14,7 +14,7 @@
 
 package com.liferay.portal.kernel.servlet.taglib.ui;
 
-import com.liferay.portal.kernel.util.HashUtil;
+import com.liferay.petra.lang.HashUtil;
 
 import java.io.IOException;
 
@@ -43,9 +43,8 @@ public abstract class BaseAssetAddonEntry implements AssetAddonEntry {
 		if (key.equals(getKey())) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.sso.SSOUtil;
+import com.liferay.portal.struts.Action;
 import com.liferay.portal.struts.ActionConstants;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.LiferayPortletUtil;
@@ -57,14 +58,13 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
+import javax.portlet.ResourceRequest;
 import javax.portlet.WindowState;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
@@ -73,12 +73,12 @@ import org.apache.struts.action.ActionMapping;
  * @author Shuyang Zhou
  * @author Neil Griffin
  */
-public class LayoutAction extends Action {
+public class LayoutAction implements Action {
 
 	@Override
 	public ActionForward execute(
-			ActionMapping actionMapping, ActionForm actionForm,
-			HttpServletRequest request, HttpServletResponse response)
+			ActionMapping actionMapping, HttpServletRequest request,
+			HttpServletResponse response)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
@@ -426,7 +426,17 @@ public class LayoutAction extends Action {
 						LiferayPortletUtil.getLiferayPortletRequest(
 							portletRequest);
 
-					liferayPortletRequest.cleanUp();
+					if (liferayPortletRequest instanceof ResourceRequest) {
+						ResourceRequest resourceRequest =
+							(ResourceRequest)liferayPortletRequest;
+
+						if (!resourceRequest.isAsyncStarted()) {
+							liferayPortletRequest.cleanUp();
+						}
+					}
+					else {
+						liferayPortletRequest.cleanUp();
+					}
 				}
 			}
 		}

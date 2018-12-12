@@ -99,6 +99,7 @@ public class MBMessageActivityInterpreter
 		ServiceContext serviceContext) {
 
 		String userName = getUserName(activity.getUserId(), serviceContext);
+
 		String receiverUserName = StringPool.BLANK;
 
 		if (activity.getReceiverUserId() > 0) {
@@ -124,17 +125,15 @@ public class MBMessageActivityInterpreter
 				if (Validator.isNull(groupName)) {
 					return "activity-message-boards-message-add-message";
 				}
-				else {
-					return "activity-message-boards-message-add-message-in";
-				}
+
+				return "activity-message-boards-message-add-message-in";
 			}
 			else {
 				if (Validator.isNull(groupName)) {
 					return "activity-message-boards-message-reply-message";
 				}
-				else {
-					return "activity-message-boards-message-reply-message-in";
-				}
+
+				return "activity-message-boards-message-reply-message-in";
 			}
 		}
 		else if ((activityType == MBActivityKeys.REPLY_MESSAGE) &&
@@ -143,17 +142,15 @@ public class MBMessageActivityInterpreter
 			if (Validator.isNull(groupName)) {
 				return "activity-message-boards-message-reply-message";
 			}
-			else {
-				return "activity-message-boards-message-reply-message-in";
-			}
+
+			return "activity-message-boards-message-reply-message-in";
 		}
 		else if (activityType == MBActivityKeys.UPDATE_MESSAGE) {
 			if (Validator.isNull(groupName)) {
 				return "activity-message-boards-message-update-message";
 			}
-			else {
-				return "activity-message-boards-message-update-message-in";
-			}
+
+			return "activity-message-boards-message-update-message-in";
 		}
 
 		return null;

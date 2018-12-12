@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.cache.SingleVMPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.Template;
-import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
 import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.template.TemplateResourceLoader;
@@ -29,7 +28,6 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.template.ClassLoaderResourceParser;
 import com.liferay.portal.template.TemplateContextHelper;
-import com.liferay.portal.template.TemplateResourceParser;
 import com.liferay.portal.template.velocity.configuration.VelocityEngineConfiguration;
 import com.liferay.portal.tools.ToolDependencies;
 import com.liferay.portal.util.FileImpl;
@@ -78,22 +76,16 @@ public class VelocityTemplateTest {
 
 		fileUtil.setFile(new FileImpl());
 
+		Registry registry = RegistryUtil.getRegistry();
+
 		_templateResourceLoader = new MockTemplateResourceLoader();
 
 		_templateResourceLoader.activate(
 			Collections.<String, Object>emptyMap());
 
-		Registry registry = RegistryUtil.getRegistry();
-
 		_serviceRegistrations.add(
 			registry.registerService(
 				TemplateResourceLoader.class, _templateResourceLoader));
-
-		_serviceRegistrations.add(
-			registry.registerService(
-				TemplateResourceParser.class, new ClassLoaderResourceParser(),
-				Collections.<String, Object>singletonMap(
-					"lang.type", TemplateConstants.LANG_TYPE_VM)));
 
 		_serviceReference = registry.getServiceReference(SingleVMPool.class);
 
@@ -499,6 +491,8 @@ public class VelocityTemplateTest {
 				registry.callService(MultiVMPool.class, Function.identity()));
 			setSingleVMPool(
 				registry.callService(SingleVMPool.class, Function.identity()));
+
+			setTemplateResourceParser(new ClassLoaderResourceParser());
 
 			super.activate(properties);
 		}

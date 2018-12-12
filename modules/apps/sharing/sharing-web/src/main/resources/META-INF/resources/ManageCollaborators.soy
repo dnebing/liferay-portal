@@ -1,0 +1,237 @@
+{namespace ManageCollaborators}
+
+/**
+ *
+ */
+{template .render}
+	{@param id: string}
+	{@param collaborators: ?}
+	{@param spritemap: string}
+	{@param? expirationDateError: bool}
+	{@param? _handleBlurExpirationDate: any}
+	{@param? _handleChangePermission: any}
+	{@param? _handleDeleteCollaborator: any}
+	{@param? _handleDeleteExpirationDate: any}
+	{@param? _handleHoverCollaborator: any}
+	{@param? _handleCancelButtonClick: any}
+	{@param? _handleSaveButtonClick: any}
+	{@param? _hideShowExpirationDateBlock: any}
+	{@param? _removeExpirationDateError: any}
+	{@param? _loadingResponse: bool}
+	{@param? _tomorrowDate: string}
+
+	<div id="{$id}">
+		<div class="inline-scroller modal-body">
+			{if length($collaborators) > 0}
+				{if $expirationDateError}
+					{call .showError}
+						{param spritemap: $spritemap /}
+						{param _removeExpirationDateError: $_removeExpirationDateError /}
+					{/call}
+				{/if}
+				<ul class="list-group">
+					{foreach $collaborator in $collaborators}
+						<li class="list-group-item list-group-item-flex" data-onmouseout="{$_handleHoverCollaborator}" data-onmouseover="{$_handleHoverCollaborator}" id="collaborator{$collaborator.id}">
+							{call .collaborator}
+								{param _handleBlurExpirationDate: $_handleBlurExpirationDate /}
+								{param _handleChangePermission: $_handleChangePermission /}
+								{param _handleDeleteCollaborator: $_handleDeleteCollaborator /}
+								{param _handleDeleteExpirationDate: $_handleDeleteExpirationDate /}
+								{param _hideShowExpirationDateBlock: $_hideShowExpirationDateBlock /}
+								{param _loadingResponse: $_loadingResponse /}
+								{param _tomorrowDate: $_tomorrowDate /}
+								{param spritemap: $spritemap /}
+								{param collaborator: $collaborator /}
+							{/call}
+						</li>
+					{/foreach}
+				</ul>
+			{else}
+				{call .emptyCollaborators}
+				{/call}
+			{/if}
+		</div>
+
+		<div class="modal-footer">
+			<div class="modal-item-last">
+				<div class="btn-group">
+					<div class="btn-group-item">
+						{let $cancelButtonAttributes kind="attributes"}
+							{if $_loadingResponse}disabled{/if}
+							class="btn btn-default"
+							data-onclick="{$_handleCancelButtonClick}"
+							type="button"
+						{/let}
+						<button {$cancelButtonAttributes}>
+							{msg desc=""}cancel{/msg}
+						</button>
+					</div>
+
+					<div class="btn-group-item">
+						{let $submitButtonAttributes kind="attributes"}
+							{if $_loadingResponse or $expirationDateError}disabled{/if}
+							class="btn btn-primary"
+							data-onclick="{$_handleSaveButtonClick}"
+							type="button"
+						{/let}
+
+						<button {$submitButtonAttributes}>
+							{if $_loadingResponse}
+								<span class="inline-item inline-item-before">
+									<span aria-hidden="true" class="loading-animation"></span>
+								</span>
+							{/if}
+							{msg desc=""}save{/msg}
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{/template}
+
+{template .collaborator}
+	{@param? _handleBlurExpirationDate: any}
+	{@param? _handleChangePermission: any}
+	{@param? _handleDeleteCollaborator: any}
+	{@param? _handleDeleteExpirationDate: any}
+	{@param? _hideShowExpirationDateBlock: any}
+	{@param? _loadingResponse: bool}
+	{@param? _tomorrowDate: string}
+	{@param collaborator: ?}
+	{@param spritemap: string}
+
+	<div class="autofit-col">
+		{call ClaySticker.render}
+			{param size: 'xl' /}
+			{param imageSrc: $collaborator.imageSrc /}
+			{param shape: 'circle' /}
+		{/call}
+	</div>
+
+	<div class="autofit-col autofit-col-expand">
+
+		<div class="autofit-row autofit-row-center">
+			<div class="autofit-col autofit-col-expand">
+				<h4>{$collaborator.name}</h4>
+			</div>
+
+			<div class="autofit-col expiration-icon {if not $collaborator.sharingEntryExpirationDate}hidden {/if}
+				{if $collaborator.expanded}hide{/if}">
+				{let $expirationDateMsg kind="text"}
+					{msg desc=""}set-expiration-date{/msg}
+				{/let}
+				{let $untilMsg kind="text"}
+					{msg desc=""}until-{$collaborator.sharingEntryExpirationDateTooltip}{/msg}
+				{/let}
+				{let $tooltipMessage:
+					$collaborator.sharingEntryExpirationDateTooltip ? $untilMsg : $expirationDateMsg /}
+
+				{call ClayButton.render}
+					{param events: [
+						'click': $_hideShowExpirationDateBlock
+					] /}
+					{param data: [
+						'collaboratorid': $collaborator.id,
+						'title': $tooltipMessage
+					] /}
+					{param elementClasses: 'text-muted' /}
+					{param icon: 'time' /}
+					{param monospaced: true /}
+					{param spritemap: $spritemap /}
+					{param style: 'link' /}
+				{/call}
+			</div>
+
+			<div class="autofit-col">
+				{call ClaySelect.render}
+					{param events: [
+						'change': $_handleChangePermission
+					] /}
+					{param name: $collaborator.sharingEntryId /}
+					{param options: $collaborator.sharingEntryPermissionDisplaySelectOptions /}
+				{/call}
+			</div>
+
+			<div class="autofit-col">
+				<button
+					class="btn btn-link btn-monospaced btn-remove text-muted"
+					data-collaborator-id="{$collaborator.id}"
+					data-sharingentry-id="{$collaborator.sharingEntryId}"
+					data-onclick="{$_handleDeleteCollaborator}"
+					{if $_loadingResponse}disabled{/if}
+				>
+					<svg class="lexicon-icon">
+						<use xlink:href="{$spritemap}#times-circle"></use>
+					</svg>
+				</button>
+			</div>
+		</div>
+
+		<div class="autofit-float autofit-row autofit-row-center {if not $collaborator.expanded}hide{/if}" id="expiration{$collaborator.id}">
+			<div class="autofit-col">
+				<span>{msg desc=""}has-permissions-until{/msg}</span>
+			</div>
+
+			<div class="autofit-col no-padding {if $collaborator.sharingEntryExpirationDateError}has-error{/if}">
+				<input
+					class="form-control"
+					data-onblur="{$_handleBlurExpirationDate}"
+					data-collaborator-id="{$collaborator.id}"
+					data-sharingentry-id="{$collaborator.sharingEntryId}"
+					min="{$_tomorrowDate}"
+					type="date"
+					{if $collaborator.sharingEntryExpirationDate}
+						value="{$collaborator.sharingEntryExpirationDate}"
+					{/if}
+				/>
+			</div>
+
+			<div class="autofit-col no-padding">
+				{let $cancelMsg kind="text"}
+					{msg desc=""}cancel-expiration{/msg}
+				{/let}
+
+				{call ClayButton.render}
+					{param events: [
+						'click': $_handleDeleteExpirationDate
+					] /}
+					{param data: ['collaboratorId': $collaborator.id] /}
+					{param elementClasses: 'text-muted' /}
+					{param label: $cancelMsg /}
+					{param size: 'sm' /}
+					{param style: 'link' /}
+				{/call}
+			</div>
+		</div>
+	</div>
+{/template}
+
+{template .emptyCollaborators}
+	<div class="autofit-row autofit-row-center empty-collaborators">
+		<div class="autofit-col autofit-col-expand">
+			<div class="message-content">
+				<h3>{msg desc=""}no-collaborators{/msg}</h3>
+				<p>{msg desc=""}you-can-add-collaborators-sharing-the-document-again{/msg}</p>
+			</div>
+		</div>
+	</div>
+{/template}
+
+{template .showError}
+	{@param spritemap: string}
+	{@param? _removeExpirationDateError: any}
+
+	{let $errorMsg kind="text"}
+		{msg desc=""}please-enter-an-expiration-date-that-comes-after-today{/msg}
+	{/let}
+
+	{call ClayStripe.render}
+		{param destroyOnHide: true /}
+		{param events: ['hide': $_removeExpirationDateError ] /}
+		{param message: $errorMsg /}
+		{param spritemap: $spritemap /}
+		{param style: 'danger' /}
+		{param title: 'Error' /}
+	{/call}
+{/template}

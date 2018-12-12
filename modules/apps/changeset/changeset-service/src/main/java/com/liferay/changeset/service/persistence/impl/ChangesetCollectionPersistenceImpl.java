@@ -1727,6 +1727,8 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 	@Override
 	public ChangesetCollection fetchByG_N(long groupId, String name,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		Object[] finderArgs = new Object[] { groupId, name };
 
 		Object result = null;
@@ -1754,10 +1756,7 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -1839,6 +1838,8 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 	 */
 	@Override
 	public int countByG_N(long groupId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_N;
 
 		Object[] finderArgs = new Object[] { groupId, name };
@@ -1854,10 +1855,7 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -1999,6 +1997,8 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 		int start, int end,
 		OrderByComparator<ChangesetCollection> orderByComparator,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2027,7 +2027,7 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 			if ((list != null) && !list.isEmpty()) {
 				for (ChangesetCollection changesetCollection : list) {
 					if ((companyId != changesetCollection.getCompanyId()) ||
-							!Objects.equals(name, changesetCollection.getName())) {
+							!name.equals(changesetCollection.getName())) {
 						list = null;
 
 						break;
@@ -2053,10 +2053,7 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_C_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_NAME_3);
 			}
 			else {
@@ -2254,6 +2251,8 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 		long changesetCollectionId, long companyId, String name,
 		OrderByComparator<ChangesetCollection> orderByComparator)
 		throws NoSuchCollectionException {
+		name = Objects.toString(name, "");
+
 		ChangesetCollection changesetCollection = findByPrimaryKey(changesetCollectionId);
 
 		Session session = null;
@@ -2302,10 +2301,7 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_C_N_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_N_NAME_3);
 		}
 		else {
@@ -2429,6 +2425,8 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 	 */
 	@Override
 	public int countByC_N(long companyId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_N;
 
 		Object[] finderArgs = new Object[] { companyId, name };
@@ -2444,10 +2442,7 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_C_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_NAME_3);
 			}
 			else {
@@ -2497,6 +2492,9 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 
 	public ChangesetCollectionPersistenceImpl() {
 		setModelClass(ChangesetCollection.class);
+
+		setModelImplClass(ChangesetCollectionImpl.class);
+		setEntityCacheEnabled(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -2970,54 +2968,6 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 	/**
 	 * Returns the changeset collection with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the changeset collection
-	 * @return the changeset collection, or <code>null</code> if a changeset collection with the primary key could not be found
-	 */
-	@Override
-	public ChangesetCollection fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED,
-				ChangesetCollectionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		ChangesetCollection changesetCollection = (ChangesetCollection)serializable;
-
-		if (changesetCollection == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				changesetCollection = (ChangesetCollection)session.get(ChangesetCollectionImpl.class,
-						primaryKey);
-
-				if (changesetCollection != null) {
-					cacheResult(changesetCollection);
-				}
-				else {
-					entityCache.putResult(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED,
-						ChangesetCollectionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(ChangesetCollectionModelImpl.ENTITY_CACHE_ENABLED,
-					ChangesetCollectionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return changesetCollection;
-	}
-
-	/**
-	 * Returns the changeset collection with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param changesetCollectionId the primary key of the changeset collection
 	 * @return the changeset collection, or <code>null</code> if a changeset collection with the primary key could not be found
 	 */
@@ -3310,6 +3260,11 @@ public class ChangesetCollectionPersistenceImpl extends BasePersistenceImpl<Chan
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

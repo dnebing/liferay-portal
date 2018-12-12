@@ -1,0 +1,39 @@
+.preview-file {
+	.preview-file-container {
+		overflow: auto;
+		position: relative;
+		text-align: center;
+
+		&.preview-file-max-height {
+			height: 480px;
+		}
+	}
+
+	.preview-toolbar-container {
+		margin: 2rem auto;
+		text-align: center;
+	}
+
+	.preview-toolbar {
+		.btn:disabled {
+			opacity: 1;
+
+			> * {
+				opacity: 0.26;
+			}
+		}
+
+		.toolbar-input-wrapper {
+			margin: .25rem;
+			position: absolute;
+			width: 100%;
+			z-index: 4;
+		}
+	}
+}
+
+.preview-file {
+	.preview-file-pdf {
+		max-width: 100%;
+	}
+}

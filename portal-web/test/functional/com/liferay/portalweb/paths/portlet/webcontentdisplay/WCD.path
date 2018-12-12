@@ -14,11 +14,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>SELECT_WEB_CONTENT</td>
-	<td>//span[contains(@class,'lfr-icon-action')]/a[contains(.,'Select Web Content')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>ADD_WEB_CONTENT</td>
 	<td>//*[@data-qa-id='addButton']//a[contains(@id,'JournalContent')]</td>
 	<td></td>
@@ -81,11 +76,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>WEB_CONTENT_LINK_TO_PAGE</td>
-	<td>//div[@class='journal-content-article']/a</td>
-	<td></td>
-</tr>
-<tr>
 	<td>WEB_CONTENT_TEXT_LINK_URL</td>
 	<td>//div[contains(@class,'journal-content-article')]//a[contains(.,'${key_contentText}')]</td>
 	<td></td>
@@ -108,11 +98,6 @@
 <tr>
 	<td>WEB_CONTENT_VIDEO</td>
 	<td>//div[contains(@class,'video-content')]/video[@class='video-node']</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
 	<td></td>
 </tr>
 </tbody>

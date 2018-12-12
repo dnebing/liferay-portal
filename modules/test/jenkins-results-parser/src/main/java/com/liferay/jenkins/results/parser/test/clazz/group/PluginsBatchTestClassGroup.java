@@ -25,12 +25,10 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -43,13 +41,16 @@ public class PluginsBatchTestClassGroup extends BatchTestClassGroup {
 		protected static PluginsBatchTestClass getInstance(
 			String batchName, File pluginDir) {
 
-			return new PluginsBatchTestClass(batchName, pluginDir);
+			return new PluginsBatchTestClass(
+				batchName, new TestClassFile(pluginDir.getAbsolutePath()));
 		}
 
-		protected PluginsBatchTestClass(String batchName, File file) {
-			super(file);
+		protected PluginsBatchTestClass(
+			String batchName, TestClassFile testClassFile) {
 
-			addTestMethod(batchName);
+			super(testClassFile);
+
+			addTestClassMethod(batchName);
 		}
 
 	}
@@ -66,8 +67,8 @@ public class PluginsBatchTestClassGroup extends BatchTestClassGroup {
 					"release.properties"));
 
 		_pluginsGitWorkingDirectory =
-			(PluginsGitWorkingDirectory)GitWorkingDirectoryFactory.
-				newGitWorkingDirectory(
+			(PluginsGitWorkingDirectory)
+				GitWorkingDirectoryFactory.newGitWorkingDirectory(
 					portalGitWorkingDirectory.getUpstreamBranchName(),
 					JenkinsResultsParserUtil.getProperty(
 						portalReleaseProperties, "lp.plugins.dir"));
@@ -101,7 +102,9 @@ public class PluginsBatchTestClassGroup extends BatchTestClassGroup {
 							Path filePath, BasicFileAttributes attrs)
 						throws IOException {
 
-						if (_pathExcluded(filePath)) {
+						if (JenkinsResultsParserUtil.isFileExcluded(
+								excludesPathMatchers, filePath)) {
+
 							return FileVisitResult.SKIP_SUBTREE;
 						}
 
@@ -113,8 +116,9 @@ public class PluginsBatchTestClassGroup extends BatchTestClassGroup {
 							Path filePath, BasicFileAttributes attrs)
 						throws IOException {
 
-						if (_pathIncluded(filePath) &&
-							!_pathExcluded(filePath)) {
+						if (JenkinsResultsParserUtil.isFileIncluded(
+								excludesPathMatchers, includesPathMatchers,
+								filePath)) {
 
 							File file = filePath.toFile();
 
@@ -124,26 +128,6 @@ public class PluginsBatchTestClassGroup extends BatchTestClassGroup {
 						}
 
 						return FileVisitResult.CONTINUE;
-					}
-
-					private boolean _pathExcluded(Path path) {
-						return _pathMatches(path, excludesPathMatchers);
-					}
-
-					private boolean _pathIncluded(Path path) {
-						return _pathMatches(path, includesPathMatchers);
-					}
-
-					private boolean _pathMatches(
-						Path path, List<PathMatcher> pathMatchers) {
-
-						for (PathMatcher pathMatcher : pathMatchers) {
-							if (pathMatcher.matches(path)) {
-								return true;
-							}
-						}
-
-						return false;
 					}
 
 				});

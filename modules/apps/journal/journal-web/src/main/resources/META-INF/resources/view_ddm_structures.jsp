@@ -20,10 +20,6 @@
 JournalDDMStructuresDisplayContext journalDDMStructuresDisplayContext = new JournalDDMStructuresDisplayContext(renderRequest, renderResponse);
 %>
 
-<liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureReferencedByStructureLinks.class %>" message="the-structure-cannot-be-deleted-because-it-is-required-by-one-or-more-structure-links" />
-<liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureReferencedByTemplates.class %>" message="the-structure-cannot-be-deleted-because-it-is-required-by-one-or-more-templates" />
-<liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureThatHasChild.class %>" message="the-structure-cannot-be-deleted-because-it-has-one-or-more-substructures" />
-
 <clay:navigation-bar
 	inverted="<%= true %>"
 	navigationItems='<%= journalDisplayContext.getNavigationBarItems("structures") %>'
@@ -44,11 +40,15 @@ JournalDDMStructuresDisplayContext journalDDMStructuresDisplayContext = new Jour
 />
 
 <portlet:actionURL name="/journal/delete_ddm_structure" var="deleteDDMStructureURL">
-	<portlet:param name="redirect" value="<%= currentURL %>" />
+	<portlet:param name="mvcPath" value="/view_ddm_structures.jsp" />
 </portlet:actionURL>
 
 <aui:form action="<%= deleteDDMStructureURL %>" cssClass="container-fluid-1280" method="post" name="fm">
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+
+	<liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureReferencedByStructureLinks.class %>" message="the-structure-cannot-be-deleted-because-it-is-required-by-one-or-more-structure-links" />
+	<liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureReferencedByTemplates.class %>" message="the-structure-cannot-be-deleted-because-it-is-required-by-one-or-more-templates" />
+	<liferay-ui:error exception="<%= RequiredStructureException.MustNotDeleteStructureThatHasChild.class %>" message="the-structure-cannot-be-deleted-because-it-has-one-or-more-substructures" />
 
 	<liferay-ui:search-container
 		id="ddmStructures"
@@ -72,22 +72,21 @@ JournalDDMStructuresDisplayContext journalDDMStructuresDisplayContext = new Jour
 
 				rowURL.setParameter("mvcPath", "/edit_ddm_structure.jsp");
 				rowURL.setParameter("redirect", currentURL);
-				rowURL.setParameter("classNameId", String.valueOf(PortalUtil.getClassNameId(DDMStructure.class)));
-				rowURL.setParameter("classPK", String.valueOf(ddmStructure.getStructureId()));
+				rowURL.setParameter("ddmStructureId", String.valueOf(ddmStructure.getStructureId()));
 
 				rowHREF = rowURL.toString();
 			}
 			%>
 
 			<liferay-ui:search-container-column-text
-				cssClass="table-cell-content"
+				cssClass="table-cell-expand table-cell-minw-200 table-title"
 				href="<%= rowHREF %>"
 				name="name"
 				value="<%= HtmlUtil.escape(ddmStructure.getName(locale)) %>"
 			/>
 
 			<liferay-ui:search-container-column-text
-				cssClass="table-cell-content"
+				cssClass="table-cell-expand table-cell-minw-200"
 				name="description"
 				truncate="<%= true %>"
 				value="<%= HtmlUtil.escape(ddmStructure.getDescription(locale)) %>"
@@ -98,11 +97,13 @@ JournalDDMStructuresDisplayContext journalDDMStructuresDisplayContext = new Jour
 			%>
 
 			<liferay-ui:search-container-column-text
+				cssClass="table-cell-minw-150"
 				name="scope"
 				value="<%= LanguageUtil.get(request, group.getScopeLabel(themeDisplay)) %>"
 			/>
 
 			<liferay-ui:search-container-column-date
+				cssClass="table-cell-ws-nowrap"
 				name="modified-date"
 				value="<%= ddmStructure.getModifiedDate() %>"
 			/>

@@ -71,7 +71,7 @@ import org.osgi.util.tracker.BundleTracker;
  * @author Raymond Augé
  * @see    com.liferay.util.dao.orm.CustomSQL
  */
-@Component
+@Component(service = CustomSQL.class)
 public class CustomSQLImpl implements CustomSQL {
 
 	public static final String DB2_FUNCTION_IS_NOT_NULL =
@@ -920,6 +920,7 @@ public class CustomSQLImpl implements CustomSQL {
 				}
 				else {
 					String id = sqlElement.attributeValue("id");
+
 					String content = transform(sqlElement.getText());
 
 					content = replaceIsNull(content);

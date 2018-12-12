@@ -14,19 +14,16 @@
 
 package com.liferay.portal.kernel.settings;
 
-import com.liferay.portal.kernel.util.FileUtil;
-//import com.liferay.portal.util.FileImpl;
-
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.mockito.Matchers;
 
 import org.powermock.api.mockito.PowerMockito;
 
@@ -37,10 +34,6 @@ public class LocationVariableResolverTest extends PowerMockito {
 
 	@Before
 	public void setUp() throws Exception {
-		FileUtil fileUtil = new FileUtil();
-
-		fileUtil.setFile(new MockFile());
-
 		_mockResourceManager = new MockResourceManager(
 			"En un lugar de la Mancha...");
 
@@ -70,14 +63,19 @@ public class LocationVariableResolverTest extends PowerMockito {
 
 		File file = File.createTempFile("testResolveVariableForFile", "txt");
 
-		file.deleteOnExit();
+		try (OutputStream outputStream = new FileOutputStream(file)) {
+			outputStream.write(expectedValue.getBytes());
 
-		FileUtil.write(file, expectedValue.getBytes());
+			outputStream.flush();
 
-		String value = _locationVariableResolver.resolve(
-			"${file://" + file.getAbsolutePath() + "}");
+			String value = _locationVariableResolver.resolve(
+				"${file://" + file.getAbsolutePath() + "}");
 
-		Assert.assertEquals(expectedValue, value);
+			Assert.assertEquals(expectedValue, value);
+		}
+		finally {
+			file.delete();
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -103,21 +101,16 @@ public class LocationVariableResolverTest extends PowerMockito {
 
 	@Test
 	public void testResolveVariableWithServerProperty() {
-		Settings mockSettings = mock(Settings.class);
-
 		final String expectedValue = "test@liferay.com";
 
-		when(
-			mockSettings.getValue(
-				Matchers.eq("admin.email.from.address"), Matchers.anyString())
-		).thenReturn(
-			expectedValue
-		);
+		MemorySettings memorySettings = new MemorySettings();
+
+		memorySettings.setValue("admin.email.from.address", expectedValue);
 
 		when(
 			_mockSettingsLocatorHelper.getServerSettings("com.liferay.portal")
 		).thenReturn(
-			mockSettings
+			memorySettings
 		);
 
 		Assert.assertEquals(

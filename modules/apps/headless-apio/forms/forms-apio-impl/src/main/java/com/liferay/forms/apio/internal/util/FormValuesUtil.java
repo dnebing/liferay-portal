@@ -46,6 +46,9 @@ public final class FormValuesUtil {
 
 		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
 
+		ddmFormValues.addAvailableLocale(locale);
+		ddmFormValues.setDefaultLocale(locale);
+
 		FormValuesUtil.FormFieldValueListToken formFieldValueListToken =
 			new FormValuesUtil.FormFieldValueListToken();
 
@@ -69,7 +72,7 @@ public final class FormValuesUtil {
 
 			Value value = _EMPTY_VALUE;
 
-			if ((ddmFormField != null) && !ddmFormField.isTransient()) {
+			if (ddmFormField != null) {
 				value = Optional.ofNullable(
 					formFieldValue.value
 				).map(

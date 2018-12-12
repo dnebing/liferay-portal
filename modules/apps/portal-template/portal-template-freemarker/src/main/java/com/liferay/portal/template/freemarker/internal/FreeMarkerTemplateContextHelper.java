@@ -53,8 +53,9 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 @Component(
 	configurationPid = "com.liferay.portal.template.freemarker.configuration.FreeMarkerEngineConfiguration",
 	configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true,
-	service =
-		{FreeMarkerTemplateContextHelper.class, TemplateContextHelper.class}
+	service = {
+		FreeMarkerTemplateContextHelper.class, TemplateContextHelper.class
+	}
 )
 public class FreeMarkerTemplateContextHelper extends TemplateContextHelper {
 
@@ -107,10 +108,9 @@ public class FreeMarkerTemplateContextHelper extends TemplateContextHelper {
 		if (ftlVariables != null) {
 			for (Map.Entry<String, Object> entry : ftlVariables.entrySet()) {
 				String key = entry.getKey();
-				Object value = entry.getValue();
 
 				if (Validator.isNotNull(key)) {
-					contextObjects.put(key, value);
+					contextObjects.put(key, entry.getValue());
 				}
 			}
 		}

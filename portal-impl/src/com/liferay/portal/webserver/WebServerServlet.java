@@ -334,6 +334,15 @@ public class WebServerServlet extends HttpServlet {
 		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
 			uuid, groupId);
 
+		User user = _getUser(request);
+
+		if (!fileEntry.containsPermission(
+				PermissionCheckerFactoryUtil.create(user), ActionKeys.VIEW)) {
+
+			throw new PrincipalException.MustHavePermission(
+				user.getUserId(), ActionKeys.VIEW);
+		}
+
 		int status = ParamUtil.getInteger(
 			request, "status", WorkflowConstants.STATUS_APPROVED);
 
@@ -403,9 +412,8 @@ public class WebServerServlet extends HttpServlet {
 		else if (path.startsWith("/user_portrait")) {
 			return ImageToolUtil.getDefaultUserMalePortrait();
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	protected FileEntry getFileEntry(String[] pathArray) throws Exception {
@@ -427,6 +435,7 @@ public class WebServerServlet extends HttpServlet {
 		else if (pathArray.length == 3) {
 			long groupId = GetterUtil.getLong(pathArray[0]);
 			long folderId = GetterUtil.getLong(pathArray[1]);
+
 			String fileName = HttpUtil.decodeURL(pathArray[2]);
 
 			if (fileName.contains(StringPool.QUESTION)) {
@@ -780,12 +789,12 @@ public class WebServerServlet extends HttpServlet {
 				queryString = "&imageThumbnail=1";
 			}
 			else if (imageId ==
-						 thumbnailCapability.getCustom1ImageId(fileEntry)) {
+						thumbnailCapability.getCustom1ImageId(fileEntry)) {
 
 				queryString = "&imageThumbnail=2";
 			}
 			else if (imageId ==
-						 thumbnailCapability.getCustom2ImageId(fileEntry)) {
+						thumbnailCapability.getCustom2ImageId(fileEntry)) {
 
 				queryString = "&imageThumbnail=3";
 			}

@@ -300,9 +300,8 @@ public class DocumentConversionImpl implements DocumentConversion {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private void _populateConversionsMap(String documentFamily) {
@@ -317,8 +316,6 @@ public class DocumentConversionImpl implements DocumentConversion {
 			PropsKeys.OPENOFFICE_CONVERSION_TARGET_EXTENSIONS, filter);
 
 		for (String sourceExtension : sourceExtensions) {
-			List<String> conversions = new SortedArrayList<>();
-
 			DocumentFormat sourceDocumentFormat =
 				documentFormatRegistry.getFormatByFileExtension(
 					sourceExtension);
@@ -330,6 +327,8 @@ public class DocumentConversionImpl implements DocumentConversion {
 
 				continue;
 			}
+
+			List<String> conversions = new SortedArrayList<>();
 
 			for (String targetExtension : targetExtensions) {
 				DocumentFormat targetDocumentFormat =

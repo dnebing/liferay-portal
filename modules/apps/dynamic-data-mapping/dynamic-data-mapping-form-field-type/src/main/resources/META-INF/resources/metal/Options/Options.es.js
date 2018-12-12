@@ -21,7 +21,7 @@ class Options extends Component {
 		 * @type {?bool}
 		 */
 
-		editable: Config.bool().value(false),
+		readOnly: Config.bool().value(true),
 
 		/**
 		 * @default undefined
@@ -30,7 +30,7 @@ class Options extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		helpText: Config.string(),
+		tip: Config.string(),
 
 		/**
 		 * @default undefined
@@ -71,6 +71,15 @@ class Options extends Component {
 		 */
 
 		label: Config.string(),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof FieldBase
+		 * @type {?(bool|undefined)}
+		 */
+
+		repeatable: Config.bool(),
 
 		/**
 		 * @default false
@@ -116,7 +125,6 @@ class Options extends Component {
 
 	_handleTextChanged(data) {
 		const {originalEvent, value} = data;
-		const {key} = this;
 		const fieldIndex = this._getFieldIndex(
 			originalEvent.delegateTarget.parentNode
 		);
@@ -135,7 +143,7 @@ class Options extends Component {
 		this.emit(
 			'fieldEdited',
 			{
-				key,
+				fieldInstance: this,
 				originalEvent,
 				value: this.items
 			}

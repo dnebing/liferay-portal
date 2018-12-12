@@ -53,6 +53,7 @@ public class UpgradeOracle extends UpgradeProcess {
 				}
 
 				String columnName = rs.getString(2);
+
 				int dataLength = rs.getInt(3);
 
 				if (buildNumber < ReleaseInfo.RELEASE_6_2_0_BUILD_NUMBER) {
@@ -122,8 +123,9 @@ public class UpgradeOracle extends UpgradeProcess {
 		}
 	}
 
-	private static final int[] _ORIGINAL_DATA_LENGTH_VALUES =
-		{75, 100, 150, 200, 255, 500, 1000, 1024, 2000, 4000};
+	private static final int[] _ORIGINAL_DATA_LENGTH_VALUES = {
+		75, 100, 150, 200, 255, 500, 1000, 1024, 2000, 4000
+	};
 
 	private static final Log _log = LogFactoryUtil.getLog(UpgradeOracle.class);
 

@@ -25,14 +25,13 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormRule;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.person.apio.architect.identifier.PersonIdentifier;
 import com.liferay.structure.apio.architect.model.FormLayoutPage;
 import com.liferay.structure.apio.architect.util.StructureRepresentorBuilderHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -40,12 +39,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Provides the information necessary to expose DDMFormStructure resources
- * through a web API. The resources are mapped from the internal model {@code
- * DDMStructure}.
+ * Provides the information necessary to expose {@code DDMFormStructure}
+ * resources through a web API. The resources are mapped from the internal model
+ * {@code DDMStructure}.
  *
  * @author Javier Gamarra
- * @review
  */
 @Component(
 	immediate = true, service = FormStructureRepresentorBuilderHelper.class
@@ -65,13 +63,10 @@ public class FormStructureRepresentorBuilderHelper {
 				DDMStructure::getGroupId);
 
 		bidirectionalModelStepBuilder.addNested(
-			"version", this::_getDDMStructureVersion,
-			this::_buildDDMStructureVersion
-		).addNested(
 			"successPage", this::_getDDMFormSuccessPageSettings,
 			this::_buildDDMFormSuccessPageSettings
 		).addNestedList(
-			"fields", _structureRepresentorBuilderHelper::getFormLayoutPages,
+			"formPages", _structureRepresentorBuilderHelper::getFormLayoutPages,
 			nestedBuilder -> _buildFormLayoutPage(nestedBuilder).build()
 		);
 
@@ -125,8 +120,6 @@ public class FormStructureRepresentorBuilderHelper {
 			"transient", DDMFormField::isTransient
 		).addNested(
 			"grid", ddmFormField -> ddmFormField, this::_buildDDMFormField
-		).addString(
-			"indexType", DDMFormField::getIndexType
 		);
 
 		return ddmFormFieldFirstStepBuilder;
@@ -138,24 +131,11 @@ public class FormStructureRepresentorBuilderHelper {
 
 		return builder.types(
 			"FormSuccessPageSettings"
-		).addBoolean(
-			"isEnabled", DDMFormSuccessPageSettings::isEnabled
+		).addLocalizedStringByLocale(
+			"description",
+			getLocalizedString(DDMFormSuccessPageSettings::getBody)
 		).addLocalizedStringByLocale(
 			"headline", getLocalizedString(DDMFormSuccessPageSettings::getTitle)
-		).addLocalizedStringByLocale(
-			"text", getLocalizedString(DDMFormSuccessPageSettings::getBody)
-		).build();
-	}
-
-	private NestedRepresentor<DDMStructureVersion> _buildDDMStructureVersion(
-		NestedRepresentor.Builder<DDMStructureVersion> nestedBuilder) {
-
-		return nestedBuilder.types(
-			"StructureVersion"
-		).addLinkedModel(
-			"creator", PersonIdentifier.class, DDMStructureVersion::getUserId
-		).addString(
-			"name", DDMStructureVersion::getVersion
 		).build();
 	}
 
@@ -191,16 +171,12 @@ public class FormStructureRepresentorBuilderHelper {
 	private DDMFormSuccessPageSettings _getDDMFormSuccessPageSettings(
 		DDMStructure ddmStructure) {
 
-		DDMForm ddmForm = ddmStructure.getDDMForm();
-
-		return ddmForm.getDDMFormSuccessPageSettings();
-	}
-
-	private DDMStructureVersion _getDDMStructureVersion(
-		DDMStructure ddmStructure) {
-
-		return Try.fromFallible(
-			ddmStructure::getStructureVersion
+		return Optional.of(
+			ddmStructure.getDDMForm()
+		).map(
+			DDMForm::getDDMFormSuccessPageSettings
+		).filter(
+			DDMFormSuccessPageSettings::isEnabled
 		).orElse(
 			null
 		);

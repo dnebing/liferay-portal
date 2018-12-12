@@ -27,12 +27,12 @@ import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.plugin.Version;
 import com.liferay.portal.kernel.servlet.ServletContextUtil;
-import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.theme.PortletDecoratorFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeCompanyId;
 import com.liferay.portal.kernel.theme.ThemeCompanyLimit;
 import com.liferay.portal.kernel.theme.ThemeGroupId;
 import com.liferay.portal.kernel.theme.ThemeGroupLimit;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ColorSchemeFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -69,7 +69,7 @@ import javax.servlet.ServletContext;
  * @author Jorge Ferrer
  * @author Raymond Augé
  */
-@Skip
+@Transactional(enabled = false)
 public class ThemeLocalServiceImpl extends ThemeLocalServiceBaseImpl {
 
 	@Override
@@ -429,11 +429,10 @@ public class ThemeLocalServiceImpl extends ThemeLocalServiceBaseImpl {
 		themes = new ConcurrentHashMap<>();
 
 		for (Map.Entry<String, Theme> entry : _themes.entrySet()) {
-			String themeId = entry.getKey();
 			Theme theme = entry.getValue();
 
 			if (theme.isCompanyAvailable(companyId)) {
-				themes.put(themeId, theme);
+				themes.put(entry.getKey(), theme);
 			}
 		}
 

@@ -22,18 +22,19 @@ import java.util.Properties;
 public class JunitBatchPortalWorkspace extends BatchPortalWorkspace {
 
 	protected JunitBatchPortalWorkspace(
-		String portalGitHubURL, String portalUpstreamBranchName) {
+		String portalGitHubURL, String portalUpstreamBranchName,
+		String portalBranchSHA) {
 
-		super(portalGitHubURL, portalUpstreamBranchName);
+		super(portalGitHubURL, portalUpstreamBranchName, portalBranchSHA);
 
 		_setPortalBuildProperties();
 	}
 
 	private void _setPortalBuildProperties() {
-		PortalLocalGitBranch otherPortalLocalGitBranch =
-			getOtherPortalLocalGitBranch();
+		WorkspaceGitRepository otherPortalWorkspaceGitRepository =
+			getOtherPortalWorkspaceGitRepository();
 
-		if (otherPortalLocalGitBranch == null) {
+		if (otherPortalWorkspaceGitRepository == null) {
 			return;
 		}
 
@@ -41,12 +42,13 @@ public class JunitBatchPortalWorkspace extends BatchPortalWorkspace {
 
 		properties.put(
 			"release.versions.test.other.dir",
-			String.valueOf(otherPortalLocalGitBranch.getDirectory()));
+			String.valueOf(otherPortalWorkspaceGitRepository.getDirectory()));
 
-		PortalLocalGitRepository portalLocalGitRepository =
-			getPrimaryPortalLocalGitRepository();
+		PortalWorkspaceGitRepository primaryPortalWorkspaceGitRepository =
+			getPrimaryPortalWorkspaceGitRepository();
 
-		portalLocalGitRepository.setBuildProperties(properties);
+		primaryPortalWorkspaceGitRepository.setPortalBuildProperties(
+			properties);
 	}
 
 }

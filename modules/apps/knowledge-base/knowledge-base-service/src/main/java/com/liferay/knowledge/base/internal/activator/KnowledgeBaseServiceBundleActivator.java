@@ -81,7 +81,7 @@ public class KnowledgeBaseServiceBundleActivator implements BundleActivator {
 	}
 
 	@Override
-	public void stop(BundleContext bundleContext) throws Exception {
+	public void stop(BundleContext bundleContext) {
 		_serviceTracker.close();
 	}
 

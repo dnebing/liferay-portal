@@ -34,8 +34,6 @@ import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.Html;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
-import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
@@ -98,18 +96,39 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 
 		Map<String, String> stringsMap = new HashMap<>();
 
-		ResourceBundle resourceBundle = getResourceBundle(
-			ddmFormFieldRenderingContext.getLocale());
+		Locale displayLocale;
+
+		if (ddmFormFieldRenderingContext.isViewMode()) {
+			displayLocale = ddmFormFieldRenderingContext.getLocale();
+		}
+		else {
+			displayLocale = getDisplayLocale(
+				ddmFormFieldRenderingContext.getHttpServletRequest());
+		}
+
+		ResourceBundle resourceBundle = getResourceBundle(displayLocale);
 
 		stringsMap.put("select", LanguageUtil.get(resourceBundle, "select"));
 
 		parameters.put("strings", stringsMap);
-		parameters.put(
-			"value",
-			jsonFactory.looseDeserialize(
-				ddmFormFieldRenderingContext.getValue()));
+
+		String value = ddmFormFieldRenderingContext.getValue();
+
+		if (Validator.isNull(value)) {
+			value = "{}";
+		}
+
+		parameters.put("value", jsonFactory.looseDeserialize(value));
 
 		return parameters;
+	}
+
+	protected Locale getDisplayLocale(HttpServletRequest httpServletRequest) {
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		return themeDisplay.getLocale();
 	}
 
 	protected FileEntry getFileEntry(JSONObject valueJSONObject) {
@@ -136,16 +155,17 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 	protected String getFileEntryURL(
 		HttpServletRequest request, FileEntry fileEntry) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		if (fileEntry == null) {
 			return StringPool.BLANK;
 		}
 
 		StringBundler sb = new StringBundler(9);
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
 		sb.append(themeDisplay.getPathContext());
+
 		sb.append("/documents/");
 		sb.append(fileEntry.getRepositoryId());
 		sb.append(StringPool.SLASH);
@@ -186,10 +206,6 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		if (themeDisplay == null) {
-			return null;
-		}
-
 		StringBundler sb = new StringBundler(3);
 
 		sb.append(themeDisplay.getPathThemeImages());
@@ -200,11 +216,7 @@ public class DocumentLibraryDDMFormFieldTemplateContextContributor
 	}
 
 	protected ResourceBundle getResourceBundle(Locale locale) {
-		ResourceBundleLoader portalResourceBundleLoader =
-			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
-
-		ResourceBundle portalResourceBundle =
-			portalResourceBundleLoader.loadResourceBundle(locale);
+		ResourceBundle portalResourceBundle = portal.getResourceBundle(locale);
 
 		ResourceBundle moduleResourceBundle = ResourceBundleUtil.getBundle(
 			"content.Language", locale, getClass());

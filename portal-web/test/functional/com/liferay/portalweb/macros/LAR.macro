@@ -92,8 +92,8 @@
 			<isset var="uncheckSubSubContent" />
 			<then>
 				<execute macro="ContentConfiguration#uncheckSubSubContent">
-					<var name="contentName" value="${uncheckSubSubContent}" />
-					<var name="subContent" value="subContent" />
+					<var name="contentName" value="${contentName}" />
+					<var name="subContent" value="${subContent}" />
 					<var name="uncheckSubSubContent" value="${uncheckSubSubContent}" />
 				</execute>
 			</then>
@@ -104,9 +104,31 @@
 		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION_DIALOG" />
 
 		<if>
+			<not>
+				<isset var="portletName" />
+			</not>
+			<then>
+				<if>
+					<condition function="IsNotChecked" locator1="ExportImport#CONTENT" />
+					<then>
+
+						<execute function="Check" locator1="ExportImport#CONTENT" />
+					</then>
+				</if>
+			</then>
+		</if>
+
+		<if>
 			<isset var="larFileName" />
 			<then>
 				<execute function="Type" locator1="ExportImport#EXPORT_FILE_NAME" value1="${larFileName}" />
+			</then>
+		</if>
+
+		<if>
+			<equals arg1="${exportIndividualDeletions}" arg2="true" />
+			<then>
+				<execute function="Check" locator1="Checkbox#DELETIONS" />
 			</then>
 		</if>
 
@@ -185,7 +207,7 @@
 	</command>
 
 	<command name="_importSite">
-		<execute function="Pause" locator1="12000" />
+		<execute function="Pause" locator1="18000" />
 
 		<execute function="Click" locator1="Button#CONTINUE" />
 
@@ -208,27 +230,15 @@
 		<if>
 			<isset var="checkContentNameList" />
 			<then>
-				<execute macro="Panel#expandPanel">
-					<var name="panel" value="Content" />
+				<execute macro="ContentConfiguration#checkContentNameList">
+					<var name="checkContentNameList" value="${checkContentNameList}" />
 				</execute>
-
-				<execute function="Select" locator1="Select#EXPORT_IMPORT_CONTENT" value1="Choose Content" />
-
-				<for list="${checkContentNameList}" param="contentName">
-					<var name="key_contentName" value="${contentName}" />
-
-					<execute function="Click" locator1="PagesConfiguration#CONTENT_CHOOSE_CONTENT_CONTENT_CHECKBOX" />
-				</for>
 			</then>
 		</if>
 
 		<if>
 			<equals arg1="${contentDeletion}" arg2="true" />
 			<then>
-				<execute macro="Panel#expandPanel">
-					<var name="panel" value="Deletions" />
-				</execute>
-
 				<execute function="Check#checkToggleSwitch" locator1="ToggleSwitch#DELETE_PORTLET_DATA" />
 			</then>
 		</if>
@@ -284,16 +294,7 @@
 			</else>
 		</if>
 
-		<execute function="Pause" locator1="5000" />
-
-		<if>
-			<equals arg1="${importPermissions}" arg2="true" />
-			<then>
-				<execute function="Click" locator1="ExportImport#PERMISSIONS_TITLE" />
-
-				<execute function="Check#checkToggleSwitch" locator1="Checkbox#PERMISSIONS" />
-			</then>
-		</if>
+		<execute function="Pause" locator1="30000" />
 
 		<if>
 			<equals arg1="${cannotImport}" arg2="true" />
@@ -321,6 +322,36 @@
 					<equals arg1="${mirrorWithOverwriting}" arg2="true" />
 					<then>
 						<execute macro="LAR#_mirrorWithOverwriting" />
+					</then>
+				</if>
+
+				<if>
+					<equals arg1="${importDeletions}" arg2="true" />
+					<then>
+						<execute function="Check" locator1="Checkbox#DELETIONS" />
+					</then>
+				</if>
+
+				<if>
+					<not>
+						<isset var="portletName" />
+					</not>
+					<then>
+						<if>
+							<condition function="IsNotChecked" locator1="ExportImport#CONTENT" />
+							<then>
+								<execute function="Check" locator1="ExportImport#CONTENT" />
+							</then>
+						</if>
+					</then>
+				</if>
+
+				<if>
+					<equals arg1="${importPermissions}" arg2="true" />
+					<then>
+						<execute function="Click" locator1="ExportImport#PERMISSIONS_TITLE" />
+
+						<execute function="Check#checkToggleSwitch" locator1="Checkbox#PERMISSIONS" />
 					</then>
 				</if>
 
@@ -520,8 +551,10 @@
 		<execute function="AssertElementPresent" locator1="IFrame#DIALOG" />
 
 		<execute macro="LAR#_export">
+			<var name="exportIndividualDeletions" value="${exportIndividualDeletions}" />
 			<var name="exportPermissions" value="${exportPermissions}" />
 			<var name="larFileName" value="${larFileName}" />
+			<var name="portletName" value="${portletName}" />
 		</execute>
 
 		<execute function="Click" locator1="Icon#CLOSE" />
@@ -583,9 +616,11 @@
 		<execute macro="LAR#_selectImportFile">
 			<var name="cannotImport" value="${cannotImport}" />
 			<var name="failureExpected" value="${failureExpected}" />
+			<var name="importDeletions" value="${importDeletions}" />
 			<var name="importPermissions" value="${importPermissions}" />
 			<var name="larFileName" value="${larFileName}" />
 			<var name="mirrorWithOverwriting" value="${mirrorWithOverwriting}" />
+			<var name="portletName" value="${portletName}" />
 			<var name="uploadFrom" value="${uploadFrom}" />
 		</execute>
 
@@ -632,13 +667,15 @@
 		<execute function="AssertElementPresent" locator1="Message#SUCCESS" />
 	</command>
 
-	<command name="orderByCompletionDate">
-		<execute function="Pause" locator1="1000" />
+	<command name="openExportAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/${siteURLKey}/~/control_panel/manage?p_p_id=com_liferay_exportimport_web_portlet_ExportPortlet" />
+		</execute>
+	</command>
 
-		<execute function="Click" locator1="Dropdown#FILTER_ORDER" />
-
-		<execute macro="MenuItem#click">
-			<var name="menuItem" value="Completion Date" />
+	<command name="openImportAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/${siteURLKey}/~/control_panel/manage?p_p_id=com_liferay_exportimport_web_portlet_ImportPortlet" />
 		</execute>
 	</command>
 
@@ -858,8 +895,10 @@
 
 		<execute macro="Portlet#addPG">
 			<var name="i" value="${i}" />
-			<var name="portletName" value="User Segment Content List" />
+			<var name="portletName" value="Asset Publisher" />
 		</execute>
+
+		<execute macro="AssetPublisherPortlet#enableUserSegementFilter" />
 	</command>
 
 	<command name="viewExportTemplateCP">

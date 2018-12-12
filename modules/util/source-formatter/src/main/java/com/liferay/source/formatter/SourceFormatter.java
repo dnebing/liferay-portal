@@ -37,6 +37,8 @@ import com.liferay.source.formatter.util.DebugUtil;
 import com.liferay.source.formatter.util.FileUtil;
 import com.liferay.source.formatter.util.SourceFormatterUtil;
 
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -67,10 +69,13 @@ import org.dom4j.DocumentException;
  */
 public class SourceFormatter {
 
-	public static final ExcludeSyntaxPattern[]
-		DEFAULT_EXCLUDE_SYNTAX_PATTERNS = {
+	public static final ExcludeSyntaxPattern[] DEFAULT_EXCLUDE_SYNTAX_PATTERNS =
+		{
 			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/.git/**"),
 			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/.gradle/**"),
+			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/.idea/**"),
+			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/.m2/**"),
+			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/.settings/**"),
 			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/bin/**"),
 			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/build/**"),
 			new ExcludeSyntaxPattern(ExcludeSyntax.GLOB, "**/classes/**"),
@@ -233,13 +238,23 @@ public class SourceFormatter {
 
 			sourceFormatter.format();
 		}
-		catch (GitException ge) {
-			System.out.println(ge.getMessage());
-
-			System.exit(0);
-		}
 		catch (Exception e) {
-			ArgumentsUtil.processMainException(arguments, e);
+			if (e instanceof GitException) {
+				System.out.println(e.getMessage());
+			}
+			else {
+				CheckstyleException checkstyleException =
+					_getNestedCheckstyleException(e);
+
+				if (checkstyleException != null) {
+					checkstyleException.printStackTrace();
+				}
+				else {
+					e.printStackTrace();
+				}
+			}
+
+			System.exit(1);
 		}
 	}
 
@@ -267,6 +282,7 @@ public class SourceFormatter {
 
 		_progressStatusThread.start();
 
+		_sourceProcessors.add(new BNDRunSourceProcessor());
 		_sourceProcessors.add(new BNDSourceProcessor());
 		_sourceProcessors.add(new CodeownersSourceProcessor());
 		_sourceProcessors.add(new ConfigSourceProcessor());
@@ -285,6 +301,7 @@ public class SourceFormatter {
 		_sourceProcessors.add(new JSSourceProcessor());
 		_sourceProcessors.add(new MarkdownSourceProcessor());
 		_sourceProcessors.add(new PackageinfoSourceProcessor());
+		_sourceProcessors.add(new PoshiSourceProcessor());
 		_sourceProcessors.add(new PropertiesSourceProcessor());
 		_sourceProcessors.add(new SHSourceProcessor());
 		_sourceProcessors.add(new SoySourceProcessor());
@@ -410,6 +427,24 @@ public class SourceFormatter {
 
 	public List<SourceMismatchException> getSourceMismatchExceptions() {
 		return _sourceMismatchExceptions;
+	}
+
+	private static CheckstyleException _getNestedCheckstyleException(
+		Exception e) {
+
+		Throwable cause = e;
+
+		while (true) {
+			if (cause == null) {
+				return null;
+			}
+
+			if (cause instanceof CheckstyleException) {
+				return (CheckstyleException)cause;
+			}
+
+			cause = cause.getCause();
+		}
 	}
 
 	private void _addDependentFileNames() {
@@ -849,7 +884,7 @@ public class SourceFormatter {
 						}
 					}
 					else if (progressStatus.equals(
-								 ProgressStatus.CHECK_FILE_COMPLETED)) {
+								ProgressStatus.CHECK_FILE_COMPLETED)) {
 
 						processedChecksFileCount++;
 
@@ -866,7 +901,7 @@ public class SourceFormatter {
 							totalChecksFileCount);
 					}
 					else if (progressStatus.equals(
-								 ProgressStatus.SOURCE_FORMAT_COMPLETED)) {
+								ProgressStatus.SOURCE_FORMAT_COMPLETED)) {
 
 						if (_maxStatusMessageLength == -1) {
 							break;

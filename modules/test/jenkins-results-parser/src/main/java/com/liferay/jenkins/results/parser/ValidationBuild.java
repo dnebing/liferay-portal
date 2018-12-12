@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.dom4j.Element;
 
 import org.json.JSONObject;
@@ -61,16 +63,45 @@ public class ValidationBuild extends BaseBuild {
 			Element taskSummaryListElement = Dom4JUtil.getNewElement(
 				"ul", rootElement);
 
+			List<String> junitTaskNames = new ArrayList<>();
+
 			for (int i = 1; i < consoleSnippets.length; i++) {
 				String consoleSnippet = consoleSnippets[i];
 
 				if (consoleSnippet.contains("merge-test-results:")) {
+					junitTaskNames.add(getTaskName(consoleSnippet));
+
 					continue;
 				}
 
 				Dom4JUtil.addToElement(
 					taskSummaryListElement,
 					getTaskSummaryIndexElement(consoleSnippet));
+			}
+
+			if (!junitTaskNames.isEmpty()) {
+				List<TestResult> testResults = getTestResults(null);
+
+				String taskResult = "SUCCESSFUL";
+
+				Element messageElement = null;
+
+				for (TestResult testResult : testResults) {
+					if (testResult.isFailing()) {
+						taskResult = "FAILED";
+
+						messageElement = Dom4JUtil.toCodeSnippetElement(
+							"Test failures detected. See below for details.");
+
+						break;
+					}
+				}
+
+				Dom4JUtil.addToElement(
+					taskSummaryListElement,
+					getTaskSummaryIndexElement(
+						StringUtils.join(junitTaskNames, "/"), taskResult,
+						messageElement));
 			}
 
 			Dom4JUtil.addToElement(
@@ -197,20 +228,24 @@ public class ValidationBuild extends BaseBuild {
 		return resultMessageElement;
 	}
 
+	protected String getTaskName(String console) {
+		return console.substring(0, console.indexOf("\n"));
+	}
+
 	protected String getTaskResultIcon(String result) {
 		if (result.equals("FAILED")) {
 			return " :x:";
 		}
 
 		if (result.equals("SUCCESSFUL")) {
-			return " :white_check_mark:";
+			return " :heavy_check_mark:";
 		}
 
 		return "";
 	}
 
 	protected Element getTaskSummaryIndexElement(String console) {
-		String taskName = console.substring(0, console.indexOf("\n"));
+		String taskName = getTaskName(console);
 
 		Matcher matcher = _consoleResultPattern.matcher(console);
 
@@ -220,11 +255,7 @@ public class ValidationBuild extends BaseBuild {
 			taskResult = matcher.group(1);
 		}
 
-		Element taskSummaryIndexElement = Dom4JUtil.getNewElement("li", null);
-
-		Dom4JUtil.addToElement(
-			taskSummaryIndexElement, taskName, " - ",
-			getTaskResultIcon(taskResult));
+		Element messageElement = null;
 
 		if (taskResult.equals("FAILED")) {
 			if (taskName.contains("subrepository-source-format")) {
@@ -232,23 +263,27 @@ public class ValidationBuild extends BaseBuild {
 					sourceFormatFailureMessageGenerator =
 						new SourceFormatFailureMessageGenerator();
 
-				Dom4JUtil.addToElement(
-					taskSummaryIndexElement,
-					sourceFormatFailureMessageGenerator.getMessageElement(
-						this));
-
-				return taskSummaryIndexElement;
+				messageElement =
+					sourceFormatFailureMessageGenerator.getMessageElement(this);
 			}
+			else {
+				GenericFailureMessageGenerator genericFailureMessageGenerator =
+					new GenericFailureMessageGenerator();
 
-			GenericFailureMessageGenerator genericFailureMessageGenerator =
-				new GenericFailureMessageGenerator();
-
-			Dom4JUtil.addToElement(
-				taskSummaryIndexElement,
-				genericFailureMessageGenerator.getMessageElement(console));
+				messageElement =
+					genericFailureMessageGenerator.getMessageElement(console);
+			}
 		}
 
-		return taskSummaryIndexElement;
+		return getTaskSummaryIndexElement(taskName, taskResult, messageElement);
+	}
+
+	protected Element getTaskSummaryIndexElement(
+		String taskName, String taskResult, Element messageElement) {
+
+		return Dom4JUtil.getNewElement(
+			"li", null, taskName, " - ", getTaskResultIcon(taskResult),
+			messageElement);
 	}
 
 	protected Element getTestSummaryElement() {
@@ -281,15 +316,9 @@ public class ValidationBuild extends BaseBuild {
 			List<Element> failureElements = new ArrayList<>();
 
 			for (TestResult testResult : getTestResults(null)) {
-				String testStatus = testResult.getStatus();
-
-				if (testStatus.equals("FIXED") || testStatus.equals("PASSED") ||
-					testStatus.equals("SKIPPED")) {
-
-					continue;
+				if (testResult.isFailing()) {
+					failureElements.add(testResult.getGitHubElement());
 				}
-
-				failureElements.add(testResult.getGitHubElement());
 			}
 
 			if (!failureElements.isEmpty()) {

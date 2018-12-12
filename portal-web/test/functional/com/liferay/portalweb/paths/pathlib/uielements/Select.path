@@ -14,6 +14,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>ASSIGNMENT_TYPE</td>
+	<td>//select[@name='assignmentType']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>PERMISSIONS_VIEW_ROLE</td>
 	<td>//select[contains(.,'${key_permissionsViewRole}')]</td>
 	<td></td>
@@ -24,18 +29,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>AVAILABLE</td>
-	<td>//div[label[contains(.,'Available')]]/select</td>
-	<td></td>
-</tr>
-<tr>
 	<td>BLOGS_RATING</td>
 	<td>//select[contains(@id,'blogs')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BULLET_STYLE</td>
-	<td>//div[label[contains(.,'Bullet Style')]]/select</td>
 	<td></td>
 </tr>
 <tr>
@@ -55,7 +50,7 @@
 </tr>
 <tr>
 	<td>DEFAULT_LANGUAGE</td>
-	<td>//div[contains(.,'Default Language')]//select</td>
+	<td>//select[contains(@id,'languageId')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -74,11 +69,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>DOCUMENT_TYPE</td>
-	<td>//select[contains(@id,'fileEntryTypeId')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>FEED_ITEM_CONTENT</td>
 	<td>//select[contains(@id,'contentFieldSelector')]</td>
 	<td></td>
@@ -89,28 +79,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>EXPORT_IMPORT_CONTENT</td>
-	<td>//select[contains(@id,'PORTLET_DATA')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>GENDER</td>
-	<td>//div[label[contains(.,'Gender')]]/select</td>
-	<td></td>
-</tr>
-<tr>
 	<td>GENERIC_SELECT_FIELD</td>
 	<td>//div[label[contains(.,'${key_fieldLabel}')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>HEADER</td>
-	<td>//div[label[contains(.,'Header')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>INCLUDED_PAGES</td>
-	<td>//div[label[contains(.,'Included Pages')]]/select</td>
 	<td></td>
 </tr>
 <tr>
@@ -119,38 +89,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>LANGUAGE</td>
-	<td>//div[label[contains(.,'Language')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>LAST_TIME</td>
-	<td>//select[contains(@id, 'last')]/option[contains(.,'${key_lastDateRange}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>LOCKOUT_DURATION</td>
-	<td>//div[label[contains(.,'Lockout Duration')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>MINIMUM_AGE</td>
-	<td>//div[label[contains(.,'Minimum Age')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>NESTED_CHILDREN</td>
-	<td>//div[label[contains(.,'Nested Children')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>NEW_NODE</td>
-	<td>//div[label[contains(.,'New Node')]]/select</td>
+	<td>LOS_ANGELES_TIME_ZONE</td>
+	<td>//select[contains(@id,'timeZoneId')]/option[@value='America/Los_Angeles']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>NEW_PARENT</td>
 	<td>//div[label[contains(.,'New Parent')]]/select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_DELTA</td>
+	<td>//select[contains(@id,'pageDelta')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PERMISSIONS</td>
+	<td>//select[contains(@id,'inputPermissionsViewRole')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -164,28 +119,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>REMOTE_PORTLET</td>
-	<td>//div[label[contains(.,'Remote Portlet')]]/select</td>
+	<td>REPORT_FORMAT</td>
+	<td>//select[contains(@id,'AdminPortlet_format')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>RESET_FAILURE_COUNT</td>
-	<td>//div[label[contains(.,'Reset Failure Count')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>RESET_TICKET_MAX_AGE</td>
-	<td>//div[label[contains(.,'Reset Ticket Max Age')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>ROOT_PAGE</td>
-	<td>//div[label[contains(.,'Root Page')]]/select</td>
-	<td></td>
-</tr>
-<tr>
-	<td>ROOT_PAGE_LEVEL</td>
-	<td>//div[label[contains(.,'Root Page Level')]]/select</td>
+	<td>SAML_NAME_IDENTIFIER_FORMAT_SELECT</td>
+	<td>//select[contains(@id,'SamlAdminPortlet_nameIdFormat')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -214,8 +154,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>VERSION</td>
-	<td>//div[label[contains(.,'Version')]]/select</td>
+	<td>WORKFLOW_DEFAULT</td>
+	<td>//select[contains(@id,'workflowDefinition-1')]</td>
 	<td></td>
 </tr>
 </tbody>

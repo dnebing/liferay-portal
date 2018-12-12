@@ -10,11 +10,6 @@
 <tbody>
 <!--NAVIGATION-->
 <tr>
-	<td>NAVIGATION_EMAIL_FROM</td>
-	<td>//ul[contains(@class,'nav') and contains(@class,'nav-tabs')]/li/a[contains(.,'Email From')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>NAVIGATION_DELIVERY_EMAIL</td>
 	<td>//ul[contains(@class,'nav') and contains(@class,'nav-tabs')]/li/a[contains(.,'Delivery Email')]</td>
 	<td></td>
@@ -24,28 +19,6 @@
 	<td>//ul[contains(@class,'nav') and contains(@class,'nav-tabs')]/li/a[contains(.,'Notifications Email')]</td>
 	<td></td>
 </tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--EMAIL_FROM-->
-<tr>
-	<td>EMAIL_FROM_NAME_FIELD</td>
-	<td>//input[contains(@id,'emailFromName')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>EMAIL_FROM_ADDRESS_FIELD</td>
-	<td>//input[contains(@id,'emailFromAddress')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--DELIVERY_EMAIL-->
 <tr>
 	<td></td>
 	<td></td>

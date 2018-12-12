@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.ClassNameUtil;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.InfrastructureUtil;
 import com.liferay.portal.model.impl.ClassNameImpl;
 import com.liferay.portal.spring.hibernate.PortletTransactionManager;
@@ -62,12 +63,14 @@ public class TransactionInterceptorTest {
 		MockPlatformTransactionManager platformTransactionManagerWrapper =
 			new MockPlatformTransactionManager(hibernateTransactionManager);
 
-		TransactionInterceptor transactionInterceptor =
-			(TransactionInterceptor)PortalBeanLocatorUtil.locate(
-				"transactionAdvice");
+		TransactionExecutor transactionExecutor =
+			(TransactionExecutor)PortalBeanLocatorUtil.locate(
+				"transactionExecutor");
 
-		transactionInterceptor.setPlatformTransactionManager(
-			platformTransactionManagerWrapper);
+		PlatformTransactionManager platformTransactionManager =
+			ReflectionTestUtil.getAndSetFieldValue(
+				transactionExecutor, "_platformTransactionManager",
+				platformTransactionManagerWrapper);
 
 		try {
 			ClassNameLocalServiceUtil.addClassName(className);
@@ -79,8 +82,9 @@ public class TransactionInterceptorTest {
 				"MockPlatformTransactionManager", re.getMessage());
 		}
 		finally {
-			transactionInterceptor.setPlatformTransactionManager(
-				hibernateTransactionManager);
+			ReflectionTestUtil.setFieldValue(
+				transactionExecutor, "_platformTransactionManager",
+				platformTransactionManager);
 		}
 
 		ClassName cachedClassName = (ClassName)EntityCacheUtil.getResult(

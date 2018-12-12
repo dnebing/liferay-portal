@@ -15,6 +15,8 @@
 package com.liferay.portal.verify;
 
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
+import com.liferay.portal.kernel.dao.db.DB;
+import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.util.LoggingTimer;
@@ -76,6 +78,24 @@ public class VerifyUUID extends VerifyProcess {
 
 	protected void verifyUUID(VerifiableUUIDModel verifiableUUIDModel)
 		throws Exception {
+
+		DB db = DBManagerUtil.getDB();
+
+		if (db.isSupportsNewUuidFunction()) {
+			try (LoggingTimer loggingTimer = new LoggingTimer(
+					verifiableUUIDModel.getTableName());
+				Connection con = DataAccess.getConnection();
+				PreparedStatement ps = con.prepareStatement(
+					StringBundler.concat(
+						"update ", verifiableUUIDModel.getTableName(),
+						" set uuid_ = ", db.getNewUuidFunctionName(),
+						" where uuid_ is null or uuid_ = ''"))) {
+
+				ps.executeUpdate();
+
+				return;
+			}
+		}
 
 		StringBundler sb = new StringBundler(5);
 

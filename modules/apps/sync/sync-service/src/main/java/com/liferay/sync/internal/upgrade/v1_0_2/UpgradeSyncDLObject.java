@@ -24,7 +24,6 @@ import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
@@ -67,45 +66,32 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 				_groupLocalService.getActionableDynamicQuery();
 
 			actionableDynamicQuery.setAddCriteriaMethod(
-				new ActionableDynamicQuery.AddCriteriaMethod() {
+				dynamicQuery -> {
+					Property classNameId = PropertyFactoryUtil.forName(
+						"classNameId");
+					Property siteProperty = PropertyFactoryUtil.forName("site");
 
-					@Override
-					public void addCriteria(DynamicQuery dynamicQuery) {
-						Property classNameId = PropertyFactoryUtil.forName(
-							"classNameId");
-						Property siteProperty = PropertyFactoryUtil.forName(
-							"site");
-
-						dynamicQuery.add(
-							RestrictionsFactoryUtil.or(
-								classNameId.eq(
-									PortalUtil.getClassNameId(User.class)),
-								siteProperty.eq(true)));
-					}
-
+					dynamicQuery.add(
+						RestrictionsFactoryUtil.or(
+							classNameId.eq(
+								PortalUtil.getClassNameId(User.class)),
+							siteProperty.eq(true)));
 				});
 			actionableDynamicQuery.setPerformActionMethod(
-				new ActionableDynamicQuery.PerformActionMethod<Group>() {
-
-					@Override
-					public void performAction(Group group)
-						throws PortalException {
-
-						if (group.isStaged()) {
-							return;
-						}
-
-						try {
-							verifyDLFileEntriesAndFolders(group.getGroupId());
-
-							verifyLocks(group.getGroupId());
-							verifyMacPackages(group.getGroupId());
-						}
-						catch (Exception e) {
-							throw new PortalException(e);
-						}
+				(Group group) -> {
+					if (group.isStaged()) {
+						return;
 					}
 
+					try {
+						verifyDLFileEntriesAndFolders(group.getGroupId());
+
+						verifyLocks(group.getGroupId());
+						verifyMacPackages(group.getGroupId());
+					}
+					catch (Exception e) {
+						throw new PortalException(e);
+					}
 				});
 
 			actionableDynamicQuery.performActions();
@@ -296,7 +282,6 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 			ResultSet rs = ps1.executeQuery()) {
 
 			while (rs.next()) {
-				long folderId = rs.getLong("folderId");
 				String name = rs.getString("name");
 
 				String extension = FileUtil.getExtension(name);
@@ -316,7 +301,7 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 
 				ps2.setString(1, extraSettingsJSONObject.toString());
 
-				ps2.setLong(2, folderId);
+				ps2.setLong(2, rs.getLong("folderId"));
 
 				ps2.addBatch();
 			}

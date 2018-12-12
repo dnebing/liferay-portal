@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.exception.RequiredGroupException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -397,7 +398,7 @@ public class SiteAdminPortlet extends MVCPortlet {
 			include("/error.jsp", renderRequest, renderResponse);
 		}
 		else if (SessionErrors.contains(
-					 renderRequest, NoSuchLayoutSetException.class.getName())) {
+					renderRequest, NoSuchLayoutSetException.class.getName())) {
 
 			include("/view.jsp", renderRequest, renderResponse);
 		}
@@ -668,8 +669,6 @@ public class SiteAdminPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		long userId = portal.getUserId(actionRequest);
-
 		long liveGroupId = ParamUtil.getLong(actionRequest, "liveGroupId");
 
 		long parentGroupId = ParamUtil.getLong(
@@ -679,7 +678,6 @@ public class SiteAdminPortlet extends MVCPortlet {
 		Map<Locale, String> descriptionMap = null;
 		int type = 0;
 		String friendlyURL = null;
-		String name = null;
 		boolean inheritContent = false;
 		boolean active = false;
 		boolean manualMembership = true;
@@ -708,7 +706,7 @@ public class SiteAdminPortlet extends MVCPortlet {
 
 			// Add group
 
-			name = ParamUtil.getString(actionRequest, "name");
+			String name = ParamUtil.getString(actionRequest, "name");
 			nameMap = LocalizationUtil.getLocalizationMap(
 				actionRequest, "name");
 			descriptionMap = LocalizationUtil.getLocalizationMap(
@@ -721,6 +719,7 @@ public class SiteAdminPortlet extends MVCPortlet {
 			inheritContent = ParamUtil.getBoolean(
 				actionRequest, "inheritContent");
 			active = ParamUtil.getBoolean(actionRequest, "active", true);
+			long userId = portal.getUserId(actionRequest);
 
 			if (Validator.isNotNull(name)) {
 				nameMap.put(LocaleUtil.getDefault(), name);
@@ -872,6 +871,16 @@ public class SiteAdminPortlet extends MVCPortlet {
 		UnicodeProperties formTypeSettingsProperties =
 			PropertiesParamUtil.getProperties(
 				actionRequest, "TypeSettingsProperties--");
+
+		if (GetterUtil.getBoolean(
+				formTypeSettingsProperties.getProperty("inheritLocales"))) {
+
+			formTypeSettingsProperties.setProperty(
+				PropsKeys.LOCALES,
+				StringUtil.merge(
+					LocaleUtil.toLanguageIds(
+						LanguageUtil.getAvailableLocales())));
+		}
 
 		typeSettingsProperties.putAll(formTypeSettingsProperties);
 
@@ -1029,7 +1038,7 @@ public class SiteAdminPortlet extends MVCPortlet {
 			}
 		}
 		else if (creationType.equals(
-					 SiteAdminConstants.CREATION_TYPE_INITIALIZER)) {
+					SiteAdminConstants.CREATION_TYPE_INITIALIZER)) {
 
 			String siteInitializerKey = ParamUtil.getString(
 				actionRequest, "siteInitializerKey");

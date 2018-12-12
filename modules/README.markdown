@@ -73,6 +73,12 @@ module with `ant all` and the other marker files choose the deploy directory.
 
 ## Marker Files
 
+### Baseline
+
+File Name | Description
+--------- | -----------
+`.lfrbuild-packageinfo` | Ignores specified baseline warnings: `EXCESSIVE-VERSION-INCREASE`, `PACKAGE-ADDED-MISSING-PACKAGEINFO`, `PACKAGE-REMOVED`, `PACKAGE-REMOVED-UNNECESSARY-PACKAGEINFO`, `VERSION-INCREASE-REQUIRED`, `VERSION-INCREASE-SUGGESTED`. Adding the suffix `-RECURSIVE` (i.e., `EXCESSIVE-VERSION-INCREASE-RECURSIVE`) will apply the ignored warning to the current directory and all child directories.
+
 ### Build
 
 File Name | Description
@@ -93,6 +99,7 @@ File Name | Description
 File Name | Description
 --------- | -----------
 `.lfrbuild-ci` | Deploys the module during the `ant all` execution, but only if running in Jenkins.
+`.lfrbuild-ci-skip-test-integration-check` | When on Jenkins, prevent the `testIntegration` task from failing if a project defined in the `testIntegrationCompile` configuration should not be deployed and has this marker file.
 `.lfrbuild-semantic-versioning` | Enables the semantic versioning check of the module on CI. `apps` and `core` modules are already checked, so they don't need this marker file.
 
 ### Deploy Directory

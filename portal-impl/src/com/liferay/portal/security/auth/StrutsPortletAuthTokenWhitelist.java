@@ -82,12 +82,12 @@ public class StrutsPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 		String strutsAction = request.getParameter(
 			namespace.concat("struts_action"));
 
-		String rootPortletId = PortletIdCodec.decodePortletName(portletId);
-
 		if (Validator.isNotNull(strutsAction)) {
 			if (_portletCSRFWhitelist.contains(strutsAction) &&
 				isValidStrutsAction(
-					portlet.getCompanyId(), rootPortletId, strutsAction)) {
+					portlet.getCompanyId(),
+					PortletIdCodec.decodePortletName(portletId),
+					strutsAction)) {
 
 				return true;
 			}
@@ -134,8 +134,6 @@ public class StrutsPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 		}
 
 		if (_portletCSRFWhitelist.contains(strutsAction)) {
-			long companyId = 0;
-
 			long plid = liferayPortletURL.getPlid();
 
 			Layout layout = LayoutLocalServiceUtil.fetchLayout(plid);
@@ -152,7 +150,7 @@ public class StrutsPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 
 			String rootPortletId = PortletIdCodec.decodePortletName(portletId);
 
-			if (isValidStrutsAction(companyId, rootPortletId, strutsAction)) {
+			if (isValidStrutsAction(0, rootPortletId, strutsAction)) {
 				return true;
 			}
 		}
@@ -171,8 +169,6 @@ public class StrutsPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 		}
 
 		if (_portletInvocationWhitelist.contains(strutsAction)) {
-			long companyId = 0;
-
 			long plid = liferayPortletURL.getPlid();
 
 			Layout layout = LayoutLocalServiceUtil.fetchLayout(plid);
@@ -187,7 +183,7 @@ public class StrutsPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 
 			String portletId = liferayPortletURL.getPortletId();
 
-			if (isValidStrutsAction(companyId, portletId, strutsAction)) {
+			if (isValidStrutsAction(0, portletId, strutsAction)) {
 				return true;
 			}
 		}

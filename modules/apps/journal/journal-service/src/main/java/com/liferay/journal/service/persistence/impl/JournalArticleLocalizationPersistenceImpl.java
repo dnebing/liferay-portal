@@ -680,6 +680,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	@Override
 	public JournalArticleLocalization fetchByA_L(long articlePK,
 		String languageId, boolean retrieveFromCache) {
+		languageId = Objects.toString(languageId, "");
+
 		Object[] finderArgs = new Object[] { articlePK, languageId };
 
 		Object result = null;
@@ -708,10 +710,7 @@ public class JournalArticleLocalizationPersistenceImpl
 
 			boolean bindLanguageId = false;
 
-			if (languageId == null) {
-				query.append(_FINDER_COLUMN_A_L_LANGUAGEID_1);
-			}
-			else if (languageId.equals("")) {
+			if (languageId.isEmpty()) {
 				query.append(_FINDER_COLUMN_A_L_LANGUAGEID_3);
 			}
 			else {
@@ -794,6 +793,8 @@ public class JournalArticleLocalizationPersistenceImpl
 	 */
 	@Override
 	public int countByA_L(long articlePK, String languageId) {
+		languageId = Objects.toString(languageId, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_A_L;
 
 		Object[] finderArgs = new Object[] { articlePK, languageId };
@@ -809,10 +810,7 @@ public class JournalArticleLocalizationPersistenceImpl
 
 			boolean bindLanguageId = false;
 
-			if (languageId == null) {
-				query.append(_FINDER_COLUMN_A_L_LANGUAGEID_1);
-			}
-			else if (languageId.equals("")) {
+			if (languageId.isEmpty()) {
 				query.append(_FINDER_COLUMN_A_L_LANGUAGEID_3);
 			}
 			else {
@@ -862,6 +860,9 @@ public class JournalArticleLocalizationPersistenceImpl
 
 	public JournalArticleLocalizationPersistenceImpl() {
 		setModelClass(JournalArticleLocalization.class);
+
+		setModelImplClass(JournalArticleLocalizationImpl.class);
+		setEntityCacheEnabled(JournalArticleLocalizationModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1238,55 +1239,6 @@ public class JournalArticleLocalizationPersistenceImpl
 	/**
 	 * Returns the journal article localization with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the journal article localization
-	 * @return the journal article localization, or <code>null</code> if a journal article localization with the primary key could not be found
-	 */
-	@Override
-	public JournalArticleLocalization fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(JournalArticleLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-				JournalArticleLocalizationImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		JournalArticleLocalization journalArticleLocalization = (JournalArticleLocalization)serializable;
-
-		if (journalArticleLocalization == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				journalArticleLocalization = (JournalArticleLocalization)session.get(JournalArticleLocalizationImpl.class,
-						primaryKey);
-
-				if (journalArticleLocalization != null) {
-					cacheResult(journalArticleLocalization);
-				}
-				else {
-					entityCache.putResult(JournalArticleLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-						JournalArticleLocalizationImpl.class, primaryKey,
-						nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(JournalArticleLocalizationModelImpl.ENTITY_CACHE_ENABLED,
-					JournalArticleLocalizationImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return journalArticleLocalization;
-	}
-
-	/**
-	 * Returns the journal article localization with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param articleLocalizationId the primary key of the journal article localization
 	 * @return the journal article localization, or <code>null</code> if a journal article localization with the primary key could not be found
 	 */
@@ -1580,6 +1532,11 @@ public class JournalArticleLocalizationPersistenceImpl
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

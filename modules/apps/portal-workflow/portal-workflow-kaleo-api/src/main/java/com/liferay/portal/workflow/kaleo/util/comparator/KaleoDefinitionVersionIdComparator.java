@@ -43,9 +43,8 @@ public class KaleoDefinitionVersionIdComparator
 		if (_ascending) {
 			return value;
 		}
-		else {
-			return -value;
-		}
+
+		return -value;
 	}
 
 	@Override
@@ -53,9 +52,8 @@ public class KaleoDefinitionVersionIdComparator
 		if (_ascending) {
 			return _ORDER_BY_ASC;
 		}
-		else {
-			return _ORDER_BY_DESC;
-		}
+
+		return _ORDER_BY_DESC;
 	}
 
 	@Override
@@ -74,8 +72,9 @@ public class KaleoDefinitionVersionIdComparator
 	private static final String _ORDER_BY_DESC =
 		"KaleoDefinitionVersion.kaleoDefinitionVersionId DESC";
 
-	private static final String[] _ORDER_BY_FIELDS =
-		{"kaleoDefinitionVersionId"};
+	private static final String[] _ORDER_BY_FIELDS = {
+		"kaleoDefinitionVersionId"
+	};
 
 	private final boolean _ascending;
 

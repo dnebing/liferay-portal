@@ -1050,6 +1050,29 @@ public class LayoutLocalServiceWrapper implements LayoutLocalService,
 	}
 
 	/**
+	* Returns a range of all the layouts belonging to the group.
+	*
+	* @param groupId the primary key of the group
+	* @param privateLayout whether the layout is private to the group
+	* @param keywords keywords
+	* @param types layout types
+	* @param start the lower bound of the range of layouts
+	* @param end the upper bound of the range of layouts (not inclusive)
+	* @param obc the comparator to order the layouts
+	* @return the matching layouts, or <code>null</code> if no matches were
+	found
+	*/
+	@Override
+	public java.util.List<com.liferay.portal.kernel.model.Layout> getLayouts(
+		long groupId, boolean privateLayout, String keywords, String[] types,
+		int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portal.kernel.model.Layout> obc)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _layoutLocalService.getLayouts(groupId, privateLayout, keywords,
+			types, start, end, obc);
+	}
+
+	/**
 	* Returns the layout references for all the layouts that belong to the
 	* company and belong to the portlet that matches the preferences.
 	*
@@ -1146,6 +1169,14 @@ public class LayoutLocalServiceWrapper implements LayoutLocalService,
 		boolean privateLayout, long[] layoutIds) {
 		return _layoutLocalService.getLayoutsCount(group, privateLayout,
 			layoutIds);
+	}
+
+	@Override
+	public int getLayoutsCount(com.liferay.portal.kernel.model.Group group,
+		boolean privateLayout, String keywords, String[] types)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _layoutLocalService.getLayoutsCount(group, privateLayout,
+			keywords, types);
 	}
 
 	@Override
@@ -1805,6 +1836,12 @@ public class LayoutLocalServiceWrapper implements LayoutLocalService,
 	public com.liferay.portal.kernel.model.Layout updateLayout(
 		com.liferay.portal.kernel.model.Layout layout) {
 		return _layoutLocalService.updateLayout(layout);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.Layout updateLayout(
+		com.liferay.portal.kernel.model.Layout layout, boolean rebuildTree) {
+		return _layoutLocalService.updateLayout(layout, rebuildTree);
 	}
 
 	/**

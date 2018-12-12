@@ -103,6 +103,11 @@
 	<td>//p[contains(@class,'search-total-label')]</td>
 	<td></td>
 </tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
 <!--FACET_PORTLET-->
 <tr>
 	<td>FACET_PORTLET_CHECKBOX_LABEL_SPECIFIC</td>
@@ -127,6 +132,11 @@
 <tr>
 	<td>FACET_PORTLET_CLEAR_SPECIFIC</td>
 	<td>//div[contains(@class,'search-facet') and contains(@id,'${key_facetClass}')]//a[contains(@onclick,'clearSelections(event);')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
 	<td></td>
 </tr>
 <!--CUSTOM_FACET-->

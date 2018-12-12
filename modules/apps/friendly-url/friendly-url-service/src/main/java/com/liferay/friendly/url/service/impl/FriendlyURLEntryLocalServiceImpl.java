@@ -23,7 +23,6 @@ import com.liferay.friendly.url.service.base.FriendlyURLEntryLocalServiceBaseImp
 import com.liferay.friendly.url.util.comparator.FriendlyURLEntryCreateDateComparator;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -121,11 +120,12 @@ public class FriendlyURLEntryLocalServiceImpl
 
 		friendlyURLEntryMappingPersistence.update(friendlyURLEntryMapping);
 
-		_updateFriendlyURLEntryLocalizations(
-			friendlyURLEntryId, group.getCompanyId(), groupId, classNameId,
-			classPK, urlTitleMap);
+		friendlyURLEntryPersistence.update(friendlyURLEntry);
 
-		return friendlyURLEntryPersistence.update(friendlyURLEntry);
+		_updateFriendlyURLEntryLocalizations(
+			friendlyURLEntry, classNameId, classPK, urlTitleMap);
+
+		return friendlyURLEntry;
 	}
 
 	@Override
@@ -221,44 +221,31 @@ public class FriendlyURLEntryLocalServiceImpl
 			getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Property property = PropertyFactoryUtil.forName("classNameId");
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Property property = PropertyFactoryUtil.forName(
-						"classNameId");
-
-					dynamicQuery.add(property.eq(classNameId));
-				}
-
+				dynamicQuery.add(property.eq(classNameId));
 			});
 		actionableDynamicQuery.setGroupId(groupId);
 		actionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<FriendlyURLEntry>() {
+			(FriendlyURLEntry friendlyURLEntry) -> {
+				friendlyURLEntryLocalizationPersistence.
+					removeByFriendlyURLEntryId(
+						friendlyURLEntry.getFriendlyURLEntryId());
 
-				@Override
-				public void performAction(FriendlyURLEntry friendlyURLEntry)
-					throws PortalException {
+				friendlyURLEntryPersistence.remove(friendlyURLEntry);
 
-					friendlyURLEntryLocalizationPersistence.
-						removeByFriendlyURLEntryId(
-							friendlyURLEntry.getFriendlyURLEntryId());
+				FriendlyURLEntryMapping friendlyURLEntryMapping =
+					friendlyURLEntryMappingPersistence.fetchByC_C(
+						classNameId, friendlyURLEntry.getClassPK());
 
-					friendlyURLEntryPersistence.remove(friendlyURLEntry);
+				if ((friendlyURLEntryMapping != null) &&
+					(friendlyURLEntryMapping.getFriendlyURLEntryId() ==
+						friendlyURLEntry.getFriendlyURLEntryId())) {
 
-					FriendlyURLEntryMapping friendlyURLEntryMapping =
-						friendlyURLEntryMappingPersistence.fetchByC_C(
-							classNameId, friendlyURLEntry.getClassPK());
-
-					if ((friendlyURLEntryMapping != null) &&
-						(friendlyURLEntryMapping.getFriendlyURLEntryId() ==
-							friendlyURLEntry.getFriendlyURLEntryId())) {
-
-						friendlyURLEntryMappingPersistence.remove(
-							friendlyURLEntryMapping);
-					}
+					friendlyURLEntryMappingPersistence.remove(
+						friendlyURLEntryMapping);
 				}
-
 			});
 
 		try {
@@ -412,11 +399,12 @@ public class FriendlyURLEntryLocalServiceImpl
 		friendlyURLEntry.setClassPK(classPK);
 		friendlyURLEntry.setDefaultLanguageId(defaultLanguageId);
 
-		_updateFriendlyURLEntryLocalizations(
-			friendlyURLEntryId, friendlyURLEntry.getCompanyId(),
-			friendlyURLEntry.getGroupId(), classNameId, classPK, urlTitleMap);
+		friendlyURLEntryPersistence.update(friendlyURLEntry);
 
-		return friendlyURLEntryPersistence.update(friendlyURLEntry);
+		_updateFriendlyURLEntryLocalizations(
+			friendlyURLEntry, classNameId, classPK, urlTitleMap);
+
+		return friendlyURLEntry;
 	}
 
 	@Override
@@ -525,8 +513,9 @@ public class FriendlyURLEntryLocalServiceImpl
 	}
 
 	private void _updateFriendlyURLEntryLocalizations(
-		long friendlyURLEntryId, long companyId, long groupId, long classNameId,
-		long classPK, Map<String, String> urlTitleMap) {
+			FriendlyURLEntry friendlyURLEntry, long classNameId, long classPK,
+			Map<String, String> urlTitleMap)
+		throws PortalException {
 
 		for (Map.Entry<String, String> entry : urlTitleMap.entrySet()) {
 			String urlTitle = HttpUtil.decodePath(entry.getValue());
@@ -540,39 +529,24 @@ public class FriendlyURLEntryLocalServiceImpl
 
 			FriendlyURLEntryLocalization existingFriendlyURLEntryLocalization =
 				friendlyURLEntryLocalizationPersistence.fetchByG_C_U(
-					groupId, classNameId, normalizedUrlTitle);
+					friendlyURLEntry.getGroupId(), classNameId,
+					normalizedUrlTitle);
 
 			if ((existingFriendlyURLEntryLocalization != null) &&
 				(existingFriendlyURLEntryLocalization.getClassPK() ==
 					classPK)) {
 
 				existingFriendlyURLEntryLocalization.setFriendlyURLEntryId(
-					friendlyURLEntryId);
+					friendlyURLEntry.getFriendlyURLEntryId());
 
-				friendlyURLEntryLocalizationPersistence.update(
+				updateFriendlyURLLocalization(
 					existingFriendlyURLEntryLocalization);
 
 				continue;
 			}
 
-			long friendlyURLEntryLocalizationId = counterLocalService.increment(
-				FriendlyURLEntryLocalization.class.getName());
-
-			FriendlyURLEntryLocalization friendlyURLEntryLocalization =
-				friendlyURLEntryLocalizationPersistence.create(
-					friendlyURLEntryLocalizationId);
-
-			friendlyURLEntryLocalization.setCompanyId(companyId);
-			friendlyURLEntryLocalization.setFriendlyURLEntryId(
-				friendlyURLEntryId);
-			friendlyURLEntryLocalization.setGroupId(groupId);
-			friendlyURLEntryLocalization.setClassNameId(classNameId);
-			friendlyURLEntryLocalization.setClassPK(classPK);
-			friendlyURLEntryLocalization.setUrlTitle(normalizedUrlTitle);
-			friendlyURLEntryLocalization.setLanguageId(entry.getKey());
-
-			friendlyURLEntryLocalizationPersistence.update(
-				friendlyURLEntryLocalization);
+			updateFriendlyURLEntryLocalization(
+				friendlyURLEntry, entry.getKey(), normalizedUrlTitle);
 		}
 	}
 

@@ -127,13 +127,14 @@ public class UserGroupsAdminPortlet extends MVCPortlet {
 			actionRequest, "publicLayoutSetPrototypeId");
 		long privateLayoutSetPrototypeId = ParamUtil.getLong(
 			actionRequest, "privateLayoutSetPrototypeId");
-		boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-			actionRequest, "publicLayoutSetPrototypeLinkEnabled");
-		boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
-			actionRequest, "privateLayoutSetPrototypeLinkEnabled");
 
 		if ((privateLayoutSetPrototypeId > 0) ||
 			(publicLayoutSetPrototypeId > 0)) {
+
+			boolean publicLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
+				actionRequest, "publicLayoutSetPrototypeLinkEnabled");
+			boolean privateLayoutSetPrototypeLinkEnabled = ParamUtil.getBoolean(
+				actionRequest, "privateLayoutSetPrototypeLinkEnabled");
 
 			SitesUtil.updateLayoutSetPrototypesLinks(
 				userGroup.getGroup(), publicLayoutSetPrototypeId,
@@ -177,14 +178,14 @@ public class UserGroupsAdminPortlet extends MVCPortlet {
 			include("/error.jsp", renderRequest, renderResponse);
 		}
 		else if (SessionErrors.contains(
-					 renderRequest,
-					 RequiredUserGroupException.class.getName())) {
+					renderRequest,
+					RequiredUserGroupException.class.getName())) {
 
 			include("/view.jsp", renderRequest, renderResponse);
 		}
 		else if (SessionErrors.contains(
-					 renderRequest,
-					 DuplicateUserGroupException.class.getName()) ||
+					renderRequest,
+					DuplicateUserGroupException.class.getName()) ||
 				 SessionErrors.contains(
 					 renderRequest, UserGroupNameException.class.getName())) {
 

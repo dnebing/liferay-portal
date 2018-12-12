@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.AuditedModel;
 import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.Resource;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.model.ResourcePermission;
@@ -188,6 +189,9 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	public void addResourcePermissions(String resourceName, String roleName,
 		int scope, long resourceActionBitwiseValue);
 
+	public void copyModelResourcePermissions(long companyId, String name,
+		long oldPrimKey, long newPrimKey) throws PortalException;
+
 	/**
 	* Creates a new resource permission with the primary key. Does not add the resource permission to the database.
 	*
@@ -274,6 +278,7 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	public void deleteResourcePermissions(long companyId, String name,
 		int scope, String primKey) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -282,6 +287,7 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -296,6 +302,7 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -312,6 +319,7 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -321,6 +329,7 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -330,6 +339,7 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 
@@ -660,6 +670,9 @@ public interface ResourcePermissionLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasScopeResourcePermission(long companyId, String name,
 		int scope, long roleId, String actionId) throws PortalException;
+
+	public void initPortletDefaultPermissions(Portlet portlet)
+		throws PortalException;
 
 	/**
 	* Reassigns all the resource permissions from the source role to the

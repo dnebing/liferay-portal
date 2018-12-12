@@ -195,6 +195,7 @@ public class LiferayVideoConverter extends LiferayConverter {
 			int streamIndex = inputIPacket.getStreamIndex();
 
 			IStreamCoder inputIStreamCoder = inputIStreamCoders[streamIndex];
+
 			IStreamCoder outputIStreamCoder = outputIStreamCoders[streamIndex];
 
 			if (outputIStreamCoder == null) {
@@ -217,7 +218,7 @@ public class LiferayVideoConverter extends LiferayConverter {
 					previousPacketSize, streamIndex, timeStampOffset);
 			}
 			else if (inputIStreamCoder.getCodecType() ==
-						 ICodec.Type.CODEC_TYPE_VIDEO) {
+						ICodec.Type.CODEC_TYPE_VIDEO) {
 
 				keyPacketFound = isKeyPacketFound(inputIPacket, keyPacketFound);
 
@@ -290,10 +291,9 @@ public class LiferayVideoConverter extends LiferayConverter {
 		if (outputFormat.equals("mp4")) {
 			return ICodec.findEncodingCodec(ICodec.ID.CODEC_ID_H264);
 		}
-		else {
-			return ICodec.guessEncodingCodec(
-				null, null, outputURL, null, inputICodecType);
-		}
+
+		return ICodec.guessEncodingCodec(
+			null, null, outputURL, null, inputICodecType);
 	}
 
 	protected IRational getVideoFrameRate(IRational originalFrameRate) {

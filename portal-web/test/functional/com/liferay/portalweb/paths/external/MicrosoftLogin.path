@@ -8,16 +8,6 @@
 <tr><td rowspan="1" colspan="3">MicrosoftLogin</td></tr>
 </thead>
 <tbody>
-<tr>
-	<td>PAGE_TITLE</td>
-	<td>title=Sign in to your account</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
 <!--LOGIN-->
 <tr>
 	<td>LOGIN_EMAIL_FIELD</td>

@@ -46,7 +46,6 @@ import java.io.IOException;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,7 +65,7 @@ import org.osgi.service.component.annotations.Reference;
 	service = Servlet.class
 )
 public class DDMDataProviderInstanceParameterSettingsServlet
-	extends HttpServlet {
+	extends BaseDDMFormBuilderServlet {
 
 	protected JSONObject createParametersJSONObject(
 			DDMDataProvider ddmDataProvider, DDMFormValues ddmFormValues)
@@ -82,9 +81,8 @@ public class DDMDataProviderInstanceParameterSettingsServlet
 		}
 
 		DDMDataProviderParameterSettings ddmDataProviderParameterSetting =
-			(DDMDataProviderParameterSettings)
-				DDMFormInstanceFactory.create(
-					ddmDataProvider.getSettings(), ddmFormValues);
+			(DDMDataProviderParameterSettings)DDMFormInstanceFactory.create(
+				ddmDataProvider.getSettings(), ddmFormValues);
 
 		parametersJSONObject.put(
 			"inputs",
@@ -166,8 +164,6 @@ public class DDMDataProviderInstanceParameterSettingsServlet
 				ddmDataProviderInputParameterSetting :
 					ddmDataProviderInputParametersSettings) {
 
-			String label =
-				ddmDataProviderInputParameterSetting.inputParameterLabel();
 			String name =
 				ddmDataProviderInputParameterSetting.inputParameterName();
 			String type = getType(
@@ -176,6 +172,9 @@ public class DDMDataProviderInstanceParameterSettingsServlet
 			if (Validator.isNull(name) || Validator.isNull(type)) {
 				continue;
 			}
+
+			String label =
+				ddmDataProviderInputParameterSetting.inputParameterLabel();
 
 			JSONObject inputJSONObject = _jsonFactory.createJSONObject();
 
@@ -209,8 +208,6 @@ public class DDMDataProviderInstanceParameterSettingsServlet
 				ddmDataProviderOutputParameterSetting :
 					ddmDataProviderOutputParametersSettings) {
 
-			String name =
-				ddmDataProviderOutputParameterSetting.outputParameterName();
 			String path =
 				ddmDataProviderOutputParameterSetting.outputParameterPath();
 			String type = getType(
@@ -219,6 +216,9 @@ public class DDMDataProviderInstanceParameterSettingsServlet
 			if (Validator.isNull(path) || Validator.isNull(type)) {
 				continue;
 			}
+
+			String name =
+				ddmDataProviderOutputParameterSetting.outputParameterName();
 
 			JSONObject outputJSONObject = _jsonFactory.createJSONObject();
 

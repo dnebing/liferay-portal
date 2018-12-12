@@ -29,10 +29,6 @@ PortletURL portletURL = SelectRoleManagementToolbarDisplayContext.getPortletURL(
 SearchContainer roleSearchContainer = SelectRoleManagementToolbarDisplayContext.getRoleSearchContainer(filterManageableRoles);
 %>
 
-<clay:navigation-bar
-	navigationItems='<%= roleDisplayContext.getSelectRoleNavigationItems("regular-roles") %>'
-/>
-
 <clay:management-toolbar
 	clearResultsURL="<%= SelectRoleManagementToolbarDisplayContext.getClearResultsURL() %>"
 	itemsTotal="<%= roleSearchContainer.getTotal() %>"
@@ -54,12 +50,13 @@ SearchContainer roleSearchContainer = SelectRoleManagementToolbarDisplayContext.
 			modelVar="role"
 		>
 			<liferay-ui:search-container-column-text
+				cssClass="table-cell-expand table-cell-minw-200"
 				name="title"
 				value="<%= HtmlUtil.escape(role.getTitle(locale)) %>"
 			/>
 
 			<liferay-ui:search-container-column-text>
-				<c:if test="<%= Validator.isNull(p_u_i_d)|| RoleMembershipPolicyUtil.isRoleAllowed((selUser != null) ? selUser.getUserId() : 0, role.getRoleId()) %>">
+				<c:if test="<%= Validator.isNull(p_u_i_d) || RoleMembershipPolicyUtil.isRoleAllowed((selUser != null) ? selUser.getUserId() : 0, role.getRoleId()) %>">
 
 					<%
 					Map<String, Object> data = new HashMap<String, Object>();

@@ -1,3 +1,5 @@
+task unrollAsmCommonsClasses
+
 configurations {
 	asmCommons {
 		transitive = false
@@ -46,7 +48,7 @@ dependencies {
 	testCompile project(":core:petra:petra-memory")
 }
 
-task unrollAsmCommonsClasses {
+unrollAsmCommonsClasses {
 	dependsOn tasks.compileJava
 
 	doLast {
@@ -87,6 +89,3 @@ task unrollAsmCommonsClasses {
 }
 
 tasks.classes.dependsOn unrollAsmCommonsClasses
-
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"

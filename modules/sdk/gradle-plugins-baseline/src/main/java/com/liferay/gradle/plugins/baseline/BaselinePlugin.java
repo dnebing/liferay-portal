@@ -38,7 +38,6 @@ import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ResolutionStrategy;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
@@ -178,20 +177,12 @@ public class BaselinePlugin implements Plugin<Project> {
 		Dependency dependency = _createDependencyBaseline(
 			newJarTask, majorVersion);
 
-		final Configuration configuration =
+		final Configuration baselineConfiguration =
 			configurationContainer.detachedConfiguration(dependency);
 
-		_configureConfigurationBaseline(configuration);
+		_configureConfigurationBaseline(baselineConfiguration);
 
-		baselineTask.setOldJarFile(
-			new Callable<File>() {
-
-				@Override
-				public File call() throws Exception {
-					return configuration.getSingleFile();
-				}
-
-			});
+		baselineTask.setBaselineConfiguration(baselineConfiguration);
 
 		return baselineTask;
 	}
@@ -238,12 +229,14 @@ public class BaselinePlugin implements Plugin<Project> {
 		return baselineTask;
 	}
 
-	private void _configureConfigurationBaseline(Configuration configuration) {
-		configuration.setTransitive(false);
-		configuration.setVisible(false);
+	private void _configureConfigurationBaseline(
+		Configuration baselineConfiguration) {
+
+		baselineConfiguration.setTransitive(false);
+		baselineConfiguration.setVisible(false);
 
 		ResolutionStrategy resolutionStrategy =
-			configuration.getResolutionStrategy();
+			baselineConfiguration.getResolutionStrategy();
 
 		ComponentSelectionRules componentSelectionRules =
 			resolutionStrategy.getComponentSelection();
@@ -271,7 +264,7 @@ public class BaselinePlugin implements Plugin<Project> {
 
 	private void _configureTaskBaseline(
 		BaselineTask baselineTask, final AbstractArchiveTask newJarTask,
-		final FileCollection oldJarFileCollection,
+		final Configuration baselineConfiguration,
 		BaselineConfigurationExtension baselineConfigurationExtension) {
 
 		VersionNumber lowestBaselineVersionNumber = VersionNumber.parse(
@@ -304,7 +297,7 @@ public class BaselinePlugin implements Plugin<Project> {
 			}
 
 			for (int majorVersion = lowestMajorVersion + 1;
-					majorVersion <= maxMajorVersion; majorVersion++) {
+				 majorVersion <= maxMajorVersion; majorVersion++) {
 
 				BaselineTask majorVersionBaselineTask = _addTaskBaseline(
 					newJarTask, majorVersion);
@@ -320,7 +313,7 @@ public class BaselinePlugin implements Plugin<Project> {
 			}
 		}
 		else if (baselineConfigurationExtension.
-					 isLowestMajorVersionRequired()) {
+					isLowestMajorVersionRequired()) {
 
 			throw new GradleException(
 				"Please configure a lowest major version for " +
@@ -329,15 +322,7 @@ public class BaselinePlugin implements Plugin<Project> {
 
 		baselineTask.dependsOn(newJarTask);
 
-		baselineTask.setOldJarFile(
-			new Callable<File>() {
-
-				@Override
-				public File call() throws Exception {
-					return oldJarFileCollection.getSingleFile();
-				}
-
-			});
+		baselineTask.setBaselineConfiguration(baselineConfiguration);
 	}
 
 	private void _configureTaskBaseline(

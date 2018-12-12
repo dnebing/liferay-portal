@@ -15,7 +15,6 @@
 package com.liferay.portal.kernel.module.framework.service;
 
 import com.liferay.petra.lang.ClassLoaderPool;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.MethodHandler;
 import com.liferay.portal.kernel.util.MethodKey;
 
@@ -31,20 +30,22 @@ public class IdentifiableOSGiServiceInvokerUtil {
 
 		MethodHandler methodHandler = new MethodHandler(method, args);
 
-		String threadContextServletContextName = ClassLoaderPool.getContextName(
-			ClassLoaderUtil.getContextClassLoader());
+		Thread currentThread = Thread.currentThread();
+
+		String contextName = ClassLoaderPool.getContextName(
+			currentThread.getContextClassLoader());
 
 		IdentifiableOSGiService identifiableOSGiService =
 			(IdentifiableOSGiService)targetObject;
 
 		return new MethodHandler(
-			_invokeMethodKey, methodHandler, threadContextServletContextName,
+			_invokeMethodKey, methodHandler, contextName,
 			identifiableOSGiService.getOSGiServiceIdentifier());
 	}
 
 	@SuppressWarnings("unused")
 	private static Object _invoke(
-			MethodHandler methodHandler, String threadContextServletContextName,
+			MethodHandler methodHandler, String contextName,
 			String osgiServiceIdentifier)
 		throws Exception {
 
@@ -57,19 +58,19 @@ public class IdentifiableOSGiServiceInvokerUtil {
 				"Unable to load OSGi service " + osgiServiceIdentifier);
 		}
 
-		ClassLoader contextClassLoader =
-			ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
 
-		ClassLoader classLoader = ClassLoaderPool.getClassLoader(
-			threadContextServletContextName);
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
-		ClassLoaderUtil.setContextClassLoader(classLoader);
+		ClassLoader classLoader = ClassLoaderPool.getClassLoader(contextName);
+
+		currentThread.setContextClassLoader(classLoader);
 
 		try {
 			return methodHandler.invoke(osgiService);
 		}
 		finally {
-			ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+			currentThread.setContextClassLoader(contextClassLoader);
 		}
 	}
 

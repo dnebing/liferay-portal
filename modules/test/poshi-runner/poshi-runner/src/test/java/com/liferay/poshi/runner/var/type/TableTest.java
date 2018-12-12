@@ -14,9 +14,7 @@
 
 package com.liferay.poshi.runner.var.type;
 
-import com.liferay.poshi.runner.PoshiRunner;
-import com.liferay.poshi.runner.PoshiRunnerContext;
-import com.liferay.poshi.runner.selenium.SeleniumUtil;
+import com.liferay.poshi.runner.PoshiRunnerTestCase;
 import com.liferay.poshi.runner.util.TableUtil;
 
 import java.io.File;
@@ -30,10 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,66 +35,34 @@ import org.junit.Test;
 /**
  * @author Yi-Chen Tsai
  */
-public class TableTest extends TestCase {
-
-	public TableTest() throws Exception {
-	}
+public class TableTest extends PoshiRunnerTestCase {
 
 	@Before
 	public void setUp() throws Exception {
 		_rawDataList = TableUtil.getRawDataListFromString(_RAW_DATA_STRING);
 
-		_testBaseDir = new File(_TEST_BASE_DIR_NAME);
-
-		if (!_testBaseDir.exists()) {
-			throw new RuntimeException(
-				"Test directory does not exist: " + _TEST_BASE_DIR_NAME);
-		}
-
-		String[] poshiFileNames = ArrayUtils.addAll(
-			PoshiRunnerContext.POSHI_SUPPORT_FILE_INCLUDES,
-			PoshiRunnerContext.POSHI_TEST_FILE_INCLUDES);
-
-		PoshiRunnerContext.readFiles(poshiFileNames, _TEST_BASE_DIR_NAME);
+		setUpPoshiRunner(_TEST_BASE_DIR_NAME);
 	}
 
 	@Test
 	public void testEchoTablesPoshiScript() throws Exception {
-		PoshiRunner pr = new PoshiRunner(
-			"LocalFile.TableTest#echoTablePoshiScript");
-
-		pr.setUp();
-
-		pr.test();
-
-		SeleniumUtil.stopSelenium();
+		runPoshiTest("TableTest#echoTablePoshiScript");
 	}
 
 	@Test
 	public void testEchoTablesXML() throws Exception {
-		PoshiRunner pr = new PoshiRunner("LocalFile.TableTest#echoTableXML");
-
-		pr.setUp();
-
-		pr.test();
-
-		SeleniumUtil.stopSelenium();
+		runPoshiTest("TableTest#echoTableXML");
 	}
 
 	@Test
 	public void testHashesTable() throws Exception {
-		HashesTable hashesTable = (HashesTable)TableFactory.newTable(
-			_rawDataList, "HashesTable");
-
-		List<Map<String, String>> actual = hashesTable.getTable();
-
-		List<Map<String, String>> expected = new ArrayList<>();
-
 		if (_rawDataList.size() < 2) {
 			return;
 		}
 
 		List<String> rowKeys = _rawDataList.get(0);
+
+		List<Map<String, String>> expected = new ArrayList<>();
 
 		for (int i = 1; i < _rawDataList.size(); i++) {
 			List<String> rowEntries = _rawDataList.get(i);
@@ -113,6 +75,11 @@ public class TableTest extends TestCase {
 
 			expected.add(hashesRow);
 		}
+
+		HashesTable hashesTable = (HashesTable)TableFactory.newTable(
+			_rawDataList, "HashesTable");
+
+		List<Map<String, String>> actual = hashesTable.getTable();
 
 		assertEquals(actual, expected);
 	}
@@ -189,6 +156,5 @@ public class TableTest extends TestCase {
 		"src/test/resources/com/liferay/poshi/runner/dependencies/var/type/";
 
 	private List<List<String>> _rawDataList;
-	private File _testBaseDir;
 
 }

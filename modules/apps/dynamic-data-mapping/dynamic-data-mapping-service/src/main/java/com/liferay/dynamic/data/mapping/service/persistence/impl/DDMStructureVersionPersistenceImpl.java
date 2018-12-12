@@ -677,6 +677,8 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	@Override
 	public DDMStructureVersion fetchByS_V(long structureId, String version,
 		boolean retrieveFromCache) {
+		version = Objects.toString(version, "");
+
 		Object[] finderArgs = new Object[] { structureId, version };
 
 		Object result = null;
@@ -704,10 +706,7 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_S_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_S_V_VERSION_3);
 			}
 			else {
@@ -789,6 +788,8 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	 */
 	@Override
 	public int countByS_V(long structureId, String version) {
+		version = Objects.toString(version, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_S_V;
 
 		Object[] finderArgs = new Object[] { structureId, version };
@@ -804,10 +805,7 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_S_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_S_V_VERSION_3);
 			}
 			else {
@@ -1405,6 +1403,9 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	public DDMStructureVersionPersistenceImpl() {
 		setModelClass(DDMStructureVersion.class);
 
+		setModelImplClass(DDMStructureVersionImpl.class);
+		setEntityCacheEnabled(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -1821,54 +1822,6 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	/**
 	 * Returns the ddm structure version with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the ddm structure version
-	 * @return the ddm structure version, or <code>null</code> if a ddm structure version with the primary key could not be found
-	 */
-	@Override
-	public DDMStructureVersion fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
-				DDMStructureVersionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DDMStructureVersion ddmStructureVersion = (DDMStructureVersion)serializable;
-
-		if (ddmStructureVersion == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmStructureVersion = (DDMStructureVersion)session.get(DDMStructureVersionImpl.class,
-						primaryKey);
-
-				if (ddmStructureVersion != null) {
-					cacheResult(ddmStructureVersion);
-				}
-				else {
-					entityCache.putResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
-						DDMStructureVersionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DDMStructureVersionModelImpl.ENTITY_CACHE_ENABLED,
-					DDMStructureVersionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return ddmStructureVersion;
-	}
-
-	/**
-	 * Returns the ddm structure version with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param structureVersionId the primary key of the ddm structure version
 	 * @return the ddm structure version, or <code>null</code> if a ddm structure version with the primary key could not be found
 	 */
@@ -2166,6 +2119,11 @@ public class DDMStructureVersionPersistenceImpl extends BasePersistenceImpl<DDMS
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

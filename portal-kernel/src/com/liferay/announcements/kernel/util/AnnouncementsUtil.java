@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.model.UserGroupGroupRole;
 import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.UserBag;
 import com.liferay.portal.kernel.security.permission.UserBagFactoryUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
@@ -78,7 +79,7 @@ public class AnnouncementsUtil {
 
 		// General announcements
 
-		scopes.put(Long.valueOf(0), new long[] {0});
+		scopes.put(0L, new long[] {0});
 
 		// Personal announcements
 
@@ -167,7 +168,7 @@ public class AnnouncementsUtil {
 	}
 
 	public static List<Group> getGroups(ThemeDisplay themeDisplay)
-		throws Exception {
+		throws PortalException {
 
 		List<Group> filteredGroups = new ArrayList<>();
 
@@ -189,7 +190,7 @@ public class AnnouncementsUtil {
 	}
 
 	public static List<Organization> getOrganizations(ThemeDisplay themeDisplay)
-		throws Exception {
+		throws PortalException {
 
 		List<Organization> filteredOrganizations = new ArrayList<>();
 
@@ -211,7 +212,7 @@ public class AnnouncementsUtil {
 	}
 
 	public static List<Role> getRoles(ThemeDisplay themeDisplay)
-		throws Exception {
+		throws PortalException {
 
 		List<Role> filteredRoles = new ArrayList<>();
 
@@ -219,22 +220,8 @@ public class AnnouncementsUtil {
 			themeDisplay.getCompanyId());
 
 		for (Role role : roles) {
-			if (role.isTeam()) {
-				Team team = TeamLocalServiceUtil.getTeam(role.getClassPK());
-
-				if (GroupPermissionUtil.contains(
-						themeDisplay.getPermissionChecker(), team.getGroupId(),
-						ActionKeys.MANAGE_ANNOUNCEMENTS) &&
-					RolePermissionUtil.contains(
-						themeDisplay.getPermissionChecker(), team.getGroupId(),
-						role.getRoleId(), ActionKeys.MANAGE_ANNOUNCEMENTS)) {
-
-					filteredRoles.add(role);
-				}
-			}
-			else if (RolePermissionUtil.contains(
-						 themeDisplay.getPermissionChecker(), role.getRoleId(),
-						 ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+			if (hasManageAnnouncementsPermission(
+					role, themeDisplay.getPermissionChecker())) {
 
 				filteredRoles.add(role);
 			}
@@ -243,9 +230,7 @@ public class AnnouncementsUtil {
 		return filteredRoles;
 	}
 
-	public static List<UserGroup> getUserGroups(ThemeDisplay themeDisplay)
-		throws Exception {
-
+	public static List<UserGroup> getUserGroups(ThemeDisplay themeDisplay) {
 		List<UserGroup> filteredUserGroups = new ArrayList<>();
 
 		List<UserGroup> userGroups = UserGroupLocalServiceUtil.getUserGroups(
@@ -262,6 +247,33 @@ public class AnnouncementsUtil {
 		}
 
 		return filteredUserGroups;
+	}
+
+	public static boolean hasManageAnnouncementsPermission(
+			Role role, PermissionChecker permissionChecker)
+		throws PortalException {
+
+		if (role.isTeam()) {
+			Team team = TeamLocalServiceUtil.getTeam(role.getClassPK());
+
+			if (GroupPermissionUtil.contains(
+					permissionChecker, team.getGroupId(),
+					ActionKeys.MANAGE_ANNOUNCEMENTS) &&
+				RolePermissionUtil.contains(
+					permissionChecker, team.getGroupId(), role.getRoleId(),
+					ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+
+				return true;
+			}
+		}
+		else if (RolePermissionUtil.contains(
+					permissionChecker, role.getRoleId(),
+					ActionKeys.MANAGE_ANNOUNCEMENTS)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final long _GROUP_CLASS_NAME_ID = PortalUtil.getClassNameId(

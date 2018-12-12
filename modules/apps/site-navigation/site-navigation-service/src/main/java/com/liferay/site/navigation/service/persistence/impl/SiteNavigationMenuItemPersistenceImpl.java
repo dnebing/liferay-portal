@@ -184,6 +184,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	public List<SiteNavigationMenuItem> findByUuid(String uuid, int start,
 		int end, OrderByComparator<SiteNavigationMenuItem> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -207,7 +209,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SiteNavigationMenuItem siteNavigationMenuItem : list) {
-					if (!Objects.equals(uuid, siteNavigationMenuItem.getUuid())) {
+					if (!uuid.equals(siteNavigationMenuItem.getUuid())) {
 						list = null;
 
 						break;
@@ -231,10 +233,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -419,6 +418,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 		long siteNavigationMenuItemId, String uuid,
 		OrderByComparator<SiteNavigationMenuItem> orderByComparator)
 		throws NoSuchMenuItemException {
+		uuid = Objects.toString(uuid, "");
+
 		SiteNavigationMenuItem siteNavigationMenuItem = findByPrimaryKey(siteNavigationMenuItemId);
 
 		Session session = null;
@@ -465,10 +466,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -588,6 +586,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -601,10 +601,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -720,6 +717,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	@Override
 	public SiteNavigationMenuItem fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -745,10 +744,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -833,6 +829,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -846,10 +844,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -994,6 +989,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 		long companyId, int start, int end,
 		OrderByComparator<SiteNavigationMenuItem> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1021,7 +1018,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SiteNavigationMenuItem siteNavigationMenuItem : list) {
-					if (!Objects.equals(uuid, siteNavigationMenuItem.getUuid()) ||
+					if (!uuid.equals(siteNavigationMenuItem.getUuid()) ||
 							(companyId != siteNavigationMenuItem.getCompanyId())) {
 						list = null;
 
@@ -1046,10 +1043,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1253,6 +1247,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 		long siteNavigationMenuItemId, String uuid, long companyId,
 		OrderByComparator<SiteNavigationMenuItem> orderByComparator)
 		throws NoSuchMenuItemException {
+		uuid = Objects.toString(uuid, "");
+
 		SiteNavigationMenuItem siteNavigationMenuItem = findByPrimaryKey(siteNavigationMenuItemId);
 
 		Session session = null;
@@ -1300,10 +1296,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1429,6 +1422,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1442,10 +1437,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -3213,6 +3205,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 		long siteNavigationMenuId, String name, int start, int end,
 		OrderByComparator<SiteNavigationMenuItem> orderByComparator,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3261,10 +3255,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_S_LIKEN_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_S_LIKEN_NAME_3);
 			}
 			else {
@@ -3466,6 +3457,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 		long siteNavigationMenuItemId, long siteNavigationMenuId, String name,
 		OrderByComparator<SiteNavigationMenuItem> orderByComparator)
 		throws NoSuchMenuItemException {
+		name = Objects.toString(name, "");
+
 		SiteNavigationMenuItem siteNavigationMenuItem = findByPrimaryKey(siteNavigationMenuItemId);
 
 		Session session = null;
@@ -3517,10 +3510,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_S_LIKEN_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_S_LIKEN_NAME_3);
 		}
 		else {
@@ -3645,6 +3635,8 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	 */
 	@Override
 	public int countByS_LikeN(long siteNavigationMenuId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_S_LIKEN;
 
 		Object[] finderArgs = new Object[] { siteNavigationMenuId, name };
@@ -3660,10 +3652,7 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_S_LIKEN_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_S_LIKEN_NAME_3);
 			}
 			else {
@@ -3713,6 +3702,9 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 
 	public SiteNavigationMenuItemPersistenceImpl() {
 		setModelClass(SiteNavigationMenuItem.class);
+
+		setModelImplClass(SiteNavigationMenuItemImpl.class);
+		setEntityCacheEnabled(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -4257,54 +4249,6 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	/**
 	 * Returns the site navigation menu item with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the site navigation menu item
-	 * @return the site navigation menu item, or <code>null</code> if a site navigation menu item with the primary key could not be found
-	 */
-	@Override
-	public SiteNavigationMenuItem fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED,
-				SiteNavigationMenuItemImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SiteNavigationMenuItem siteNavigationMenuItem = (SiteNavigationMenuItem)serializable;
-
-		if (siteNavigationMenuItem == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				siteNavigationMenuItem = (SiteNavigationMenuItem)session.get(SiteNavigationMenuItemImpl.class,
-						primaryKey);
-
-				if (siteNavigationMenuItem != null) {
-					cacheResult(siteNavigationMenuItem);
-				}
-				else {
-					entityCache.putResult(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED,
-						SiteNavigationMenuItemImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SiteNavigationMenuItemModelImpl.ENTITY_CACHE_ENABLED,
-					SiteNavigationMenuItemImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return siteNavigationMenuItem;
-	}
-
-	/**
-	 * Returns the site navigation menu item with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param siteNavigationMenuItemId the primary key of the site navigation menu item
 	 * @return the site navigation menu item, or <code>null</code> if a site navigation menu item with the primary key could not be found
 	 */
@@ -4603,6 +4547,11 @@ public class SiteNavigationMenuItemPersistenceImpl extends BasePersistenceImpl<S
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

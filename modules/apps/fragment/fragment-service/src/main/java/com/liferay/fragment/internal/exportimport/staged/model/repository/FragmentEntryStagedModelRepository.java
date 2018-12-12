@@ -60,7 +60,7 @@ public class FragmentEntryStagedModelRepository
 			fragmentEntry.getFragmentCollectionId(), fragmentEntry.getName(),
 			fragmentEntry.getCss(), fragmentEntry.getHtml(),
 			fragmentEntry.getJs(), fragmentEntry.getPreviewFileEntryId(),
-			fragmentEntry.getStatus(), serviceContext);
+			fragmentEntry.getType(), fragmentEntry.getStatus(), serviceContext);
 	}
 
 	@Override
@@ -90,8 +90,8 @@ public class FragmentEntryStagedModelRepository
 
 	@Override
 	public FragmentEntry fetchMissingReference(String uuid, long groupId) {
-		return
-			(FragmentEntry)_stagedModelRepositoryHelper.fetchMissingReference(
+		return (FragmentEntry)
+			_stagedModelRepositoryHelper.fetchMissingReference(
 				uuid, groupId, this);
 	}
 

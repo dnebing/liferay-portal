@@ -87,7 +87,7 @@ LayoutPageTemplateEntry layoutPageTemplateEntry = (LayoutPageTemplateEntry)row.g
 		<portlet:actionURL name="/layout/edit_layout_page_template_settings" var="editLayoutPageTemplateSettingsURL">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="layoutPageTemplateEntryId" value="<%= String.valueOf(layoutPageTemplateEntry.getLayoutPageTemplateEntryId()) %>" />
-			<portlet:param name="defaultTemplate" value="<%= Boolean.TRUE.toString() %>" />
+			<portlet:param name="defaultTemplate" value="<%= layoutPageTemplateEntry.getDefaultTemplate() ? Boolean.FALSE.toString() : Boolean.TRUE.toString() %>" />
 		</portlet:actionURL>
 
 		<%
@@ -97,6 +97,9 @@ LayoutPageTemplateEntry layoutPageTemplateEntry = (LayoutPageTemplateEntry)row.g
 
 		if ((defaultLayoutPageTemplateEntry != null) && (defaultLayoutPageTemplateEntry.getLayoutPageTemplateEntryId() != layoutPageTemplateEntry.getLayoutPageTemplateEntryId())) {
 			taglibOnClickPrimary = "if (confirm('" + UnicodeLanguageUtil.format(request, "do-you-want-to-replace-x-for-x-as-the-default-display-page", new String[] {layoutPageTemplateEntry.getName(), defaultLayoutPageTemplateEntry.getName()}) + "')) { submitForm(document.hrefFm, '" + editLayoutPageTemplateSettingsURL + "'); } ";
+		}
+		else if (layoutPageTemplateEntry.getDefaultTemplate()) {
+			taglibOnClickPrimary = "if (confirm('" + LanguageUtil.get(request, "unmark-default-confirmation") + "')) { submitForm(document.hrefFm, '" + editLayoutPageTemplateSettingsURL + "'); } ";
 		}
 		%>
 

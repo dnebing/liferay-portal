@@ -240,6 +240,22 @@ public class PoshiRunnerGetterUtil {
 		return className + "." + fileExtension;
 	}
 
+	public static int getLineNumber(Element element) {
+		if (element instanceof PoshiElement) {
+			PoshiElement poshiElement = (PoshiElement)element;
+
+			return poshiElement.getPoshiScriptLineNumber();
+		}
+
+		String lineNumber = element.attributeValue("line-number");
+
+		if (lineNumber != null) {
+			return Integer.valueOf(lineNumber);
+		}
+
+		return -1;
+	}
+
 	public static Object getMethodReturnValue(
 			List<String> args, String className, String methodName,
 			Object object)
@@ -310,7 +326,7 @@ public class PoshiRunnerGetterUtil {
 			String namespace = matcher.group("namespace");
 
 			if (Validator.isNull(namespace)) {
-				namespace = PoshiRunnerContext.getDefaultNamespace();
+				namespace = PoshiRunnerStackTraceUtil.getCurrentNamespace();
 			}
 
 			String className = matcher.group("className");
@@ -332,7 +348,7 @@ public class PoshiRunnerGetterUtil {
 			String namespace = matcher.group("namespace");
 
 			if (Validator.isNull(namespace)) {
-				namespace = PoshiRunnerContext.getDefaultNamespace();
+				namespace = PoshiRunnerStackTraceUtil.getCurrentNamespace();
 			}
 
 			return namespace;
@@ -352,7 +368,7 @@ public class PoshiRunnerGetterUtil {
 			String namespace = matcher.group("namespace");
 
 			if (Validator.isNull(namespace)) {
-				namespace = PoshiRunnerContext.getDefaultNamespace();
+				namespace = PoshiRunnerStackTraceUtil.getCurrentNamespace();
 			}
 
 			return namespace;
@@ -376,23 +392,24 @@ public class PoshiRunnerGetterUtil {
 		String fileContent = FileUtil.read(url);
 		String filePath = url.getFile();
 
+		if (!fileContent.contains("<definition") &&
+			(filePath.endsWith(".function") || filePath.endsWith(".macro") ||
+			 filePath.endsWith(".testcase"))) {
+
+			PoshiNode<?, ?> poshiNode = PoshiNodeFactory.newPoshiNodeFromFile(
+				filePath);
+
+			if (poshiNode instanceof PoshiElement) {
+				return (Element)poshiNode;
+			}
+		}
+
 		if (filePath.endsWith(".prose")) {
 			PoshiProseDefinition poshiProseDefinition =
 				new PoshiProseDefinition(
 					getFileNameFromFilePath(filePath), fileContent);
 
 			fileContent = Dom4JUtil.format(poshiProseDefinition.toElement());
-		}
-
-		if (!fileContent.contains("<definition") &&
-			(filePath.endsWith(".macro") || filePath.endsWith(".testcase"))) {
-
-			PoshiNode<?, ?> poshiNode = PoshiNodeFactory.newPoshiNodeFromFile(
-				filePath);
-
-			if (poshiNode instanceof PoshiElement) {
-				fileContent = Dom4JUtil.format((PoshiElement)poshiNode);
-			}
 		}
 
 		BufferedReader bufferedReader = new BufferedReader(
@@ -508,7 +525,8 @@ public class PoshiRunnerGetterUtil {
 			simpleClassName + " is not a valid simple class name");
 	}
 
-	public static Object getVarMethodValue(String expression, String namespace)
+	public static Object getVarMethodValue(
+			String expression, String defaultNamespace)
 		throws Exception {
 
 		List<String> args = new ArrayList<>();
@@ -531,9 +549,20 @@ public class PoshiRunnerGetterUtil {
 					parameterValue = parameterValue.substring(
 						1, parameterValue.length() - 1);
 				}
-				else if (parameterValue.contains("#")) {
-					parameterValue = PoshiRunnerContext.getPathLocator(
-						parameterValue, namespace);
+
+				Matcher matcher = _locatorKeyPattern.matcher(parameterValue);
+
+				if (matcher.matches()) {
+					String namespace = matcher.group("namespace");
+
+					if (namespace == null) {
+						parameterValue = PoshiRunnerContext.getPathLocator(
+							parameterValue, defaultNamespace);
+					}
+					else {
+						parameterValue = PoshiRunnerContext.getPathLocator(
+							parameterValue, namespace);
+					}
 				}
 
 				if (parameterValue.contains("\'")) {
@@ -566,6 +595,8 @@ public class PoshiRunnerGetterUtil {
 		return false;
 	}
 
+	private static final Pattern _locatorKeyPattern = Pattern.compile(
+		"(?<namespace>[\\w]+\\.)?[\\w]+#[A-Z0-9_]+");
 	private static final Pattern _namespacedClassCommandNamePattern =
 		Pattern.compile(
 			"((?<namespace>\\w+)\\.)?(?<className>\\w+)(\\#(?<commandName>" +
@@ -573,36 +604,35 @@ public class PoshiRunnerGetterUtil {
 	private static final Pattern _parameterPattern = Pattern.compile(
 		"('([^'\\\\]|\\\\.)*'|[^',\\s]+)");
 	private static final List<String> _reservedTags = Arrays.asList(
-		new String[] {
-			"and", "arg", "body", "case", "command", "condition", "contains",
-			"default", "definition", "description", "echo", "else", "elseif",
-			"equals", "execute", "fail", "for", "if", "head", "html", "isset",
-			"not", "off", "on", "or", "property", "prose", "return", "set-up",
-			"table", "take-screenshot", "task", "tbody", "td", "tear-down",
-			"thead", "then", "title", "tr", "var", "while"
-		});
+		"and", "arg", "body", "case", "command", "condition", "contains",
+		"default", "definition", "description", "echo", "else", "elseif",
+		"equals", "execute", "fail", "for", "if", "head", "html", "isset",
+		"not", "off", "on", "or", "property", "prose", "return", "set-up",
+		"table", "take-screenshot", "task", "tbody", "td", "tear-down", "thead",
+		"then", "title", "tr", "var", "while");
 	private static final Pattern _tagPattern = Pattern.compile("<[a-z\\-]+");
-	private static final Map<String, String > _utilityClassMap =
-		new TreeMap<>();
+
+	private static final Map<String, String> _utilityClassMap =
+		new TreeMap<String, String>() {
+			{
+				try {
+					ClassPath classPath = ClassPath.from(
+						PropsUtil.class.getClassLoader());
+
+					for (ClassPath.ClassInfo classInfo :
+							classPath.getTopLevelClasses(
+								"com.liferay.poshi.runner.util")) {
+
+						put(classInfo.getSimpleName(), classInfo.getName());
+					}
+				}
+				catch (IOException ioe) {
+					throw new RuntimeException(ioe);
+				}
+			}
+		};
+
 	private static final Pattern _variablePattern = Pattern.compile(
 		"\\$\\{([^}]*)\\}");
-
-	static {
-		try {
-			ClassPath classPath = ClassPath.from(
-				PropsUtil.class.getClassLoader());
-
-			for (ClassPath.ClassInfo classInfo :
-					classPath.getTopLevelClasses(
-						"com.liferay.poshi.runner.util")) {
-
-				_utilityClassMap.put(
-					classInfo.getSimpleName(), classInfo.getName());
-			}
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-	}
 
 }

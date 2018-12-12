@@ -1,0 +1,500 @@
+<definition component-name="portal-document-management">
+	<property name="portal.release" value="false" />
+	<property name="portal.upstream" value="true" />
+	<property name="custom.properties" value="default.layout.template.id=1_column" />
+	<property name="testray.main.component.name" value="Documents Management" />
+
+	<var name="pageName" value="Documents and Media Page" />
+	<var name="portletName" value="Documents and Media" />
+
+	<set-up>
+		<execute macro="TestCase#setUpPortalInstance" />
+
+		<execute macro="User#firstLoginPG" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="System Settings" />
+		</execute>
+
+		<execute macro="SystemSettings#gotoConfiguration">
+			<var name="configurationCategory" value="Documents and Media" />
+			<var name="configurationName" value="Google Drive" />
+			<var name="configurationScope" value="System Scope" />
+		</execute>
+
+		<var method="PropsUtil#get('google.client.id.1')" name="googleClientID" />
+
+		<execute function="Type" locator1="TextArea#ANY" value1="${googleClientID}">
+			<var name="key_text" value="clientId" />
+		</execute>
+
+		<var method="PropsUtil#get('google.client.secret.1')" name="googleClientSecret" />
+
+		<execute function="Type" locator1="TextArea#ANY" value1="${googleClientSecret}">
+			<var name="key_text" value="clientSecret" />
+		</execute>
+
+		<execute function="ScrollWebElementIntoView" locator1="Button#SAVE" />
+
+		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
+
+		<execute function="AssertElementPresent" locator1="Message#SUCCESS" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="Documents and Media Page" />
+			<var name="sitePageType" value="Widget Page" />
+		</execute>
+
+		<execute macro="SitePages#configurePage">
+			<var name="columnName" value="1 Column" />
+			<var name="pageName" value="Documents and Media Page" />
+			<var name="privacy" value="Public Pages" />
+			<var name="sitePageType" value="Widget Page" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Documents and Media" />
+		</execute>
+
+		<execute macro="DMDocument#enableActionsMenuOnPortlet" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="LexiconEntry#changeDisplayStyle">
+			<var name="displayStyle" value="list" />
+		</execute>
+	</set-up>
+
+	<command name="CancelGoogleDocCreation" priority="5">
+		<description message="This test ensures no document is generated if a user cancels creating a Google Doc." />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#discardChanges" />
+
+		<execute function="AssertElementPresent" locator1="Message#EMPTY_INFO" />
+	</command>
+
+	<command name="CancelGoogleDocEdit" priority="5">
+		<description message="This test ensures the title of a document is not changed if a user cancels editing a Google Doc." />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="This title should not be saved" />
+		</execute>
+
+		<execute macro="GoogleDoc#discardChanges" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="Untitled" />
+	</command>
+
+	<command name="CancelGoogleSheetCreation" priority="5">
+		<description message="This test ensures no document is generated if a user cancels creating a Google Doc." />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Sheets" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#discardChanges" />
+
+		<execute function="AssertElementPresent" locator1="Message#EMPTY_INFO" />
+	</command>
+
+	<command name="CancelGoogleSheetEdit" priority="5">
+		<description message="This test ensures the title of a document is not changed if a user cancels editing a Google Sheet." />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Sheets" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Sheets" />
+		</execute>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="This title should not be saved" />
+		</execute>
+
+		<execute macro="GoogleDoc#discardChanges" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="Untitled" />
+	</command>
+
+	<command name="CancelGoogleSlideCreation" priority="5">
+		<description message="This test ensures no document is generated if a user cancels creating a Google Doc." />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Slides" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#discardChanges" />
+
+		<execute function="AssertElementPresent" locator1="Message#EMPTY_INFO" />
+	</command>
+
+	<command name="CancelGoogleSlideEdit" priority="5">
+		<description message="This test ensures the title of a document is not changed if a user cancels editing a Google Slide." />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Slides" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Slides" />
+		</execute>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="This title should not be saved" />
+		</execute>
+
+		<execute macro="GoogleDoc#discardChanges" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="Untitled" />
+	</command>
+
+	<command name="EditGoogleDoc" priority="4">
+		<description message="This test ensures a Google Doc title can be changed through the editor" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="Edited Google Document" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="Edited Google Document" />
+	</command>
+
+	<command name="EditGoogleDocWithSpecialCharacters" priority="4">
+		<description message="This test ensures that special characters  can be saved through the Google Doc editor" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<var name="dmDocumentTitle"><![CDATA[Special Characters Title 12345`~!@#$%^&*(){}[],.<>/?|]]></var>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="${dmDocumentTitle}" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="${dmDocumentTitle}" />
+	</command>
+
+	<command name="EditGoogleSheet" priority="4">
+		<description message="This test ensures a Google Sheet title can be changed through the editor" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Sheets" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Sheets" />
+		</execute>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="Edited Google Sheet" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="Edited Google Sheet" />
+	</command>
+
+	<command name="EditGoogleSlide" priority="4">
+		<description message="This test ensures a Google Slide title can be changed through the editor" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Slides" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="GoogleDoc#gotoEdit">
+			<var name="dmDocumentTitle" value="Untitled" />
+			<var name="dmGoogleApp" value="Google Slides" />
+		</execute>
+
+		<execute macro="GoogleDoc#editTitleInGoogleDoc">
+			<var name="dmDocumentTitle" value="Edited Google Slide" />
+		</execute>
+
+		<execute macro="GoogleDoc#saveAndExit" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE" value1="Edited Google Slide" />
+	</command>
+
+	<command name="GoogleDocSmoke" priority="5">
+		<description message="This test ensures that a document is checked out when the Google Doc editor is being used" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Docs" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#viewCheckedoutPG">
+			<var name="dmDocumentTitle" value="Untitled" />
+		</execute>
+	</command>
+
+	<command name="GoogleSheetSmoke" priority="5">
+		<description message="This test ensures that a document is checked out when the Google Sheet editor is being used" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Sheets" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#viewCheckedoutPG">
+			<var name="dmDocumentTitle" value="Untitled" />
+		</execute>
+	</command>
+
+	<command name="GoogleSlideSmoke" priority="5">
+		<description message="This test ensures that a document is checked out when the Google Slide editor is being used" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#addGoogleApp">
+			<var name="dmGoogleApp" value="Google Slides" />
+		</execute>
+
+		<execute macro="Google#signIn">
+			<var method="PropsUtil#get('email.address.3')" name="userEmailAddress" />
+			<var method="PropsUtil#get('email.password.3')" name="userPassword" />
+			<var name="windowTitle" value="Documents and Media Page - Liferay" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Documents and Media Page" />
+		</execute>
+
+		<execute macro="DMDocument#viewCheckedoutPG">
+			<var name="dmDocumentTitle" value="Untitled" />
+		</execute>
+	</command>
+
+	<tear-down>
+		<var method="PropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+
+		<if>
+			<equals arg1="${testPortalInstance}" arg2="true" />
+			<then>
+				<execute macro="PortalInstances#tearDownCP" />
+			</then>
+			<else>
+				<execute macro="DMDocument#tearDownCP" />
+
+				<execute macro="DMFolder#tearDownCP" />
+
+				<execute macro="DMDocumentType#tearDownCP" />
+
+				<execute macro="Page#tearDownCP" />
+			</else>
+		</if>
+	</tear-down>
+</definition>

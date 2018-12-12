@@ -1,5 +1,5 @@
 <definition component-name="portal-search">
-	<property name="osgi.app.includes" value="portal-search-solr" />
+	<property name="osgi.app.includes" value="portal-search-solr7" />
 	<property name="osgi.module.configuration.file.names" value="com.liferay.portal.bundle.blacklist.internal.BundleBlacklistConfiguration.config" />
 	<property name="osgi.module.configurations" value="blacklistBundleSymbolicNames=&quot;com.liferay.portal.mobile.device.detection.fiftyonedegrees.api,com.liferay.portal.mobile.device.detection.fiftyonedegrees.enterprise,com.liferay.portal.mobile.device.detection.fiftyonedegrees.enterprise.test.data,com.liferay.portal.mobile.device.detection.fiftyonedegrees,com.liferay.portal.search.elasticsearch6.api,com.liferay.portal.search.elasticsearch6.impl,com.liferay.portal.search.elasticsearch6.xpack.security.impl,com.liferay.portal.search.elasticsearch6.xpack.monitoring.web&quot;" />
 	<property name="portal.release" value="true" />
@@ -32,19 +32,13 @@
 			<then>
 				<execute macro="PortalInstances#tearDownCP" />
 			</then>
-			<else>
-				<execute macro="MessageboardsThread#tearDownCP" />
-
-				<execute macro="DMDocument#tearDownCP" />
-
-				<execute macro="Page#tearDownCP" />
-			</else>
 		</if>
 	</tear-down>
 
 	<command name="SolrSmokeTest" priority="4">
 		<description message="This smoke test is to ensure that Liferay is successfully running on a remote Solr by asserting the Solr administration dashboard and performing searches in portal. Note by default, an embedded Elasticsearch is deployed in portal." />
 
+		<property name="environment.acceptance" value="false" />
 		<property name="test.name.skip.portal.instance" value="Solr#SolrSmokeTest" />
 
 		<execute macro="Navigator#openURL" />
@@ -121,16 +115,16 @@
 		</execute>
 	</command>
 
-	<command ignore="true" name="SolrWithSolrCloudSmokeTest" priority="4">
+	<command name="SolrWithSolrCloudSmokeTest" priority="4">
 		<description message="This smoke test is to ensure that Liferay is successfully running on a remote SolrCloud with 2 nodes by asserting console logging for ZooKeeper and performing searches in portal. Note by default, an embedded Elasticsearch is deployed in portal." />
 
 		<property name="dummy.socket.proxy.disabled" value="true" />
 		<property name="solr.solrcloud.enabled" value="true" />
 		<property name="test.name.skip.portal.instance" value="Solr#SolrWithSolrCloudSmokeTest" />
 
-		<!-- LPS-83256 -->
+		<!-- LRQA-44617 -->
 
-		<execute macro="Solr#viewSolrwithSolrCloudEnabledInConsole" />
+		<!-- <execute macro="Solr#viewSolrwithSolrCloudEnabledInConsole" /> -->
 
 		<execute macro="Solr#viewLiferayCloudDashboard">
 			<var name="cloudCollectionName" value="liferay" />

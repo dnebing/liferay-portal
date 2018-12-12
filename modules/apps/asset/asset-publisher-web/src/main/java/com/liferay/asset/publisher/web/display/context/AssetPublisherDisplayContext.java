@@ -32,7 +32,6 @@ import com.liferay.asset.kernel.service.AssetEntryServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyServiceUtil;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.list.constants.AssetListEntryTypeConstants;
-import com.liferay.asset.list.item.selector.criterion.AssetListItemSelectorCriterion;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryServiceUtil;
 import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
@@ -46,9 +45,6 @@ import com.liferay.asset.publisher.web.util.AssetPublisherUtil;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.asset.util.AssetPublisherAddItemHolder;
 import com.liferay.document.library.kernel.document.conversion.DocumentConversionUtil;
-import com.liferay.item.selector.ItemSelector;
-import com.liferay.item.selector.ItemSelectorReturnType;
-import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -64,7 +60,6 @@ import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
-import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.theme.PortletDisplay;
@@ -117,8 +112,9 @@ public class AssetPublisherDisplayContext {
 
 	public static final String PAGINATION_TYPE_SIMPLE = "simple";
 
-	public static final String[] PAGINATION_TYPES =
-		{PAGINATION_TYPE_NONE, PAGINATION_TYPE_REGULAR, PAGINATION_TYPE_SIMPLE};
+	public static final String[] PAGINATION_TYPES = {
+		PAGINATION_TYPE_NONE, PAGINATION_TYPE_REGULAR, PAGINATION_TYPE_SIMPLE
+	};
 
 	public AssetPublisherDisplayContext(
 			AssetPublisherCustomizer assetPublisherCustomizer,
@@ -153,7 +149,7 @@ public class AssetPublisherDisplayContext {
 	/**
 	 * @deprecated As of Judson (7.1.x), replaced by {@link
 	 *             #AssetPublisherDisplayContext(AssetPublisherCustomizer,
-	 *             PortletRequest,PortletResponse, PortletPreferences)}
+	 *             PortletRequest, PortletResponse, PortletPreferences)}
 	 */
 	@Deprecated
 	public AssetPublisherDisplayContext(
@@ -251,6 +247,26 @@ public class AssetPublisherDisplayContext {
 		return _allAssetTagNames;
 	}
 
+	public List<AssetEntry> getAssetEntries() throws Exception {
+		AssetListEntry assetListEntry = fetchAssetListEntry();
+
+		if (isSelectionStyleManual()) {
+			ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+			return AssetPublisherUtil.getAssetEntries(
+				_portletRequest, _portletPreferences,
+				themeDisplay.getPermissionChecker(), getGroupIds(),
+				getAllAssetCategoryIds(), getAllAssetTagNames(), false,
+				isEnablePermissions());
+		}
+		else if (isSelectionStyleAssetList() && (assetListEntry != null)) {
+			return assetListEntry.getAssetEntries();
+		}
+
+		return Collections.emptyList();
+	}
+
 	public List<AssetEntryAction> getAssetEntryActions(String className) {
 		return _assetEntryActionRegistry.getAssetEntryActions(className);
 	}
@@ -296,44 +312,29 @@ public class AssetPublisherDisplayContext {
 		}
 
 		_assetLinkBehavior = GetterUtil.getString(
-			_portletPreferences.getValue(
-				"assetLinkBehavior", "showFullContent"));
+			_portletPreferences.getValue("assetLinkBehavior", "viewInPortlet"));
 
 		return _assetLinkBehavior;
 	}
 
-	public String getAssetListItemSelectorEventName() {
-		return _portletResponse.getNamespace() + "selectAssetList";
-	}
-
-	public String getAssetListItemSelectorURL() throws PortalException {
-		ItemSelector itemSelector = (ItemSelector)_request.getAttribute(
-			AssetPublisherWebKeys.ITEM_SELECTOR);
-
-		AssetListItemSelectorCriterion assetListItemSelectorCriterion =
-			new AssetListItemSelectorCriterion();
+	public String getAssetListSelectorURL() throws Exception {
+		PortletURL portletURL = PortletProviderUtil.getPortletURL(
+			_request, AssetListEntry.class.getName(),
+			PortletProvider.Action.BROWSE);
 
 		AssetListEntry assetListEntry = fetchAssetListEntry();
 
 		if (assetListEntry != null) {
-			assetListItemSelectorCriterion.setSelectedAssetListEntryId(
-				assetListEntry.getAssetListEntryId());
+			portletURL.setParameter(
+				"assetListEntryId",
+				String.valueOf(assetListEntry.getAssetListEntryId()));
 		}
 
-		List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
-			new ArrayList<>();
+		portletURL.setParameter("eventName", getSelectAssetListEventName());
 
-		desiredItemSelectorReturnTypes.add(new UUIDItemSelectorReturnType());
+		portletURL.setWindowState(LiferayWindowState.POP_UP);
 
-		assetListItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
-			desiredItemSelectorReturnTypes);
-
-		PortletURL itemSelectorURL = itemSelector.getItemSelectorURL(
-			RequestBackedPortletURLFactoryUtil.create(_portletRequest),
-			getAssetListItemSelectorEventName(),
-			assetListItemSelectorCriterion);
-
-		return itemSelectorURL.toString();
+		return portletURL.toString();
 	}
 
 	public AssetPublisherPortletInstanceConfiguration
@@ -352,10 +353,11 @@ public class AssetPublisherDisplayContext {
 		Map<String, String[]> parameters = _request.getParameterMap();
 
 		for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-			String name = entry.getKey();
 			String[] values = entry.getValue();
 
 			if (ArrayUtil.isNotEmpty(values)) {
+				String name = entry.getKey();
+
 				if (values.length == 1) {
 					_attributes.put(name, values[0]);
 				}
@@ -510,13 +512,20 @@ public class AssetPublisherDisplayContext {
 		return null;
 	}
 
-	public long[] getClassNameIds() {
+	public long[] getClassNameIds() throws Exception {
 		if (_classNameIds != null) {
 			return _classNameIds;
 		}
 
-		_classNameIds = AssetPublisherUtil.getClassNameIds(
-			_portletPreferences, getAvailableClassNameIds());
+		if (isSelectionStyleAssetList()) {
+			AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+			_classNameIds = assetEntryQuery.getClassNameIds();
+		}
+		else {
+			_classNameIds = AssetPublisherUtil.getClassNameIds(
+				_portletPreferences, getAvailableClassNameIds());
+		}
 
 		return _classNameIds;
 	}
@@ -979,6 +988,10 @@ public class AssetPublisherDisplayContext {
 		return _scopeGroupId;
 	}
 
+	public String getSelectAssetListEventName() {
+		return _portletResponse.getNamespace() + "selectAssetList";
+	}
+
 	public String getSelectionStyle() {
 		if (_selectionStyle != null) {
 			return _selectionStyle;
@@ -1328,8 +1341,6 @@ public class AssetPublisherDisplayContext {
 	}
 
 	public boolean isSelectionStyleDynamic() throws PortalException {
-		String selectionStyle = getSelectionStyle();
-
 		AssetListEntry assetListEntry = fetchAssetListEntry();
 
 		if (isSelectionStyleAssetList() && (assetListEntry != null) &&
@@ -1339,6 +1350,8 @@ public class AssetPublisherDisplayContext {
 			return true;
 		}
 
+		String selectionStyle = getSelectionStyle();
+
 		return selectionStyle.equals("dynamic");
 	}
 
@@ -1347,8 +1360,6 @@ public class AssetPublisherDisplayContext {
 	}
 
 	public boolean isSelectionStyleManual() throws PortalException {
-		String selectionStyle = getSelectionStyle();
-
 		AssetListEntry assetListEntry = fetchAssetListEntry();
 
 		if (isSelectionStyleAssetList() && (assetListEntry != null) &&
@@ -1357,6 +1368,8 @@ public class AssetPublisherDisplayContext {
 
 			return true;
 		}
+
+		String selectionStyle = getSelectionStyle();
 
 		return selectionStyle.equals("manual");
 	}
@@ -1570,9 +1583,6 @@ public class AssetPublisherDisplayContext {
 	}
 
 	protected void setDDMStructure() throws Exception {
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		_ddmStructureDisplayFieldValue = StringPool.BLANK;
 		_ddmStructureFieldLabel = StringPool.BLANK;
 		_ddmStructureFieldName = StringPool.BLANK;
@@ -1602,6 +1612,9 @@ public class AssetPublisherDisplayContext {
 
 		if (Validator.isNotNull(_ddmStructureFieldName) &&
 			Validator.isNotNull(_ddmStructureFieldValue)) {
+
+			ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+				WebKeys.THEME_DISPLAY);
 
 			AssetRendererFactory<?> assetRendererFactory =
 				AssetRendererFactoryRegistryUtil.

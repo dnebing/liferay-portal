@@ -30,6 +30,7 @@
 
 		<property name="apacheds.blank.user.password.enabled" value="true" />
 		<property name="apacheds.enabled" value="true" />
+		<property name="environment.acceptance" value="false" />
 		<property name="portal.acceptance" value="true" />
 		<property name="test.name.skip.portal.instance" value="LDAP#ImportLDAPUserWithBlankPassword" />
 
@@ -196,8 +197,7 @@
 		</execute>
 	</command>
 
-	<command ignore="true" name="ViewHiddenSecurityCredential" priority="4">
-		<!-- Ignoring until LRQA-39644 is resolved -->
+	<command name="ViewHiddenSecurityCredential" priority="4">
 
 		<description message="This is a use case for LPS-73381." />
 

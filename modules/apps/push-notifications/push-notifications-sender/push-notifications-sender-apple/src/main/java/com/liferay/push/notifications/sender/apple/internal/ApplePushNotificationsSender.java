@@ -53,7 +53,8 @@ import org.osgi.service.component.annotations.Modified;
 @Component(
 	configurationPid = "com.liferay.push.notifications.sender.apple.internal.configuration.ApplePushNotificationsSenderConfiguration",
 	immediate = true,
-	property = "platform=" + ApplePushNotificationsSender.PLATFORM
+	property = "platform=" + ApplePushNotificationsSender.PLATFORM,
+	service = PushNotificationsSender.class
 )
 public class ApplePushNotificationsSender implements PushNotificationsSender {
 
@@ -97,8 +98,8 @@ public class ApplePushNotificationsSender implements PushNotificationsSender {
 
 		ApnsServiceBuilder appleServiceBuilder = APNS.newService();
 
-		try (InputStream inputStream =
-				_getCertificateInputStream(certificatePath)) {
+		try (InputStream inputStream = _getCertificateInputStream(
+				certificatePath)) {
 
 			if (inputStream == null) {
 				throw new IllegalArgumentException(
@@ -191,7 +192,7 @@ public class ApplePushNotificationsSender implements PushNotificationsSender {
 			List<String> localizedArguments = new ArrayList<>();
 
 			for (int i = 0; i < titleLocalizedArgumentsJSONArray.length();
-					i++) {
+				 i++) {
 
 				localizedArguments.add(
 					titleLocalizedArgumentsJSONArray.getString(i));

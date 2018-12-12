@@ -14,6 +14,8 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,7 +39,8 @@ public class IfPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new IfPoshiElement(parentPoshiElement, poshiScript);
@@ -47,7 +50,14 @@ public class IfPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public String getPoshiLogDescriptor() {
+		return getBlockName();
+	}
+
+	@Override
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		for (String poshiScriptSnippet :
 				getPoshiScriptSnippets(poshiScript, false)) {
 
@@ -104,7 +114,8 @@ public class IfPoshiElement extends PoshiElement {
 	}
 
 	protected IfPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super("if", parentPoshiElement, poshiScript);
 	}
@@ -120,7 +131,8 @@ public class IfPoshiElement extends PoshiElement {
 	}
 
 	protected IfPoshiElement(
-		String name, PoshiElement parentPoshiElement, String poshiScript) {
+			String name, PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(name, parentPoshiElement, poshiScript);
 	}
@@ -137,7 +149,7 @@ public class IfPoshiElement extends PoshiElement {
 					conditionName);
 
 				sb.append(" (");
-				sb.append(poshiElement.toPoshiScript());
+				sb.append(poshiElement.getPoshiScript());
 				sb.append(")");
 
 				break;

@@ -64,13 +64,18 @@ UADExportProcessDisplayContext uadExportProcessDisplayContext = new UADExportPro
 			</c:if>
 		</liferay-ui:search-container-column-text>
 
-		<c:if test="<%= backgroundTask.isCompleted() %>">
-			<liferay-ui:search-container-column-text
-				cssClass="lfr-completion-date-column table-cell-expand"
-			>
-				<%= LanguageUtil.get(request, "completion-date") + ": " + dateFormat.format(backgroundTask.getCompletionDate()) %>
-			</liferay-ui:search-container-column-text>
-		</c:if>
+		<liferay-ui:search-container-column-text
+			cssClass="lfr-completion-date-column table-cell-expand"
+		>
+			<c:choose>
+				<c:when test="<%= backgroundTask.isCompleted() %>">
+					<%= LanguageUtil.get(request, "completion-date") + ": " + dateFormat.format(backgroundTask.getCompletionDate()) %>
+				</c:when>
+				<c:otherwise>
+					<%= LanguageUtil.get(request, "in-progress") %>
+				</c:otherwise>
+			</c:choose>
+		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-jsp
 			cssClass="entry-action-column"

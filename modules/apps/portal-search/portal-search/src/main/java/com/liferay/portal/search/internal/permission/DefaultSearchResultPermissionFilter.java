@@ -168,6 +168,7 @@ public class DefaultSearchResultPermissionFilter
 			(searchContext.getEnd() != QueryUtil.ALL_POS)) {
 
 			int end = searchContext.getEnd();
+
 			int start = searchContext.getStart();
 
 			if (start == QueryUtil.ALL_POS) {
@@ -281,8 +282,9 @@ public class DefaultSearchResultPermissionFilter
 		return false;
 	}
 
-	private static final String[] _PERMISSION_SELECTED_FIELD_NAMES =
-		{Field.COMPANY_ID, Field.ENTRY_CLASS_NAME, Field.ENTRY_CLASS_PK};
+	private static final String[] _PERMISSION_SELECTED_FIELD_NAMES = {
+		Field.COMPANY_ID, Field.ENTRY_CLASS_NAME, Field.ENTRY_CLASS_PK
+	};
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DefaultSearchResultPermissionFilter.class);
@@ -370,6 +372,7 @@ public class DefaultSearchResultPermissionFilter
 			Hits hits, int accumulatedCount, int start, int end) {
 
 			int delta = end - start;
+
 			Document[] docs = hits.getDocs();
 
 			int remaining = docs.length;

@@ -27,12 +27,6 @@
 		</execute>
 	</command>
 
-	<command name="clickConfirm">
-		<execute macro="Button#click">
-			<var name="button" value="Confirm" />
-		</execute>
-	</command>
-
 	<command name="clickDelete">
 		<execute macro="Button#click">
 			<var name="button" value="Delete" />
@@ -60,6 +54,12 @@
 	<command name="clickMap">
 		<execute macro="Button#click">
 			<var name="button" value="Map" />
+		</execute>
+	</command>
+
+	<command name="clickMore">
+		<execute macro="Button#click">
+			<var name="button" value="More" />
 		</execute>
 	</command>
 
@@ -106,6 +106,12 @@
 	<command name="clickSelect">
 		<execute macro="Button#click">
 			<var name="button" value="Select" />
+		</execute>
+	</command>
+
+	<command name="clickShare">
+		<execute macro="Button#click">
+			<var name="button" value="Share" />
 		</execute>
 	</command>
 

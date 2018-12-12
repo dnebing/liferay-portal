@@ -704,8 +704,8 @@ public class BackgroundTaskManagerImpl implements BackgroundTaskManager {
 	}
 
 	protected OrderByComparator
-		<com.liferay.portal.background.task.model.BackgroundTask>
-			translate(OrderByComparator<BackgroundTask> orderByComparator) {
+		<com.liferay.portal.background.task.model.BackgroundTask> translate(
+			OrderByComparator<BackgroundTask> orderByComparator) {
 
 		if (orderByComparator instanceof
 				BackgroundTaskCompletionDateComparator) {
@@ -715,7 +715,7 @@ public class BackgroundTaskManagerImpl implements BackgroundTaskManager {
 					orderByComparator.isAscending());
 		}
 		else if (orderByComparator instanceof
-					 BackgroundTaskCreateDateComparator) {
+					BackgroundTaskCreateDateComparator) {
 
 			return new com.liferay.portal.background.task.internal.comparator.
 				BackgroundTaskCreateDateComparator(

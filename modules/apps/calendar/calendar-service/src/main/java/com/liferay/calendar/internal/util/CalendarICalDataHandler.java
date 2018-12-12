@@ -281,7 +281,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 		int i = 0;
 
 		for (Iterator<VAlarm> iterator = componentList.iterator();
-				iterator.hasNext();) {
+			 iterator.hasNext();) {
 
 			VAlarm vAlarm = iterator.next();
 
@@ -297,8 +297,6 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 
 			Trigger trigger = vAlarm.getTrigger();
 
-			long time = 0;
-
 			DateTime dateTime = trigger.getDateTime();
 
 			Dur dur = trigger.getDuration();
@@ -306,6 +304,8 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 			if ((dateTime == null) && (dur == null)) {
 				continue;
 			}
+
+			long time = 0;
 
 			if (dateTime != null) {
 				time = startDate.getTime() - dateTime.getTime();
@@ -353,7 +353,7 @@ public class CalendarICalDataHandler implements CalendarDataHandler {
 		List<Long> childCalendarIds = new ArrayList<>();
 
 		for (Iterator<Attendee> iterator = propertyList.iterator();
-				iterator.hasNext();) {
+			 iterator.hasNext();) {
 
 			Attendee attendee = iterator.next();
 

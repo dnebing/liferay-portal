@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
@@ -92,6 +93,14 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 		throws PortalException;
 
 	public void addQuestionResources(long questionId,
+		ModelPermissions modelPermissions) throws PortalException;
+
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link
+	#addQuestionResources(long, ModelPermissions)}
+	*/
+	@Deprecated
+	public void addQuestionResources(long questionId,
 		String[] groupPermissions, String[] guestPermissions)
 		throws PortalException;
 
@@ -99,6 +108,14 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 		boolean addGroupPermissions, boolean addGuestPermissions)
 		throws PortalException;
 
+	public void addQuestionResources(PollsQuestion question,
+		ModelPermissions modelPermissions) throws PortalException;
+
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link
+	#addQuestionResources(PollsQuestion, ModelPermissions)}
+	*/
+	@Deprecated
 	public void addQuestionResources(PollsQuestion question,
 		String[] groupPermissions, String[] guestPermissions)
 		throws PortalException;
@@ -147,6 +164,7 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 
 	public void deleteQuestions(long groupId) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -155,6 +173,7 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -169,6 +188,7 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -185,6 +205,7 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -194,6 +215,7 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -203,6 +225,7 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 

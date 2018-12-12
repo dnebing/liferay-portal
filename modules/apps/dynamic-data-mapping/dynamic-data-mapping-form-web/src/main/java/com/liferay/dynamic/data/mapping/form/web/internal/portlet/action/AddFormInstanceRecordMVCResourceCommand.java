@@ -27,15 +27,19 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordVersionLoca
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+
+import java.util.Locale;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -71,9 +75,18 @@ public class AddFormInstanceRecordMVCResourceCommand
 
 		DDMForm ddmForm = getDDMForm(ddmFormInstance);
 
-		return _ddmFormBuilderContextToDDMFormValues.deserialize(
+		DDMFormContextDeserializerRequest ddmFormContextDeserializerRequest =
 			DDMFormContextDeserializerRequest.with(
-				ddmForm, serializedDDMFormValues));
+				ddmForm, serializedDDMFormValues);
+
+		Locale currentLocale = LocaleUtil.fromLanguageId(
+			LanguageUtil.getLanguageId(resourceRequest));
+
+		ddmFormContextDeserializerRequest.addProperty(
+			"currentLocale", currentLocale);
+
+		return _ddmFormBuilderContextToDDMFormValues.deserialize(
+			ddmFormContextDeserializerRequest);
 	}
 
 	protected ServiceContext createServiceContext(
@@ -101,9 +114,6 @@ public class AddFormInstanceRecordMVCResourceCommand
 			return;
 		}
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		long formInstanceId = ParamUtil.getLong(
 			resourceRequest, "formInstanceId");
 
@@ -116,6 +126,9 @@ public class AddFormInstanceRecordMVCResourceCommand
 		if (ddmFormValues == null) {
 			return;
 		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		DDMFormInstanceRecordVersion ddmFormInstanceRecordVersion =
 			_ddmFormInstanceRecordVersionLocalService.

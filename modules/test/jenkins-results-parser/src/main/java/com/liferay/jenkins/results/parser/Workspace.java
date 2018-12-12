@@ -19,13 +19,15 @@ package com.liferay.jenkins.results.parser;
  */
 public interface Workspace {
 
-	public void addJenkinsLocalGitBranch(String jenkinsGitHubURL);
+	public void addJenkinsWorkspaceGitRepository(String jenkinsGitHubURL);
 
-	public String getJenkinsBranchName();
+	public WorkspaceGitRepository getJenkinsWorkspaceGitRepository();
+
+	public void setBuildData(BuildData buildData);
+
+	public void setJob(Job job);
 
 	public void setUp();
-
-	public void setUp(Job job);
 
 	public void tearDown();
 

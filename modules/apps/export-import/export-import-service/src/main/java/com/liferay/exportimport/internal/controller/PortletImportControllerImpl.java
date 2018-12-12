@@ -511,6 +511,7 @@ public class PortletImportControllerImpl implements PortletImportController {
 
 				long ownerId = GetterUtil.getLong(
 					element.attributeValue("owner-id"));
+
 				int ownerType = GetterUtil.getInteger(
 					element.attributeValue("owner-type"));
 
@@ -810,12 +811,13 @@ public class PortletImportControllerImpl implements PortletImportController {
 
 		for (Element assetElement : assetElements) {
 			String path = assetElement.attributeValue("path");
-			String className = assetElement.attributeValue("class-name");
-			String key = assetElement.attributeValue("key");
 
 			Lock lock = (Lock)portletDataContext.getZipEntryAsObject(path);
 
 			if (lock != null) {
+				String className = assetElement.attributeValue("class-name");
+				String key = assetElement.attributeValue("key");
+
 				portletDataContext.addLocks(className, key, lock);
 			}
 		}
@@ -845,6 +847,7 @@ public class PortletImportControllerImpl implements PortletImportController {
 
 			String portletId = MapUtil.getString(settingsMap, "portletId");
 			long targetGroupId = MapUtil.getLong(settingsMap, "targetGroupId");
+
 			long targetPlid = MapUtil.getLong(settingsMap, "targetPlid");
 
 			Layout layout = _layoutLocalService.getLayout(targetPlid);
@@ -1516,9 +1519,9 @@ public class PortletImportControllerImpl implements PortletImportController {
 				headerElement.attributeValue("schema-version"), "1.0.0");
 
 			if (!manifestVersionBiPredicate.test(
-				Version.getInstance(
-					ExportImportConstants.EXPORT_IMPORT_SCHEMA_VERSION),
-				Version.getInstance(importSchemaVersion))) {
+					Version.getInstance(
+						ExportImportConstants.EXPORT_IMPORT_SCHEMA_VERSION),
+					Version.getInstance(importSchemaVersion))) {
 
 				throw new LayoutImportException(
 					LayoutImportException.TYPE_WRONG_LAR_SCHEMA_VERSION,

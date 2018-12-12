@@ -9,13 +9,13 @@ class Text extends Component {
 	static STATE = {
 
 		/**
-		 * @default false
+		 * @default undefined
 		 * @instance
 		 * @memberof Text
-		 * @type {?bool}
+		 * @type {?(string|undefined)}
 		 */
 
-		editable: Config.bool().value(true),
+		displayStyle: Config.string().value('singleline'),
 
 		/**
 		 * @default undefined
@@ -24,7 +24,7 @@ class Text extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		helpText: Config.string(),
+		fieldName: Config.string(),
 
 		/**
 		 * @default undefined
@@ -51,7 +51,25 @@ class Text extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
+		name: Config.string().required(),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof Text
+		 * @type {?(string|undefined)}
+		 */
+
 		placeholder: Config.string(),
+
+		/**
+		 * @default false
+		 * @instance
+		 * @memberof Text
+		 * @type {?bool}
+		 */
+
+		readOnly: Config.bool().value(false),
 
 		/**
 		 * @default false
@@ -61,6 +79,15 @@ class Text extends Component {
 		 */
 
 		required: Config.bool().value(false),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof FieldBase
+		 * @type {?(bool|undefined)}
+		 */
+
+		repeatable: Config.bool(),
 
 		/**
 		 * @default true
@@ -87,18 +114,32 @@ class Text extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		value: Config.string(),
+		tip: Config.string(),
 
-		key: Config.string()
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof FieldBase
+		 * @type {?(string|undefined)}
+		 */
+
+		tooltip: Config.string(),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof Text
+		 * @type {?(string|undefined)}
+		 */
+
+		value: Config.string()
 	};
 
 	_handleFieldChanged(event) {
-		const {key} = this;
-
 		this.emit(
 			'fieldEdited',
 			{
-				key,
+				fieldInstance: this,
 				originalEvent: event,
 				value: event.target.value
 			}

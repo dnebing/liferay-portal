@@ -14,27 +14,22 @@
 
 package com.liferay.portal.spring.transaction;
 
-import org.springframework.transaction.PlatformTransactionManager;
-
 /**
  * @author Shuyang Zhou
  */
 public interface TransactionHandler {
 
 	public void commit(
-		PlatformTransactionManager platformTransactionManager,
 		TransactionAttributeAdapter transactionAttributeAdapter,
 		TransactionStatusAdapter transactionStatusAdapter);
 
 	public void rollback(
-			PlatformTransactionManager platformTransactionManager,
 			Throwable throwable,
 			TransactionAttributeAdapter transactionAttributeAdapter,
 			TransactionStatusAdapter transactionStatusAdapter)
 		throws Throwable;
 
 	public TransactionStatusAdapter start(
-		PlatformTransactionManager platformTransactionManager,
 		TransactionAttributeAdapter transactionAttributeAdapter);
 
 }

@@ -21,13 +21,14 @@ import com.liferay.portal.search.engine.adapter.cluster.StatsClusterResponse;
 
 import java.io.IOException;
 
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsAction;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsRequestBuilder;
 import org.elasticsearch.action.admin.cluster.stats.ClusterStatsResponse;
-import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.xpack.watcher.watch.Payload;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -55,7 +56,7 @@ public class StatsClusterRequestExecutorImpl
 			xContentBuilder.startObject();
 
 			xContentBuilder = clusterStatsResponse.toXContent(
-				xContentBuilder, Payload.XContent.EMPTY_PARAMS);
+				xContentBuilder, ToXContent.EMPTY_PARAMS);
 
 			xContentBuilder.endObject();
 
@@ -66,7 +67,7 @@ public class StatsClusterRequestExecutorImpl
 				new StatsClusterResponse(
 					clusterHealthStatusTranslator.translate(
 						clusterHealthStatus),
-					xContentBuilder.string());
+					Strings.toString(xContentBuilder));
 
 			return statsClusterResponse;
 		}
@@ -78,10 +79,11 @@ public class StatsClusterRequestExecutorImpl
 	protected ClusterStatsRequestBuilder createClusterStatsRequestBuilder(
 		StatsClusterRequest statsClusterRequest) {
 
-		ClusterAdminClient clusterAdminClient =
-			elasticsearchConnectionManager.getClusterAdminClient();
+		ClusterStatsRequestBuilder clusterStatsRequestBuilder =
+			ClusterStatsAction.INSTANCE.newRequestBuilder(
+				elasticsearchConnectionManager.getClient());
 
-		return clusterAdminClient.prepareClusterStats();
+		return clusterStatsRequestBuilder;
 	}
 
 	@Reference

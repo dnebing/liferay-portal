@@ -489,6 +489,8 @@ information.
 	</macrodef>
 
 	<macrodef name="deploy-properties">
+		<attribute default="${app.server.classes.portal.dir}" name="deploy.properties.dest" />
+
 		<sequential>
 			<if>
 				<and>
@@ -506,7 +508,7 @@ information.
 				<else>
 					<copy
 						overwrite="true"
-						todir="${app.server.classes.portal.dir}"
+						todir="@{deploy.properties.dest}"
 					>
 						<fileset
 							dir="${project.dir}/portal-impl/src"
@@ -1427,10 +1429,17 @@ artifact.url=${remote.repository.url}/com/liferay/portal/com.liferay.${processed
 						toDir="${project.dir}/.gradle/caches/modules-2/files-2.1"
 					/>
 
-					<copy
-						file="${project.dir}/${build.binaries.cache.dir}/${build.binaries.gradle.file}"
-						todir="${project.dir}/tools"
-					/>
+					<if>
+						<not>
+							<available file="${project.dir}/tools/${build.binaries.gradle.file}" type="file" />
+						</not>
+						<then>
+							<copy
+								file="${project.dir}/${build.binaries.cache.dir}/${build.binaries.gradle.file}"
+								todir="${project.dir}/tools"
+							/>
+						</then>
+					</if>
 				</then>
 			</if>
 
@@ -1451,6 +1460,7 @@ artifact.url=${remote.repository.url}/com/liferay/portal/com.liferay.${processed
 			<gradle-execute forcedcacheenabled="true" outputproperty="sdk.zip.file" task="printDependencyPath">
 				<arg value="--build-file=${project.dir}/modules/util.gradle" />
 				<arg value="--quiet" />
+				<arg value="-Dorg.gradle.internal.launcher.welcomeMessageEnabled=false" />
 				<arg value="-PdependencyNotation=com.liferay.portal:com.liferay.portal.plugins.sdk:${build.sdk.version}" />
 			</gradle-execute>
 
@@ -1757,7 +1767,10 @@ rerun your task.
 					<propertyref name="liferay.releng.product.display.name" />
 					<propertyref name="liferay.releng.public" />
 					<propertyref name="liferay.releng.supported" />
+					<propertyref name="org.gradle.console" />
 					<propertyref name="org.gradle.daemon" />
+					<propertyref name="org.gradle.internal.launcher.welcomeMessageEnabled" />
+					<propertyref name="org.gradle.warning.mode" />
 					<propertyref name="project.templates.test.builds" />
 					<propertyref name="release.versions.test.other.dir" />
 					<propertyref name="sass.compiler.class.name" />

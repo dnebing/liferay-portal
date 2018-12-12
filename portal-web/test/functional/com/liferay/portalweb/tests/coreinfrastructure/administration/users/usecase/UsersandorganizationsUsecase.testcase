@@ -130,6 +130,8 @@
 
 	<command name="AssignImportedUserGroupToSuborganizationSites" priority="5">
 		<property name="liferay.training.dependency.jars" value="02-content-management/exercise-src/01-engaging-users-with-content/com.liferay.training.contentloader.jar" />
+		<property name="portal.release" value="false" />
+		<property name="portal.upstream" value="false" />
 		<property name="testray.component.names" value="Training" />
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -270,6 +272,507 @@
 		</execute>
 
 		<execute function="AssertElementNotPresent" locator1="ProductMenu#PRODUCT_MENU_PANEL_MENU_ITEM" />
+	</command>
+
+	<command name="EditUserAdditionalEmailAddresses" priority="4">
+		<execute macro="JSONUser#addUser">
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoUser">
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoContact" />
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Contact Information" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="address" value="additional1@liferay.com" />
+			<var name="contactType" value="Add Email Address" />
+		</execute>
+
+		<execute macro="User#viewContactInformation">
+			<var name="address" value="additional1@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional1@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="address" value="additional2@liferay.com" />
+			<var name="contactType" value="Add Email Address" />
+			<var name="makePrimary" value="true" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional2@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="address" value="additional3@liferay.com" />
+			<var name="contactType" value="Add Email Address" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="additional1@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional2@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="additional3@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoEdit">
+			<var name="rowEntry" value="additional2@liferay.com" />
+		</execute>
+
+		<execute macro="User#editPrimary">
+			<var name="makePrimary" value="false" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="additional2@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional3@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#makePrimary">
+			<var name="rowEntry" value="additional2@liferay.com" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="additional1@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional2@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="additional3@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="additional3@liferay.com" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional2@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="additional2@liferay.com" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="additional1@liferay.com" />
+			<var name="searchContainerType" value="emailAddressesSearchContainer" />
+		</execute>
+	</command>
+
+	<command name="EditUserAddresses" priority="4">
+		<execute macro="JSONUser#addUser">
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoUser">
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoContact" />
+
+		<execute macro="User#addContactInformation">
+			<var name="city" value="Diamond Bar" />
+			<var name="contactType" value="Add Address" />
+			<var name="country" value="United States" />
+			<var name="postalCode" value="91765" />
+			<var name="region" value="California" />
+			<var name="street1" value="1400 Montefino Ave" />
+		</execute>
+
+		<execute macro="User#viewAddress">
+			<var name="city" value="Diamond Bar" />
+			<var name="country" value="United States" />
+			<var name="postalCode" value="91765" />
+			<var name="region" value="California" />
+			<var name="street1" value="1400 Montefino Ave" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="1400 Montefino Ave" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="city" value="Chicago" />
+			<var name="contactType" value="Add Address" />
+			<var name="makePrimary" value="true" />
+			<var name="postalCode" value="60606" />
+			<var name="street1" value="205 West Wacker Dr" />a
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="city" value="Raleigh" />
+			<var name="contactType" value="Add Address" />
+			<var name="postalCode" value="27607" />
+			<var name="street1" value="4000 Westchase Blvd" />a
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="primaryValue" value="1400 Montefino Ave" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="primaryValue" value="4000 Westchase Blvd" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoEdit">
+			<var name="rowEntry" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#editPrimary">
+			<var name="makePrimary" value="false" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="primaryValue" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="4000 Westchase Blvd" />
+		</execute>
+
+		<execute macro="User#makePrimary">
+			<var name="rowEntry" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="primaryValue" value="1400 Montefino Ave" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="primaryValue" value="4000 Westchase Blvd" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="4000 Westchase Blvd" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="205 West Wacker Dr" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="primaryValue" value="1400 Montefino Ave" />
+		</execute>
+	</command>
+
+	<command name="EditUserPhoneNumbers" priority="4">
+		<execute macro="JSONUser#addUser">
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoUser">
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoContact" />
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Contact Information" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Phone Number" />
+			<var name="extension" value="111" />
+			<var name="number" value="1111111111" />
+		</execute>
+
+		<execute macro="User#viewContactInformation">
+			<var name="extension" value="111" />
+			<var name="number" value="1111111111" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="1111111111" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Phone Number" />
+			<var name="makePrimary" value="true" />
+			<var name="number" value="2222222222" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="2222222222" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Phone Number" />
+			<var name="number" value="3333333333" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="1111111111" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="2222222222" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="3333333333" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoEdit">
+			<var name="rowEntry" value="2222222222" />
+		</execute>
+
+		<execute macro="User#editPrimary">
+			<var name="makePrimary" value="false" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="2222222222" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="3333333333" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#makePrimary">
+			<var name="rowEntry" value="2222222222" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="1111111111" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="2222222222" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="3333333333" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="3333333333" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="2222222222" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="2222222222" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="1111111111" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+	</command>
+
+	<command name="EditUserWebsites" priority="4">
+		<execute macro="JSONUser#addUser">
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoUser">
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoContact" />
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Contact Information" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Website" />
+			<var name="url" value="http://www.liferay1.com" />
+		</execute>
+
+		<execute macro="User#viewContactInformation">
+			<var name="searchContainerType" value="websitesSearchContainer" />
+			<var name="url" value="http://www.liferay1.com" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay1.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Website" />
+			<var name="makePrimary" value="true" />
+			<var name="url" value="http://www.liferay2.com" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay2.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Website" />
+			<var name="url" value="http://www.liferay3.com" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay1.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay2.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay3.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoEdit">
+			<var name="rowEntry" value="http://www.liferay2.com" />
+		</execute>
+
+		<execute macro="User#editPrimary">
+			<var name="makePrimary" value="false" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay2.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay3.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#makePrimary">
+			<var name="rowEntry" value="http://www.liferay2.com" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay1.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay2.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewNotPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay3.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="http://www.liferay3.com" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay2.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="http://www.liferay2.com" />
+		</execute>
+
+		<execute macro="User#viewIsPrimary">
+			<var name="contactInfoPrimaryValue" value="http://www.liferay1.com" />
+			<var name="searchContainerType" value="websitesSearchContainer" />
+		</execute>
 	</command>
 
 	<command name="ImpersonatingAdministratorandOwner" priority="4">
@@ -544,6 +1047,10 @@
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
+		<execute macro="Organization#editOrganizationCP">
+			<var name="orgName" value="${orgName}" />
+		</execute>
+
 		<execute macro="Organization#addCategorizationCP">
 			<var name="orgName" value="Organization Name 1" />
 			<var name="tagName" value="alpha" />
@@ -577,6 +1084,10 @@
 			<var name="category" value="Users" />
 			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="Organization#editOrganizationCP">
+			<var name="orgName" value="${orgName}" />
 		</execute>
 
 		<execute macro="Organization#addCategorizationCP">
@@ -1255,27 +1766,27 @@
 			<var name="portlet" value="Password Policies" />
 		</execute>
 
-		<execute function="Click" locator1="PasswordPolicies#DEFAULT_PASSWORD_POLICY_TABLE_ACTIONS_BUTTON" />
-		<execute macro="MenuItem#click">
-			<var name="menuItem" value="Edit" />
+		<execute macro="PasswordPolicies#enableSyntaxChecking">
+			<var name="allowDictionaryWords" value="false" />
+			<var name="passwordPolicyName" value="Default Password Policy" />
 		</execute>
 
-		<execute macro="Panel#expandPanel">
-			<var name="panel" value="Password Syntax Checking" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Password Policies" />
 		</execute>
 
-		<execute function="Check#checkToggleSwitch" locator1="Checkbox#ENABLE_SYNTAX_CHECKING" />
-		<execute function="Uncheck#uncheckToggleSwitch" locator1="Checkbox#ALLOW_DICTIONARY_WORDS" />
-		<execute function="Type" locator1="TextInput#MINIMUM_ALPHA_NUMERIC" value1="0" />
-		<execute function="Type" locator1="TextInput#MINIMUM_LENGTH" value1="0" />
-		<execute function="Type" locator1="TextInput#MINIMUM_LOWER_CASE" value1="0" />
-		<execute function="Type" locator1="TextInput#MINIMUM_NUMBERS" value1="0" />
-		<execute function="Type" locator1="TextInput#MINIMUM_SYMBOLS" value1="0" />
-		<execute function="Type" locator1="TextInput#MINIMUM_UPPER_CASE" value1="0" />
-
-		<execute function="Type" locator1="TextInput#REGULAR_EXPRESSION" value1="(?=.{4})(?:[a-zA-Z]*)" />
-
-		<execute macro="Button#clickSave" />
+		<execute macro="PasswordPolicies#editSyntaxChecking">
+			<var name="minimumAlphaNumeric" value="0" />
+			<var name="minimumLength" value="0" />
+			<var name="minimumLowerCase" value="0" />
+			<var name="minimumNumbers" value="0" />
+			<var name="minimumSymbols" value="0" />
+			<var name="minimumUpperCase" value="0" />
+			<var name="passwordPolicyName" value="Default Password Policy" />
+			<var name="regularExpression" value="(?=.{4})(?:[a-zA-Z]*)" />
+		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Users" />
@@ -1310,19 +1821,10 @@
 			<var name="portlet" value="Password Policies" />
 		</execute>
 
-		<execute function="Click" locator1="PasswordPolicies#DEFAULT_PASSWORD_POLICY_TABLE_ACTIONS_BUTTON" />
-
-		<execute macro="MenuItem#click">
-			<var name="menuItem" value="Edit" />
+		<execute macro="PasswordPolicies#editSyntaxChecking">
+			<var name="passwordPolicyName" value="Default Password Policy" />
+			<var name="regularExpression" value="(?=.{6})(?:[a-zA-Z0-9]*)" />
 		</execute>
-
-		<execute macro="Panel#expandPanel">
-			<var name="panel" value="Password Syntax Checking" />
-		</execute>
-
-		<execute function="Type" locator1="TextInput#REGULAR_EXPRESSION" value1="(?=.{6})(?:[a-zA-Z0-9]*)" />
-
-		<execute macro="Button#clickSave" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Users" />
@@ -1371,19 +1873,10 @@
 			<var name="portlet" value="Password Policies" />
 		</execute>
 
-		<execute function="Click" locator1="PasswordPolicies#DEFAULT_PASSWORD_POLICY_TABLE_ACTIONS_BUTTON" />
-
-		<execute macro="MenuItem#click">
-			<var name="menuItem" value="Edit" />
+		<execute macro="PasswordPolicies#editSyntaxChecking">
+			<var name="minimumNumbers" value="2" />
+			<var name="passwordPolicyName" value="Default Password Policy" />
 		</execute>
-
-		<execute macro="Panel#expandPanel">
-			<var name="panel" value="Password Syntax Checking" />
-		</execute>
-
-		<execute function="Type" locator1="TextInput#MINIMUM_NUMBERS" value1="2" />
-
-		<execute macro="Button#clickSave" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Users" />
@@ -1392,8 +1885,8 @@
 		</execute>
 
 		<execute macro="User#editPasswordInvalidCP">
+			<var name="minimumNumbers" value="2" />
 			<var name="newPassword" value="abcABC" />
-			<var name="trivialPassword" value="true" />
 			<var name="userEmailAddress" value="test1@liferay.com" />
 			<var name="userScreenName" value="test1" />
 		</execute>
@@ -1731,6 +2224,58 @@
 
 		<execute macro="MessageboardsThread#viewDoNotHaveRequiredPermissionsPG">
 			<var name="threadSubject" value="Canada Message Subject" />
+		</execute>
+	</command>
+
+	<command name="ViewUserFormPersistence" priority="4">
+		<execute macro="JSONUser#addUser">
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoUser">
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="UserNavigator#gotoContact" />
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Contact Information" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="contactType" value="Add Phone Number" />
+			<var name="extension" value="111" />
+			<var name="number" value="1111111111" />
+		</execute>
+
+		<execute macro="User#addContactInformation">
+			<var name="skype" value="skype12345" />
+		</execute>
+
+		<execute macro="User#viewContactInformation">
+			<var name="number" value="1111111111" />
+			<var name="searchContainerType" value="phonesSearchContainer" />
+		</execute>
+
+		<execute macro="User#viewContactInformation">
+			<var name="skype" value="skype12345" />
+		</execute>
+
+		<execute macro="User#removeContactInformation">
+			<var name="rowEntry" value="1111111111" />
+		</execute>
+
+		<execute macro="User#viewContactInformation">
+			<var name="skype" value="skype12345" />
 		</execute>
 	</command>
 </definition>

@@ -273,6 +273,25 @@ version 2.0.4.
 - [LPS-83922]: Update the [Liferay Gradle Plugins Target Platform] dependency to
 version 1.1.2.
 
+## 1.10.9 - 2018-10-29
+
+### Changed
+- [LPS-86549]: Update the [Liferay Gradle Plugins] dependency to version 3.13.8.
+
+## 1.10.13 - 2018-11-30
+
+### Added
+- [LPS-77897]: Adds support for Docker. The following tasks are now available:
+	- `buildDockerImage`
+	- `createDockerContainer`
+	- `createDockerfile`
+	- `dockerDeploy`
+	- `logsDockerContainer`
+	- `pullDockerImage`
+	- `removeDockerContainer`
+	- `startDockerContainer`
+	- `stopDockerContainer`
+
 [Gradle Download Task]: https://github.com/michel-kraemer/gradle-download-task/
 [Liferay Gradle Plugins]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-plugins
 [Liferay Gradle Plugins Poshi Runner]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-plugins-poshi-runner
@@ -321,6 +340,7 @@ version 1.1.2.
 [LPS-77425]: https://issues.liferay.com/browse/LPS-77425
 [LPS-77586]: https://issues.liferay.com/browse/LPS-77586
 [LPS-77875]: https://issues.liferay.com/browse/LPS-77875
+[LPS-77897]: https://issues.liferay.com/browse/LPS-77897
 [LPS-78149]: https://issues.liferay.com/browse/LPS-78149
 [LPS-78537]: https://issues.liferay.com/browse/LPS-78537
 [LPS-78911]: https://issues.liferay.com/browse/LPS-78911
@@ -335,3 +355,4 @@ version 1.1.2.
 [LPS-82534]: https://issues.liferay.com/browse/LPS-82534
 [LPS-83922]: https://issues.liferay.com/browse/LPS-83922
 [LPS-84119]: https://issues.liferay.com/browse/LPS-84119
+[LPS-86549]: https://issues.liferay.com/browse/LPS-86549

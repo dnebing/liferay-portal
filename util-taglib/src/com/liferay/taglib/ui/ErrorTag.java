@@ -21,6 +21,9 @@ import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.util.IncludeTag;
+import com.liferay.taglib.util.TagResourceBundleUtil;
+
+import java.util.ResourceBundle;
 
 import javax.portlet.PortletRequest;
 
@@ -182,12 +185,12 @@ public class ErrorTag extends IncludeTag implements BodyTag {
 	}
 
 	private String _getAlertIcon() {
-		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
-			JavaConstants.JAVAX_PORTLET_REQUEST);
-
 		if ((_key != null) && Validator.isNull(_message)) {
 			return "exclamation-full";
 		}
+
+		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 
 		if (SessionErrors.contains(portletRequest, "warning")) {
 			return "warning-full";
@@ -197,12 +200,12 @@ public class ErrorTag extends IncludeTag implements BodyTag {
 	}
 
 	private String _getAlertMessage() {
-		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
-			JavaConstants.JAVAX_PORTLET_REQUEST);
-
 		if ((_key != null) && Validator.isNull(_message)) {
 			return _getBodyContentString();
 		}
+
+		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 
 		if (SessionErrors.contains(portletRequest, "warning")) {
 			String alertMessage = _message;
@@ -213,7 +216,11 @@ public class ErrorTag extends IncludeTag implements BodyTag {
 			}
 
 			if (_translateMessage) {
-				alertMessage = LanguageUtil.get(request, alertMessage);
+				ResourceBundle resourceBundle =
+					TagResourceBundleUtil.getResourceBundle(pageContext);
+
+				alertMessage = LanguageUtil.get(
+					request, resourceBundle, alertMessage);
 			}
 
 			return alertMessage;
@@ -227,7 +234,11 @@ public class ErrorTag extends IncludeTag implements BodyTag {
 			String alertMessage = _message;
 
 			if (_translateMessage) {
-				alertMessage = LanguageUtil.get(request, _message);
+				ResourceBundle resourceBundle =
+					TagResourceBundleUtil.getResourceBundle(pageContext);
+
+				alertMessage = LanguageUtil.get(
+					request, resourceBundle, _message);
 			}
 
 			return alertMessage;
@@ -237,12 +248,12 @@ public class ErrorTag extends IncludeTag implements BodyTag {
 	}
 
 	private String _getAlertStyle() {
-		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
-			JavaConstants.JAVAX_PORTLET_REQUEST);
-
 		if ((_key != null) && Validator.isNull(_message)) {
 			return "danger";
 		}
+
+		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 
 		if (SessionErrors.contains(portletRequest, "warning")) {
 			return "warning";
@@ -252,12 +263,12 @@ public class ErrorTag extends IncludeTag implements BodyTag {
 	}
 
 	private String _getAlertTitle() {
-		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
-			JavaConstants.JAVAX_PORTLET_REQUEST);
-
 		if ((_key != null) && Validator.isNull(_message)) {
 			return LanguageUtil.get(request, "error");
 		}
+
+		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 
 		if (SessionErrors.contains(portletRequest, "warning")) {
 			return LanguageUtil.get(request, "warning");

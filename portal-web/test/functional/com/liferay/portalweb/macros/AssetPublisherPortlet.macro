@@ -126,7 +126,7 @@
 		</execute>
 
 		<execute macro="Panel#expandPanel">
-			<var name="panel" value="Ordering and Grouping" />
+			<var name="panel" value="Ordering" />
 		</execute>
 
 		<execute function="Select" locator1="APConfiguration#ORDERING_AND_GROUPING_ORDER_BY_SELECT" value1="${fieldNameOrder}" />
@@ -221,9 +221,21 @@
 
 		<execute function="Select" locator1="APConfiguration#FILTER_CATEGORIZATION_SELECT" value1="Categories" />
 
-		<execute macro="AssetCategorization#addCategory">
+		<if>
+			<isset var="queryAndOperator" />
+			<then>
+				<execute function="Select" locator1="APConfiguration#FILTER_QUERY_AND_OPERATOR" value1="${queryAndOperator}" />
+			</then>
+		</if>
+
+		<execute function="Click" locator1="Button#SELECT_CATEGORIES" />
+
+		<execute macro="AssetCategorization#selectCategory">
 			<var name="categoryName" value="${categoryName}" />
-			<var name="vocabularyName" value="${vocabularyName}" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="AssetCategorization#CATEGORY" value1="${categoryName}">
+			<var name="key_categoryName" value="${categoryName}" />
 		</execute>
 
 		<execute macro="PortletEntry#save" />
@@ -301,7 +313,7 @@
 			<var name="navTab" value="Display Settings" />
 		</execute>
 
-		<execute function="Select" locator1="APConfigurationDisplaysettings#DISPLAY_TEMPLATE_SELECT" value1="${displayTemplate}" />
+		<execute function="Select" locator1="Select#DISPLAY_TEMPLATE" value1="${displayTemplate}" />
 
 		<execute macro="PortletEntry#save" />
 
@@ -594,10 +606,26 @@
 			<var name="panel" value="Filter" />
 		</execute>
 
+		<execute function="Click" locator1="APConfiguration#RULE_BUILDER_ADD_CONDITION" />
+
+		<if>
+			<isset var="aqueryAndOperator" />
+			<then>
+				<execute function="Select" locator1="APConfiguration#FILTER_QUERY_AND_OPERATOR" value1="${queryAndOperator}" />
+			</then>
+		</if>
+
+		<if>
+			<isset var="queryContains" />
+			<then>
+				<execute function="Select" locator1="APConfiguration#FILTER_QUERY_CONTAINS" value1="${queryContains}" />
+			</then>
+		</if>
+
 		<execute function="Select" locator1="APConfiguration#FILTER_CATEGORIZATION_SELECT" value1="Tags" />
 
 		<execute macro="AssetCategorization#selectTag">
-			<var name="tagName" value="${tagName}" />
+			<var name="tagNameList" value="${tagNameList}" />
 		</execute>
 
 		<execute macro="PortletEntry#save" />
@@ -618,13 +646,78 @@
 			<var name="rowEntry" value="${configurationName}" />
 		</execute>
 
-		<execute function="Confirm#waitForConfirmation" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<execute function="AssertConfirm#waitForConfirmation" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute macro="Alert#viewSuccessMessage" />
 
 		<execute macro="PortletEntry#viewEmptyMessage">
 			<var name="entity" value="Configuration Templates" />
 		</execute>
+	</command>
+
+	<command name="editConfigureCategoriesFilterPG">
+		<execute macro="AssetPublisherPortlet#gotoConfigurationPG" />
+
+		<execute macro="Panel#expandPanel">
+			<var name="panel" value="Filter" />
+		</execute>
+
+		<if>
+			<isset var="queryContains" />
+			<then>
+				<execute function="Select" locator1="APConfiguration#FILTER_QUERY_CONTAINS" value1="${queryContains}" />
+			</then>
+		</if>
+
+		<execute function="Click" locator1="Button#SELECT_CATEGORIES" />
+
+		<execute macro="AssetCategorization#gotoSelectCategory" />
+
+		<for list="${categoryNames}" param="categoryName">
+			<execute macro="Portlet#selectTreeNode">
+				<var name="nodeName" value="${categoryName}" />
+			</execute>
+		</for>
+
+		<execute function="SelectFrame" value1="relative=top" />
+
+		<execute function="AssertClick" locator1="Button#DONE" value1="Done" />
+
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+
+		<execute macro="PortletEntry#save" />
+	</command>
+
+	<command name="editConfigureTagsFilterPG">
+		<execute macro="AssetPublisherPortlet#gotoConfigurationPG" />
+
+		<execute macro="Panel#expandPanel">
+			<var name="panel" value="Filter" />
+		</execute>
+
+		<if>
+			<isset var="queryAndOperator" />
+			<then>
+				<execute function="Select" locator1="APConfiguration#FILTER_QUERY_AND_OPERATOR" value1="${queryAndOperator}" />
+			</then>
+		</if>
+
+		<if>
+			<isset var="queryContains" />
+			<then>
+				<execute function="Select" locator1="APConfiguration#FILTER_QUERY_CONTAINS" value1="${queryContains}" />
+			</then>
+		</if>
+
+		<execute function="Select" locator1="APConfiguration#FILTER_CATEGORIZATION_SELECT" value1="Tags" />
+
+		<execute macro="AssetCategorization#selectTag">
+			<var name="tagNameList" value="${tagNameList}" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="IFrame#selectTopFrame" />
 	</command>
 
 	<command name="enableRSSSubscription">
@@ -637,6 +730,26 @@
 		<execute function="AssertTextEquals" locator1="APConfiguration#SUBSCRIPTIONS_ENABLE_RSS_SUBSCRIPTION_LABEL" value1="Enable RSS Subscription" />
 
 		<execute function="Check#checkToggleSwitch" locator1="APConfiguration#SUBSCRIPTIONS_ENABLE_RSS_SUBSCRIPTION" />
+	</command>
+
+	<command name="enableUserSegementFilter">
+		<execute macro="AssetPublisherPortlet#gotoConfigurationPG" />
+
+		<execute macro="Navigator#gotoNavTab">
+			<var name="navTab" value="Asset Selection" />
+		</execute>
+
+		<execute macro="Panel#expandPanel">
+			<var name="panel" value="User Segments Filter" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="APConfiguration#ENABLE_USER_SEGMENTS_FILTER_LABEL" value1="User Segments Filter" />
+
+		<execute function="Check#checkToggleSwitch" locator1="APConfiguration#ENABLE_USER_SEGMENTS_FILTER" />
+
+		<execute macro="Button#clickSave" />
+
+		<execute function="SelectFrameTop" />
 	</command>
 
 	<command name="gotoConfigurationPG">
@@ -1069,7 +1182,7 @@
 		<execute function="AssertElementPresent" locator1="Icon#FLAG" />
 		<execute function="AssertElementPresent" locator1="Ratings#YOUR_RATING_LABEL" />
 		<execute function="AssertElementPresent" locator1="Ratings#AVERAGE_LABEL" />
-		<execute function="AssertElementPresent" locator1="Comments#SUBSCRIBE_TO_COMMENTS_LINK" />
+		<execute function="AssertElementPresent" locator1="Button#SUBSCRIBE" />
 		<execute function="AssertElementPresent" locator1="Icon#CUSTOM_EDIT" />
 
 		<execute function="Click" locator1="AP#ASSET_RICH_SUMMARY_TITLE" value1="${assetTitle}" />
@@ -1130,7 +1243,7 @@
 
 		<execute function="Click" locator1="APConfiguration#ASSET_SELECTION_DYNAMIC" />
 
-		<for list="Source,Filter,Custom User Attributes,Ordering and Grouping" param="panel">
+		<for list="Source,Filter,Custom User Attributes,Ordering" param="panel">
 			<execute function="AssertElementPresent" locator1="Panel#PANEL_COLLAPSED">
 				<var name="key_panel" value="${panel}" />
 			</execute>

@@ -16,7 +16,11 @@
 
 <%@ include file="/dynamic_section/init.jsp" %>
 
-<div class="autofit-row sidebar-panel widget-metadata">
+<%
+JSONArray collaboratorsJSONArray = JSONFactoryUtil.createJSONArray();
+%>
+
+<div class="autofit-row widget-metadata">
 	<div class="autofit-col inline-item-before">
 
 		<%
@@ -26,8 +30,8 @@
 		%>
 
 		<div class="lfr-portal-tooltip" data-title="<%= LanguageUtil.format(resourceBundle, "x-is-the-owner", owner.getFullName()) %>">
-			<liferay-ui:user-portrait
-				cssClass="user-icon-lg"
+			<liferay-frontend:user-portrait
+				size="lg"
 				user="<%= owner %>"
 			/>
 		</div>
@@ -40,12 +44,19 @@
 			List<User> sharingEntryToUsers = (List<User>)request.getAttribute("info_panel_file_entry.jsp-sharingEntryToUsers");
 
 			for (User sharingEntryToUser : sharingEntryToUsers) {
+				JSONObject collaboratorJSONObject = JSONFactoryUtil.createJSONObject();
+
+				collaboratorJSONObject.put("id", sharingEntryToUser.getUserId());
+				collaboratorJSONObject.put("imageSrc", sharingEntryToUser.getPortraitURL(themeDisplay));
+				collaboratorJSONObject.put("name", sharingEntryToUser.getFullName());
+
+				collaboratorsJSONArray.put(collaboratorJSONObject);
 			%>
 
 				<div class="autofit-col">
 					<div class="lfr-portal-tooltip" data-title="<%= sharingEntryToUser.getFullName() %>">
-						<liferay-ui:user-portrait
-							cssClass="user-icon-lg"
+						<liferay-frontend:user-portrait
+							size="lg"
 							user="<%= sharingEntryToUser %>"
 						/>
 					</div>
@@ -70,3 +81,51 @@
 		</div>
 	</div>
 </div>
+
+<div class="autofit-row sidebar-panel">
+	<clay:button
+		elementClasses="manage-collaborators-btn"
+		id='<%= liferayPortletResponse.getNamespace() + "manageCollaboratorsButton" %>'
+		label='<%= LanguageUtil.get(resourceBundle, "manage-collaborators") %>'
+		size="sm"
+		style="link"
+	/>
+</div>
+
+<%
+PortletURL manageCollaboratorsRenderURL = PortletProviderUtil.getPortletURL(request, SharingEntry.class.getName(), PortletProvider.Action.MANAGE);
+
+manageCollaboratorsRenderURL.setParameter("classNameId", String.valueOf(ClassNameLocalServiceUtil.getClassNameId(DLFileEntry.class.getName())));
+manageCollaboratorsRenderURL.setParameter("classPK", String.valueOf(fileEntry.getFileEntryId()));
+manageCollaboratorsRenderURL.setParameter("manageCollaboratorDialogId", liferayPortletResponse.getNamespace() + "manageCollaboratorsDialog");
+manageCollaboratorsRenderURL.setWindowState(LiferayWindowState.POP_UP);
+%>
+
+<aui:script>
+	var button = document.getElementById('<portlet:namespace/>manageCollaboratorsButton');
+
+	button.addEventListener(
+		'click',
+		function() {
+			Liferay.Util.openWindow(
+				{
+					dialog: {
+						destroyOnHide: true,
+						height: 470,
+						width: 600,
+						on: {
+							visibleChange: function(event) {
+								if (!event.newVal) {
+									Liferay.Util.getOpener().Liferay.fire('refreshInfoPanel');
+								}
+							}
+						}
+					},
+					id: '<portlet:namespace />manageCollaboratorsDialog',
+					title: '<%= LanguageUtil.get(resourceBundle, "collaborators") %>',
+					uri: '<%= manageCollaboratorsRenderURL.toString() %>'
+				}
+			);
+		}
+	);
+</aui:script>

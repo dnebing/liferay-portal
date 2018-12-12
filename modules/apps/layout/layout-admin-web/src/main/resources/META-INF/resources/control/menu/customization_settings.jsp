@@ -75,7 +75,7 @@ data.put("qa-id", "customizations");
 			<div class="control-menu-level-2-heading visible-xs">
 				<liferay-ui:message key="customization-options" />
 
-				<button aria-labelledby="Close" class="close" id="<%= portletNamespace %>closeCustomizationOptions" type="button">
+				<button aria-label="<%= LanguageUtil.get(request, "close") %>" class="close" id="<%= portletNamespace %>closeCustomizationOptions" type="button">
 					<aui:icon image="times" markupView="lexicon" />
 				</button>
 			</div>
@@ -147,6 +147,8 @@ data.put("qa-id", "customizations");
 				else if (layoutTypePortlet.isDefaultUpdated()) {
 					toggleCustomizedViewMessage = "the-defaults-for-the-current-page-have-been-updated-click-here-to-see-them";
 				}
+
+				toggleCustomizedViewMessage = LanguageUtil.get(resourceBundle, toggleCustomizedViewMessage);
 
 				PortletURL resetCustomizationViewURL = PortletURLFactoryUtil.create(request, LayoutAdminPortletKeys.GROUP_PAGES, PortletRequest.ACTION_PHASE);
 

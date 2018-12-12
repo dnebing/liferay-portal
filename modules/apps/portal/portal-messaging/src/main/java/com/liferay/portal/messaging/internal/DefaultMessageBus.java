@@ -80,8 +80,9 @@ public class DefaultMessageBus implements ManagedServiceFactory, MessageBus {
 					MessageListener messageListener = bundleContext.getService(
 						serviceReference);
 
-					String destinationName = (String)
-						serviceReference.getProperty("destination.name");
+					String destinationName =
+						(String)serviceReference.getProperty(
+							"destination.name");
 
 					Thread currentThread = Thread.currentThread();
 
@@ -195,9 +196,8 @@ public class DefaultMessageBus implements ManagedServiceFactory, MessageBus {
 		if ((destination != null) && destination.isRegistered()) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override

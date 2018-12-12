@@ -16,7 +16,6 @@ package com.liferay.dynamic.data.lists.web.internal.upgrade.v1_0_0;
 
 import com.liferay.dynamic.data.lists.constants.DDLPortletKeys;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Junction;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -52,36 +51,22 @@ public class UpgradeDDLFormPortletId extends BaseUpgradePortletId {
 			_resourcePermissionLocalService.getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Property nameProperty = PropertyFactoryUtil.forName("name");
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Property nameProperty = PropertyFactoryUtil.forName("name");
-
-					dynamicQuery.add(
-						nameProperty.eq(new String(oldRootPortletId)));
-				}
-
+				dynamicQuery.add(nameProperty.eq(new String(oldRootPortletId)));
 			});
 		actionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.
-				PerformActionMethod<ResourcePermission>() {
+			(ResourcePermission resourcePermission) -> {
+				long total = getResourcePermissionsCount(
+					resourcePermission.getCompanyId(), newRootPortletId,
+					resourcePermission.getScope(),
+					resourcePermission.getRoleId());
 
-				@Override
-				public void performAction(ResourcePermission resourcePermission)
-					throws PortalException {
-
-					long total = getResourcePermissionsCount(
-						resourcePermission.getCompanyId(), newRootPortletId,
-						resourcePermission.getScope(),
-						resourcePermission.getRoleId());
-
-					if (total > 0) {
-						_resourcePermissionLocalService.
-							deleteResourcePermission(resourcePermission);
-					}
+				if (total > 0) {
+					_resourcePermissionLocalService.deleteResourcePermission(
+						resourcePermission);
 				}
-
 			});
 
 		actionableDynamicQuery.performActions();
@@ -90,10 +75,7 @@ public class UpgradeDDLFormPortletId extends BaseUpgradePortletId {
 	@Override
 	protected String[][] getRenamePortletIdsArray() {
 		return new String[][] {
-			{
-				"1_WAR_ddlformportlet",
-				DDLPortletKeys.DYNAMIC_DATA_LISTS_DISPLAY
-			}
+			{"1_WAR_ddlformportlet", DDLPortletKeys.DYNAMIC_DATA_LISTS_DISPLAY}
 		};
 	}
 
@@ -106,30 +88,23 @@ public class UpgradeDDLFormPortletId extends BaseUpgradePortletId {
 			_resourcePermissionLocalService.getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Property companyIdProperty = PropertyFactoryUtil.forName(
+					"companyId");
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Property companyIdProperty = PropertyFactoryUtil.forName(
-						"companyId");
+				dynamicQuery.add(companyIdProperty.eq(companyId));
 
-					dynamicQuery.add(companyIdProperty.eq(companyId));
+				Property nameProperty = PropertyFactoryUtil.forName("name");
 
-					Property nameProperty = PropertyFactoryUtil.forName("name");
+				dynamicQuery.add(nameProperty.eq(name));
 
-					dynamicQuery.add(nameProperty.eq(name));
+				Property scopeProperty = PropertyFactoryUtil.forName("scope");
 
-					Property scopeProperty = PropertyFactoryUtil.forName(
-						"scope");
+				dynamicQuery.add(scopeProperty.eq(scope));
 
-					dynamicQuery.add(scopeProperty.eq(scope));
+				Property roleIdProperty = PropertyFactoryUtil.forName("roleId");
 
-					Property roleIdProperty = PropertyFactoryUtil.forName(
-						"roleId");
-
-					dynamicQuery.add(roleIdProperty.eq(roleId));
-				}
-
+				dynamicQuery.add(roleIdProperty.eq(roleId));
 			});
 
 		return actionableDynamicQuery.performCount();
@@ -144,38 +119,23 @@ public class UpgradeDDLFormPortletId extends BaseUpgradePortletId {
 			_portletPreferencesLocalService.getActionableDynamicQuery();
 
 		actionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Junction junction = RestrictionsFactoryUtil.disjunction();
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Junction junction = RestrictionsFactoryUtil.disjunction();
+				Property property = PropertyFactoryUtil.forName("portletId");
 
-					Property property = PropertyFactoryUtil.forName(
-						"portletId");
+				junction.add(property.eq(oldRootPortletId));
+				junction.add(property.like(oldRootPortletId + "_INSTANCE_%"));
+				junction.add(
+					property.like(oldRootPortletId + "_USER_%_INSTANCE_%"));
 
-					junction.add(property.eq(oldRootPortletId));
-					junction.add(
-						property.like(oldRootPortletId + "_INSTANCE_%"));
-					junction.add(
-						property.like(oldRootPortletId + "_USER_%_INSTANCE_%"));
-
-					dynamicQuery.add(junction);
-				}
-
+				dynamicQuery.add(junction);
 			});
 		actionableDynamicQuery.setParallel(true);
 		actionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.
-				PerformActionMethod<PortletPreferences>() {
-
-				@Override
-				public void performAction(PortletPreferences portletPreference)
-					throws PortalException {
-
-					updatePortletPreferences(
-						portletPreference, oldRootPortletId, newRootPortletId);
-				}
-
+			(PortletPreferences portletPreference) -> {
+				updatePortletPreferences(
+					portletPreference, oldRootPortletId, newRootPortletId);
 			});
 
 		actionableDynamicQuery.performActions();

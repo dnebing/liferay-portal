@@ -57,6 +57,11 @@ public interface AssetListEntry extends AssetListEntryModel, PersistedModel {
 
 	public java.util.List<com.liferay.asset.kernel.model.AssetEntry> getAssetEntries();
 
+	public java.util.List<com.liferay.asset.kernel.model.AssetEntry> getAssetEntries(
+		int start, int end);
+
+	public int getAssetEntriesCount();
+
 	public com.liferay.asset.kernel.service.persistence.AssetEntryQuery getAssetEntryQuery();
 
 	public String getTypeLabel();

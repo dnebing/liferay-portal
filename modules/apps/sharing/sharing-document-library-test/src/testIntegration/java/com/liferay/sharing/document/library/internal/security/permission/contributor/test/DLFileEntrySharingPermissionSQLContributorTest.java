@@ -42,7 +42,7 @@ import com.liferay.portal.security.permission.contributor.PermissionSQLContribut
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
-import com.liferay.sharing.constants.SharingEntryActionKey;
+import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.service.SharingEntryLocalService;
 
 import java.util.Collections;
@@ -124,8 +124,8 @@ public class DLFileEntrySharingPermissionSQLContributorTest {
 		PermissionChecker permissionChecker =
 			PermissionCheckerFactoryUtil.create(_groupUser);
 
-		try (ContextUserReplace contextUserReplace =
-				new ContextUserReplace(_groupUser, permissionChecker)) {
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_groupUser, permissionChecker)) {
 
 			Assert.assertEquals(
 				0,
@@ -142,7 +142,7 @@ public class DLFileEntrySharingPermissionSQLContributorTest {
 			_sharingEntryLocalService.addSharingEntry(
 				TestPropsValues.getUserId(), _groupUser.getUserId(),
 				classNameId, _fileEntry.getFileEntryId(), _group.getGroupId(),
-				true, Collections.singletonList(SharingEntryActionKey.VIEW),
+				true, Collections.singletonList(SharingEntryAction.VIEW), null,
 				serviceContext);
 
 			Assert.assertEquals(

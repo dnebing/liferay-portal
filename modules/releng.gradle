@@ -1,3 +1,9 @@
+import aQute.bnd.osgi.Constants
+import aQute.bnd.osgi.Resource
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+
 import com.liferay.gradle.plugins.change.log.builder.BuildChangeLogTask
 import com.liferay.gradle.plugins.defaults.internal.util.GradleUtil
 import com.liferay.gradle.util.FileUtil
@@ -9,6 +15,8 @@ import groovy.json.JsonSlurper
 
 import java.nio.file.Path
 
+import java.util.jar.Attributes
+import java.util.jar.Manifest
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -29,13 +37,22 @@ import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.treewalk.TreeWalk
 import org.eclipse.jgit.treewalk.filter.PathFilter
 
-import org.gradle.initialization.GradleLauncher
-import org.gradle.initialization.NestedBuildFactory
+import org.gradle.StartParameter
+import org.gradle.api.Transformer
+import org.gradle.api.internal.BuildDefinition
+import org.gradle.internal.build.BuildState
+import org.gradle.internal.build.BuildStateRegistry
+import org.gradle.internal.build.PublicBuildPath
+import org.gradle.internal.build.StandAloneNestedBuild
+import org.gradle.internal.invocation.BuildController
+import org.gradle.util.GUtil
 
 buildscript {
 	apply from: file("build-buildscript.gradle"), to: buildscript
 
 	dependencies {
+		classpath group: "com.github.jengelman.gradle.plugins", name: "shadow", version: "2.0.4"
+		classpath group: "de.undercouch", name: "gradle-download-task", version: "3.4.3"
 		classpath group: "org.ajoberstar", name: "gradle-git", version: "1.6.0"
 	}
 
@@ -46,6 +63,9 @@ buildscript {
 	}
 }
 
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "de.undercouch.download"
+apply plugin: "java"
 apply plugin: "org.ajoberstar.grgit"
 
 task buildFixPackChangeLog(type: BuildChangeLogTask)
@@ -54,6 +74,10 @@ task cleanReleng
 task cleanVersionOverride
 task lockDependencyVersion
 task lockPrivateDependencyVersions
+task portalArtifactsJar(type: ShadowJar)
+task portalJavadoc(type: Javadoc)
+task portalJavadocJar(type: Jar)
+task portalSourcesJar(type: ShadowJar)
 task prepareMajorIncrement
 task syncGitRepoReleases
 task tagAppReleases
@@ -328,6 +352,140 @@ lockPrivateDependencyVersions {
 	}
 
 	group = "releng"
+}
+
+portalArtifactsJar {
+	ext {
+		relengPropertiesFiles = null
+	}
+
+	baseName = "portal"
+	classifier = null
+	includeEmptyDirs = false
+	version = _getReleaseInfoVersion()
+
+	doFirst {
+		relengPropertiesFiles = _getRelengPropertiesFiles()
+
+		ConfigurationContainer configurationContainer = project.getConfigurations()
+
+		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalArtifactsDependencies(relengPropertiesFiles) as Dependency[])
+
+		detachedConfiguration.resolve()
+
+		configurations = [detachedConfiguration]
+
+		fileTree(dir: projectDir.parentFile, include: "/portal-impl/src/content/Language*.properties").each {
+			append("content/" + it.name)
+		}
+	}
+
+	doLast {
+		println "Created jar " + archivePath
+	}
+
+	onlyIf {
+		return file(".releng").exists()
+	}
+
+	outputs.upToDateWhen {
+		return false
+	}
+}
+
+portalJavadoc {
+	dependsOn portalArtifactsJar
+	dependsOn portalSourcesJar
+
+	destinationDir = new File(buildDir, "releng/portalJavadoc")
+	options.addStringOption("Xdoclint:none", "-quiet")
+	options.encoding = "ISO-8859-1"
+	options.stylesheetFile = file("../tools/styles/javadoc.css")
+	source {
+		zipTree(portalSourcesJar.archivePath).matching {
+			include _getPortalJavadocIncludes(portalArtifactsJar.relengPropertiesFiles)
+		}
+	}
+	title = "Portal " + _getReleaseInfoVersion()
+
+	doFirst {
+		ConfigurationContainer configurationContainer = project.getConfigurations()
+
+		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalJavadocDependencies() as Dependency[])
+
+		detachedConfiguration.setTransitive(false)
+
+		detachedConfiguration.resolve()
+
+		classpath = fileTree(dir: portalArtifactsJar.archivePath) + detachedConfiguration
+	}
+
+	doLast {
+		println "Created Javadoc " + destinationDir
+	}
+
+	onlyIf {
+		return file(".releng").exists()
+	}
+
+	outputs.upToDateWhen {
+		return false
+	}
+}
+
+portalJavadocJar {
+	dependsOn portalJavadoc
+
+	baseName = "portal"
+	classifier = "javadoc"
+	from portalJavadoc
+	includeEmptyDirs = false
+	version = _getReleaseInfoVersion()
+
+	doLast {
+		println "Created jar " + archivePath
+	}
+
+	onlyIf {
+		return file(".releng").exists()
+	}
+
+	outputs.upToDateWhen {
+		return false
+	}
+}
+
+portalSourcesJar {
+	baseName = "portal"
+	classifier = "sources"
+	includeEmptyDirs = false
+	version = _getReleaseInfoVersion()
+
+	doFirst {
+		ConfigurationContainer configurationContainer = project.getConfigurations()
+
+		Configuration detachedConfiguration = configurationContainer.detachedConfiguration(_getPortalSourcesDependencies(portalArtifactsJar.relengPropertiesFiles) as Dependency[])
+
+		detachedConfiguration.resolve()
+
+		configurations = [detachedConfiguration]
+
+		fileTree(dir: projectDir.parentFile, include: "/portal-impl/src/content/Language*.properties").each {
+			append("content/" + it.name)
+		}
+	}
+
+	doLast {
+		println "Created jar " + archivePath
+	}
+
+	onlyIf {
+		return file(".releng").exists()
+	}
+
+	outputs.upToDateWhen {
+		return false
+	}
 }
 
 prepareMajorIncrement {
@@ -610,12 +768,16 @@ prepareMajorIncrement {
 	group = "releng"
 }
 
+repositories {
+	maven {
+		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+	}
+}
+
 syncGitRepoReleases {
 	description = "Runs 'gradlew baseline -PsyncRelease' on every read-only Git subrepository."
 
 	doLast {
-		NestedBuildFactory nestedBuildFactory = gradle.services.get(NestedBuildFactory)
-
 		FileTree gitRepoFileTree = fileTree(dir: projectDir, include: "**/.gitrepo")
 
 		gitRepoFileTree.each {
@@ -638,7 +800,6 @@ syncGitRepoReleases {
 			File settingsGradleFile = new File(moduleDir, "settings.gradle")
 			File settingsGradleBackupFile = new File(moduleDir, "settings.gradle.backup")
 
-			GradleLauncher gradleLauncher
 			String syncRelease
 
 			try {
@@ -652,15 +813,9 @@ syncGitRepoReleases {
 				startParameter.projectProperties = ["syncRelease": "true"]
 				startParameter.taskNames = ["baseline"]
 
-				gradleLauncher = nestedBuildFactory.nestedInstance(startParameter)
-
-				gradleLauncher.run()
+				_executeGradle(startParameter, true)
 			}
 			finally {
-				if (gradleLauncher) {
-					gradleLauncher.stop()
-				}
-
 				assert settingsGradleBackupFile.renameTo(settingsGradleFile)
 
 				_setSystemProperty "org.gradle.project.syncRelease", syncRelease
@@ -922,16 +1077,7 @@ private void _cherryPickPrepNext(Commit commit) {
 			startParameter.projectProperties = ["forced.update.version": newVersion]
 			startParameter.taskNames = [moduleTaskPrefix + "updateVersion"]
 
-			NestedBuildFactory nestedBuildFactory = gradle.services.get(NestedBuildFactory)
-
-			GradleLauncher gradleLauncher = nestedBuildFactory.nestedInstance(startParameter)
-
-			try {
-				gradleLauncher.run()
-			}
-			finally {
-				gradleLauncher.stop()
-			}
+			_executeGradle(startParameter, true)
 
 			grgit.add patterns: [moduleDirName]
 
@@ -950,16 +1096,10 @@ private void _cherryPickPrepNext(Commit commit) {
 		startParameter.projectProperties = ["syncRelease": "true"]
 		startParameter.taskNames = [moduleTaskPrefix + "baseline"]
 
-		NestedBuildFactory nestedBuildFactory = gradle.services.get(NestedBuildFactory)
-
-		GradleLauncher gradleLauncher = nestedBuildFactory.nestedInstance(startParameter)
-
 		try {
-			gradleLauncher.run()
+			_executeGradle(startParameter, true)
 		}
 		finally {
-			gradleLauncher.stop()
-
 			_setSystemProperty "baseline.ignoreFailures", baselineIgnoreFailures
 			_setSystemProperty "org.gradle.project.syncRelease", syncRelease
 		}
@@ -978,6 +1118,35 @@ private boolean _contains(File dir, String fileName, String s) {
 	}
 
 	return false
+}
+
+private void _downloadFile(String url, File destinationDir) {
+	File file = new File(destinationDir, url.substring(url.lastIndexOf("/") + 1))
+
+	if (file.exists()) {
+		return
+	}
+
+	for (int i = 0; i < 3; i++) {
+		try {
+			download {
+				dest destinationDir
+				quiet true
+				src url
+			}
+
+			break
+		}
+		catch (Exception e) {
+			if (i == 2) {
+				logger.lifecycle "Unable to download {}", url
+
+				e.printStackTrace()
+
+				throw e
+			}
+		}
+	}
 }
 
 private boolean _executeGradle(File moduleDir, List<String> taskNames, Map<String, String> projectProperties, boolean rethrowException) {
@@ -1001,12 +1170,37 @@ private boolean _executeGradle(File moduleDir, List<String> taskNames, Map<Strin
 		moduleTaskPrefix + it
 	}
 
-	NestedBuildFactory nestedBuildFactory = gradle.services.get(NestedBuildFactory)
+	try {
+		return _executeGradle(startParameter, rethrowException)
+	}
+	finally {
+		oldSystemProperties.each {
+			String key, String value ->
 
-	GradleLauncher gradleLauncher = nestedBuildFactory.nestedInstance(startParameter)
+			_setSystemProperty(key, value)
+		}
+	}
+}
+
+private boolean _executeGradle(StartParameter startParameter, boolean rethrowException) {
+	BuildDefinition buildDefinition = BuildDefinition.fromStartParameter(startParameter, gradle.services.get(PublicBuildPath))
+	BuildStateRegistry buildStateRegistry = gradle.services.get(BuildStateRegistry)
+
+	StandAloneNestedBuild standAloneNestedBuild = buildStateRegistry.addNestedBuildTree(buildDefinition, gradle.services.get(BuildState))
+
+	Transformer<Void, BuildController> transformer = new Transformer<Void, BuildController>() {
+
+		@Override
+		public Void transform(BuildController buildController) {
+			buildController.run()
+
+			return null
+		}
+
+	}
 
 	try {
-		gradleLauncher.run()
+		standAloneNestedBuild.run(transformer)
 
 		return true
 	}
@@ -1018,15 +1212,6 @@ private boolean _executeGradle(File moduleDir, List<String> taskNames, Map<Strin
 		e.printStackTrace()
 
 		return false
-	}
-	finally {
-		gradleLauncher.stop()
-
-		oldSystemProperties.each {
-			String key, String value ->
-
-			_setSystemProperty(key, value)
-		}
 	}
 }
 
@@ -1097,6 +1282,268 @@ private String _getModuleTaskPrefix(File moduleDir) {
 	String moduleTaskPrefix = relativePath(moduleDir)
 
 	":" + moduleTaskPrefix.replace(File.separatorChar, ':' as char) + ":"
+}
+
+private List<Dependency> _getPortalArtifactsDependencies(List<File> relengPropertiesFiles) {
+	File cacheDir = new File(buildDir, "releng/portalCache")
+	File portalArtifactsDir = new File(buildDir, "releng/portalArtifacts")
+
+	delete portalArtifactsDir
+
+	List<String> artifactURLs = new ArrayList<>()
+
+	for (File artifactPropertiesFile : relengPropertiesFiles) {
+		Properties artifactProperties = GUtil.loadProperties(artifactPropertiesFile)
+
+		artifactURLs.add(artifactProperties.getProperty("artifact.url"))
+	}
+
+	XmlSlurper xmlSlurper = new XmlSlurper()
+
+	List<String[]> artifactProperties = [
+		["liferay-public-releases", "com.liferay", "com.liferay.arquillian.extension.junit.bridge", "1.0.10"],
+		["maven2", "org.jboss.arquillian.junit", "arquillian-junit-container", "1.1.10.Final"]
+	]
+
+	artifactProperties.each {
+		String repository = it[0]
+		String groupId = it[1]
+		String artifact = it[2]
+		String version = it[3]
+
+		String groupPath = groupId.replace('.' as char, '/' as char)
+
+		String artifactURL = "https://repository-cdn.liferay.com/nexus/service/local/repositories/${repository}/content/${groupPath}/${artifact}/${version}/${artifact}-${version}.jar"
+
+		_downloadFile(artifactURL, cacheDir)
+
+		artifactURLs.add(artifactURL)
+	}
+
+	List<Dependency> dependencies = new ArrayList<>()
+
+	for (String artifactURL : artifactURLs) {
+		File jarFile = new File(cacheDir, artifactURL.substring(artifactURL.lastIndexOf("/") + 1))
+
+		File dir = new File(portalArtifactsDir, jarFile.name[0 .. -5])
+
+		copy {
+			from zipTree(jarFile)
+			into dir
+		}
+
+		DependencyHandler dependencyHandler = project.getDependencies()
+
+		dependencies.add(dependencyHandler.create(files(dir)))
+
+		logger.lifecycle "Added {}", jarFile.name
+	}
+
+	return dependencies
+}
+
+private List<Dependency> _getPortalJavadocDependencies() {
+	List<String> dependencyNotations = new ArrayList<>()
+
+	FileTree libDependenciesFileTree = fileTree(dir: "../lib", include: "**/dependencies.properties")
+
+	libDependenciesFileTree.each {
+		File libDependencies ->
+
+		Properties properties = GUtil.loadProperties(libDependencies)
+
+		dependencyNotations.addAll(properties.values())
+	}
+
+	FileTree buildGradleFileTree = fileTree(dir: "apps/static", include: "**/build.gradle")
+
+	buildGradleFileTree.each {
+		File buildGradleFile ->
+
+		buildGradleFile.getText("UTF-8").eachLine {
+			String line ->
+
+			if (!line.startsWith("	compileOnly group:")) {
+				return
+			}
+
+			Map<String, String> map = evaluate("[" + line.substring(13, line.length()) + "]")
+
+			if (!map.group.startsWith("com.liferay") || !map.version.matches("[0-9.]*")) {
+				dependencyNotations.add(map.group + ":" + map.name + ":" + map.version)
+			}
+		}
+	}
+
+	List<Dependency> dependencies = new ArrayList<>()
+
+	for (String dependencyNotation : dependencyNotations) {
+		DependencyHandler dependencyHandler = project.getDependencies()
+
+		dependencies.add(dependencyHandler.create(dependencyNotation))
+	}
+
+	return dependencies
+}
+
+private List<String> _getPortalJavadocIncludes(List<File> relengPropertiesFiles) {
+	File cacheDir = new File(buildDir, "releng/portalCache")
+
+	List<String> includes = new ArrayList<>()
+
+	for (File artifactPropertiesFile : relengPropertiesFiles) {
+		Properties artifactProperties = GUtil.loadProperties(artifactPropertiesFile)
+
+		String artifactURL = artifactProperties.getProperty("artifact.url")
+
+		File jarFile = new File(cacheDir, artifactURL.substring(artifactURL.lastIndexOf("/") + 1))
+
+		aQute.bnd.osgi.Jar jar = new aQute.bnd.osgi.Jar(jarFile)
+
+		Resource resource = jar.getResource("META-INF/MANIFEST.MF")
+
+		if (resource == null) {
+			continue
+		}
+
+		Manifest manifest = new Manifest(resource.openInputStream())
+
+		Attributes attributes = manifest.getMainAttributes()
+
+		String exportPackageValue = attributes.getValue(Constants.EXPORT_PACKAGE)
+
+		if (exportPackageValue == null) {
+			continue
+		}
+
+		for (String pattern : exportPackageValue.split(",")) {
+			pattern = pattern.trim()
+
+			if (pattern.startsWith("!")) {
+				continue
+			}
+
+			pattern = pattern.substring(0, pattern.length())
+
+			if (pattern.contains(";")) {
+				pattern = pattern.substring(0, pattern.indexOf(';'))
+			}
+
+			if (pattern.equals("org.apache.axis.enum")) {
+				continue
+			}
+
+			pattern = "**/" + pattern.replace('.', '/')
+
+			if (!pattern.endsWith("/*")) {
+				pattern += "/*"
+			}
+
+			includes.add(pattern + ".java")
+		}
+	}
+
+	return includes
+}
+
+private List<File> _getPortalSourcesDependencies(List<File> relengPropertiesFiles) {
+	File cacheDir = new File(buildDir, "releng/portalCache")
+	File portalSourcesDir = new File(buildDir, "releng/portalSources")
+
+	delete portalSourcesDir
+
+	List<Dependency> dependencies = new ArrayList<>()
+
+	for (File artifactPropertiesFile : relengPropertiesFiles) {
+		Properties artifactProperties = GUtil.loadProperties(artifactPropertiesFile)
+
+		String artifactSourcesURL = artifactProperties.getProperty("artifact.sources.url")
+
+		if (!artifactSourcesURL && !artifactPropertiesFile.name.equals("artifact.properties")) {
+			String artifactURL = artifactProperties.getProperty("artifact.url")
+
+			artifactSourcesURL = artifactURL[0 .. -5] + "-sources.jar"
+		}
+
+		if (artifactSourcesURL && artifactSourcesURL.endsWith(".jar")) {
+			_downloadFile(artifactSourcesURL, cacheDir)
+
+			File jarFile = new File(cacheDir, artifactSourcesURL.substring(artifactSourcesURL.lastIndexOf("/") + 1))
+
+			File dir = new File(portalSourcesDir, jarFile.name[0 .. -5])
+
+			copy {
+				from zipTree(jarFile)
+				into dir
+			}
+
+			DependencyHandler dependencyHandler = project.getDependencies()
+
+			dependencies.add(dependencyHandler.create(files(dir)))
+
+			logger.lifecycle "Added {}", jarFile.name
+		}
+	}
+
+	return dependencies
+}
+
+private String _getReleaseInfoVersion() {
+	File releaseInfoFile = file("../portal-kernel/src/com/liferay/portal/kernel/util/ReleaseInfo.java")
+
+	Matcher matcher = (releaseInfoFile.text =~ /private static final String _VERSION = "(.+)";/)
+
+	return matcher[0][1]
+}
+
+private List<File> _getRelengPropertiesFiles() {
+	File cacheDir = new File(buildDir, "releng/portalCache")
+
+	if (!cacheDir.exists()) {
+		cacheDir.mkdirs()
+	}
+
+	List<File> artifactPropertiesFiles = new ArrayList<>()
+
+	fileTree(dir: file(".releng"), exclude: "**/test/**", include: "**/*.properties").each {
+		File relengFile ->
+
+		Properties relengProperties = GUtil.loadProperties(relengFile)
+
+		String artifactURL = relengProperties.getProperty("artifact.url")
+
+		if (!artifactURL || !artifactURL.endsWith(".jar")) {
+			return
+		}
+
+		_downloadFile(artifactURL, cacheDir)
+
+		File jarFile = new File(cacheDir, artifactURL.substring(artifactURL.lastIndexOf("/") + 1))
+
+		aQute.bnd.osgi.Jar jar = new aQute.bnd.osgi.Jar(jarFile)
+
+		Resource resource = jar.getResource("META-INF/MANIFEST.MF")
+
+		if (resource == null) {
+			return
+		}
+
+		Manifest manifest = new Manifest(resource.openInputStream())
+
+		Attributes attributes = manifest.getMainAttributes()
+
+		String exportPackageValue = attributes.getValue(Constants.EXPORT_PACKAGE)
+
+		if (exportPackageValue == null) {
+			return
+		}
+
+		artifactPropertiesFiles.add(relengFile)
+
+		logger.lifecycle relengFile.path
+	}
+
+	return artifactPropertiesFiles
 }
 
 private RevCommit _getRevCommit(String commitId) {

@@ -17,6 +17,12 @@
 <%@ include file="/display/init.jsp" %>
 
 <%
+Group scopeGroup = themeDisplay.getScopeGroup();
+
+if (scopeGroup.isStagingGroup() && !scopeGroup.isInStagingPortlet(DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM_ADMIN)) {
+	scopeGroupId = scopeGroup.getLiveGroupId();
+}
+
 int cur = ParamUtil.getInteger(request, SearchContainer.DEFAULT_CUR_PARAM);
 
 String keywords = ParamUtil.getString(request, "keywords");
@@ -128,6 +134,7 @@ DDMFormInstance selFormInstance = DDMFormInstanceServiceUtil.fetchFormInstance(f
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 	<aui:input name="redirect" type="hidden" value='<%= configurationRenderURL.toString() + StringPool.AMPERSAND + renderResponse.getNamespace() + "cur" + cur %>' />
 	<aui:input name="preferences--formInstanceId--" type="hidden" value="<%= formInstanceId %>" />
+	<aui:input name="preferences--groupId--" type="hidden" value="<%= scopeGroupId %>" />
 
 	<aui:button-row>
 		<aui:button type="submit" />

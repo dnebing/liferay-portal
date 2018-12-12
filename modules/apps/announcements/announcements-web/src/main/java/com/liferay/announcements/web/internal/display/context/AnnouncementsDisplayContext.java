@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.model.UserGroup;
 import java.text.Format;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author Adolfo Pérez
@@ -35,11 +36,19 @@ public interface AnnouncementsDisplayContext extends DisplayContext {
 
 	public Format getDateFormatDate();
 
+	public List<Group> getGroups() throws PortalException;
+
+	public List<Organization> getOrganizations() throws PortalException;
+
 	public int getPageDelta();
+
+	public List<Role> getRoles() throws PortalException;
 
 	public String getTabs1Names();
 
 	public String getTabs1PortletURL();
+
+	public List<UserGroup> getUserGroups() throws PortalException;
 
 	public boolean isCustomizeAnnouncementsDisplayed();
 

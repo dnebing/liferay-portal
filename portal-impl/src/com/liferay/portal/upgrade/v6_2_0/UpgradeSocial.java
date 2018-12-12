@@ -692,13 +692,16 @@ public class UpgradeSocial extends UpgradeProcess {
 
 			ExtraDataFactory extraDataFactory = null;
 
-			if (classNameId == PortalUtil.getClassNameId(
-					_kbArticleExtraDataFactory.getActivityClassName())) {
+			if (classNameId ==
+					PortalUtil.getClassNameId(
+						_kbArticleExtraDataFactory.getActivityClassName())) {
 
 				extraDataFactory = _kbArticleExtraDataFactory;
 			}
-			else if (classNameId == PortalUtil.getClassNameId(
-						 _kbTemplateExtraDataFactory.getActivityClassName())) {
+			else if (classNameId ==
+						PortalUtil.getClassNameId(
+							_kbTemplateExtraDataFactory.
+								getActivityClassName())) {
 
 				extraDataFactory = _kbTemplateExtraDataFactory;
 			}

@@ -312,7 +312,6 @@ public class BuildPluginDescriptorTask extends DefaultTask {
 		Document document, Element dependenciesElement,
 		String configurationName, String scope) {
 
-		Logger logger = getLogger();
 		Project project = getProject();
 
 		ConfigurationContainer configurationContainer =
@@ -324,6 +323,8 @@ public class BuildPluginDescriptorTask extends DefaultTask {
 		if (configuration == null) {
 			return;
 		}
+
+		Logger logger = getLogger();
 
 		Set<String> forcedExclusions = getForcedExclusions();
 
@@ -478,6 +479,7 @@ public class BuildPluginDescriptorTask extends DefaultTask {
 			});
 
 		File dir = new File(getClassesDir(), "META-INF/maven");
+
 		File outputDir = getOutputDir();
 
 		project.delete(outputDir);
@@ -727,8 +729,6 @@ public class BuildPluginDescriptorTask extends DefaultTask {
 	}
 
 	private void _readdForcedExclusions() throws Exception {
-		Logger logger = getLogger();
-
 		Set<String> forcedExclusions = getForcedExclusions();
 
 		if (forcedExclusions.isEmpty()) {
@@ -745,6 +745,8 @@ public class BuildPluginDescriptorTask extends DefaultTask {
 		int pos = content.lastIndexOf("</dependencies>");
 
 		if (pos == -1) {
+			Logger logger = getLogger();
+
 			if (logger.isWarnEnabled()) {
 				logger.warn("Unable to readd forced exclusions");
 			}

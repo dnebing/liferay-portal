@@ -18,6 +18,7 @@ import com.liferay.project.templates.internal.util.FileUtil;
 import com.liferay.project.templates.internal.util.ProjectTemplatesUtil;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -40,15 +41,6 @@ public class ArchetyperArchetypeArtifactManager
 
 	public ArchetyperArchetypeArtifactManager(List<File> archetypesFiles) {
 		_archetypesFiles = archetypesFiles;
-
-		if (_archetypesFiles.isEmpty()) {
-			try {
-				_archetypesFiles.add(
-					FileUtil.getJarFile(ProjectGenerator.class));
-			}
-			catch (Exception e) {
-			}
-		}
 	}
 
 	@Override
@@ -75,23 +67,29 @@ public class ArchetyperArchetypeArtifactManager
 			try {
 				if (archetypesFile.isDirectory()) {
 					Path archetypePath = FileUtil.getFile(
-						archetypesFile.toPath(), artifactId + "-*.jar");
+						archetypesFile.toPath(),
+						artifactId + "-" + version + ".jar");
 
 					if (archetypePath != null) {
 						archetypeFile = archetypePath.toFile();
 					}
 				}
-				else {
-					archetypeFile = ProjectTemplatesUtil.getArchetypeFile(
-						artifactId, archetypesFile);
 
-					if (archetypeFile != null) {
-						break;
-					}
+				if (archetypeFile != null) {
+					break;
 				}
 			}
 			catch (Exception e) {
 				continue;
+			}
+		}
+
+		if (archetypeFile == null) {
+			try {
+				archetypeFile = ProjectTemplatesUtil.getArchetypeFile(
+					artifactId);
+			}
+			catch (IOException ioe) {
 			}
 		}
 

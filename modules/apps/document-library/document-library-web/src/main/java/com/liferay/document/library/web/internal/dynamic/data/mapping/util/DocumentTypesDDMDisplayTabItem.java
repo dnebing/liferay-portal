@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.ResourceBundle;
 
@@ -44,9 +44,9 @@ public class DocumentTypesDDMDisplayTabItem implements DDMDisplayTabItem {
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse) {
 
-		ResourceBundle resourceBundle =
-			_resourceBundleLoader.loadResourceBundle(
-				liferayPortletRequest.getLocale());
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			liferayPortletRequest.getLocale(),
+			DocumentTypesDDMDisplayTabItem.class);
 
 		return LanguageUtil.get(resourceBundle, "document-types");
 	}
@@ -61,18 +61,12 @@ public class DocumentTypesDDMDisplayTabItem implements DDMDisplayTabItem {
 			liferayPortletRequest, PortletKeys.DOCUMENT_LIBRARY_ADMIN,
 			PortletRequest.RENDER_PHASE);
 
-		portletURL.setParameter(
-			"mvcRenderCommandName", "/document_library/view_file_entry_types");
+		portletURL.setParameter("navigation", "file_entry_types");
 
 		return portletURL.toString();
 	}
 
 	@Reference
 	private Portal _portal;
-
-	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.document.library.web)"
-	)
-	private ResourceBundleLoader _resourceBundleLoader;
 
 }

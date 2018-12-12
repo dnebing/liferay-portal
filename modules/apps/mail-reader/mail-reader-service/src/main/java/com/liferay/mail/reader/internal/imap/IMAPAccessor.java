@@ -866,17 +866,15 @@ public class IMAPAccessor {
 
 			return getMessage(folderId, jxFolder, oldest);
 		}
-		else {
-			return jxMessage;
-		}
+
+		return jxMessage;
 	}
 
 	protected int[] getMessageIndexes(
 			int messageCount, int page, int messagesPerPage)
 		throws MailException {
 
-		int pageCount =
-			(int)(Math.ceil(messageCount / (double)messagesPerPage));
+		int pageCount = (int)Math.ceil(messageCount / (double)messagesPerPage);
 
 		if (messageCount == 0) {
 			return new int[] {0, 0};
@@ -960,12 +958,12 @@ public class IMAPAccessor {
 	protected Part getPart(Part part, String contentPath)
 		throws IOException, MessagingException {
 
-		int index = GetterUtil.getInteger(
-			StringUtil.split(contentPath.substring(1), StringPool.PERIOD)[0]);
-
 		if (!(part.getContent() instanceof Multipart)) {
 			return part;
 		}
+
+		int index = GetterUtil.getInteger(
+			StringUtil.split(contentPath.substring(1), StringPool.PERIOD)[0]);
 
 		Multipart multipart = (Multipart)part.getContent();
 

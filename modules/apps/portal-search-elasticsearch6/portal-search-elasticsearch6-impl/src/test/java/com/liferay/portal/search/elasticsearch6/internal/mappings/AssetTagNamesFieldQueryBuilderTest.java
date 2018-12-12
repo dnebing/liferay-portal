@@ -21,6 +21,9 @@ import com.liferay.portal.search.test.util.indexing.BaseIndexingTestCase;
 import com.liferay.portal.search.test.util.indexing.IndexingFixture;
 import com.liferay.portal.search.test.util.mappings.BaseAssetTagNamesFieldQueryBuilderTestCase;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
 /**
@@ -29,81 +32,62 @@ import org.junit.Test;
 public class AssetTagNamesFieldQueryBuilderTest
 	extends BaseAssetTagNamesFieldQueryBuilderTestCase {
 
-	@Override
 	@Test
-	public void testBasicWordMatches() throws Exception {
-		super.testBasicWordMatches();
-	}
+	public void testMultiwordPhrasePrefixesElasticsearch() throws Exception {
+		addDocument("Name Tags");
+		addDocument("Names Tab");
+		addDocument("Tabs Names Tags");
+		addDocument("Tag Names");
 
-	@Override
-	@Test
-	public void testExactMatchBoost() throws Exception {
-		super.testExactMatchBoost();
-	}
+		List<String> results1 = Arrays.asList(
+			"Name Tags", "Names Tab", "Tabs Names Tags");
 
-	@Override
-	@Test
-	public void testLuceneUnfriendlyTerms() throws Exception {
-		super.testLuceneUnfriendlyTerms();
-	}
+		assertSearch("\"name ta*\"", results1);
+		assertSearch("\"names ta*\"", results1);
 
-	@Override
-	@Test
-	public void testMultiwordPhrasePrefixes() throws Exception {
-		super.testMultiwordPhrasePrefixes();
-	}
+		List<String> results2 = Arrays.asList("Name Tags", "Tabs Names Tags");
 
-	@Override
-	@Test
-	public void testMultiwordPrefixes() throws Exception {
-		super.testMultiwordPrefixes();
-	}
+		assertSearch("\"name tag*\"", results2);
+		assertSearch("\"name tags*\"", results2);
+		assertSearch("\"names tag*\"", results2);
+		assertSearch("\"names tags*\"", results2);
 
-	@Override
-	@Test
-	public void testNull() throws Exception {
-		super.testNull();
-	}
+		List<String> results3 = Arrays.asList("Names Tab");
 
-	@Override
-	@Test
-	public void testNumbers() throws Exception {
-		super.testNumbers();
-	}
+		assertSearch("\"name tab*\"", results3);
+		assertSearch("\"name tabs*\"", results3);
+		assertSearch("\"names tab*\"", results3);
+		assertSearch("\"names tabs*\"", results3);
 
-	@Override
-	@Test
-	public void testPhrasePrefixes() throws Exception {
-		super.testPhrasePrefixes();
-	}
+		List<String> results4 = Arrays.asList("Tabs Names Tags");
 
-	@Override
-	@Test
-	public void testPhrases() throws Exception {
-		super.testPhrases();
-	}
+		assertSearch("\"tab na*\"", results4);
+		assertSearch("\"tab names*\"", results4);
+		assertSearch("\"tabs name*\"", results4);
+		assertSearch("\"tabs names ta*\"", results4);
+		assertSearch("\"tabs names tag*\"", results4);
+		assertSearch("\"tabs names tags*\"", results4);
+		assertSearch("\"tabs names*\"", results4);
+		assertSearch("\"tabs name ta*\"", results4);
 
-	@Override
-	@Test
-	public void testStopwords() throws Exception {
-		super.testStopwords();
-	}
+		List<String> results5 = Arrays.asList("Tag Names");
 
-	@Override
-	public void testWhitespace() throws Exception {
-		super.testWhitespace();
-	}
+		assertSearch("\"tag na*\"", results5);
+		assertSearch("\"tag name*\"", results5);
+		assertSearch("\"tag names*\"", results5);
+		assertSearch("\"tags names*\"", results5);
 
-	@Override
-	@Test
-	public void testWildcardCharacters() throws Exception {
-		super.testWildcardCharacters();
-	}
-
-	@Override
-	@Test
-	public void testWordPrefixes() throws Exception {
-		super.testWordPrefixes();
+		assertSearchNoHits("\"tabs na ta*\"");
+		assertSearchNoHits("\"tags na ta*\"");
+		assertSearchNoHits("\"tags names tabs*\"");
+		assertSearchNoHits("\"zz na*\"");
+		assertSearchNoHits("\"zz name*\"");
+		assertSearchNoHits("\"zz names*\"");
+		assertSearchNoHits("\"zz ta*\"");
+		assertSearchNoHits("\"zz tab*\"");
+		assertSearchNoHits("\"zz tabs*\"");
+		assertSearchNoHits("\"zz tag*\"");
+		assertSearchNoHits("\"zz tags*\"");
 	}
 
 	@Override

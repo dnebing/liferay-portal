@@ -16,6 +16,7 @@ package com.liferay.asset.browser.web.internal.display.context;
 
 import com.liferay.asset.browser.web.internal.configuration.AssetBrowserWebConfigurationValues;
 import com.liferay.asset.browser.web.internal.constants.AssetBrowserPortletKeys;
+import com.liferay.asset.browser.web.internal.search.AddAssetEntryChecker;
 import com.liferay.asset.browser.web.internal.search.AssetBrowserSearch;
 import com.liferay.asset.constants.AssetWebKeys;
 import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
@@ -26,8 +27,6 @@ import com.liferay.asset.util.AssetHelper;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItem;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.SafeConsumer;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
@@ -132,11 +131,14 @@ public class AssetBrowserDisplayContext {
 	}
 
 	public AssetBrowserSearch getAssetBrowserSearch() {
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		AssetBrowserSearch assetBrowserSearch = new AssetBrowserSearch(
 			_renderRequest, getPortletURL());
+
+		if (isMultipleSelection()) {
+			assetBrowserSearch.setRowChecker(
+				new AddAssetEntryChecker(
+					_renderResponse, getRefererAssetEntryId()));
+		}
 
 		AssetRendererFactory assetRendererFactory = getAssetRendererFactory();
 
@@ -158,6 +160,9 @@ public class AssetBrowserDisplayContext {
 			assetBrowserSearch.setResults(assetEntries);
 		}
 		else {
+			ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
 			Sort sort = null;
 
 			boolean orderByAsc = false;
@@ -276,20 +281,6 @@ public class AssetBrowserDisplayContext {
 		};
 	}
 
-	public List<NavigationItem> getNavigationItems() {
-		return new NavigationItemList() {
-			{
-				add(
-					navigationItem -> {
-						navigationItem.setActive(true);
-						navigationItem.setHref(getPortletURL());
-						navigationItem.setLabel(
-							LanguageUtil.get(_request, "entries"));
-					});
-			}
-		};
-	}
-
 	public String getOrderByType() {
 		if (Validator.isNotNull(_orderByType)) {
 			return _orderByType;
@@ -377,6 +368,17 @@ public class AssetBrowserDisplayContext {
 		}
 
 		return true;
+	}
+
+	public boolean isMultipleSelection() {
+		if (_multipleSelection != null) {
+			return _multipleSelection;
+		}
+
+		_multipleSelection = ParamUtil.getBoolean(
+			_request, "multipleSelection");
+
+		return _multipleSelection;
 	}
 
 	private String _getAddButtonLabel() {
@@ -530,13 +532,17 @@ public class AssetBrowserDisplayContext {
 			portletURL.setParameter(
 				"selectedGroupId", String.valueOf(selectedGroupId));
 		}
-		else {
-			long[] selectedGroupIds = _getSelectedGroupIds();
 
-			if (selectedGroupIds.length > 0) {
-				portletURL.setParameter(
-					"selectedGroupIds", StringUtil.merge(selectedGroupIds));
-			}
+		if (isMultipleSelection()) {
+			portletURL.setParameter(
+				"multipleSelection", Boolean.TRUE.toString());
+		}
+
+		long[] selectedGroupIds = _getSelectedGroupIds();
+
+		if (selectedGroupIds.length > 0) {
+			portletURL.setParameter(
+				"selectedGroupIds", StringUtil.merge(selectedGroupIds));
 		}
 
 		portletURL.setParameter(
@@ -599,9 +605,6 @@ public class AssetBrowserDisplayContext {
 	}
 
 	private int _getTotal(long[] groupIds) {
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		AssetRendererFactory assetRendererFactory = getAssetRendererFactory();
 
 		if (AssetBrowserWebConfigurationValues.SEARCH_WITH_DATABASE) {
@@ -610,6 +613,9 @@ public class AssetBrowserDisplayContext {
 				_getKeywords(), _getKeywords(), _getKeywords(), _getKeywords(),
 				_getListable(), false, false);
 		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		return (int)AssetEntryLocalServiceUtil.searchCount(
 			themeDisplay.getCompanyId(), groupIds, themeDisplay.getUserId(),
@@ -646,6 +652,7 @@ public class AssetBrowserDisplayContext {
 	private String _eventName;
 	private Long _groupId;
 	private String _keywords;
+	private Boolean _multipleSelection;
 	private String _orderByCol;
 	private String _orderByType;
 	private Long _refererAssetEntryId;

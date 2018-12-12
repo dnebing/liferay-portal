@@ -91,6 +91,10 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 				project, BasePlugin.ASSEMBLE_TASK_NAME);
 
 			_configureRootTaskDistBundle(assembleTask);
+
+			addTaskDockerDeploy(
+				project, _copyWarClosure(project, assembleTask),
+				workspaceExtension);
 		}
 	}
 
@@ -165,23 +169,7 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 
 		copy.dependsOn(assembleTask);
 
-		copy.into(
-			"osgi/war",
-			new Closure<Void>(project) {
-
-				@SuppressWarnings("unused")
-				public void doCall(CopySpec copySpec) {
-					Project project = assembleTask.getProject();
-
-					ConfigurableFileCollection configurableFileCollection =
-						project.files(_getWarFile(project));
-
-					configurableFileCollection.builtBy(assembleTask);
-
-					copySpec.from(_getWarFile(project));
-				}
-
-			});
+		copy.into("osgi/war", _copyWarClosure(project, assembleTask));
 	}
 
 	private void _configureTaskBuildTheme(Project project) {
@@ -219,6 +207,26 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 			project, WarPluginConvention.class);
 
 		warPluginConvention.setWebAppDirName("src");
+	}
+
+	@SuppressWarnings({"rawtypes", "serial", "unused"})
+	private Closure _copyWarClosure(Project project, final Task assembleTask) {
+		return new Closure<Void>(project) {
+
+			public void doCall(CopySpec copySpec) {
+				Project project = assembleTask.getProject();
+
+				File warFile = _getWarFile(project);
+
+				ConfigurableFileCollection configurableFileCollection =
+					project.files(warFile);
+
+				configurableFileCollection.builtBy(assembleTask);
+
+				copySpec.from(warFile);
+			}
+
+		};
 	}
 
 	private File _getWarFile(Project project) {

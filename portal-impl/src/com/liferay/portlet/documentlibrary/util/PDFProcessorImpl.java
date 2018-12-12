@@ -883,8 +883,8 @@ public class PDFProcessorImpl
 			StringPool.BLANK);
 
 		for (String decryptPassword : decryptPasswords) {
-			try (PDDocument pdDocument =
-					PDDocument.load(encryptedFile, decryptPassword)) {
+			try (PDDocument pdDocument = PDDocument.load(
+					encryptedFile, decryptPassword)) {
 
 				pdDocument.setAllSecurityToBeRemoved(true);
 
@@ -920,8 +920,8 @@ public class PDFProcessorImpl
 			float width = pdRectangle.getWidth();
 
 			double widthFactor =
-				(double)PropsValues.
-					DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_WIDTH / width;
+				(double)PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_WIDTH /
+					width;
 
 			float height = pdRectangle.getHeight();
 
@@ -930,8 +930,8 @@ public class PDFProcessorImpl
 			scaledDimensions.put("height", scaledHeight);
 
 			double heightFactor =
-				(double)PropsValues.
-					DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT / height;
+				(double)PropsValues.DL_FILE_ENTRY_PREVIEW_DOCUMENT_MAX_HEIGHT /
+					height;
 
 			int scaledWidth = (int)Math.round(heightFactor * width);
 
@@ -959,9 +959,8 @@ public class PDFProcessorImpl
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private boolean _isGenerateThumbnail(FileVersion fileVersion)
@@ -972,9 +971,8 @@ public class PDFProcessorImpl
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private void _queueGeneration(

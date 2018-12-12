@@ -73,7 +73,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -87,8 +86,9 @@ import javax.portlet.PortletURL;
  */
 public class JournalUtil {
 
-	public static final String[] SELECTED_FIELD_NAMES =
-		{Field.ARTICLE_ID, Field.COMPANY_ID, Field.GROUP_ID, Field.UID};
+	public static final String[] SELECTED_FIELD_NAMES = {
+		Field.ARTICLE_ID, Field.COMPANY_ID, Field.GROUP_ID, Field.UID
+	};
 
 	public static void addAllReservedEls(
 		Element rootElement, Map<String, String> tokens, JournalArticle article,
@@ -486,9 +486,8 @@ public class JournalUtil {
 		if (nodes.size() == 1) {
 			return (Element)nodes.get(0);
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	private static String _getTemplateScript(
@@ -587,10 +586,12 @@ public class JournalUtil {
 
 		curTypeAttribute.setValue(newTypeAttribute.getValue());
 
-		Attribute curIndexTypeAttribute = curElement.attribute("index-type");
 		Attribute newIndexTypeAttribute = newElement.attribute("index-type");
 
 		if (newIndexTypeAttribute != null) {
+			Attribute curIndexTypeAttribute = curElement.attribute(
+				"index-type");
+
 			if (curIndexTypeAttribute == null) {
 				curElement.addAttribute(
 					"index-type", newIndexTypeAttribute.getValue());
@@ -914,56 +915,6 @@ public class JournalUtil {
 
 			_removeArticleLocale(dynamicElementElement, languageId);
 		}
-	}
-
-	private static void _removeOldContent(
-		Stack<String> path, Element contentElement, Document xsdDocument) {
-
-		String elementPath = "";
-
-		for (int i = 0; i < path.size(); i++) {
-			elementPath += "/" + path.elementAt(i);
-		}
-
-		for (int i = 0; i < contentElement.nodeCount(); i++) {
-			Node contentNode = contentElement.node(i);
-
-			if (contentNode instanceof Element) {
-				_removeOldContent(
-					path, (Element)contentNode, xsdDocument, elementPath);
-			}
-		}
-	}
-
-	private static void _removeOldContent(
-		Stack<String> path, Element contentElement, Document xsdDocument,
-		String elementPath) {
-
-		String name = contentElement.attributeValue("name");
-
-		if (Validator.isNull(name)) {
-			return;
-		}
-
-		String localPath =
-			"dynamic-element[@name=" + HtmlUtil.escapeXPathAttribute(name) +
-				"]";
-
-		String fullPath = elementPath + "/" + localPath;
-
-		XPath xPathSelector = SAXReaderUtil.createXPath(fullPath);
-
-		List<Node> curNodes = xPathSelector.selectNodes(xsdDocument);
-
-		if (curNodes.isEmpty()) {
-			contentElement.detach();
-		}
-
-		path.push(localPath);
-
-		_removeOldContent(path, contentElement, xsdDocument);
-
-		path.pop();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(JournalUtil.class);

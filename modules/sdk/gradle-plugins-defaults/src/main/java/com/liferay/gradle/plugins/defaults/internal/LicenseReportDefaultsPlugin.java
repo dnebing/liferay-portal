@@ -134,8 +134,8 @@ public class LicenseReportDefaultsPlugin implements Plugin<Project> {
 
 	}
 
-	private abstract static class
-		BaseLicenseReportConfigurator<P extends Plugin<? extends Project>>
+	private abstract static class BaseLicenseReportConfigurator
+		<P extends Plugin<? extends Project>>
 			implements Action<P> {
 
 		public static final String LICENSE_REPORT_CONFIGURATION_NAME =
@@ -163,7 +163,7 @@ public class LicenseReportDefaultsPlugin implements Plugin<Project> {
 					"Unable to configure license report for " + project, e);
 			}
 
-			// We need to pass a non-existent group to avoid excluding
+			// We need to pass a nonexistent group to avoid excluding
 			// "com.liferay" dependencies.
 
 			licenseReportExtension.setExcludeGroups(
@@ -186,9 +186,8 @@ public class LicenseReportDefaultsPlugin implements Plugin<Project> {
 
 						@Override
 						public String call() throws Exception {
-							return
-								GradleUtil.getArchivesBaseName(project) + "." +
-									getArchiveExtension();
+							return GradleUtil.getArchivesBaseName(project) +
+								"." + getArchiveExtension();
 						}
 
 					}));

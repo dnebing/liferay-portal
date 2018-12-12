@@ -20,139 +20,88 @@ package com.liferay.jenkins.results.parser;
 public abstract class BaseWorkspace implements Workspace {
 
 	@Override
-	public void addJenkinsLocalGitBranch(String jenkinsGitHubURL) {
-		if (jenkinsGitHubURL == null) {
-			return;
-		}
-
+	public void addJenkinsWorkspaceGitRepository(String jenkinsGitHubURL) {
 		if (!JenkinsResultsParserUtil.isCINode()) {
 			return;
 		}
 
-		LocalGitRepository jenkinsLocalGitRepository =
-			GitRepositoryFactory.getLocalGitRepository(
-				"liferay-jenkins-ee", "master");
-
-		LocalGitBranch localGitBranch;
-
-		if (PullRequest.isValidGitHubPullRequestURL(jenkinsGitHubURL)) {
-			PullRequest pullRequest = new PullRequest(jenkinsGitHubURL);
-
-			localGitBranch = GitHubDevSyncUtil.createCachedLocalGitBranch(
-				jenkinsLocalGitRepository, pullRequest, true);
-
-			_jenkinsBranchName = GitHubDevSyncUtil.getCacheBranchName(
-				pullRequest);
-		}
-		else if (GitUtil.isValidGitHubRefURL(jenkinsGitHubURL)) {
-			RemoteGitRef remoteGitRef = GitUtil.getRemoteGitRef(
-				jenkinsGitHubURL);
-
-			localGitBranch = GitHubDevSyncUtil.createCachedLocalGitBranch(
-				jenkinsLocalGitRepository, remoteGitRef, true);
-
-			_jenkinsBranchName = GitHubDevSyncUtil.getCacheBranchName(
-				remoteGitRef);
-		}
-		else {
-			throw new RuntimeException(
-				"Invalid jenkins GitHub url " + jenkinsGitHubURL);
+		if (jenkinsGitHubURL == null) {
+			return;
 		}
 
-		_jenkinsLocalGitBranch = localGitBranch;
+		_jenkinsWorkspaceGitRepository =
+			WorkspaceUtil.getWorkspaceGitRepository(
+				JenkinsWorkspaceGitRepository.TYPE, jenkinsGitHubURL, "master");
 	}
 
 	@Override
-	public String getJenkinsBranchName() {
-		return _jenkinsBranchName;
+	public WorkspaceGitRepository getJenkinsWorkspaceGitRepository() {
+		return _jenkinsWorkspaceGitRepository;
+	}
+
+	@Override
+	public void setBuildData(BuildData buildData) {
+		_buildData = buildData;
+	}
+
+	@Override
+	public void setJob(Job job) {
+		_job = job;
 	}
 
 	@Override
 	public void setUp() {
-		setUp(null);
-	}
+		setUpWorkspaceGitRepositories();
 
-	@Override
-	public void setUp(Job job) {
-		checkoutLocalGitBranches();
+		setWorkspaceDefaultProperties();
 
-		if (job != null) {
-			setGitRepositoryJobProperties(job);
+		if (_buildData != null) {
+			setWorkspaceBuildDataProperties(_buildData);
 		}
 
-		writeGitRepositoryPropertiesFiles();
+		if (_job != null) {
+			setWorkspaceJobProperties(_job);
+		}
+
+		writeWorkspaceGitRepositoryPropertiesFiles();
 	}
 
 	@Override
 	public void tearDown() {
-		cleanupLocalGitBranches();
+		tearDownWorkspaceGitRepositories();
 	}
 
-	protected void checkoutJenkinsLocalGitBranch() {
-		if (_jenkinsLocalGitBranch != null) {
-			checkoutLocalGitBranch(_jenkinsLocalGitBranch);
+	protected void setUpJenkinsWorkspaceGitRepository() {
+		if (_jenkinsWorkspaceGitRepository != null) {
+			_jenkinsWorkspaceGitRepository.setUp();
 		}
 	}
 
-	protected void checkoutLocalGitBranch(LocalGitBranch localGitBranch) {
-		System.out.println();
-		System.out.println("##");
-		System.out.println("## " + localGitBranch.toString());
-		System.out.println("##");
-		System.out.println();
-
-		GitWorkingDirectory gitWorkingDirectory =
-			localGitBranch.getGitWorkingDirectory();
-
-		gitWorkingDirectory.createLocalGitBranch(localGitBranch, true);
-
-		gitWorkingDirectory.checkoutLocalGitBranch(localGitBranch);
-
-		gitWorkingDirectory.reset("--hard " + localGitBranch.getSHA());
-
-		gitWorkingDirectory.clean();
-
-		gitWorkingDirectory.displayLog();
+	protected void setUpWorkspaceGitRepositories() {
+		setUpJenkinsWorkspaceGitRepository();
 	}
 
-	protected abstract void checkoutLocalGitBranches();
+	protected abstract void setWorkspaceBuildDataProperties(
+		BuildData buildData);
 
-	protected void cleanupLocalGitBranch(LocalGitBranch localGitBranch) {
-		if (localGitBranch == null) {
-			return;
+	protected abstract void setWorkspaceDefaultProperties();
+
+	protected abstract void setWorkspaceJobProperties(Job job);
+
+	protected void tearDownJenkinsWorkspaceGitRepository() {
+		if (_jenkinsWorkspaceGitRepository != null) {
+			_jenkinsWorkspaceGitRepository.tearDown();
 		}
-
-		System.out.println();
-		System.out.println("##");
-		System.out.println("## " + localGitBranch.toString());
-		System.out.println("##");
-		System.out.println();
-
-		GitWorkingDirectory gitWorkingDirectory =
-			localGitBranch.getGitWorkingDirectory();
-
-		LocalGitBranch upstreamLocalGitBranch =
-			gitWorkingDirectory.getLocalGitBranch(
-				gitWorkingDirectory.getUpstreamBranchName());
-
-		gitWorkingDirectory.checkoutLocalGitBranch(upstreamLocalGitBranch);
-
-		gitWorkingDirectory.reset("--hard " + localGitBranch.getSHA());
-
-		gitWorkingDirectory.clean();
-
-		gitWorkingDirectory.displayLog();
 	}
 
-	protected abstract void cleanupLocalGitBranches();
+	protected void tearDownWorkspaceGitRepositories() {
+		tearDownJenkinsWorkspaceGitRepository();
+	}
 
-	protected abstract void setGitRepositoryJobProperties(Job job);
+	protected abstract void writeWorkspaceGitRepositoryPropertiesFiles();
 
-	protected abstract boolean synchronizeGitBranches();
-
-	protected abstract void writeGitRepositoryPropertiesFiles();
-
-	private String _jenkinsBranchName;
-	private LocalGitBranch _jenkinsLocalGitBranch;
+	private BuildData _buildData;
+	private WorkspaceGitRepository _jenkinsWorkspaceGitRepository;
+	private Job _job;
 
 }

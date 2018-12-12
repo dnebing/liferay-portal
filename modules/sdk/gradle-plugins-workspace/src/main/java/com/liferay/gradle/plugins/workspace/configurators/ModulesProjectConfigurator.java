@@ -101,6 +101,8 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 				}
 
 			});
+
+		addTaskDockerDeploy(project, jar, workspaceExtension);
 	}
 
 	@Override

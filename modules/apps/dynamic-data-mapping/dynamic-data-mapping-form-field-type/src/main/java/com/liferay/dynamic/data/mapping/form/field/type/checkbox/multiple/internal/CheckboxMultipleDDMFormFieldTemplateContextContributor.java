@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,15 +84,15 @@ public class CheckboxMultipleDDMFormFieldTemplateContextContributor
 		DDMFormField ddmFormField,
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
 
-		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
-
 		List<Map<String, String>> keyValuePairs =
-			(List<Map<String, String>>)
-				ddmFormFieldRenderingContext.getProperty("options");
+			(List<Map<String, String>>)ddmFormFieldRenderingContext.getProperty(
+				"options");
 
-		if (keyValuePairs.isEmpty()) {
+		if (ListUtil.isEmpty(keyValuePairs)) {
 			return ddmFormField.getDDMFormFieldOptions();
 		}
+
+		DDMFormFieldOptions ddmFormFieldOptions = new DDMFormFieldOptions();
 
 		for (Map<String, String> keyValuePair : keyValuePairs) {
 			ddmFormFieldOptions.addOptionLabel(

@@ -73,6 +73,8 @@ public class WarsProjectConfigurator extends BaseProjectConfigurator {
 
 		_addTaskDeploy(war, workspaceExtension);
 
+		addTaskDockerDeploy(project, war, workspaceExtension);
+
 		_configureRootTaskDistBundle(war);
 	}
 

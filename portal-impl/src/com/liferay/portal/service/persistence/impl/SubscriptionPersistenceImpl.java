@@ -21,7 +21,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
-import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -199,7 +198,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		List<Subscription> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<Subscription>)finderCache.getResult(finderPath,
+			list = (List<Subscription>)FinderCacheUtil.getResult(finderPath,
 					finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -265,10 +264,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -557,7 +556,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 		Object[] finderArgs = new Object[] { userId };
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -581,10 +581,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -710,7 +710,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		List<Subscription> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<Subscription>)finderCache.getResult(finderPath,
+			list = (List<Subscription>)FinderCacheUtil.getResult(finderPath,
 					finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -781,10 +781,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1093,7 +1093,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 		Object[] finderArgs = new Object[] { groupId, userId };
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1121,10 +1122,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1252,7 +1253,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		List<Subscription> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<Subscription>)finderCache.getResult(finderPath,
+			list = (List<Subscription>)FinderCacheUtil.getResult(finderPath,
 					finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -1323,10 +1324,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1635,7 +1636,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 		Object[] finderArgs = new Object[] { userId, classNameId };
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1663,10 +1665,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1806,7 +1808,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		List<Subscription> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<Subscription>)finderCache.getResult(finderPath,
+			list = (List<Subscription>)FinderCacheUtil.getResult(finderPath,
 					finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -1882,10 +1884,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2212,7 +2214,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 		Object[] finderArgs = new Object[] { companyId, classNameId, classPK };
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(4);
@@ -2244,10 +2247,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2444,7 +2447,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		List<Subscription> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<Subscription>)finderCache.getResult(FINDER_PATH_WITH_PAGINATION_FIND_BY_C_U_C_C,
+			list = (List<Subscription>)FinderCacheUtil.getResult(FINDER_PATH_WITH_PAGINATION_FIND_BY_C_U_C_C,
 					finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -2529,11 +2532,11 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				cacheResult(list);
 
-				finderCache.putResult(FINDER_PATH_WITH_PAGINATION_FIND_BY_C_U_C_C,
+				FinderCacheUtil.putResult(FINDER_PATH_WITH_PAGINATION_FIND_BY_C_U_C_C,
 					finderArgs, list);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_WITH_PAGINATION_FIND_BY_C_U_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_WITH_PAGINATION_FIND_BY_C_U_C_C,
 					finderArgs);
 
 				throw processException(e);
@@ -2626,7 +2629,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = finderCache.getResult(FINDER_PATH_FETCH_BY_C_U_C_C,
+			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_C_U_C_C,
 					finderArgs, this);
 		}
 
@@ -2676,7 +2679,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 				List<Subscription> list = q.list();
 
 				if (list.isEmpty()) {
-					finderCache.putResult(FINDER_PATH_FETCH_BY_C_U_C_C,
+					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U_C_C,
 						finderArgs, list);
 				}
 				else {
@@ -2688,7 +2691,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 				}
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_FETCH_BY_C_U_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_U_C_C,
 					finderArgs);
 
 				throw processException(e);
@@ -2742,7 +2745,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 				companyId, userId, classNameId, classPK
 			};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(5);
@@ -2778,10 +2782,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2818,7 +2822,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 				companyId, userId, classNameId, StringUtil.merge(classPKs)
 			};
 
-		Long count = (Long)finderCache.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U_C_C,
+		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U_C_C,
 				finderArgs, this);
 
 		if (count == null) {
@@ -2866,11 +2870,11 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U_C_C,
+				FinderCacheUtil.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U_C_C,
 					finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_U_C_C,
 					finderArgs);
 
 				throw processException(e);
@@ -2891,6 +2895,9 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 	public SubscriptionPersistenceImpl() {
 		setModelClass(Subscription.class);
+
+		setModelImplClass(SubscriptionImpl.class);
+		setEntityCacheEnabled(SubscriptionModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -2900,10 +2907,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 	 */
 	@Override
 	public void cacheResult(Subscription subscription) {
-		entityCache.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
+		EntityCacheUtil.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 			SubscriptionImpl.class, subscription.getPrimaryKey(), subscription);
 
-		finderCache.putResult(FINDER_PATH_FETCH_BY_C_U_C_C,
+		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U_C_C,
 			new Object[] {
 				subscription.getCompanyId(), subscription.getUserId(),
 				subscription.getClassNameId(), subscription.getClassPK()
@@ -2920,7 +2927,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 	@Override
 	public void cacheResult(List<Subscription> subscriptions) {
 		for (Subscription subscription : subscriptions) {
-			if (entityCache.getResult(
+			if (EntityCacheUtil.getResult(
 						SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 						SubscriptionImpl.class, subscription.getPrimaryKey()) == null) {
 				cacheResult(subscription);
@@ -2935,43 +2942,43 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 	 * Clears the cache for all subscriptions.
 	 *
 	 * <p>
-	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(SubscriptionImpl.class);
+		EntityCacheUtil.clearCache(SubscriptionImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the subscription.
 	 *
 	 * <p>
-	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(Subscription subscription) {
-		entityCache.removeResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
+		EntityCacheUtil.removeResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 			SubscriptionImpl.class, subscription.getPrimaryKey());
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		clearUniqueFindersCache((SubscriptionModelImpl)subscription, true);
 	}
 
 	@Override
 	public void clearCache(List<Subscription> subscriptions) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (Subscription subscription : subscriptions) {
-			entityCache.removeResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
+			EntityCacheUtil.removeResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 				SubscriptionImpl.class, subscription.getPrimaryKey());
 
 			clearUniqueFindersCache((SubscriptionModelImpl)subscription, true);
@@ -2987,9 +2994,9 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 				subscriptionModelImpl.getClassPK()
 			};
 
-		finderCache.putResult(FINDER_PATH_COUNT_BY_C_U_C_C, args,
+		FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_C_U_C_C, args,
 			Long.valueOf(1), false);
-		finderCache.putResult(FINDER_PATH_FETCH_BY_C_U_C_C, args,
+		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U_C_C, args,
 			subscriptionModelImpl, false);
 	}
 
@@ -3003,8 +3010,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 					subscriptionModelImpl.getClassPK()
 				};
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
-			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_U_C_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_U_C_C, args);
 		}
 
 		if ((subscriptionModelImpl.getColumnBitmask() &
@@ -3016,8 +3023,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 					subscriptionModelImpl.getOriginalClassPK()
 				};
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
-			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_U_C_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_U_C_C, args);
 		}
 	}
 
@@ -3187,17 +3194,17 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (!SubscriptionModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 		else
 		 if (isNew) {
 			Object[] args = new Object[] { subscriptionModelImpl.getUserId() };
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
-			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
 				args);
 
 			args = new Object[] {
@@ -3205,8 +3212,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 					subscriptionModelImpl.getUserId()
 				};
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
-			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U,
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U,
 				args);
 
 			args = new Object[] {
@@ -3214,8 +3221,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 					subscriptionModelImpl.getClassNameId()
 				};
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_U_C, args);
-			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_C,
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_U_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_C,
 				args);
 
 			args = new Object[] {
@@ -3224,8 +3231,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 					subscriptionModelImpl.getClassPK()
 				};
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
-			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
 				args);
 
 			args = new Object[] {
@@ -3235,12 +3242,13 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 					subscriptionModelImpl.getClassPK()
 				};
 
-			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
-			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_U_C_C,
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_U_C_C,
 				args);
 
-			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				FINDER_ARGS_EMPTY);
+			FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
 				FINDER_ARGS_EMPTY);
 		}
 
@@ -3251,14 +3259,14 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getOriginalUserId()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
 					args);
 
 				args = new Object[] { subscriptionModelImpl.getUserId() };
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
 					args);
 			}
 
@@ -3269,8 +3277,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getOriginalUserId()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U,
 					args);
 
 				args = new Object[] {
@@ -3278,8 +3286,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getUserId()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_U, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_U,
 					args);
 			}
 
@@ -3290,8 +3298,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getOriginalClassNameId()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_U_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_U_C, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_C,
 					args);
 
 				args = new Object[] {
@@ -3299,8 +3307,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getClassNameId()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_U_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_U_C, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_C,
 					args);
 			}
 
@@ -3312,8 +3320,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getOriginalClassPK()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
 					args);
 
 				args = new Object[] {
@@ -3322,8 +3330,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getClassPK()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
 					args);
 			}
 
@@ -3336,8 +3344,8 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getOriginalClassPK()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_U_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_U_C_C,
 					args);
 
 				args = new Object[] {
@@ -3347,13 +3355,13 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 						subscriptionModelImpl.getClassPK()
 					};
 
-				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
-				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_U_C_C,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U_C_C, args);
+				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_U_C_C,
 					args);
 			}
 		}
 
-		entityCache.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
+		EntityCacheUtil.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 			SubscriptionImpl.class, subscription.getPrimaryKey(), subscription,
 			false);
 
@@ -3405,54 +3413,6 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 	/**
 	 * Returns the subscription with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the subscription
-	 * @return the subscription, or <code>null</code> if a subscription with the primary key could not be found
-	 */
-	@Override
-	public Subscription fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
-				SubscriptionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Subscription subscription = (Subscription)serializable;
-
-		if (subscription == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				subscription = (Subscription)session.get(SubscriptionImpl.class,
-						primaryKey);
-
-				if (subscription != null) {
-					cacheResult(subscription);
-				}
-				else {
-					entityCache.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
-						SubscriptionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
-					SubscriptionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return subscription;
-	}
-
-	/**
-	 * Returns the subscription with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param subscriptionId the primary key of the subscription
 	 * @return the subscription, or <code>null</code> if a subscription with the primary key could not be found
 	 */
@@ -3487,7 +3447,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = EntityCacheUtil.getResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 					SubscriptionImpl.class, primaryKey);
 
 			if (serializable != nullModel) {
@@ -3541,7 +3501,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
+				EntityCacheUtil.putResult(SubscriptionModelImpl.ENTITY_CACHE_ENABLED,
 					SubscriptionImpl.class, primaryKey, nullModel);
 			}
 		}
@@ -3634,7 +3594,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		List<Subscription> list = null;
 
 		if (retrieveFromCache) {
-			list = (List<Subscription>)finderCache.getResult(finderPath,
+			list = (List<Subscription>)FinderCacheUtil.getResult(finderPath,
 					finderArgs, this);
 		}
 
@@ -3683,10 +3643,10 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -3716,7 +3676,7 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -3729,11 +3689,11 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
-					count);
+				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
+					FINDER_ARGS_EMPTY, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -3744,6 +3704,11 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return EntityCacheUtil.getEntityCache();
 	}
 
 	@Override
@@ -3758,16 +3723,14 @@ public class SubscriptionPersistenceImpl extends BasePersistenceImpl<Subscriptio
 	}
 
 	public void destroy() {
-		entityCache.removeCache(SubscriptionImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		EntityCacheUtil.removeCache(SubscriptionImpl.class.getName());
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	@BeanReference(type = CompanyProviderWrapper.class)
 	protected CompanyProvider companyProvider;
-	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
-	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_SUBSCRIPTION = "SELECT subscription FROM Subscription subscription";
 	private static final String _SQL_SELECT_SUBSCRIPTION_WHERE_PKS_IN = "SELECT subscription FROM Subscription subscription WHERE subscriptionId IN (";
 	private static final String _SQL_SELECT_SUBSCRIPTION_WHERE = "SELECT subscription FROM Subscription subscription WHERE ";

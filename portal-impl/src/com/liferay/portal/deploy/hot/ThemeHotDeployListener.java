@@ -24,8 +24,8 @@ import com.liferay.portal.kernel.service.ThemeLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.FileTimestampUtil;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateResourceLoaderUtil;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -89,8 +89,8 @@ public class ThemeHotDeployListener extends BaseHotDeployListener {
 			return;
 		}
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Registering themes for " + servletContextName);
+		if (_log.isDebugEnabled()) {
+			_log.debug("Registering themes for " + servletContextName);
 		}
 
 		FileTimestampUtil.reset();
@@ -132,8 +132,8 @@ public class ThemeHotDeployListener extends BaseHotDeployListener {
 		List<Theme> themes = _themes.remove(servletContextName);
 
 		if (themes != null) {
-			if (_log.isInfoEnabled()) {
-				_log.info("Unregistering themes for " + servletContextName);
+			if (_log.isDebugEnabled()) {
+				_log.debug("Unregistering themes for " + servletContextName);
 			}
 
 			try {
@@ -149,12 +149,13 @@ public class ThemeHotDeployListener extends BaseHotDeployListener {
 
 		// LEP-2057
 
-		ClassLoader contextClassLoader =
-			ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
 		try {
-			ClassLoaderUtil.setContextClassLoader(
-				ClassLoaderUtil.getPortalClassLoader());
+			currentThread.setContextClassLoader(
+				PortalClassLoaderUtil.getClassLoader());
 
 			TemplateResourceLoaderUtil.clearCache(
 				TemplateConstants.LANG_TYPE_FTL);
@@ -162,7 +163,7 @@ public class ThemeHotDeployListener extends BaseHotDeployListener {
 				TemplateConstants.LANG_TYPE_VM);
 		}
 		finally {
-			ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+			currentThread.setContextClassLoader(contextClassLoader);
 		}
 
 		if (_log.isInfoEnabled()) {

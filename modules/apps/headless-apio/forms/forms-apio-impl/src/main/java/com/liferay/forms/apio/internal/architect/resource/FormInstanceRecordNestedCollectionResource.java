@@ -29,7 +29,6 @@ import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
-import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceRecordService;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
@@ -41,7 +40,6 @@ import com.liferay.forms.apio.internal.architect.form.FormInstanceRecordForm;
 import com.liferay.forms.apio.internal.architect.locale.AcceptLocale;
 import com.liferay.forms.apio.internal.helper.UploadFileHelper;
 import com.liferay.forms.apio.internal.model.ServiceContextWrapper;
-import com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil;
 import com.liferay.media.object.apio.architect.identifier.MediaObjectIdentifier;
 import com.liferay.person.apio.architect.identifier.PersonIdentifier;
 import com.liferay.portal.apio.permission.HasPermission;
@@ -63,11 +61,11 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Paulo Cruz
  */
-@Component(immediate = true)
+@Component(immediate = true, service = NestedCollectionResource.class)
 public class FormInstanceRecordNestedCollectionResource
 	implements NestedCollectionResource
 		<DDMFormInstanceRecord, Long, FormInstanceRecordIdentifier, Long,
-			FormInstanceIdentifier> {
+		 FormInstanceIdentifier> {
 
 	@Override
 	public NestedCollectionRoutes<DDMFormInstanceRecord, Long, Long>
@@ -78,7 +76,7 @@ public class FormInstanceRecordNestedCollectionResource
 		return builder.addGetter(
 			this::_getPageItems
 		).addCreator(
-			this::_addFormInstanceRecord, AcceptLocale.class,
+			this::_addDDMFormInstanceRecord, AcceptLocale.class,
 			ServiceContextWrapper.class,
 			_hasPermission.forAddingIn(FormInstanceRecordIdentifier.class),
 			FormInstanceRecordForm::buildForm
@@ -87,7 +85,7 @@ public class FormInstanceRecordNestedCollectionResource
 
 	@Override
 	public String getName() {
-		return "form-instance-record";
+		return "form-record";
 	}
 
 	@Override
@@ -97,7 +95,7 @@ public class FormInstanceRecordNestedCollectionResource
 		return builder.addGetter(
 			_ddmFormInstanceRecordService::getFormInstanceRecord
 		).addUpdater(
-			this::_updateFormInstanceRecord, AcceptLocale.class,
+			this::_updateDDMFormInstanceRecord, AcceptLocale.class,
 			ServiceContextWrapper.class, _hasPermission::forUpdating,
 			FormInstanceRecordForm::buildForm
 		).build();
@@ -108,12 +106,14 @@ public class FormInstanceRecordNestedCollectionResource
 		Representor.Builder<DDMFormInstanceRecord, Long> builder) {
 
 		return builder.types(
-			"FormInstanceRecord"
+			"FormRecord"
 		).identifier(
 			DDMFormInstanceRecord::getFormInstanceRecordId
 		).addBidirectionalModel(
-			"formInstance", "formInstanceRecords", FormInstanceIdentifier.class,
+			"form", "formRecords", FormInstanceIdentifier.class,
 			DDMFormInstanceRecord::getFormInstanceId
+		).addBoolean(
+			"draft", this::_isDraft
 		).addDate(
 			"dateCreated", DDMFormInstanceRecord::getCreateDate
 		).addDate(
@@ -122,22 +122,12 @@ public class FormInstanceRecordNestedCollectionResource
 			"datePublished", DDMFormInstanceRecord::getLastPublishDate
 		).addLinkedModel(
 			"creator", PersonIdentifier.class, DDMFormInstanceRecord::getUserId
-		).addNested(
-			"version", FormInstanceRecordResourceUtil::getVersion,
-			versionBuilder -> versionBuilder.types(
-				"FormInstanceRecordVersion"
-			).addLinkedModel(
-				"creator", PersonIdentifier.class,
-				DDMFormInstanceRecordVersion::getUserId
-			).addString(
-				"name", DDMFormInstanceRecordVersion::getVersion
-			).build()
 		).addNestedList(
-			"fieldValues", this::_getFieldValues,
+			"fieldValues", this::_getDDMFormFieldValues,
 			fieldValuesBuilder -> fieldValuesBuilder.types(
 				"FormFieldValue"
 			).addLinkedModel(
-				"mediaObject", MediaObjectIdentifier.class,
+				"document", MediaObjectIdentifier.class,
 				ddmFormFieldValue -> Try.fromFallible(
 					ddmFormFieldValue::getValue
 				).map(
@@ -156,7 +146,7 @@ public class FormInstanceRecordNestedCollectionResource
 		).build();
 	}
 
-	private DDMFormInstanceRecord _addFormInstanceRecord(
+	private DDMFormInstanceRecord _addDDMFormInstanceRecord(
 			long ddmFormInstanceId,
 			FormInstanceRecordForm formInstanceRecordForm,
 			AcceptLocale acceptLocale,
@@ -185,7 +175,7 @@ public class FormInstanceRecordNestedCollectionResource
 			ddmFormValues, serviceContext);
 	}
 
-	private List<DDMFormFieldValue> _getFieldValues(
+	private List<DDMFormFieldValue> _getDDMFormFieldValues(
 		DDMFormInstanceRecord ddmFormInstanceRecord) {
 
 		return Try.fromFallible(
@@ -212,7 +202,17 @@ public class FormInstanceRecordNestedCollectionResource
 		return new PageItems<>(ddmFormInstanceRecords, count);
 	}
 
-	private DDMFormInstanceRecord _updateFormInstanceRecord(
+	private Boolean _isDraft(DDMFormInstanceRecord ddmFormInstanceRecord) {
+		return Try.fromFallible(
+			ddmFormInstanceRecord::getStatus
+		).map(
+			status -> status == WorkflowConstants.STATUS_DRAFT
+		).orElse(
+			false
+		);
+	}
+
+	private DDMFormInstanceRecord _updateDDMFormInstanceRecord(
 			long formInstanceRecordId,
 			FormInstanceRecordForm formInstanceRecordForm,
 			AcceptLocale acceptLocale,

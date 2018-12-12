@@ -324,7 +324,7 @@ public class ModifiableServletContextAdapter
 				modifiableServletContext.getWrappedServletContext();
 		}
 
-		return servletContext.equals(_servletContext);
+		return _servletContext.equals(servletContext);
 	}
 
 	@Override
@@ -537,11 +537,11 @@ public class ModifiableServletContextAdapter
 			String servletClassName = servletRegistrationImpl.getClassName();
 
 			try {
-				String jspFile = servletRegistrationImpl.getJspFile();
-
 				Servlet servlet = servletRegistrationImpl.getInstance();
 
 				if (servlet == null) {
+					String jspFile = servletRegistrationImpl.getJspFile();
+
 					if (Validator.isNotNull(jspFile)) {
 						servlet = new JspServletWrapper(
 							_jspServletFactory.createJSPServlet(), jspFile);

@@ -14,7 +14,7 @@
 
 package com.liferay.portal.template.freemarker.internal;
 
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 
 import freemarker.ext.beans.BeansWrapper;
 
@@ -40,16 +40,18 @@ public class LiferayObjectConstructor implements TemplateMethodModelEx {
 
 		String className = String.valueOf(arguments.get(0));
 
+		Thread currentThread = Thread.currentThread();
+
 		Class<?> clazz = null;
 
 		try {
 			clazz = Class.forName(
-				className, true, ClassLoaderUtil.getContextClassLoader());
+				className, true, currentThread.getContextClassLoader());
 		}
 		catch (Exception e1) {
 			try {
 				clazz = Class.forName(
-					className, true, ClassLoaderUtil.getPortalClassLoader());
+					className, true, PortalClassLoaderUtil.getClassLoader());
 			}
 			catch (Exception e2) {
 				throw new TemplateModelException(e2.getMessage());

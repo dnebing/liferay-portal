@@ -265,11 +265,16 @@ public class SitesImpl implements Sites {
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
-		serviceContext.setAttribute("layoutPrototypeLinkEnabled", linkEnabled);
-		serviceContext.setAttribute(
-			"layoutPrototypeUuid", layoutPrototype.getUuid());
+		Serializable originalLayoutPrototypeLinkEnabled =
+			serviceContext.getAttribute("layoutPrototypeLinkEnabled");
+		Serializable originalLayoutPrototypeUuid = serviceContext.getAttribute(
+			"layoutPrototypeUuid");
 
 		try {
+			serviceContext.setAttribute(
+				"layoutPrototypeLinkEnabled", linkEnabled);
+			serviceContext.setAttribute(
+				"layoutPrototypeUuid", layoutPrototype.getUuid());
 			Locale targetSiteDefaultLocale = PortalUtil.getSiteDefaultLocale(
 				targetLayout.getGroupId());
 
@@ -285,6 +290,23 @@ public class SitesImpl implements Sites {
 				layoutPrototypeLayout.isIconImage(), iconBytes, serviceContext);
 		}
 		finally {
+			if (originalLayoutPrototypeLinkEnabled == null) {
+				serviceContext.removeAttribute("layoutPrototypeLinkEnabled");
+			}
+			else {
+				serviceContext.setAttribute(
+					"layoutPrototypeLinkEnabled",
+					originalLayoutPrototypeLinkEnabled);
+			}
+
+			if (originalLayoutPrototypeUuid == null) {
+				serviceContext.removeAttribute("layoutPrototypeUuid");
+			}
+			else {
+				serviceContext.setAttribute(
+					"layoutPrototypeUuid", originalLayoutPrototypeUuid);
+			}
+
 			LocaleThreadLocal.setSiteDefaultLocale(siteDefaultLocale);
 		}
 
@@ -938,9 +960,6 @@ public class SitesImpl implements Sites {
 
 	@Override
 	public boolean isContentSharingWithChildrenEnabled(Group group) {
-		UnicodeProperties typeSettingsProperties =
-			group.getParentLiveGroupTypeSettingsProperties();
-
 		int companyContentSharingEnabled = PrefsPropsUtil.getInteger(
 			group.getCompanyId(),
 			PropsKeys.SITES_CONTENT_SHARING_WITH_CHILDREN_ENABLED);
@@ -950,6 +969,9 @@ public class SitesImpl implements Sites {
 
 			return false;
 		}
+
+		UnicodeProperties typeSettingsProperties =
+			group.getParentLiveGroupTypeSettingsProperties();
 
 		int groupContentSharingEnabled = GetterUtil.getInteger(
 			typeSettingsProperties.getProperty(
@@ -1177,6 +1199,10 @@ public class SitesImpl implements Sites {
 				Layout layoutSetPrototypeLayout = getLayoutSetPrototypeLayout(
 					layout);
 
+				if (layoutSetPrototypeLayout == null) {
+					return true;
+				}
+
 				String layoutUpdateable =
 					layoutSetPrototypeLayout.getTypeSettingsProperty(
 						LAYOUT_UPDATEABLE);
@@ -1239,9 +1265,8 @@ public class SitesImpl implements Sites {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1288,27 +1313,6 @@ public class SitesImpl implements Sites {
 			return;
 		}
 
-		UnicodeProperties settingsProperties =
-			layoutSet.getSettingsProperties();
-
-		long lastMergeTime = GetterUtil.getLong(
-			settingsProperties.getProperty(LAST_MERGE_TIME));
-
-		LayoutSetPrototype layoutSetPrototype =
-			LayoutSetPrototypeLocalServiceUtil.
-				getLayoutSetPrototypeByUuidAndCompanyId(
-					layoutSet.getLayoutSetPrototypeUuid(),
-					layoutSet.getCompanyId());
-
-		LayoutSet layoutSetPrototypeLayoutSet =
-			layoutSetPrototype.getLayoutSet();
-
-		UnicodeProperties layoutSetPrototypeSettingsProperties =
-			layoutSetPrototypeLayoutSet.getSettingsProperties();
-
-		int mergeFailCount = GetterUtil.getInteger(
-			layoutSetPrototypeSettingsProperties.getProperty(MERGE_FAIL_COUNT));
-
 		String owner = PortalUUIDUtil.generate();
 
 		try {
@@ -1347,11 +1351,22 @@ public class SitesImpl implements Sites {
 			return;
 		}
 
+		UnicodeProperties settingsProperties =
+			layoutSet.getSettingsProperties();
+
+		LayoutSetPrototype layoutSetPrototype =
+			LayoutSetPrototypeLocalServiceUtil.
+				getLayoutSetPrototypeByUuidAndCompanyId(
+					layoutSet.getLayoutSetPrototypeUuid(),
+					layoutSet.getCompanyId());
+
 		try {
 			MergeLayoutPrototypesThreadLocal.setInProgress(true);
 
 			boolean importData = true;
 
+			long lastMergeTime = GetterUtil.getLong(
+				settingsProperties.getProperty(LAST_MERGE_TIME));
 			long lastResetTime = GetterUtil.getLong(
 				settingsProperties.getProperty(LAST_RESET_TIME));
 
@@ -1372,6 +1387,16 @@ public class SitesImpl implements Sites {
 				layoutSet.isPrivateLayout(), parameterMap, importData);
 		}
 		catch (Exception e) {
+			LayoutSet layoutSetPrototypeLayoutSet =
+				layoutSetPrototype.getLayoutSet();
+
+			UnicodeProperties layoutSetPrototypeSettingsProperties =
+				layoutSetPrototypeLayoutSet.getSettingsProperties();
+
+			int mergeFailCount = GetterUtil.getInteger(
+				layoutSetPrototypeSettingsProperties.getProperty(
+					MERGE_FAIL_COUNT));
+
 			mergeFailCount++;
 
 			if (_log.isWarnEnabled()) {
@@ -1593,7 +1618,7 @@ public class SitesImpl implements Sites {
 				ActionKeys.UPDATE);
 		}
 		else if (!GroupPermissionUtil.contains(
-					 permissionChecker, group, ActionKeys.UPDATE) &&
+					permissionChecker, group, ActionKeys.UPDATE) &&
 				 (!group.isUser() ||
 				  (permissionChecker.getUserId() != group.getClassPK()))) {
 

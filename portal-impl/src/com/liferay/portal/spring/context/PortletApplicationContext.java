@@ -21,12 +21,11 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletClassLoaderUtil;
 import com.liferay.portal.kernel.util.AggregateClassLoader;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.spring.bean.LiferayBeanFactory;
 import com.liferay.portal.spring.util.FilterClassLoader;
-import com.liferay.portal.util.PropsValues;
 
 import java.io.FileNotFoundException;
 
@@ -51,29 +50,15 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  */
 public class PortletApplicationContext extends XmlWebApplicationContext {
 
-	public static ClassLoader getBeanClassLoader() {
+	public PortletApplicationContext() {
 		ClassLoader beanClassLoader =
 			AggregateClassLoader.getAggregateClassLoader(
 				new ClassLoader[] {
 					PortletClassLoaderUtil.getClassLoader(),
-					ClassLoaderUtil.getPortalClassLoader()
+					PortalClassLoaderUtil.getClassLoader()
 				});
 
-		return new FilterClassLoader(beanClassLoader);
-	}
-
-	public PortletApplicationContext() {
-		setClassLoader(getBeanClassLoader());
-	}
-
-	/**
-	 * @deprecated As of Judson (7.1.x), with no direct replacement
-	 */
-	@Deprecated
-	public interface PACL {
-
-		public ClassLoader getBeanClassLoader();
-
+		setClassLoader(new FilterClassLoader(beanClassLoader));
 	}
 
 	@Override
@@ -123,7 +108,7 @@ public class PortletApplicationContext extends XmlWebApplicationContext {
 			"WEB-INF/classes/META-INF/infrastructure-spring.xml");
 
 		return ArrayUtil.append(
-			PropsValues.SPRING_PORTLET_CONFIGS, configLocations,
+			configLocations,
 			serviceBuilderPropertiesConfigLocations.toArray(
 				new String[serviceBuilderPropertiesConfigLocations.size()]));
 	}
@@ -132,7 +117,7 @@ public class PortletApplicationContext extends XmlWebApplicationContext {
 	protected void initBeanDefinitionReader(
 		XmlBeanDefinitionReader xmlBeanDefinitionReader) {
 
-		xmlBeanDefinitionReader.setBeanClassLoader(getBeanClassLoader());
+		xmlBeanDefinitionReader.setBeanClassLoader(getClassLoader());
 	}
 
 	protected void injectExplicitBean(
@@ -140,14 +125,6 @@ public class PortletApplicationContext extends XmlWebApplicationContext {
 
 		beanDefinitionRegistry.registerBeanDefinition(
 			clazz.getName(), new RootBeanDefinition(clazz));
-	}
-
-	/**
-	 * @deprecated As of Judson (7.1.x), with no direct replacement
-	 */
-	@Deprecated
-	protected void injectExplicitBeans(
-		BeanDefinitionRegistry beanDefinitionRegistry) {
 	}
 
 	@Override

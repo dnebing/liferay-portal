@@ -26,8 +26,9 @@ public class EntryModifiedDateComparator extends OrderByComparator<BlogsEntry> {
 	public static final String ORDER_BY_ASC =
 		"BlogsEntry.modifiedDate ASC, BlogsEntry.entryId ASC";
 
-	public static final String[] ORDER_BY_CONDITION_FIELDS =
-		{"modifiedDate", "entryId"};
+	public static final String[] ORDER_BY_CONDITION_FIELDS = {
+		"modifiedDate", "entryId"
+	};
 
 	public static final String ORDER_BY_DESC =
 		"BlogsEntry.modifiedDate DESC, BlogsEntry.entryId DESC";
@@ -59,9 +60,8 @@ public class EntryModifiedDateComparator extends OrderByComparator<BlogsEntry> {
 		if (_ascending) {
 			return value;
 		}
-		else {
-			return -value;
-		}
+
+		return -value;
 	}
 
 	@Override
@@ -69,9 +69,8 @@ public class EntryModifiedDateComparator extends OrderByComparator<BlogsEntry> {
 		if (_ascending) {
 			return ORDER_BY_ASC;
 		}
-		else {
-			return ORDER_BY_DESC;
-		}
+
+		return ORDER_BY_DESC;
 	}
 
 	@Override

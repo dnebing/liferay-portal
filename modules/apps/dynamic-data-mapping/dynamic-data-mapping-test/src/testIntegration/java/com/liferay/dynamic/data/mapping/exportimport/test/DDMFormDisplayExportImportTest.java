@@ -106,6 +106,9 @@ public class DDMFormDisplayExportImportTest
 		preferenceMap.put(
 			"formInstanceId",
 			new String[] {String.valueOf(ddmFormInstance.getFormInstanceId())});
+		preferenceMap.put(
+			"groupId",
+			new String[] {String.valueOf(importedGroup.getGroupId())});
 
 		PortletPreferences importedPortletPreferences =
 			getImportedPortletPreferences(preferenceMap);
@@ -132,6 +135,7 @@ public class DDMFormDisplayExportImportTest
 	}
 
 	@Ignore
+	@Override
 	@Test
 	public void testExportImportAssetLinks() throws Exception {
 		super.testExportImportAssetLinks();

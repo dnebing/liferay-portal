@@ -14,69 +14,21 @@
 
 package com.liferay.jenkins.results.parser;
 
-import java.io.IOException;
-
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Michael Hashimoto
  */
-public abstract class TopLevelBuildData extends BaseBuildData {
+public interface TopLevelBuildData extends BuildData {
 
-	protected TopLevelBuildData(
-		Map<String, String> buildParameters,
-		JenkinsJSONObject jenkinsJSONObject, String runID) {
+	public void addDownstreamBuildData(BuildData buildData);
 
-		super(buildParameters, jenkinsJSONObject, runID);
+	public List<String> getDistNodes();
 
-		if (!has("dist_nodes")) {
-			put("dist_nodes", _getDistNodes());
-		}
+	public String getDistPath();
 
-		if (!has("dist_path")) {
-			put("dist_path", _getDistPath());
-		}
+	public List<BuildData> getDownstreamBuildDataList();
 
-		put("top_level_run_id", getRunID());
-	}
-
-	private String _getDistNodes() {
-		if (!JenkinsResultsParserUtil.isCINode()) {
-			return "";
-		}
-
-		Properties buildProperties = null;
-
-		try {
-			buildProperties = JenkinsResultsParserUtil.getBuildProperties();
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-
-		String cohortName = getCohortName();
-
-		List<JenkinsMaster> jenkinsMasters =
-			JenkinsResultsParserUtil.getJenkinsMasters(
-				buildProperties, cohortName);
-
-		List<String> slaves = JenkinsResultsParserUtil.getSlaves(
-			buildProperties, cohortName + "-[1-9]{1}[0-9]?");
-
-		List<String> distNodes = JenkinsResultsParserUtil.getRandomList(
-			slaves, jenkinsMasters.size());
-
-		return StringUtils.join(distNodes, ",");
-	}
-
-	private String _getDistPath() {
-		return JenkinsResultsParserUtil.combine(
-			BuildData.DIST_ROOT_PATH, "/", getMasterHostname(), "/",
-			getJobName(), "/", String.valueOf(getBuildNumber()), "/dist");
-	}
+	public void setDistNodes(List<String> distNodes);
 
 }

@@ -31,8 +31,8 @@ import com.liferay.portal.kernel.log.SanitizerLogWrapper;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.security.xml.SecureXMLFactoryProviderUtil;
 import com.liferay.portal.kernel.util.BasePortalLifecycle;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.JavaDetector;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OSDetector;
@@ -48,6 +48,7 @@ import com.liferay.portal.log.Log4jLogFactoryImpl;
 import com.liferay.portal.module.framework.ModuleFrameworkUtilAdapter;
 import com.liferay.portal.security.xml.SecureXMLFactoryProviderImpl;
 import com.liferay.portal.spring.bean.LiferayBeanFactory;
+import com.liferay.portal.spring.configurator.ConfigurableApplicationContextConfigurator;
 import com.liferay.portal.spring.context.ArrayApplicationContext;
 import com.liferay.portal.xml.SAXReaderImpl;
 import com.liferay.registry.Registry;
@@ -67,6 +68,7 @@ import org.apache.commons.lang.time.StopWatch;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -80,7 +82,7 @@ public class InitUtil {
 		}
 
 		try {
-			if (!OSDetector.isWindows()) {
+			if (!OSDetector.isWindows() && !JavaDetector.isJDK11()) {
 				Field field = ReflectionUtil.getDeclaredField(
 					ZipFile.class, "usemmap");
 
@@ -115,9 +117,11 @@ public class InitUtil {
 
 		// Shared class loader
 
+		Thread currentThread = Thread.currentThread();
+
 		try {
 			PortalClassLoaderUtil.setClassLoader(
-				ClassLoaderUtil.getContextClassLoader());
+				currentThread.getContextClassLoader());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -224,10 +228,10 @@ public class InitUtil {
 				ModuleFrameworkUtilAdapter.startFramework();
 			}
 
-			ApplicationContext appApplicationContext =
+			ConfigurableApplicationContext configurableApplicationContext =
 				new ClassPathXmlApplicationContext(
 					configLocations.toArray(new String[configLocations.size()]),
-					infrastructureApplicationContext) {
+					false, infrastructureApplicationContext) {
 
 					@Override
 					protected DefaultListableBeanFactory createBeanFactory() {
@@ -237,8 +241,24 @@ public class InitUtil {
 
 				};
 
+			if (infrastructureApplicationContext.containsBean(
+					"configurableApplicationContextConfigurator")) {
+
+				ConfigurableApplicationContextConfigurator
+					configurableApplicationContextConfigurator =
+						infrastructureApplicationContext.getBean(
+							"configurableApplicationContextConfigurator",
+							ConfigurableApplicationContextConfigurator.class);
+
+				configurableApplicationContextConfigurator.configure(
+					configurableApplicationContext);
+			}
+
+			configurableApplicationContext.refresh();
+
 			BeanLocator beanLocator = new BeanLocatorImpl(
-				ClassLoaderUtil.getPortalClassLoader(), appApplicationContext);
+				PortalClassLoaderUtil.getClassLoader(),
+				configurableApplicationContext);
 
 			PortalBeanLocatorUtil.setBeanLocator(beanLocator);
 
@@ -246,7 +266,7 @@ public class InitUtil {
 				ModuleFrameworkUtilAdapter.startRuntime();
 			}
 
-			_appApplicationContext = appApplicationContext;
+			_appApplicationContext = configurableApplicationContext;
 
 			if (initModuleFramework && registerContext) {
 				registerContext();

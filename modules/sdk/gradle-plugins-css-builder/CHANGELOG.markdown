@@ -78,7 +78,23 @@ available, but they are deprecated.
 ### Changed
 - [LPS-84218]: Update the [Liferay CSS Builder] dependency to version 2.1.3.
 
+## 2.2.4 - 2018-10-22
+
+### Changed
+- [LPS-86581]: Update the [Liferay Gradle Util] dependency to version 1.0.31.
+
+## 2.2.5 - 2018-11-16
+
+### Changed
+- [LPS-87466]: Update the [Liferay Gradle Util] dependency to version 1.0.32.
+
+## 2.2.6 - 2018-11-19
+
+### Changed
+- [LPS-87466]: Update the [Liferay Gradle Util] dependency to version 1.0.33.
+
 [Liferay CSS Builder]: https://github.com/liferay/liferay-portal/tree/master/modules/util/css-builder
+[Liferay Gradle Util]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-util
 [LPS-67573]: https://issues.liferay.com/browse/LPS-67573
 [LPS-69223]: https://issues.liferay.com/browse/LPS-69223
 [LPS-73495]: https://issues.liferay.com/browse/LPS-73495
@@ -92,3 +108,5 @@ available, but they are deprecated.
 [LPS-76475]: https://issues.liferay.com/browse/LPS-76475
 [LPS-84218]: https://issues.liferay.com/browse/LPS-84218
 [LPS-84473]: https://issues.liferay.com/browse/LPS-84473
+[LPS-86581]: https://issues.liferay.com/browse/LPS-86581
+[LPS-87466]: https://issues.liferay.com/browse/LPS-87466

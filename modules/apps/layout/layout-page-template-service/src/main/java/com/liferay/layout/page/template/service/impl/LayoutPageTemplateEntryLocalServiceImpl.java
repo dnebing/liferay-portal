@@ -14,14 +14,12 @@
 
 package com.liferay.layout.page.template.service.impl;
 
-import com.liferay.asset.display.page.service.AssetDisplayPageEntryLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMStructureLink;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLinkLocalService;
 import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.exception.DuplicateLayoutPageTemplateEntryException;
 import com.liferay.layout.page.template.exception.LayoutPageTemplateEntryNameException;
-import com.liferay.layout.page.template.exception.RequiredLayoutPageTemplateEntryException;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.base.LayoutPageTemplateEntryLocalServiceBaseImpl;
 import com.liferay.petra.string.StringBundler;
@@ -32,7 +30,9 @@ import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.LayoutPrototypeLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -53,6 +53,18 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 	extends LayoutPageTemplateEntryLocalServiceBaseImpl {
 
 	@Override
+	public LayoutPageTemplateEntry addGlobalLayoutPageTemplateEntry(
+			LayoutPrototype layoutPrototype)
+		throws PortalException {
+
+		Company company = _companyLocalService.getCompany(
+			layoutPrototype.getCompanyId());
+
+		return addLayoutPageTemplateEntry(
+			company.getGroupId(), layoutPrototype);
+	}
+
+	@Override
 	public LayoutPageTemplateEntry addLayoutPageTemplateEntry(
 			LayoutPrototype layoutPrototype)
 		throws PortalException {
@@ -60,26 +72,20 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 		Company company = _companyLocalService.getCompany(
 			layoutPrototype.getCompanyId());
 
-		String nameXML = layoutPrototype.getName();
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
 
-		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
-			nameXML);
+		long groupId = company.getGroupId();
 
-		Locale defaultLocale = LocaleUtil.fromLanguageId(
-			LocalizationUtil.getDefaultLanguageId(nameXML));
+		if (serviceContext != null) {
+			long scopeGroupId = serviceContext.getScopeGroupId();
 
-		int status = WorkflowConstants.STATUS_APPROVED;
-
-		if (!layoutPrototype.isActive()) {
-			status = WorkflowConstants.STATUS_INACTIVE;
+			if (scopeGroupId != 0) {
+				groupId = scopeGroupId;
+			}
 		}
 
-		return addLayoutPageTemplateEntry(
-			layoutPrototype.getUserId(), company.getGroupId(), 0,
-			nameMap.get(defaultLocale),
-			LayoutPageTemplateEntryTypeConstants.TYPE_WIDGET_PAGE,
-			layoutPrototype.getLayoutPrototypeId(), status,
-			new ServiceContext());
+		return addLayoutPageTemplateEntry(groupId, layoutPrototype);
 	}
 
 	@Override
@@ -122,7 +128,7 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 		layoutPageTemplateEntry.setLayoutPrototypeId(layoutPrototypeId);
 		layoutPageTemplateEntry.setStatus(status);
 		layoutPageTemplateEntry.setStatusByUserId(userId);
-		layoutPageTemplateEntry.setStatusByUserName(user.getFullName());
+		layoutPageTemplateEntry.setStatusByUserName(user.getScreenName());
 		layoutPageTemplateEntry.setStatusDate(new Date());
 
 		layoutPageTemplateEntryPersistence.update(layoutPageTemplateEntry);
@@ -199,16 +205,7 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 			LayoutPageTemplateEntry layoutPageTemplateEntry)
 		throws PortalException {
 
-		// Layout page template entry
-
-		int assetDisplayPageEntriesCount =
-			_assetDisplayPageEntryLocalService.
-				getAssetDisplayPageEntriesCountByLayoutPageTemplateEntryId(
-					layoutPageTemplateEntry.getLayoutPageTemplateEntryId());
-
-		if (assetDisplayPageEntriesCount > 0) {
-			throw new RequiredLayoutPageTemplateEntryException();
-		}
+		// Layout page template
 
 		layoutPageTemplateEntryPersistence.remove(layoutPageTemplateEntry);
 
@@ -219,6 +216,21 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 			LayoutPageTemplateEntry.class.getName(),
 			ResourceConstants.SCOPE_INDIVIDUAL,
 			layoutPageTemplateEntry.getLayoutPageTemplateEntryId());
+
+		// Layout prototype
+
+		long layoutPrototypeId = layoutPageTemplateEntry.getLayoutPrototypeId();
+
+		if (layoutPrototypeId > 0) {
+			LayoutPrototype layoutPrototype =
+				_layoutPrototypeLocalService.fetchLayoutPrototype(
+					layoutPrototypeId);
+
+			if (layoutPrototype != null) {
+				_layoutPrototypeLocalService.deleteLayoutPrototype(
+					layoutPrototypeId);
+			}
+		}
 
 		// Dynamic data mapping structure link
 
@@ -490,6 +502,33 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 
 	@Override
 	public LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
+			long userId, long layoutPageTemplateEntryId, String name,
+			int status)
+		throws PortalException {
+
+		User user = userLocalService.getUser(userId);
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			layoutPageTemplateEntryPersistence.findByPrimaryKey(
+				layoutPageTemplateEntryId);
+
+		if (!Objects.equals(layoutPageTemplateEntry.getName(), name)) {
+			validate(layoutPageTemplateEntry.getGroupId(), name);
+		}
+
+		layoutPageTemplateEntry.setModifiedDate(new Date());
+		layoutPageTemplateEntry.setName(name);
+		layoutPageTemplateEntry.setStatus(status);
+		layoutPageTemplateEntry.setStatusByUserId(userId);
+		layoutPageTemplateEntry.setStatusByUserName(user.getScreenName());
+		layoutPageTemplateEntry.setStatusDate(new Date());
+
+		return layoutPageTemplateEntryLocalService.
+			updateLayoutPageTemplateEntry(layoutPageTemplateEntry);
+	}
+
+	@Override
+	public LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
 			long layoutPageTemplateEntryId, String name)
 		throws PortalException {
 
@@ -544,6 +583,31 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 		return layoutPageTemplateEntry;
 	}
 
+	protected LayoutPageTemplateEntry addLayoutPageTemplateEntry(
+			long groupId, LayoutPrototype layoutPrototype)
+		throws PortalException {
+
+		String nameXML = layoutPrototype.getName();
+
+		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
+			nameXML);
+
+		Locale defaultLocale = LocaleUtil.fromLanguageId(
+			LocalizationUtil.getDefaultLanguageId(nameXML));
+
+		int status = WorkflowConstants.STATUS_APPROVED;
+
+		if (!layoutPrototype.isActive()) {
+			status = WorkflowConstants.STATUS_INACTIVE;
+		}
+
+		return addLayoutPageTemplateEntry(
+			layoutPrototype.getUserId(), groupId, 0, nameMap.get(defaultLocale),
+			LayoutPageTemplateEntryTypeConstants.TYPE_WIDGET_PAGE,
+			layoutPrototype.getLayoutPrototypeId(), status,
+			new ServiceContext());
+	}
+
 	protected void validate(long groupId, String name) throws PortalException {
 		if (Validator.isNull(name)) {
 			throw new LayoutPageTemplateEntryNameException(
@@ -569,10 +633,6 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 		}
 	}
 
-	@ServiceReference(type = AssetDisplayPageEntryLocalService.class)
-	private AssetDisplayPageEntryLocalService
-		_assetDisplayPageEntryLocalService;
-
 	@ServiceReference(type = CompanyLocalService.class)
 	private CompanyLocalService _companyLocalService;
 
@@ -581,5 +641,8 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 
 	@ServiceReference(type = FragmentEntryLinkLocalService.class)
 	private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
+
+	@ServiceReference(type = LayoutPrototypeLocalService.class)
+	private LayoutPrototypeLocalService _layoutPrototypeLocalService;
 
 }

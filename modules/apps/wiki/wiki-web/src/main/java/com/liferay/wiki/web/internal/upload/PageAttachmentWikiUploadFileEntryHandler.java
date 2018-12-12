@@ -14,6 +14,7 @@
 
 package com.liferay.wiki.web.internal.upload;
 
+import com.liferay.document.library.kernel.util.DLValidator;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -48,6 +49,10 @@ public class PageAttachmentWikiUploadFileEntryHandler
 	public FileEntry upload(UploadPortletRequest uploadPortletRequest)
 		throws IOException, PortalException {
 
+		dlValidator.validateFileSize(
+			uploadPortletRequest.getFileName(_PARAMETER_NAME),
+			uploadPortletRequest.getSize(_PARAMETER_NAME));
+
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)uploadPortletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
@@ -69,14 +74,17 @@ public class PageAttachmentWikiUploadFileEntryHandler
 
 		_validateFile(fileName, contentType, mimeTypes);
 
-		try (InputStream inputStream =
-				uploadPortletRequest.getFileAsStream(_PARAMETER_NAME)) {
+		try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
+				_PARAMETER_NAME)) {
 
 			return _wikiPageService.addPageAttachment(
 				page.getNodeId(), page.getTitle(), fileName, inputStream,
 				contentType);
 		}
 	}
+
+	@Reference
+	protected DLValidator dlValidator;
 
 	private void _validateFile(
 			String fileName, String contentType, String[] mimeTypes)

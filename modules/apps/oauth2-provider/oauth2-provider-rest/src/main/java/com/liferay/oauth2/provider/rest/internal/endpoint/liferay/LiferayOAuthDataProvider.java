@@ -317,33 +317,6 @@ public class LiferayOAuthDataProvider
 	}
 
 	@Override
-	public Client getClient(String clientId) {
-		long companyId = CompanyThreadLocal.getCompanyId();
-
-		OAuth2Application oAuth2Application =
-			_oAuth2ApplicationLocalService.fetchOAuth2Application(
-				companyId, clientId);
-
-		if (oAuth2Application == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					StringBundler.concat(
-						"Remote client ", _getRemoteIP(),
-						" tried to use a nonexistent OAuth 2 client ID ",
-						clientId));
-			}
-
-			return null;
-		}
-
-		MessageContext messageContext = getMessageContext();
-
-		messageContext.put(OAuthConstants.CLIENT_ID, clientId);
-
-		return populateClient(oAuth2Application);
-	}
-
-	@Override
 	public List<Client> getClients(UserSubject resourceOwner) {
 		throw new UnsupportedOperationException();
 	}
@@ -565,6 +538,10 @@ public class LiferayOAuthDataProvider
 
 		RefreshToken newRefreshToken = doCreateNewRefreshToken(accessToken);
 
+		if (_oAuth2ProviderConfiguration.recycleRefreshToken()) {
+			newRefreshToken.setTokenKey(oldRefreshToken.getTokenKey());
+		}
+
 		List<String> accessTokens = newRefreshToken.getAccessTokens();
 
 		accessTokens.add(accessToken.getTokenKey());
@@ -731,6 +708,33 @@ public class LiferayOAuthDataProvider
 	}
 
 	@Override
+	protected Client doGetClient(String clientId) {
+		long companyId = CompanyThreadLocal.getCompanyId();
+
+		OAuth2Application oAuth2Application =
+			_oAuth2ApplicationLocalService.fetchOAuth2Application(
+				companyId, clientId);
+
+		if (oAuth2Application == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					StringBundler.concat(
+						"Remote client ", _getRemoteIP(),
+						" tried to use a nonexistent OAuth 2 client ID ",
+						clientId));
+			}
+
+			return null;
+		}
+
+		MessageContext messageContext = getMessageContext();
+
+		messageContext.put(OAuthConstants.CLIENT_ID, clientId);
+
+		return populateClient(oAuth2Application);
+	}
+
+	@Override
 	protected ServerAccessToken doRefreshAccessToken(
 		Client client, RefreshToken oldRefreshToken,
 		List<String> restrictedScopes) {
@@ -861,7 +865,7 @@ public class LiferayOAuthDataProvider
 				clientGrantTypes.add(OAuthConstants.AUTHORIZATION_CODE_GRANT);
 			}
 			else if (_oAuth2ProviderConfiguration.
-						 allowAuthorizationCodePKCEGrant() &&
+						allowAuthorizationCodePKCEGrant() &&
 					 (allowedGrantType == GrantType.AUTHORIZATION_CODE_PKCE)) {
 
 				clientGrantTypes.add(OAuthConstants.AUTHORIZATION_CODE_GRANT);
@@ -870,13 +874,13 @@ public class LiferayOAuthDataProvider
 						AUTHORIZATION_CODE_PKCE_GRANT);
 			}
 			else if (_oAuth2ProviderConfiguration.
-						 allowClientCredentialsGrant() &&
+						allowClientCredentialsGrant() &&
 					 (allowedGrantType == GrantType.CLIENT_CREDENTIALS)) {
 
 				clientGrantTypes.add(OAuthConstants.CLIENT_CREDENTIALS_GRANT);
 			}
 			else if (_oAuth2ProviderConfiguration.
-						 allowResourceOwnerPasswordCredentialsGrant() &&
+						allowResourceOwnerPasswordCredentialsGrant() &&
 					 (allowedGrantType == GrantType.RESOURCE_OWNER_PASSWORD)) {
 
 				clientGrantTypes.add(OAuthConstants.RESOURCE_OWNER_GRANT);
@@ -939,8 +943,7 @@ public class LiferayOAuthDataProvider
 		for (String feature : oAuth2Application.getFeaturesList()) {
 			properties.put(
 				OAuth2ProviderRestEndpointConstants.
-					PROPERTY_KEY_CLIENT_FEATURE_PREFIX +
-						feature,
+					PROPERTY_KEY_CLIENT_FEATURE_PREFIX + feature,
 				feature);
 		}
 
@@ -1035,7 +1038,6 @@ public class LiferayOAuthDataProvider
 	private void _transactionalSaveServerAccessToken(
 		ServerAccessToken serverAccessToken) {
 
-		Client client = serverAccessToken.getClient();
 		Date createDate = fromCXFTime(serverAccessToken.getIssuedAt());
 		Date expirationDate = fromCXFTime(
 			serverAccessToken.getIssuedAt() + serverAccessToken.getExpiresIn());
@@ -1056,6 +1058,8 @@ public class LiferayOAuthDataProvider
 
 			return;
 		}
+
+		Client client = serverAccessToken.getClient();
 
 		OAuth2Application oAuth2Application = resolveOAuth2Application(client);
 

@@ -20,6 +20,7 @@ import com.liferay.document.library.kernel.model.DLFileEntryTypeConstants;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileEntryServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalServiceUtil;
@@ -248,7 +249,7 @@ public class DLFileEntryServiceTest {
 	}
 
 	@Test
-	public void testUpdateFileName()throws Exception {
+	public void testUpdateFileName() throws Exception {
 		DLFileEntry dlFileEntry = addDLFileEntry(
 			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, false);
 
@@ -331,8 +332,9 @@ public class DLFileEntryServiceTest {
 			dlFileEntry.getUserId(), dlFileEntry.getFileEntryId(),
 			dlFileEntry.getTitle(), dlFileEntry.getMimeType(),
 			dlFileEntry.getTitle(), dlFileEntry.getDescription(),
-			StringPool.BLANK, false, dlFileEntry.getFileEntryTypeId(), null,
-			null, dlFileEntry.getContentStream(), dlFileEntry.getSize(),
+			StringPool.BLANK, DLVersionNumberIncrease.MINOR,
+			dlFileEntry.getFileEntryTypeId(), null, null,
+			dlFileEntry.getContentStream(), dlFileEntry.getSize(),
 			serviceContext);
 	}
 

@@ -86,6 +86,16 @@ AUI.add(
 				context.errorMessage = '';
 				context.valid = true;
 
+				if (instance.get('viewMode')) {
+					var editingLanguageId = instance.get('editingLanguageId');
+
+					context.localizedValue = {};
+
+					context.locale = editingLanguageId;
+					context.localizable = false;
+					context.localizedValue[editingLanguageId] = context.value;
+				}
+
 				var config = A.merge(
 					context,
 					{

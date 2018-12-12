@@ -82,10 +82,10 @@ public class MicroblogsActivityInterpreter
 			_microblogsEntryLocalService.getMicroblogsEntry(
 				activity.getClassPK());
 
-		String receiverUserName = getUserName(
-			activity.getReceiverUserId(), serviceContext);
-
 		if (activity.getReceiverUserId() > 0) {
+			String receiverUserName = getUserName(
+				activity.getReceiverUserId(), serviceContext);
+
 			if (microblogsEntry.getType() ==
 					MicroblogsEntryConstants.TYPE_REPLY) {
 
@@ -94,7 +94,7 @@ public class MicroblogsActivityInterpreter
 				sb.append(": ");
 			}
 			else if (microblogsEntry.getType() ==
-						 MicroblogsEntryConstants.TYPE_REPOST) {
+						MicroblogsEntryConstants.TYPE_REPOST) {
 
 				sb.append(serviceContext.translate("reposted-from"));
 				sb.append(" ");
@@ -128,8 +128,9 @@ public class MicroblogsActivityInterpreter
 		_microblogsEntryLocalService = microblogsEntryLocalService;
 	}
 
-	private static final String[] _CLASS_NAMES =
-		{MicroblogsEntry.class.getName()};
+	private static final String[] _CLASS_NAMES = {
+		MicroblogsEntry.class.getName()
+	};
 
 	private MicroblogsEntryLocalService _microblogsEntryLocalService;
 

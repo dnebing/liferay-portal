@@ -67,7 +67,7 @@ public class KBCommentResultRowSplitter implements ResultRowSplitter {
 				newResultRows.add(resultRow);
 			}
 			else if (kbComment.getStatus() ==
-						 KBCommentConstants.STATUS_IN_PROGRESS) {
+						KBCommentConstants.STATUS_IN_PROGRESS) {
 
 				inProgressResultRows.add(resultRow);
 			}
@@ -111,8 +111,7 @@ public class KBCommentResultRowSplitter implements ResultRowSplitter {
 		catch (PortalException pe) {
 			_log.error(
 				"Unable to obtain completed knowledge base comments count " +
-					"for group " +
-						_kbSuggestionListDisplayContext.getGroupId(),
+					"for group " + _kbSuggestionListDisplayContext.getGroupId(),
 				pe);
 		}
 

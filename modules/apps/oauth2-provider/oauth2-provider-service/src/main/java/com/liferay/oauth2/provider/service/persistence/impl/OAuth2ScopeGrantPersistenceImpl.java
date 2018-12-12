@@ -738,6 +738,10 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 	public OAuth2ScopeGrant fetchByC_O_A_B_S(long companyId,
 		long oAuth2ApplicationScopeAliasesId, String applicationName,
 		String bundleSymbolicName, String scope, boolean retrieveFromCache) {
+		applicationName = Objects.toString(applicationName, "");
+		bundleSymbolicName = Objects.toString(bundleSymbolicName, "");
+		scope = Objects.toString(scope, "");
+
 		Object[] finderArgs = new Object[] {
 				companyId, oAuth2ApplicationScopeAliasesId, applicationName,
 				bundleSymbolicName, scope
@@ -775,10 +779,7 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 			boolean bindApplicationName = false;
 
-			if (applicationName == null) {
-				query.append(_FINDER_COLUMN_C_O_A_B_S_APPLICATIONNAME_1);
-			}
-			else if (applicationName.equals("")) {
+			if (applicationName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_O_A_B_S_APPLICATIONNAME_3);
 			}
 			else {
@@ -789,10 +790,7 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 			boolean bindBundleSymbolicName = false;
 
-			if (bundleSymbolicName == null) {
-				query.append(_FINDER_COLUMN_C_O_A_B_S_BUNDLESYMBOLICNAME_1);
-			}
-			else if (bundleSymbolicName.equals("")) {
+			if (bundleSymbolicName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_O_A_B_S_BUNDLESYMBOLICNAME_3);
 			}
 			else {
@@ -803,10 +801,7 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 			boolean bindScope = false;
 
-			if (scope == null) {
-				query.append(_FINDER_COLUMN_C_O_A_B_S_SCOPE_1);
-			}
-			else if (scope.equals("")) {
+			if (scope.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_O_A_B_S_SCOPE_3);
 			}
 			else {
@@ -922,6 +917,10 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 	public int countByC_O_A_B_S(long companyId,
 		long oAuth2ApplicationScopeAliasesId, String applicationName,
 		String bundleSymbolicName, String scope) {
+		applicationName = Objects.toString(applicationName, "");
+		bundleSymbolicName = Objects.toString(bundleSymbolicName, "");
+		scope = Objects.toString(scope, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_O_A_B_S;
 
 		Object[] finderArgs = new Object[] {
@@ -942,10 +941,7 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 			boolean bindApplicationName = false;
 
-			if (applicationName == null) {
-				query.append(_FINDER_COLUMN_C_O_A_B_S_APPLICATIONNAME_1);
-			}
-			else if (applicationName.equals("")) {
+			if (applicationName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_O_A_B_S_APPLICATIONNAME_3);
 			}
 			else {
@@ -956,10 +952,7 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 			boolean bindBundleSymbolicName = false;
 
-			if (bundleSymbolicName == null) {
-				query.append(_FINDER_COLUMN_C_O_A_B_S_BUNDLESYMBOLICNAME_1);
-			}
-			else if (bundleSymbolicName.equals("")) {
+			if (bundleSymbolicName.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_O_A_B_S_BUNDLESYMBOLICNAME_3);
 			}
 			else {
@@ -970,10 +963,7 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 			boolean bindScope = false;
 
-			if (scope == null) {
-				query.append(_FINDER_COLUMN_C_O_A_B_S_SCOPE_1);
-			}
-			else if (scope.equals("")) {
+			if (scope.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_O_A_B_S_SCOPE_3);
 			}
 			else {
@@ -1041,6 +1031,9 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 
 	public OAuth2ScopeGrantPersistenceImpl() {
 		setModelClass(OAuth2ScopeGrant.class);
+
+		setModelImplClass(OAuth2ScopeGrantImpl.class);
+		setEntityCacheEnabled(OAuth2ScopeGrantModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -1438,54 +1431,6 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 	public OAuth2ScopeGrant findByPrimaryKey(long oAuth2ScopeGrantId)
 		throws NoSuchOAuth2ScopeGrantException {
 		return findByPrimaryKey((Serializable)oAuth2ScopeGrantId);
-	}
-
-	/**
-	 * Returns the o auth2 scope grant with the primary key or returns <code>null</code> if it could not be found.
-	 *
-	 * @param primaryKey the primary key of the o auth2 scope grant
-	 * @return the o auth2 scope grant, or <code>null</code> if a o auth2 scope grant with the primary key could not be found
-	 */
-	@Override
-	public OAuth2ScopeGrant fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(OAuth2ScopeGrantModelImpl.ENTITY_CACHE_ENABLED,
-				OAuth2ScopeGrantImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		OAuth2ScopeGrant oAuth2ScopeGrant = (OAuth2ScopeGrant)serializable;
-
-		if (oAuth2ScopeGrant == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				oAuth2ScopeGrant = (OAuth2ScopeGrant)session.get(OAuth2ScopeGrantImpl.class,
-						primaryKey);
-
-				if (oAuth2ScopeGrant != null) {
-					cacheResult(oAuth2ScopeGrant);
-				}
-				else {
-					entityCache.putResult(OAuth2ScopeGrantModelImpl.ENTITY_CACHE_ENABLED,
-						OAuth2ScopeGrantImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(OAuth2ScopeGrantModelImpl.ENTITY_CACHE_ENABLED,
-					OAuth2ScopeGrantImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return oAuth2ScopeGrant;
 	}
 
 	/**
@@ -2096,6 +2041,11 @@ public class OAuth2ScopeGrantPersistenceImpl extends BasePersistenceImpl<OAuth2S
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

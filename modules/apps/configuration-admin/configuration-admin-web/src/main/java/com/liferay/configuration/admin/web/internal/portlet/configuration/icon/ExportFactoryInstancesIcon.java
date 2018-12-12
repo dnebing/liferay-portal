@@ -24,7 +24,7 @@ import com.liferay.portal.kernel.portlet.configuration.icon.BasePortletConfigura
 import com.liferay.portal.kernel.portlet.configuration.icon.PortletConfigurationIcon;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.ResourceBundle;
@@ -41,8 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	immediate = true,
 	property = {
-		"javax.portlet.name=" +
-			ConfigurationAdminPortletKeys.SYSTEM_SETTINGS,
+		"javax.portlet.name=" + ConfigurationAdminPortletKeys.SYSTEM_SETTINGS,
 		"path=/view_factory_instances"
 	},
 	service = PortletConfigurationIcon.class
@@ -54,8 +53,8 @@ public class ExportFactoryInstancesIcon extends BasePortletConfigurationIcon {
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		ResourceBundle resourceBundle =
-			_resourceBundleLoader.loadResourceBundle(themeDisplay.getLocale());
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			themeDisplay.getLocale(), ExportFactoryInstancesIcon.class);
 
 		return LanguageUtil.get(resourceBundle, "export-entries");
 	}
@@ -106,10 +105,5 @@ public class ExportFactoryInstancesIcon extends BasePortletConfigurationIcon {
 
 	@Reference
 	private Portal _portal;
-
-	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.configuration.admin.web)"
-	)
-	private ResourceBundleLoader _resourceBundleLoader;
 
 }

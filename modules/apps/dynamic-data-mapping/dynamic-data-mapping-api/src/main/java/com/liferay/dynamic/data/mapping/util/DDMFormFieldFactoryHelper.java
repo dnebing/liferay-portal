@@ -70,12 +70,13 @@ public class DDMFormFieldFactoryHelper {
 		Map<String, Object> properties = getProperties();
 
 		for (Map.Entry<String, Object> entry : properties.entrySet()) {
-			String key = entry.getKey();
 			Object value = entry.getValue();
 
 			if (isLocalizableValue((String)value)) {
 				value = getPropertyValue(value);
 			}
+
+			String key = entry.getKey();
 
 			ddmFormField.setProperty(key, value);
 		}
@@ -184,9 +185,8 @@ public class DDMFormFieldFactoryHelper {
 
 			return "short";
 		}
-		else {
-			return "string";
-		}
+
+		return "string";
 	}
 
 	protected LocalizedValue getDDMFormFieldLabel() {

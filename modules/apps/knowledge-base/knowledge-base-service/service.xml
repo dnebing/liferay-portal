@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_1_0.dtd">
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_2_0.dtd">
 
 <service-builder auto-namespace-tables="false" package-path="com.liferay.knowledge.base">
 	<namespace>KB</namespace>
@@ -175,6 +175,12 @@
 		<finder db-index="false" name="G_S_S" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column arrayable-operator="OR" comparator="LIKE" name="sections" />
+			<finder-column name="status" />
+		</finder>
+		<finder name="G_P_L_S" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column arrayable-operator="OR" name="parentResourcePrimKey" />
+			<finder-column name="latest" />
 			<finder-column name="status" />
 		</finder>
 		<finder name="G_KBFI_UT_ST" return-type="Collection">

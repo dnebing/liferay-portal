@@ -1,6 +1,7 @@
 <definition component-name="portal-user-management-and-portal-configuration">
 	<property name="portal.release" value="true" />
 	<property name="portal.upstream" value="true" />
+	<property name="test.assert.warning.exceptions" value="true" />
 	<property name="testray.main.component.name" value="Portal Settings" />
 
 	<set-up>
@@ -355,6 +356,16 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="AP Test Page" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
 			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
@@ -372,7 +383,7 @@
 		</execute>
 
 		<execute macro="SitePages#addPublicPage">
-			<var name="pageName" value="AP Test Page" />
+			<var name="pageName" value="WC Test Page" />
 		</execute>
 
 		<execute macro="Navigator#openSiteURL">
@@ -381,16 +392,6 @@
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Asset Publisher" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Build" />
-			<var name="panel" value="Site Administration" />
-			<var name="portlet" value="Pages" />
-		</execute>
-
-		<execute macro="SitePages#addPublicPage">
-			<var name="pageName" value="WC Test Page" />
 		</execute>
 
 		<execute macro="Navigator#openSiteURL">
@@ -492,6 +493,8 @@
 	</command>
 
 	<command name="ViewContentSharingEnabledAcrossSitesViaAP" priority="4">
+		<property name="test.name.skip.portal.instance" value="CPPortalSettings#ViewContentSharingEnabledAcrossSitesViaAP" />
+
 		<execute macro="TestCase#getSiteName">
 			<return name="siteName" />
 			<var name="siteName" value="${siteName}" />

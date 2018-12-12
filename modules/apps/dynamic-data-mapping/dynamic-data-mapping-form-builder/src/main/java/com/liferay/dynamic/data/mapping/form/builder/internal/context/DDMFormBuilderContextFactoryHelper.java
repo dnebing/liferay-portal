@@ -264,14 +264,13 @@ public class DDMFormBuilderContextFactoryHelper {
 				(DDMFormFieldOptions)propertyValue, availableLocales);
 		}
 		else if (Objects.equals(
-					 ddmFormFieldTypeSetting.getType(), "validation")) {
+					ddmFormFieldTypeSetting.getType(), "validation")) {
 
 			return doCreateDDMFormFieldValue(
 				(DDMFormFieldValidation)propertyValue);
 		}
-		else {
-			return new UnlocalizedValue(String.valueOf(propertyValue));
-		}
+
+		return new UnlocalizedValue(String.valueOf(propertyValue));
 	}
 
 	protected Value doCreateDDMFormFieldValue(

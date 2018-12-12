@@ -57,8 +57,9 @@ import org.osgi.service.component.annotations.Reference;
 public class CalendarBookingStagedModelDataHandler
 	extends BaseStagedModelDataHandler<CalendarBooking> {
 
-	public static final String[] CLASS_NAMES =
-		{CalendarBooking.class.getName()};
+	public static final String[] CLASS_NAMES = {
+		CalendarBooking.class.getName()
+	};
 
 	@Override
 	public void deleteStagedModel(CalendarBooking calendarBooking)
@@ -321,9 +322,6 @@ public class CalendarBookingStagedModelDataHandler
 			CalendarBooking calendarBooking)
 		throws Exception {
 
-		long userId = portletDataContext.getUserId(
-			calendarBooking.getUserUuid());
-
 		CalendarBooking existingBooking = fetchStagedModelByUuidAndGroupId(
 			calendarBooking.getUuid(), portletDataContext.getScopeGroupId());
 
@@ -335,6 +333,9 @@ public class CalendarBookingStagedModelDataHandler
 			CalendarBooking.class.getName());
 
 		if (trashHandler.isRestorable(existingBooking.getCalendarBookingId())) {
+			long userId = portletDataContext.getUserId(
+				calendarBooking.getUserUuid());
+
 			trashHandler.restoreTrashEntry(
 				userId, existingBooking.getCalendarBookingId());
 		}

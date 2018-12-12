@@ -1,6 +1,8 @@
 <definition>
 	<command name="addCP">
-		<execute function="AssertClick" locator1="NavBar#TEMPLATES" value1="Templates" />
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Templates" />
+		</execute>
 
 		<execute macro="LexiconEntry#gotoAdd" />
 
@@ -13,7 +15,9 @@
 	</command>
 
 	<command name="gotoCP">
-		<execute function="AssertClick" locator1="NavBar#TEMPLATES" value1="Templates" />
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Templates" />
+		</execute>
 
 		<execute macro="LexiconEntry#gotoEntryMenuItem">
 			<var name="menuItem" value="View" />
@@ -41,7 +45,7 @@
 
 				<execute function="AssertClickNoError" locator1="Button#DELETE" value1="Delete" />
 
-				<execute function="Confirm" value1="Are you sure you want to delete the selected templates?" />
+				<execute function="AssertConfirm" value1="Are you sure you want to delete the selected templates?" />
 
 				<execute macro="Alert#viewSuccessMessage" />
 			</then>

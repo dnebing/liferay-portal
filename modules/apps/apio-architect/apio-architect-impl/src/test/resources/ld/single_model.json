@@ -1,53 +1,121 @@
 {
 	"@context": [
-		{ "embedded2": { "@type": "@id" } },
-		{ "linked1": { "@type": "@id" } },
-		{ "linked2": { "@type": "@id" } },
-		{ "relatedCollection1": { "@type": "@id" } },
-		{ "relatedCollection2": { "@type": "@id" } },
-		{ "@vocab": "http://schema.org/" },
+		{
+			"embedded2": {
+				"@type": "@id"
+			}
+		},
+		{
+			"linked1": {
+				"@type": "@id"
+			}
+		},
+		{
+			"linked2": {
+				"@type": "@id"
+			}
+		},
+		{
+			"relatedCollection1": {
+				"@type": "@id"
+			}
+		},
+		{
+			"relatedCollection2": {
+				"@type": "@id"
+			}
+		},
+		{
+			"@vocab": "http://schema.org/"
+		},
 		"https://www.w3.org/ns/hydra/core#"
 	],
 	"@id": "localhost/o/api/p/model/first",
-	"@type": ["Type 1", "Type 2"],
+	"@type": [
+		"Type 1",
+		"Type 2"
+	],
 	"applicationRelativeURL1": "localhost/o/api/first",
 	"binary1": "localhost/o/api/b/model/first/binary1",
 	"binary2": "localhost/o/api/b/model/first/binary2",
 	"boolean1": true,
 	"boolean2": false,
-	"booleanList1": [true, true, false, false],
-	"booleanList2": [true, false, true, false],
+	"booleanList1": [
+		true,
+		true,
+		false,
+		false
+	],
+	"booleanList2": [
+		true,
+		false,
+		true,
+		false
+	],
 	"date1": "2016-06-15T09:00Z",
 	"date2": "2017-04-03T18:36Z",
 	"embedded1": {
 		"@context": [
-			{ "linked": { "@type": "@id" } },
-			{ "relatedCollection": { "@type": "@id" } }
+			{
+				"linked": {
+					"@type": "@id"
+				}
+			},
+			{
+				"relatedCollection": {
+					"@type": "@id"
+				}
+			}
 		],
 		"@id": "localhost/o/api/p/first-inner-model/first",
-		"@type": ["Type"],
+		"@type": [
+			"Type"
+		],
 		"binary": "localhost/o/api/b/first-inner-model/first/binary",
 		"boolean": true,
-		"booleanList": [true, false],
+		"booleanList": [
+			true,
+			false
+		],
 		"embedded": {
 			"@context": [
-				{ "embedded": { "@type": "@id" } },
-				{ "linked": { "@type": "@id" } },
-				{ "relatedCollection": { "@type": "@id" } }
+				{
+					"embedded": {
+						"@type": "@id"
+					}
+				},
+				{
+					"linked": {
+						"@type": "@id"
+					}
+				},
+				{
+					"relatedCollection": {
+						"@type": "@id"
+					}
+				}
 			],
 			"@id": "localhost/o/api/p/second-inner-model/first",
-			"@type": ["Type"],
+			"@type": [
+				"Type"
+			],
 			"binary": "localhost/o/api/b/second-inner-model/first/binary",
 			"boolean": false,
-			"booleanList": [true],
+			"booleanList": [
+				true
+			],
 			"embedded": "localhost/o/api/p/third-inner-model/first",
 			"link": "community.liferay.com",
 			"linked": "localhost/o/api/p/third-inner-model/second",
 			"number": 2017,
-			"numberList": [1],
+			"numberList": [
+				1
+			],
 			"relatedCollection": "localhost/o/api/p/second-inner-model/first/models",
 			"string": "A string",
-			"stringList": ["a"]
+			"stringList": [
+				"a"
+			]
 		},
 		"link": "www.liferay.com",
 		"linked": "localhost/o/api/p/second-inner-model/second",
@@ -62,13 +130,17 @@
 			},
 			"member": [
 				{
-					"@type": ["Type 7"],
+					"@type": [
+						"Type 7"
+					],
 					"number1": 2018,
 					"string1": "id 1",
 					"string2": "string3"
 				},
 				{
-					"@type": ["Type 7"],
+					"@type": [
+						"Type 7"
+					],
 					"number1": 2018,
 					"string1": "id 2",
 					"string2": "string3"
@@ -77,17 +149,26 @@
 			"totalItems": 2
 		},
 		"number": 42,
-		"numberList": [1, 2],
+		"numberList": [
+			1,
+			2
+		],
 		"operation": [
 			{
 				"@id": "_:resource/delete",
-				"@type": ["DeleteAction", "Operation"],
+				"@type": [
+					"DeleteAction",
+					"Operation"
+				],
 				"method": "DELETE"
 			}
 		],
 		"relatedCollection": "localhost/o/api/p/first-inner-model/first/models",
 		"string": "A string",
-		"stringList": ["a", "b"]
+		"stringList": [
+			"a",
+			"b"
+		]
 	},
 	"embedded2": "localhost/o/api/p/first-inner-model/second",
 	"link1": "www.liferay.com",
@@ -97,17 +178,29 @@
 	"localizedString1": "Translated 1",
 	"localizedString2": "Translated 2",
 	"nested1": {
-		"@type": ["Type 3"],
+		"@type": [
+			"Type 3"
+		],
 		"number1": 2017,
 		"string1": "id 1",
 		"string2": "string2"
 	},
 	"nested2": {
-		"@context": [ { "linked3": { "@type": "@id" } } ],
-		"@type": ["Type 4"],
+		"@context": [
+			{
+				"linked3": {
+					"@type": "@id"
+				}
+			}
+		],
+		"@type": [
+			"Type 4"
+		],
 		"linked3": "localhost/o/api/p/third-inner-model/fifth",
 		"nested3": {
-			"@type": ["Type 5"],
+			"@type": [
+				"Type 5"
+			],
 			"string1": "id 3"
 		},
 		"number1": 42,
@@ -123,23 +216,36 @@
 		},
 		"member": [
 			{
-				"@type": ["Type 6"],
+				"@type": [
+					"Type 6"
+				],
 				"nested4" : {
-					"@type" : [ "Type 7" ],
+					"@type" : [
+						"Type 7"
+					],
 					"nestedList" : {
-						"totalItems" : 2,
+						"@type" : [
+							"Collection"
+						],
 						"manages": {
 							"object": "schema:Type 8",
 							"property": "rdf:type"
 						},
-						"member" : [ {
-								"@type" : [ "Type 8" ],
+						"member" : [
+							{
+								"@type" : [
+									"Type 8"
+								],
 								"number1" : 2017
-							}, {
-								"@type" : [ "Type 8" ],
+							},
+							{
+								"@type" : [
+									"Type 8"
+								],
 								"number1" : 2017
-							} ],
-						"@type" : [ "Collection" ]
+							}
+						],
+						"totalItems" : 2
 					},
 					"string1" : "id 4"
 				},
@@ -148,23 +254,36 @@
 				"string2": "string2"
 			},
 			{
-				"@type": ["Type 6"],
+				"@type": [
+					"Type 6"
+				],
 				"nested4" : {
-					"@type" : [ "Type 7" ],
+					"@type" : [
+						"Type 7"
+					],
 					"nestedList" : {
-						"totalItems" : 2,
+						"@type" : [
+							"Collection"
+						],
 						"manages": {
 							"object": "schema:Type 8",
 							"property": "rdf:type"
 						},
-						"member" : [ {
-								"@type" : [ "Type 8" ],
+						"member" : [
+							{
+								"@type" : [
+									"Type 8"
+								],
 								"number1" : 2017
-							}, {
-								"@type" : [ "Type 8" ],
+							},
+							{
+								"@type" : [
+									"Type 8"
+								],
 								"number1" : 2017
-							} ],
-						"@type" : [ "Collection" ]
+							}
+						],
+						"totalItems" : 2
 					},
 					"string1" : "id 4"
 				},
@@ -177,17 +296,35 @@
 	},
 	"number1": 2017,
 	"number2": 42,
-	"numberList1": [1, 2, 3, 4, 5],
-	"numberList2": [6, 7, 8, 9, 10],
+	"numberList1": [
+		1,
+		2,
+		3,
+		4,
+		5
+	],
+	"numberList2": [
+		6,
+		7,
+		8,
+		9,
+		10
+	],
 	"operation": [
 		{
 			"@id": "_:resource/delete",
-			"@type": ["DeleteAction", "Operation"],
+			"@type": [
+				"DeleteAction",
+				"Operation"
+			],
 			"method": "DELETE"
 		},
 		{
 			"@id": "_:resource/update",
-			"@type": ["ReplaceAction", "Operation"],
+			"@type": [
+				"ReplaceAction",
+				"Operation"
+			],
 			"expects": "localhost/o/api/f/u/r",
 			"method": "PUT"
 		}
@@ -198,6 +335,18 @@
 	"relativeURL2": "localhost/second",
 	"string1": "Live long and prosper",
 	"string2": "Hypermedia",
-	"stringList1": ["a", "b", "c", "d", "e"],
-	"stringList2": ["f", "g", "h", "i", "j"]
+	"stringList1": [
+		"a",
+		"b",
+		"c",
+		"d",
+		"e"
+	],
+	"stringList2": [
+		"f",
+		"g",
+		"h",
+		"i",
+		"j"
+	]
 }

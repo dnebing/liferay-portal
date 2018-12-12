@@ -86,12 +86,13 @@ if (filterManageableOrganizations) {
 			<aui:input name="toolbarItem" type="hidden" value="<%= toolbarItem %>" />
 			<aui:input name="redirect" type="hidden" value="<%= portletURL.toString() %>" />
 
+			<liferay-ui:error exception="<%= RequiredOrganizationException.class %>" message="you-cannot-delete-organizations-that-have-suborganizations-or-users" />
+
 			<liferay-ui:search-container
 				id="organizations"
 				searchContainer="<%= searchContainer %>"
 				var="organizationSearchContainer"
 			>
-				<aui:input disabled="<%= true %>" name="organizationsRedirect" type="hidden" value="<%= portletURL.toString() %>" />
 				<aui:input name="deleteOrganizationIds" type="hidden" />
 
 				<c:if test="<%= usersListView.equals(UserConstants.LIST_VIEW_FLAT_ORGANIZATIONS) %>">
@@ -136,8 +137,10 @@ if (filterManageableOrganizations) {
 		</aui:form>
 	</c:when>
 	<c:otherwise>
-		<div class="alert alert-info">
-			<liferay-ui:message key="you-do-not-belong-to-an-organization-and-are-not-allowed-to-view-other-organizations" />
-		</div>
+		<clay:alert
+			message='<%= LanguageUtil.get(request, "you-do-not-belong-to-an-organization-and-are-not-allowed-to-view-other-organizations") %>'
+			style="info"
+			title='<%= LanguageUtil.get(request, "info") + ":" %>'
+		/>
 	</c:otherwise>
 </c:choose>

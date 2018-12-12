@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.security.ldap.LDAPSettings;
 import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.security.exportimport.UserExporter;
 import com.liferay.portal.security.exportimport.UserOperation;
@@ -220,11 +219,11 @@ public class LDAPUserExporterImpl implements UserExporter {
 			return;
 		}
 
+		Name name = new CompositeName();
+
+		name.add(binding.getNameInNamespace());
+
 		try {
-			Name name = new CompositeName();
-
-			name.add(binding.getNameInNamespace());
-
 			Modifications modifications =
 				_portalToLDAPConverter.getLDAPGroupModifications(
 					ldapServerId, userGroup, user, groupMappings, userMappings,
@@ -251,7 +250,7 @@ public class LDAPUserExporterImpl implements UserExporter {
 				groupMappings.getProperty(GroupConverterKeys.USER));
 
 			if ((groupMembers != null) && (groupMembers.size() == 1)) {
-				ldapContext.unbind(fullGroupDN);
+				ldapContext.unbind(name);
 			}
 		}
 		finally {
@@ -317,18 +316,18 @@ public class LDAPUserExporterImpl implements UserExporter {
 				String modifyTimestamp = LDAPUtil.getAttributeString(
 					attributes, "modifyTimestamp");
 
-				if (Validator.isNotNull(modifyTimestamp)) {
-					Date modifiedDate = LDAPUtil.parseDate(modifyTimestamp);
+				Date modifiedDate = LDAPUtil.parseDate(modifyTimestamp);
 
-					if (modifiedDate.equals(user.getModifiedDate())) {
-						if (_log.isDebugEnabled()) {
-							_log.debug(
-								"Skipping user " + user.getEmailAddress() +
-									" because he is already synchronized");
-						}
+				if ((modifiedDate != null) &&
+					modifiedDate.equals(user.getModifiedDate())) {
 
-						return;
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							"Skipping user " + user.getEmailAddress() +
+								" because he is already synchronized");
 					}
+
+					return;
 				}
 			}
 

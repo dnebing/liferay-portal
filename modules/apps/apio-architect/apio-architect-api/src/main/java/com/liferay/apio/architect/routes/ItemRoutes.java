@@ -17,6 +17,7 @@ package com.liferay.apio.architect.routes;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.apio.architect.alias.form.FormBuilderFunction;
+import com.liferay.apio.architect.alias.routes.CustomItemFunction;
 import com.liferay.apio.architect.alias.routes.DeleteItemConsumer;
 import com.liferay.apio.architect.alias.routes.GetItemFunction;
 import com.liferay.apio.architect.alias.routes.UpdateItemFunction;
@@ -27,6 +28,8 @@ import com.liferay.apio.architect.consumer.throwable.ThrowableConsumer;
 import com.liferay.apio.architect.consumer.throwable.ThrowablePentaConsumer;
 import com.liferay.apio.architect.consumer.throwable.ThrowableTetraConsumer;
 import com.liferay.apio.architect.consumer.throwable.ThrowableTriConsumer;
+import com.liferay.apio.architect.credentials.Credentials;
+import com.liferay.apio.architect.custom.actions.CustomRoute;
 import com.liferay.apio.architect.form.Form;
 import com.liferay.apio.architect.function.throwable.ThrowableBiFunction;
 import com.liferay.apio.architect.function.throwable.ThrowableFunction;
@@ -34,8 +37,11 @@ import com.liferay.apio.architect.function.throwable.ThrowableHexaFunction;
 import com.liferay.apio.architect.function.throwable.ThrowablePentaFunction;
 import com.liferay.apio.architect.function.throwable.ThrowableTetraFunction;
 import com.liferay.apio.architect.function.throwable.ThrowableTriFunction;
+import com.liferay.apio.architect.identifier.Identifier;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 /**
  * Holds information about the routes supported for an {@link
@@ -57,11 +63,29 @@ import java.util.Optional;
 public interface ItemRoutes<T, S> {
 
 	/**
-	 * Returns the function used to delete the item, if the endpoint was added
-	 * through the {@link ItemRoutes.Builder} and the function therefore exists.
+	 * Returns the function that creates custom operations, if the endpoint was
+	 * added through {@link CollectionRoutes.Builder} and the function therefore
+	 * exists. Returns {@code Optional#empty()} otherwise.
+	 *
+	 * @return the function used to create custom operations, if the function
+	 *         exists; {@code Optional#empty()} otherwise
+	 */
+	public Optional<Map<String, CustomItemFunction<?, S>>>
+		getCustomItemFunctionsOptional();
+
+	/**
+	 * Returns the custom routes configured based on their paths.
+	 *
+	 * @return the custom routes
+	 */
+	public Map<String, CustomRoute> getCustomRoutes();
+
+	/**
+	 * Returns the function that deletes the item, if the endpoint was added
+	 * through {@link ItemRoutes.Builder} and the function therefore exists.
 	 * Returns {@code Optional#empty()} otherwise.
 	 *
-	 * @return the function used to delete the item, if the function exists;
+	 * @return the function that deletes the item, if the function exists;
 	 *         {@code Optional#empty()} otherwise
 	 */
 	public Optional<DeleteItemConsumer<S>> getDeleteConsumerOptional();
@@ -108,6 +132,151 @@ public interface ItemRoutes<T, S> {
 	public interface Builder<T, S> {
 
 		/**
+		 * Adds a {@link CustomRoute} via the {@code CustomRoute} object (that
+		 * sets the HTTP method to use) and the custom route function {@code
+		 * throwableBiFunction}.
+		 *
+		 * <p>
+		 * The custom route function receives the element's ID and the value
+		 * extracted from the form. It returns another model of type {@code U}.
+		 * </p>
+		 *
+		 * @param  customRoute the custom route that sets the HTTP method to use
+		 * @param  throwableBiFunction the custom route function
+		 * @param  supplier the identifier class of type {@code R}
+		 * @param  permissionBiFunction the route's permission function
+		 * @param  formBuilderFunction the function that creates this
+		 *         operation's form
+		 * @return the updated builder
+		 */
+		public <R, U, I extends Identifier<?>> Builder<T, S> addCustomRoute(
+			CustomRoute customRoute,
+			ThrowableBiFunction<S, R, U> throwableBiFunction, Class<I> supplier,
+			BiFunction<Credentials, S, Boolean> permissionBiFunction,
+			FormBuilderFunction<R> formBuilderFunction);
+
+		/**
+		 * Adds a {@link CustomRoute} via the {@code CustomRoute} object (that
+		 * sets the HTTP method to use) and the custom route function {@code
+		 * throwableHexaFunction}.
+		 *
+		 * <p>
+		 * The custom route function receives the element's ID, the value
+		 * extracted from the form, and four provider parameters ({@code aClass}
+		 * through {@code dClass}). It returns another model of type {@code U}.
+		 * </p>
+		 *
+		 * @param  customRoute the custom route that sets the HTTP method to use
+		 * @param  throwableHexaFunction the custom route function
+		 * @param  aClass the class of the item function's second parameter
+		 * @param  bClass the class of the item function's third parameter
+		 * @param  cClass the class of the item function's fourth parameter
+		 * @param  dClass the class of the item function's fifth parameter
+		 * @param  supplier the identifier class of type {@code R}
+		 * @param  permissionBiFunction the route's permission function
+		 * @param  formBuilderFunction the function that creates this
+		 *         operation's form
+		 * @return the updated builder
+		 */
+		public <A, B, C, D, R, U, I extends Identifier<?>> Builder<T, S>
+			addCustomRoute(
+				CustomRoute customRoute,
+				ThrowableHexaFunction<S, R, A, B, C, D, U>
+					throwableHexaFunction,
+				Class<A> aClass, Class<B> bClass, Class<C> cClass,
+				Class<D> dClass, Class<I> supplier,
+				BiFunction<Credentials, S, Boolean> permissionBiFunction,
+				FormBuilderFunction<R> formBuilderFunction);
+
+		/**
+		 * Adds a {@link CustomRoute} via the {@code CustomRoute} object (that
+		 * sets the HTTP method to use) and the custom route function {@code
+		 * throwablePentaFunction}.
+		 *
+		 * <p>
+		 * The custom route function receives the element's ID, the value
+		 * extracted from the form, and three provider parameters ({@code
+		 * aClass} through {@code cClass}). It returns another model of type
+		 * {@code U}.
+		 * </p>
+		 *
+		 * @param  customRoute the custom route that sets the HTTP method to use
+		 * @param  throwablePentaFunction the custom route function
+		 * @param  aClass the class of the item function's second parameter
+		 * @param  bClass the class of the item function's third parameter
+		 * @param  cClass the class of the item function's fourth parameter
+		 * @param  supplier the identifier class of type {@code R}
+		 * @param  permissionBiFunction the route's permission function
+		 * @param  formBuilderFunction the function that creates this
+		 *         operation's form
+		 * @return the updated builder
+		 */
+		public <A, B, C, R, U, I extends Identifier<?>> Builder<T, S>
+			addCustomRoute(
+				CustomRoute customRoute,
+				ThrowablePentaFunction<S, R, A, B, C, U> throwablePentaFunction,
+				Class<A> aClass, Class<B> bClass, Class<C> cClass,
+				Class<I> supplier,
+				BiFunction<Credentials, S, Boolean> permissionBiFunction,
+				FormBuilderFunction<R> formBuilderFunction);
+
+		/**
+		 * Adds a {@link CustomRoute} via the {@code CustomRoute} object (that
+		 * sets the HTTP method to use) and the custom route function {@code
+		 * throwableTetraFunction}.
+		 *
+		 * <p>
+		 * The custom route function receives the element's ID, the value
+		 * extracted from the form, and two provider parameters ({@code aClass}
+		 * and {@code bClass}). It returns another model of type {@code U}.
+		 * </p>
+		 *
+		 * @param  customRoute the custom route that sets the HTTP method to use
+		 * @param  throwableTetraFunction the custom route function
+		 * @param  aClass the class of the item function's second parameter
+		 * @param  bClass the class of the item function's third parameter
+		 * @param  supplier the identifier class of type {@code R}
+		 * @param  permissionBiFunction the route's permission function
+		 * @param  formBuilderFunction the function that creates this
+		 *         operation's form
+		 * @return the updated builder
+		 */
+		public <A, B, R, U, I extends Identifier<?>> Builder<T, S>
+			addCustomRoute(
+				CustomRoute customRoute,
+				ThrowableTetraFunction<S, R, A, B, U> throwableTetraFunction,
+				Class<A> aClass, Class<B> bClass, Class<I> supplier,
+				BiFunction<Credentials, S, Boolean> permissionBiFunction,
+				FormBuilderFunction<R> formBuilderFunction);
+
+		/**
+		 * Adds a {@link CustomRoute} via the {@code CustomRoute} object (that
+		 * sets the HTTP method to use) and the custom route function {@code
+		 * throwableTriFunction}.
+		 *
+		 * <p>
+		 * The custom route function receives the element's ID, the value
+		 * extracted from the form, and one provider parameter ({@code aClass}).
+		 * It returns another model of type {@code U}.
+		 * </p>
+		 *
+		 * @param  customRoute the custom route that sets the HTTP method to use
+		 * @param  throwableTriFunction the custom route function
+		 * @param  aClass the class of the item function's second parameter
+		 * @param  supplier the identifier class of type {@code R}
+		 * @param  permissionBiFunction the route's permission function
+		 * @param  formBuilderFunction the function that creates this
+		 *         operation's form
+		 * @return the updated builder
+		 */
+		public <A, R, U, I extends Identifier<?>> Builder<T, S> addCustomRoute(
+			CustomRoute customRoute,
+			ThrowableTriFunction<S, R, A, U> throwableTriFunction,
+			Class<A> aClass, Class<I> supplier,
+			BiFunction<Credentials, S, Boolean> permissionBiFunction,
+			FormBuilderFunction<R> formBuilderFunction);
+
+		/**
 		 * Adds a route to an item function with one extra parameter.
 		 *
 		 * @param  getterThrowableBiFunction the function that calculates the
@@ -120,7 +289,7 @@ public interface ItemRoutes<T, S> {
 			Class<A> aClass);
 
 		/**
-		 * Adds a route to an item function with none extra parameters.
+		 * Adds a route to an item function with no extra parameters.
 		 *
 		 * @param  getterThrowableFunction the function that calculates the item
 		 * @return the updated builder

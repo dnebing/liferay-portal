@@ -239,13 +239,13 @@ public class XMLLookAndFeelCompatibilityVersionCheck extends BaseFileCheck {
 	private static final String _PORTAL_KERNEL_RELEASE_INFO_JAVA_FILE_NAME =
 		"portal-kernel/src/com/liferay/portal/kernel/util/ReleaseInfo.java";
 
-	private final Pattern _portalKernelReleaseInfoVersionPattern =
+	private static final Pattern _portalKernelReleaseInfoVersionPattern =
 		Pattern.compile("private static final String _VERSION = \"(.*)\";");
-
-	private final Pattern _portalVersionPattern = Pattern.compile(
+	private static final Pattern _portalVersionPattern = Pattern.compile(
 		"(\\w+\\.\\w+)\\.\\w+");
-	private final Pattern _privateBranchNamePattern = Pattern.compile(
+	private static final Pattern _privateBranchNamePattern = Pattern.compile(
 		"private.branch.name=(.*)\n");
+
 	private String _privatePortalVersion;
 	private String _publicPortalVersion;
 

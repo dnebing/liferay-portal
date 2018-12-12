@@ -18,68 +18,23 @@
 
 <liferay-ui:error exception="<%= RequiredLayoutSetPrototypeException.class %>" message="you-cannot-delete-site-templates-that-are-used-by-a-site" />
 
-<aui:nav-bar markupView="lexicon">
-	<aui:nav cssClass="navbar-nav">
-		<aui:nav-item href="<%= layoutSetPrototypeDisplayContext.getPortletURL().toString() %>" label="templates" selected="<%= true %>" />
-	</aui:nav>
-</aui:nav-bar>
-
-<liferay-frontend:management-bar
-	disabled="<%= layoutSetPrototypeDisplayContext.isDisabledManagementBar() %>"
-	includeCheckBox="<%= true %>"
+<clay:management-toolbar
+	actionDropdownItems="<%= layoutSetPrototypeDisplayContext.getActionDropdownItems() %>"
+	clearResultsURL="<%= layoutSetPrototypeDisplayContext.getClearResultsURL() %>"
+	componentId="layoutSetPrototypeWebManagementToolbar"
+	creationMenu="<%= layoutSetPrototypeDisplayContext.isShowAddButton() ? layoutSetPrototypeDisplayContext.getCreationMenu() : null %>"
+	filterDropdownItems="<%= layoutSetPrototypeDisplayContext.getFilterDropdownItems() %>"
+	infoPanelId="infoPanelId"
+	itemsTotal="<%= layoutSetPrototypeDisplayContext.getTotalItems() %>"
+	searchActionURL="<%= layoutSetPrototypeDisplayContext.getSearchActionURL() %>"
 	searchContainerId="layoutSetPrototype"
->
-	<liferay-frontend:management-bar-filters>
-		<liferay-frontend:management-bar-navigation
-			navigationKeys='<%= new String[] {"all", "active", "inactive"} %>'
-			portletURL="<%= layoutSetPrototypeDisplayContext.getPortletURL() %>"
-		/>
-
-		<liferay-frontend:management-bar-sort
-			orderByCol="<%= layoutSetPrototypeDisplayContext.getOrderByCol() %>"
-			orderByType="<%= layoutSetPrototypeDisplayContext.getOrderByType() %>"
-			orderColumns='<%= new String[] {"create-date"} %>'
-			portletURL="<%= layoutSetPrototypeDisplayContext.getPortletURL() %>"
-		/>
-	</liferay-frontend:management-bar-filters>
-
-	<liferay-frontend:management-bar-buttons>
-		<liferay-portlet:actionURL name="changeDisplayStyle" varImpl="changeDisplayStyleURL">
-			<portlet:param name="redirect" value="<%= currentURL %>" />
-		</liferay-portlet:actionURL>
-
-		<liferay-frontend:management-bar-display-buttons
-			displayViews='<%= new String[] {"icon", "descriptive", "list"} %>'
-			portletURL="<%= changeDisplayStyleURL %>"
-			selectedDisplayStyle="<%= layoutSetPrototypeDisplayContext.getDisplayStyle() %>"
-		/>
-
-		<c:if test="<%= layoutSetPrototypeDisplayContext.isShowAddButton() %>">
-			<portlet:renderURL var="addLayoutSetPrototypeURL">
-				<portlet:param name="mvcPath" value="/edit_layout_set_prototype.jsp" />
-				<portlet:param name="redirect" value="<%= currentURL %>" />
-			</portlet:renderURL>
-
-			<liferay-frontend:add-menu
-				inline="<%= true %>"
-			>
-				<liferay-frontend:add-menu-item
-					title='<%= LanguageUtil.get(request, "add") %>'
-					url="<%= addLayoutSetPrototypeURL.toString() %>"
-				/>
-			</liferay-frontend:add-menu>
-		</c:if>
-	</liferay-frontend:management-bar-buttons>
-
-	<liferay-frontend:management-bar-action-buttons>
-		<liferay-frontend:management-bar-button
-			href="javascript:;"
-			icon="times-circle"
-			id="deleteSelectedLayoutSetPrototypes"
-			label="delete"
-		/>
-	</liferay-frontend:management-bar-action-buttons>
-</liferay-frontend:management-bar>
+	searchFormName="searchFm"
+	showInfoButton="<%= false %>"
+	showSearch="<%= false %>"
+	sortingOrder="<%= layoutSetPrototypeDisplayContext.getOrderByType() %>"
+	sortingURL="<%= layoutSetPrototypeDisplayContext.getSortingURL() %>"
+	viewTypeItems="<%= layoutSetPrototypeDisplayContext.getViewTypeItems() %>"
+/>
 
 <portlet:actionURL name="deleteLayoutSetPrototypes" var="deleteLayoutSetPrototypesURL">
 	<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -195,7 +150,7 @@
 				</c:when>
 				<c:when test="<%= layoutSetPrototypeDisplayContext.isListView() %>">
 					<liferay-ui:search-container-column-text
-						cssClass="table-cell-content"
+						cssClass="table-cell-expand-small table-cell-minw-200 table-title"
 						name="name"
 					>
 						<aui:a href="<%= rowURL %>" target="_blank"><%= layoutSetPrototype.getName(locale) %></aui:a>
@@ -210,17 +165,19 @@
 					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-text
-						cssClass="table-cell-content"
+						cssClass="table-cell-expand table-cell-minw-300"
 						name="description"
 						value="<%= layoutSetPrototype.getDescription(locale) %>"
 					/>
 
 					<liferay-ui:search-container-column-date
+						cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 						name="create-date"
 						property="createDate"
 					/>
 
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-expand-smallest table-cell-ws-nowrap table-column-text-center"
 						name="active"
 						value='<%= LanguageUtil.get(request, layoutSetPrototype.isActive()? "yes" : "no") %>'
 					/>
@@ -241,12 +198,28 @@
 </aui:form>
 
 <aui:script sandbox="<%= true %>">
-	$('#<portlet:namespace />deleteSelectedLayoutSetPrototypes').on(
-		'click',
-		function() {
-			if (confirm('<liferay-ui:message key="are-you-sure-you-want-to-delete-this" />')) {
-				submitForm($(document.<portlet:namespace />fm));
-			}
+	var deleteLayoutSetPrototypes = function() {
+		if (confirm('<liferay-ui:message key="are-you-sure-you-want-to-delete-this" />')) {
+			submitForm(document.querySelector('#<portlet:namespace />fm'));
+		}
+	};
+
+	var ACTIONS = {
+		'deleteLayoutSetPrototypes': deleteLayoutSetPrototypes
+	};
+
+	Liferay.componentReady('layoutSetPrototypeWebManagementToolbar').then(
+		function(managementToolbar) {
+			managementToolbar.on(
+				'actionItemClicked',
+				function(event) {
+					var itemData = event.data.item.data;
+
+					if (itemData && itemData.action && ACTIONS[itemData.action]) {
+						ACTIONS[itemData.action]();
+					}
+				}
+			);
 		}
 	);
 </aui:script>

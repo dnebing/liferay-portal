@@ -52,7 +52,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Marcellus Tavares
  */
-@Component(immediate = true, property = "ddm.form.deserializer.type=json")
+@Component(
+	immediate = true, property = "ddm.form.deserializer.type=json",
+	service = DDMFormDeserializer.class
+)
 public class DDMFormJSONDeserializer implements DDMFormDeserializer {
 
 	@Override
@@ -139,14 +142,13 @@ public class DDMFormJSONDeserializer implements DDMFormDeserializer {
 				serializedDDMFormFieldProperty);
 		}
 		else if (Objects.equals(
-					 ddmFormFieldTypeSetting.getType(), "validation")) {
+					ddmFormFieldTypeSetting.getType(), "validation")) {
 
 			return deserializeDDMFormFieldValidation(
 				serializedDDMFormFieldProperty);
 		}
-		else {
-			return serializedDDMFormFieldProperty;
-		}
+
+		return serializedDDMFormFieldProperty;
 	}
 
 	protected DDMFormFieldValidation deserializeDDMFormFieldValidation(

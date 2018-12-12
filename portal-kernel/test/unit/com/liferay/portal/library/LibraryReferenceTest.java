@@ -137,8 +137,7 @@ public class LibraryReferenceTest {
 	public void testLibDependencyJarsInVersionsExt() {
 		for (String jar : _libDependencyJars) {
 			Assert.assertTrue(
-				_VERSIONS_EXT_FILE_NAME + " is missing a reference to " +
-					jar,
+				_VERSIONS_EXT_FILE_NAME + " is missing a reference to " + jar,
 				_versionsExtJars.contains(jar));
 		}
 	}
@@ -421,6 +420,7 @@ public class LibraryReferenceTest {
 					String dirName = String.valueOf(dirPath.getFileName());
 
 					if (!dirName.endsWith("-compat") &&
+						!dirName.endsWith("-test-util") &&
 						Files.exists(dirPath.resolve(".lfrbuild-portal-pre"))) {
 
 						Path sourceDirPath = dirPath.resolve(

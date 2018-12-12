@@ -17,34 +17,51 @@ package com.liferay.structured.content.apio.internal.model;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 
+import java.util.Locale;
+
 /**
- * JournalArticle wrapper that includes a {@code ThemeDisplay} object.
+ * Wraps a {@code JournalArticle} and includes a {@code ThemeDisplay} object.
  *
  * @author Eduardo Perez
- * @review
  */
 public class JournalArticleWrapper
 	extends com.liferay.journal.model.JournalArticleWrapper {
 
 	/**
-	 * Creates a new {@link JournalArticleWrapper}.
+	 * Creates a new journal article wrapper.
 	 *
-	 * @param  journalArticle the journalArticle being wrapped
-	 * @param  themeDisplay the {@link ThemeDisplay} of the current request
-	 * @review
+	 * @param journalArticle the journal article to wrap
+	 * @param themeDisplay the current request's theme display
 	 */
 	public JournalArticleWrapper(
-		JournalArticle journalArticle, ThemeDisplay themeDisplay) {
+		JournalArticle journalArticle, Locale locale,
+		ThemeDisplay themeDisplay) {
 
 		super(journalArticle);
 
+		_locale = locale;
 		_themeDisplay = themeDisplay;
 	}
 
+	/**
+	 * Returns the locale.
+	 *
+	 * @return the locale
+	 */
+	public Locale getLocale() {
+		return _locale;
+	}
+
+	/**
+	 * Returns the theme display.
+	 *
+	 * @return the theme display
+	 */
 	public ThemeDisplay getThemeDisplay() {
 		return _themeDisplay;
 	}
 
+	private final Locale _locale;
 	private final ThemeDisplay _themeDisplay;
 
 }

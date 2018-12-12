@@ -40,10 +40,6 @@ public class UnavailableComponentUtil {
 				(List<DependencyManager>)
 					DependencyManager.getDependencyManagers()) {
 
-			BundleContext bundleContext = dependencyManager.getBundleContext();
-
-			Bundle bundle = bundleContext.getBundle();
-
 			Map<ComponentDeclaration, List<ComponentDependencyDeclaration>>
 				unavailableComponentDeclarations = new HashMap<>();
 
@@ -77,6 +73,11 @@ public class UnavailableComponentUtil {
 			}
 
 			if (!unavailableComponentDeclarations.isEmpty()) {
+				BundleContext bundleContext =
+					dependencyManager.getBundleContext();
+
+				Bundle bundle = bundleContext.getBundle();
+
 				sb.append("\nBundle {id: ");
 				sb.append(bundle.getBundleId());
 				sb.append(", name: ");
@@ -87,8 +88,8 @@ public class UnavailableComponentUtil {
 
 				for (Map.Entry
 						<ComponentDeclaration,
-							List<ComponentDependencyDeclaration>> entry :
-								unavailableComponentDeclarations.entrySet()) {
+						 List<ComponentDependencyDeclaration>> entry :
+							unavailableComponentDeclarations.entrySet()) {
 
 					sb.append("\tComponent with ID ");
 

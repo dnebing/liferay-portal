@@ -25,6 +25,8 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,28 +69,27 @@ public class JenkinsConsoleTextLoader {
 	}
 
 	public String getConsoleText() {
+		String consoleText = null;
+
 		if (buildURL.startsWith("file:") || buildURL.contains("mirrors") ||
 			buildComplete) {
 
 			try {
-				String consoleText = JenkinsResultsParserUtil.toString(
+				consoleText = JenkinsResultsParserUtil.toString(
 					buildURL + "/consoleText", false);
-
-				if (buildURL.startsWith("file:") ||
-					buildURL.contains("mirrors") ||
-					consoleText.contains("\nFinished:")) {
-
-					return consoleText;
-				}
 			}
 			catch (IOException ioe) {
 				throw new RuntimeException(ioe);
 			}
 		}
 
-		update();
+		if ((consoleText == null) || !consoleText.contains("\nFinished:")) {
+			update();
 
-		return logStringBuilder.toString();
+			consoleText = logStringBuilder.toString();
+		}
+
+		return StringEscapeUtils.unescapeHtml(consoleText);
 	}
 
 	public int getLineCount() {

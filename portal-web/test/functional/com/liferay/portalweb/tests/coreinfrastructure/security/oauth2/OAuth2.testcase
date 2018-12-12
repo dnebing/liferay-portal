@@ -1,5 +1,4 @@
-<definition component-name="portal-security">
-	<property name="portal.release" value="true" />
+<definition component-name="portal-security" ignore="true">
 	<property name="portal.upstream" value="true" />
 	<property name="testray.main.component.name" value="OAuth 2" />
 
@@ -24,6 +23,10 @@
 	</tear-down>
 
 	<command name="addAndEditApplication">
+		<property name="app.server.types" value="jboss,resin,tcserver,tomcat,weblogic,websphere,wildfly" />
+		<property name="database.types" value="db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase" />
+		<property name="environment.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Configuration" />
 			<var name="panel" value="Control Panel" />
@@ -37,8 +40,8 @@
 			<var name="websiteURL" value="http://www.liferay.com" />
 		</execute>
 
-		<var method="selenium#getElementValue(OAuth2#ADMIN_INPUT_FORM_CLIENT_ID)" name="generatedClientId" />
-		<var method="selenium#getElementValue(OAuth2#ADMIN_INPUT_FORM_CLIENT_SECRET)" name="generatedClientSecret" />
+		<var method="selenium#getElementValue('OAuth2#ADMIN_INPUT_FORM_CLIENT_ID')" name="generatedClientId" />
+		<var method="selenium#getElementValue('OAuth2#ADMIN_INPUT_FORM_CLIENT_SECRET')" name="generatedClientSecret" />
 
 		<execute macro="OAuth2#inputApplicationValues">
 			<var name="description" value="Registering a new application" />
@@ -185,6 +188,10 @@
 	</command>
 
 	<command name="viewAndRevokeGrantedAuthorizations">
+		<property name="app.server.types" value="jboss,resin,tcserver,tomcat,weblogic,websphere,wildfly" />
+		<property name="database.types" value="db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase" />
+		<property name="environment.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Configuration" />
 			<var name="panel" value="Control Panel" />
@@ -196,9 +203,9 @@
 			<var name="checkboxUncheckList" value="Authorization Code" />
 		</execute>
 
-		<var method="selenium#getElementValue(OAuth2#ADMIN_INPUT_FORM_CLIENT_ID)" name="generatedClientId" />
+		<var method="selenium#getElementValue('OAuth2#ADMIN_INPUT_FORM_CLIENT_ID')" name="generatedClientId" />
 
-		<var method="selenium#getElementValue(OAuth2#ADMIN_INPUT_FORM_CLIENT_SECRET)" name="generatedClientSecret" />
+		<var method="selenium#getElementValue('OAuth2#ADMIN_INPUT_FORM_CLIENT_SECRET')" name="generatedClientSecret" />
 
 		<var method="PropsUtil#get('portal.url')" name="portalURL" />
 

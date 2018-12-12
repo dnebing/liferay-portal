@@ -16,7 +16,6 @@ package com.liferay.marketplace.app.manager.web.internal.util;
 
 import com.liferay.marketplace.app.manager.web.internal.constants.BundleConstants;
 import com.liferay.marketplace.app.manager.web.internal.constants.BundleStateConstants;
-import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -74,13 +73,17 @@ public class MarketplaceAppManagerSearchUtil {
 		if (matcher.find()) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected static String getKeywordsRegex(String keywords) {
-		keywords = StringUtil.replace(keywords, CharPool.SPACE, CharPool.PIPE);
+		keywords = StringUtil.replace(
+			keywords,
+			new String[] {
+				StringPool.SPACE, StringPool.APOSTROPHE, StringPool.QUOTE
+			},
+			new String[] {StringPool.PIPE, StringPool.BLANK, StringPool.BLANK});
 
 		return StringPool.OPEN_PARENTHESIS + keywords +
 			StringPool.CLOSE_PARENTHESIS;
@@ -94,9 +97,8 @@ public class MarketplaceAppManagerSearchUtil {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected static boolean hasBundleKeywordsMatch(

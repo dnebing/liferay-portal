@@ -60,6 +60,11 @@ public class PoshiRunnerConsoleEvaluator {
 				sb.append(line.trim());
 				sb.append("]]></value>");
 			}
+			else if (line.contains("WARN")) {
+				sb.append("\n<value><![CDATA[SHUT_DOWN_WARNING: ");
+				sb.append(line.trim());
+				sb.append("]]></value>");
+			}
 		}
 
 		String poshiWarningsFileContent = sb.toString();

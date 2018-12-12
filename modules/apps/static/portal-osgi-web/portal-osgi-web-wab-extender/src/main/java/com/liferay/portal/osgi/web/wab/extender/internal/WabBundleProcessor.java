@@ -16,6 +16,7 @@ package com.liferay.portal.osgi.web.wab.extender.internal;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.osgi.web.servlet.JSPServletFactory;
@@ -25,6 +26,7 @@ import com.liferay.portal.osgi.web.servlet.context.helper.definition.FilterDefin
 import com.liferay.portal.osgi.web.servlet.context.helper.definition.ListenerDefinition;
 import com.liferay.portal.osgi.web.servlet.context.helper.definition.ServletDefinition;
 import com.liferay.portal.osgi.web.servlet.context.helper.definition.WebXMLDefinition;
+import com.liferay.portal.osgi.web.wab.extender.internal.adapter.AsyncAttributeAdapterServlet;
 import com.liferay.portal.osgi.web.wab.extender.internal.adapter.FilterExceptionAdapter;
 import com.liferay.portal.osgi.web.wab.extender.internal.adapter.ModifiableServletContext;
 import com.liferay.portal.osgi.web.wab.extender.internal.adapter.ModifiableServletContextAdapter;
@@ -51,7 +53,7 @@ import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -205,12 +207,14 @@ public class WabBundleProcessor {
 
 			scanTLDsForListeners(webXMLDefinition, servletContext);
 
-			initListeners(
-				webXMLDefinition.getListenerDefinitions(), servletContext);
+			Set<ListenerDefinition> listenerDefinitions = new LinkedHashSet<>();
 
-			initListeners(
-				modifiableServletContext.getListenerDefinitions(),
-				servletContext);
+			listenerDefinitions.addAll(
+				modifiableServletContext.getListenerDefinitions());
+			listenerDefinitions.addAll(
+				webXMLDefinition.getListenerDefinitions());
+
+			initListeners(listenerDefinitions, servletContext);
 
 			modifiableServletContext.registerFilters();
 
@@ -466,7 +470,7 @@ public class WabBundleProcessor {
 
 			FilterDefinition filterDefinition = entry.getValue();
 
-			Dictionary<String, Object> properties = new Hashtable<>();
+			Dictionary<String, Object> properties = new HashMapDictionary<>();
 
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT,
@@ -524,12 +528,12 @@ public class WabBundleProcessor {
 	}
 
 	protected void initListeners(
-			List<ListenerDefinition> listenerDefinitions,
+			Collection<ListenerDefinition> listenerDefinitions,
 			ServletContext servletContext)
 		throws Exception {
 
 		for (ListenerDefinition listenerDefinition : listenerDefinitions) {
-			Dictionary<String, Object> properties = new Hashtable<>();
+			Dictionary<String, Object> properties = new HashMapDictionary<>();
 
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT,
@@ -585,14 +589,14 @@ public class WabBundleProcessor {
 			Bundle bundle, ServletContext servletContext)
 		throws IOException {
 
-		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-
 		Enumeration<URL> initializerResources = bundle.getResources(
 			"META-INF/services/javax.servlet.ServletContainerInitializer");
 
 		if (initializerResources == null) {
 			return;
 		}
+
+		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
 
 		while (initializerResources.hasMoreElements()) {
 			URL url = initializerResources.nextElement();
@@ -637,7 +641,7 @@ public class WabBundleProcessor {
 
 			ServletDefinition servletDefinition = entry.getValue();
 
-			Dictionary<String, Object> properties = new Hashtable<>();
+			Dictionary<String, Object> properties = new HashMapDictionary<>();
 
 			properties.put(
 				HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT,
@@ -680,7 +684,9 @@ public class WabBundleProcessor {
 
 			ServletExceptionAdapter servletExceptionAdaptor =
 				new ServletExceptionAdapter(
-					servletDefinition.getServlet(), modifiableServletContext);
+					new AsyncAttributeAdapterServlet(
+						servletDefinition.getServlet()),
+					modifiableServletContext);
 
 			ServiceRegistration<Servlet> serviceRegistration =
 				_bundleContext.registerService(

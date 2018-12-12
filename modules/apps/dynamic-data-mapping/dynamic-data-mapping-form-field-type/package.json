@@ -30,6 +30,7 @@
 						"./node_modules/eslint-plugin-react"
 					],
 					"rules": {
+						"newline-after-var": 2,
 						"no-console": 0,
 						"no-unknown-property": 0,
 						"react/jsx-uses-react": 0,
@@ -46,7 +47,7 @@
 		"clay-radio": "^2.2.0",
 		"incremental-dom-string": "0.0.2",
 		"metal-component": "^2.14.0",
-		"metal-position": "^2.1.1",
+		"metal-position": "^2.1.2",
 		"metal-soy": "^2.16.0",
 		"text-mask-addons": "^3.7.1",
 		"vanilla-text-mask": "^5.0.1"
@@ -56,6 +57,7 @@
 		"babel-eslint": "^8.2.6",
 		"babel-plugin-module-resolver": "^3.1.1",
 		"babel-plugin-transform-class-properties": "^6.24.1",
+		"babel-plugin-transform-object-rest-spread": "^6.26.0",
 		"babel-preset-env": "^1.7.0",
 		"check-source-formatting": "^2.0.4",
 		"eslint": "^4.10.0",
@@ -84,8 +86,12 @@
 			"/__fixtures__/",
 			"/classes/"
 		],
+		"setupTestFrameworkScriptFile": "<rootDir>/test/metal/setup/setup_framework.es.js",
 		"snapshotSerializers": [
 			"metal-jest-serializer"
+		],
+		"testMatch": [
+			"<rootDir>/test/metal/js/**/*.js"
 		],
 		"testResultsProcessor": "./node_modules/liferay-jest-junit-reporter",
 		"testURL": "http://localhost",
@@ -97,15 +103,18 @@
 	"name": "dynamic-data-mapping-form-field-type",
 	"private": true,
 	"scripts": {
-		"build": "npm run soy && babel --source-maps -d classes/META-INF/resources src/main/resources/META-INF/resources --ignore config.js,*_field*.js,*_support.js,src/**/__tests__/*.js,src/**/__tests__/*/*.js && liferay-npm-bundler && npm run clean",
+		"build": "npm run build-soy && npm run build-js && npm run bundler && npm run clean",
+		"build-js": "babel --source-maps -d classes/META-INF/resources src/main/resources/META-INF/resources",
+		"build-soy": "metalsoy --soyDeps \"./node_modules/com.liferay.frontend.taglib.clay/META-INF/resources/node_modules/*/src/*.soy\"",
+		"build-soy-tests": "npm run build-soy && metalsoy -s \"test/**/*.soy\" -d \"test\"",
+		"bundler": "liferay-npm-bundler",
 		"checkFormat": "npm run csf",
-		"clean": "rimraf src/**/*.soy.js",
-		"csf": "csf src/main/resources/META-INF/resources/metal/**/*.es.js src/main/resources/META-INF/resources/metal/**/*.soy",
+		"clean": "rimraf \"src/**/*.soy.js\" \"test/**/*.soy.js\"",
+		"csf": "csf src/**/*.es.js src/**/*.soy test/**/*.es.js --fail-on-errors",
 		"format": "npm run csf -- -i",
 		"lint": "eslint src/main/resources/META-INF/resources/metal/",
-		"soy": "metalsoy --soyDeps './node_modules/com.liferay.frontend.taglib.clay/META-INF/resources/node_modules/*/src/*.soy'",
-		"test": "npm run soy && NODE_ENV=test jest --coverage && npm run clean",
-		"test:snapshots": "npm run soy && NODE_ENV=test jest --coverage -u && npm run clean"
+		"test": "npm run build-soy-tests && NODE_ENV=test jest --coverage && npm run clean",
+		"test:snapshots": "npm run build-soy-tests && NODE_ENV=test jest --coverage -u && npm run clean"
 	},
 	"version": "4.0.0"
 }

@@ -184,8 +184,11 @@ public class EditUserMVCActionCommand extends BaseMVCActionCommand {
 					status = WorkflowConstants.STATUS_INACTIVE;
 				}
 
-				_userService.updateStatus(
-					deleteUserId, status, new ServiceContext());
+				ServiceContext serviceContext =
+					ServiceContextFactory.getInstance(
+						User.class.getName(), actionRequest);
+
+				_userService.updateStatus(deleteUserId, status, serviceContext);
 			}
 			else {
 				_userService.deleteUser(deleteUserId);
@@ -522,6 +525,7 @@ public class EditUserMVCActionCommand extends BaseMVCActionCommand {
 				portal.getHttpServletRequest(actionRequest));
 			HttpServletResponse response = portal.getHttpServletResponse(
 				actionResponse);
+
 			HttpSession session = request.getSession();
 
 			session.removeAttribute(Globals.LOCALE_KEY);

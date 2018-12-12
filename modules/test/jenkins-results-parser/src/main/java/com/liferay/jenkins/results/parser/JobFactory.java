@@ -97,6 +97,27 @@ public class JobFactory {
 			return _jobs.get(jobName);
 		}
 
+		if (jobName.equals("js-test-csv-report") ||
+			jobName.equals("junit-test-csv-report")) {
+
+			PortalGitRepositoryJob portalGitRepositoryJob =
+				new PortalGitRepositoryJob(jobName) {
+
+					@Override
+					protected GitWorkingDirectory getNewGitWorkingDirectory() {
+						return GitWorkingDirectoryFactory.
+							newGitWorkingDirectory(
+								getBranchName(),
+								System.getProperty("user.dir"));
+					}
+
+				};
+
+			_jobs.put(jobName, portalGitRepositoryJob);
+
+			return _jobs.get(jobName);
+		}
+
 		if (jobName.contains("test-plugins-acceptance-pullrequest(")) {
 			PluginsGitRepositoryJob pluginsGitRepositoryJob =
 				new PluginsGitRepositoryJob(jobName);

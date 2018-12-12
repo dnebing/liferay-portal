@@ -82,10 +82,8 @@ public class RequiresScopeAnnotationFinder {
 		}
 
 		if (_isSubresourceLocator(method)) {
-			Class<?> returnType = method.getReturnType();
-
 			if (recurse) {
-				_find(visited, scopes, false, returnType);
+				_find(visited, scopes, false, method.getReturnType());
 			}
 		}
 	}
@@ -96,9 +94,8 @@ public class RequiresScopeAnnotationFinder {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private static boolean _isHttpMethod(Method method) {

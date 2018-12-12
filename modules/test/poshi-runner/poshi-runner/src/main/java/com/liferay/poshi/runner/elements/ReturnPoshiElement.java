@@ -14,6 +14,7 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
 import com.liferay.poshi.runner.util.RegexUtil;
 import com.liferay.poshi.runner.util.StringUtil;
 
@@ -39,7 +40,8 @@ public class ReturnPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new ReturnPoshiElement(parentPoshiElement, poshiScript);
@@ -49,7 +51,9 @@ public class ReturnPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		if (getParent() instanceof ExecutePoshiElement) {
 			String returnName = RegexUtil.getGroup(
 				poshiScript, "var\\s*(.+?)\\s*=", 1);
@@ -59,7 +63,7 @@ public class ReturnPoshiElement extends PoshiElement {
 			return;
 		}
 
-		addAttribute("value", getQuotedContent(poshiScript));
+		addAttribute("value", getDoubleQuotedContent(poshiScript));
 	}
 
 	@Override
@@ -84,7 +88,8 @@ public class ReturnPoshiElement extends PoshiElement {
 	}
 
 	protected ReturnPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}

@@ -56,8 +56,8 @@ public class MultiVMPoolImpl implements MultiVMPool {
 	 */
 	@Deprecated
 	@Override
-	public PortalCache<? extends Serializable, ? extends Serializable>
-		getCache(String portalCacheName) {
+	public PortalCache<? extends Serializable, ? extends Serializable> getCache(
+		String portalCacheName) {
 
 		return getPortalCache(portalCacheName);
 	}
@@ -68,8 +68,8 @@ public class MultiVMPoolImpl implements MultiVMPool {
 	 */
 	@Deprecated
 	@Override
-	public PortalCache<? extends Serializable, ? extends Serializable>
-		getCache(String portalCacheName, boolean blocking) {
+	public PortalCache<? extends Serializable, ? extends Serializable> getCache(
+		String portalCacheName, boolean blocking) {
 
 		return getPortalCache(portalCacheName, blocking);
 	}
@@ -186,14 +186,13 @@ public class MultiVMPoolImpl implements MultiVMPool {
 	private ServiceTracker
 		<SPIPortalCacheManagerConfigurator, SPIPortalCacheManagerConfigurator>
 			_serviceTracker;
-	private volatile
-		PortalCacheManager<? extends Serializable, ? extends Serializable>
-			_spiPortalCacheManager;
+	private volatile PortalCacheManager
+		<? extends Serializable, ? extends Serializable> _spiPortalCacheManager;
 
 	private class SPIPortalCacheManagerConfiguratorServiceTrackerCustomizer
 		implements ServiceTrackerCustomizer
 			<SPIPortalCacheManagerConfigurator,
-				SPIPortalCacheManagerConfigurator> {
+			 SPIPortalCacheManagerConfigurator> {
 
 		@Override
 		public SPIPortalCacheManagerConfigurator addingService(

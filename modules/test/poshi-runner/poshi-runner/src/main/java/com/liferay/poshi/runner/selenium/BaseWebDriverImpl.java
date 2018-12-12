@@ -1117,7 +1117,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public int getElementHeight(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		Dimension dimension = webElement.getSize();
 
@@ -1129,15 +1129,8 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 		return getElementValue(locator, null);
 	}
 
-	public String getElementValue(String locator, String timeout)
-		throws Exception {
-
+	public String getElementValue(String locator, String timeout) {
 		WebElement webElement = getWebElement(locator, timeout);
-
-		if (webElement == null) {
-			throw new Exception(
-				"Element is not present at \"" + locator + "\"");
-		}
 
 		scrollWebElementIntoView(webElement);
 
@@ -1146,7 +1139,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public int getElementWidth(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		Dimension dimension = webElement.getSize();
 
@@ -1445,11 +1438,6 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 		WebElement webElement = getWebElement(locator, timeout);
 
-		if (webElement == null) {
-			throw new Exception(
-				"Element is not present at \"" + locator + "\"");
-		}
-
 		scrollWebElementIntoView(webElement);
 
 		String text = webElement.getText();
@@ -1463,15 +1451,8 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 		return getTextAceEditor(locator, null);
 	}
 
-	public String getTextAceEditor(String locator, String timeout)
-		throws Exception {
-
+	public String getTextAceEditor(String locator, String timeout) {
 		WebElement webElement = getWebElement(locator, timeout);
-
-		if (webElement == null) {
-			throw new Exception(
-				"Element is not present at \"" + locator + "\"");
-		}
 
 		scrollWebElementIntoView(webElement);
 
@@ -1561,7 +1542,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isChecked(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		scrollWebElementIntoView(webElement);
 
@@ -1599,7 +1580,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isElementPresent(String locator) {
-		List<WebElement> webElements = getWebElements(locator, "1");
+		List<WebElement> webElements = getWebElements(locator);
 
 		return !webElements.isEmpty();
 	}
@@ -1692,7 +1673,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isPartialText(String locator, String value) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		String text = webElement.getText();
 
@@ -1701,7 +1682,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isPartialTextAceEditor(String locator, String value) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		String text = webElement.getText();
 
@@ -1716,7 +1697,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 			return false;
 		}
 
-		return pattern.equals(getSelectedLabel(selectLocator, "1"));
+		return pattern.equals(getSelectedLabel(selectLocator));
 	}
 
 	@Override
@@ -1756,14 +1737,14 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isText(String locator, String value) throws Exception {
-		return value.equals(getText(locator, "1"));
+		return value.equals(getText(locator));
 	}
 
 	@Override
 	public boolean isTextCaseInsensitive(String locator, String value)
 		throws Exception {
 
-		String actual = StringUtil.toUpperCase(getText(locator, "1"));
+		String actual = StringUtil.toUpperCase(getText(locator));
 
 		value = StringUtil.toUpperCase(value);
 
@@ -1786,7 +1767,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isValue(String locator, String value) throws Exception {
-		return value.equals(getElementValue(locator, "1"));
+		return value.equals(getElementValue(locator));
 	}
 
 	@Override
@@ -1796,7 +1777,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isVisibleInPage(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		scrollWebElementIntoView(webElement);
 
@@ -1805,7 +1786,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 	@Override
 	public boolean isVisibleInViewport(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		return webElement.isDisplayed();
 	}
@@ -1823,11 +1804,6 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 		}
 
 		WebElement webElement = getWebElement(locator, timeout);
-
-		if (webElement == null) {
-			throw new Exception(
-				"Element is not present at \"" + locator + "\"");
-		}
 
 		WrapsDriver wrapsDriver = (WrapsDriver)webElement;
 
@@ -2557,7 +2533,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 		if (!PropsValues.BROWSER_TYPE.equals("safari")) {
 			timeouts.implicitlyWait(
-				GetterUtil.getInteger(timeout), TimeUnit.MILLISECONDS);
+				GetterUtil.getInteger(timeout), TimeUnit.SECONDS);
 		}
 	}
 
@@ -2873,13 +2849,8 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	}
 
 	@Override
-	public void type(String locator, String value) throws Exception {
+	public void type(String locator, String value) {
 		WebElement webElement = getWebElement(locator);
-
-		if (webElement == null) {
-			throw new Exception(
-				"Element is not present at \"" + locator + "\"");
-		}
 
 		if (!webElement.isEnabled()) {
 			return;
@@ -3007,13 +2978,8 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	}
 
 	@Override
-	public void typeKeys(String locator, String value) throws Exception {
+	public void typeKeys(String locator, String value) {
 		WebElement webElement = getWebElement(locator);
-
-		if (webElement == null) {
-			throw new Exception(
-				"Element is not present at \"" + locator + "\"");
-		}
 
 		if (!webElement.isEnabled()) {
 			return;
@@ -3778,7 +3744,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	}
 
 	protected int getElementPositionLeft(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		Point point = webElement.getLocation();
 
@@ -3790,7 +3756,7 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	}
 
 	protected int getElementPositionTop(String locator) {
-		WebElement webElement = getWebElement(locator, "1");
+		WebElement webElement = getWebElement(locator);
 
 		Point point = webElement.getLocation();
 
@@ -3833,6 +3799,10 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 		Point point = getFramePoint();
 
 		return point.getY();
+	}
+
+	protected Stack<WebElement> getFrameWebElements() {
+		return _frameWebElements;
 	}
 
 	protected ImageTarget getImageTarget(String image) throws Exception {
@@ -3931,7 +3901,8 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 			return webElements.get(0);
 		}
 
-		return null;
+		throw new RuntimeException(
+			"Element is not present at \"" + locator + "\"");
 	}
 
 	protected List<WebElement> getWebElements(String locator) {
@@ -4133,11 +4104,12 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	private static final String _TEST_DEPENDENCIES_DIR_NAME =
 		PropsValues.TEST_DEPENDENCIES_DIR_NAME;
 
-	private final Pattern _aceEditorPattern = Pattern.compile(
+	private static final Pattern _aceEditorPattern = Pattern.compile(
 		"\\(|\\$\\{line\\.separator\\}");
-	private String _clipBoard = "";
-	private final Pattern _coordinatePairsPattern = Pattern.compile(
+	private static final Pattern _coordinatePairsPattern = Pattern.compile(
 		"[+-]?\\d+\\,[+-]?\\d+(\\|[+-]?\\d+\\,[+-]?\\d+)*");
+
+	private String _clipBoard = "";
 	private String _defaultWindowHandle;
 	private Stack<WebElement> _frameWebElements = new Stack<>();
 	private final Map<String, String> _keysSpecialChars = new HashMap<>();

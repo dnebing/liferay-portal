@@ -14,6 +14,7 @@
 
 package com.liferay.portal.service.permission;
 
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -27,7 +28,6 @@ import com.liferay.portal.kernel.service.permission.GroupPermission;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserPermissionUtil;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
-import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.util.PropsValues;
 
 import java.util.Map;
@@ -118,9 +118,8 @@ public class GroupPermissionImpl
 
 			return contains(permissionChecker, group, actionId);
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -200,8 +199,8 @@ public class GroupPermissionImpl
 					 originalGroup, Group.class.getName(), groupId,
 					 ActionKeys.ASSIGN_USER_ROLES) ||
 				  permissionChecker.hasPermission(
-					 originalGroup, Group.class.getName(), groupId,
-					 ActionKeys.MANAGE_LAYOUTS))) {
+					  originalGroup, Group.class.getName(), groupId,
+					  ActionKeys.MANAGE_LAYOUTS))) {
 
 			return true;
 		}
@@ -210,14 +209,14 @@ public class GroupPermissionImpl
 					 originalGroup, Group.class.getName(), groupId,
 					 ActionKeys.MANAGE_LAYOUTS) ||
 				  permissionChecker.hasPermission(
-					 originalGroup, Group.class.getName(), groupId,
-					 ActionKeys.MANAGE_STAGING) ||
+					  originalGroup, Group.class.getName(), groupId,
+					  ActionKeys.MANAGE_STAGING) ||
 				  permissionChecker.hasPermission(
-					 originalGroup, Group.class.getName(), groupId,
-					 ActionKeys.PUBLISH_STAGING) ||
+					  originalGroup, Group.class.getName(), groupId,
+					  ActionKeys.PUBLISH_STAGING) ||
 				  permissionChecker.hasPermission(
-					 originalGroup, Group.class.getName(), groupId,
-					 ActionKeys.UPDATE))) {
+					  originalGroup, Group.class.getName(), groupId,
+					  ActionKeys.UPDATE))) {
 
 			return true;
 		}

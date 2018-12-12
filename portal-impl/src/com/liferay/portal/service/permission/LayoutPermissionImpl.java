@@ -15,6 +15,7 @@
 package com.liferay.portal.service.permission;
 
 import com.liferay.exportimport.kernel.staging.permission.StagingPermissionUtil;
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -45,7 +46,6 @@ import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserGroupPermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserPermissionUtil;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
-import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.util.LayoutTypeControllerTracker;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.sites.kernel.util.SitesUtil;
@@ -464,8 +464,7 @@ public class LayoutPermissionImpl
 				return true;
 			}
 			else if (OrganizationPermissionUtil.contains(
-						 permissionChecker, organizationId,
-						 ActionKeys.UPDATE)) {
+						permissionChecker, organizationId, ActionKeys.UPDATE)) {
 
 				return true;
 			}
@@ -577,8 +576,8 @@ public class LayoutPermissionImpl
 				}
 
 				if (Arrays.binarySearch(
-						userBag.getUserUserGroupsIds(),
-						group.getClassPK()) >= 0) {
+						userBag.getUserUserGroupsIds(), group.getClassPK()) >=
+							0) {
 
 					return true;
 				}

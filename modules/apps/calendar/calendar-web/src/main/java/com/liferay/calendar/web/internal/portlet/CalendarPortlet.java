@@ -45,6 +45,7 @@ import com.liferay.calendar.service.CalendarBookingLocalService;
 import com.liferay.calendar.service.CalendarBookingService;
 import com.liferay.calendar.service.CalendarLocalService;
 import com.liferay.calendar.service.CalendarNotificationTemplateService;
+import com.liferay.calendar.service.CalendarResourceLocalService;
 import com.liferay.calendar.service.CalendarResourceService;
 import com.liferay.calendar.service.CalendarService;
 import com.liferay.calendar.util.JCalendarUtil;
@@ -303,7 +304,7 @@ public class CalendarPortlet extends MVCPortlet {
 			getCalendar(renderRequest);
 			getCalendarBooking(renderRequest);
 			getCalendarResource(renderRequest);
-			setRenderRequestAttributes(renderRequest);
+			setRenderRequestAttributes(renderRequest, renderResponse);
 		}
 		catch (Exception e) {
 			if (e instanceof NoSuchResourceException ||
@@ -319,14 +320,60 @@ public class CalendarPortlet extends MVCPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
+	@Override
+	public void serveResource(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+		throws PortletException {
+
+		try {
+			String resourceID = resourceRequest.getResourceID();
+
+			if (resourceID.equals("calendar")) {
+				serveCalendar(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("calendarBookingInvitees")) {
+				serveCalendarBookingInvitees(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("calendarBookings")) {
+				serveCalendarBookings(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("calendarBookingsRSS")) {
+				serveCalendarBookingsRSS(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("calendarRenderingRules")) {
+				serveCalendarRenderingRules(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("calendarResources")) {
+				serveCalendarResources(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("currentTime")) {
+				serveCurrentTime(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("exportCalendar")) {
+				serveExportCalendar(resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("hasExclusiveCalendarBooking")) {
+				serveHasExclusiveCalendarBooking(
+					resourceRequest, resourceResponse);
+			}
+			else if (resourceID.equals("resourceCalendars")) {
+				serveResourceCalendars(resourceRequest, resourceResponse);
+			}
+			else {
+				serveUnknownResource(resourceRequest, resourceResponse);
+			}
+		}
+		catch (Exception e) {
+			throw new PortletException(e);
+		}
+	}
+
 	public void updateCalendar(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
 		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
 
-		long calendarResourceId = ParamUtil.getLong(
-			actionRequest, "calendarResourceId");
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, "name");
 		Map<Locale, String> descriptionMap =
@@ -346,6 +393,9 @@ public class CalendarPortlet extends MVCPortlet {
 		Calendar calendar = null;
 
 		if (calendarId <= 0) {
+			long calendarResourceId = ParamUtil.getLong(
+				actionRequest, "calendarResourceId");
+
 			CalendarResource calendarResource =
 				_calendarResourceService.getCalendarResource(
 					calendarResourceId);
@@ -374,12 +424,8 @@ public class CalendarPortlet extends MVCPortlet {
 		long calendarNotificationTemplateId = ParamUtil.getLong(
 			actionRequest, "calendarNotificationTemplateId");
 
-		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
 		NotificationType notificationType = NotificationType.parse(
 			ParamUtil.getString(actionRequest, "notificationType"));
-		NotificationTemplateType notificationTemplateType =
-			NotificationTemplateType.parse(
-				ParamUtil.getString(actionRequest, "notificationTemplateType"));
 		String subject = ParamUtil.getString(actionRequest, "subject");
 		String body = ParamUtil.getString(actionRequest, "body");
 
@@ -387,6 +433,12 @@ public class CalendarPortlet extends MVCPortlet {
 			CalendarNotificationTemplate.class.getName(), actionRequest);
 
 		if (calendarNotificationTemplateId <= 0) {
+			long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
+			NotificationTemplateType notificationTemplateType =
+				NotificationTemplateType.parse(
+					ParamUtil.getString(
+						actionRequest, "notificationTemplateType"));
+
 			_calendarNotificationTemplateService.
 				addCalendarNotificationTemplate(
 					calendarId, notificationType,
@@ -411,9 +463,6 @@ public class CalendarPortlet extends MVCPortlet {
 		long calendarResourceId = ParamUtil.getLong(
 			actionRequest, "calendarResourceId");
 
-		long defaultCalendarId = ParamUtil.getLong(
-			actionRequest, "defaultCalendarId");
-		String code = ParamUtil.getString(actionRequest, "code");
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, "name");
 		Map<Locale, String> descriptionMap =
@@ -424,6 +473,8 @@ public class CalendarPortlet extends MVCPortlet {
 			CalendarResource.class.getName(), actionRequest);
 
 		if (calendarResourceId <= 0) {
+			String code = ParamUtil.getString(actionRequest, "code");
+
 			_calendarResourceService.addCalendarResource(
 				serviceContext.getScopeGroupId(),
 				_portal.getClassNameId(CalendarResource.class), 0,
@@ -434,6 +485,9 @@ public class CalendarPortlet extends MVCPortlet {
 			_calendarResourceService.updateCalendarResource(
 				calendarResourceId, nameMap, descriptionMap, active,
 				serviceContext);
+
+			long defaultCalendarId = ParamUtil.getLong(
+				actionRequest, "defaultCalendarId");
 
 			if (defaultCalendarId > 0) {
 				_calendarLocalService.updateCalendar(defaultCalendarId, true);
@@ -641,58 +695,6 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	@Override
-	protected boolean callResourceMethod(
-			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-		throws PortletException {
-
-		try {
-			String resourceID = resourceRequest.getResourceID();
-
-			if (resourceID.equals("calendar")) {
-				serveCalendar(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("calendarBookingInvitees")) {
-				serveCalendarBookingInvitees(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("calendarBookings")) {
-				serveCalendarBookings(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("calendarBookingsRSS")) {
-				serveCalendarBookingsRSS(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("calendarRenderingRules")) {
-				serveCalendarRenderingRules(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("calendarResources")) {
-				serveCalendarResources(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("currentTime")) {
-				serveCurrentTime(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("exportCalendar")) {
-				serveExportCalendar(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("hasExclusiveCalendarBooking")) {
-				serveHasExclusiveCalendarBooking(
-					resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("resourceCalendars")) {
-				serveResourceCalendars(resourceRequest, resourceResponse);
-			}
-			else if (!super.callResourceMethod(
-						 resourceRequest, resourceResponse)) {
-
-				serveUnknownResource(resourceRequest, resourceResponse);
-			}
-
-			return true;
-		}
-		catch (Exception e) {
-			throw new PortletException(e);
-		}
-	}
-
-	@Override
 	protected void doDispatch(
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
@@ -856,7 +858,7 @@ public class CalendarPortlet extends MVCPortlet {
 				"please-select-at-least-one-category-for-x", vocabularyTitle);
 		}
 		else if (assetCategoryException.getType() ==
-					 AssetCategoryException.TOO_MANY_CATEGORIES) {
+					AssetCategoryException.TOO_MANY_CATEGORIES) {
 
 			errorMessage = themeDisplay.translate(
 				"you-cannot-select-more-than-one-category-for-x",
@@ -959,12 +961,13 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		long oldStartTime = editedCalendarBookingInstance.getStartTime();
-		TimeZone timeZone = editedCalendarBookingInstance.getTimeZone();
 
 		if (frequency == Frequency.WEEKLY) {
 			CalendarBooking firstInstance =
 				_calendarBookingService.getCalendarBookingInstance(
 					editedCalendarBookingInstance.getCalendarBookingId(), 0);
+
+			TimeZone timeZone = editedCalendarBookingInstance.getTimeZone();
 
 			java.util.Calendar oldStartTimeJCalendar =
 				CalendarFactoryUtil.getCalendar(oldStartTime, timeZone);
@@ -1146,9 +1149,6 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	protected TimeZone getTimeZone(PortletRequest portletRequest) {
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		boolean allDay = ParamUtil.getBoolean(portletRequest, "allDay");
 
 		if (allDay) {
@@ -1156,6 +1156,9 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		PortletPreferences preferences = portletRequest.getPreferences();
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		User user = themeDisplay.getUser();
 
@@ -1287,19 +1290,20 @@ public class CalendarPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		long[] calendarIds = ParamUtil.getLongValues(
-			resourceRequest, "calendarIds");
-		java.util.Calendar endTimeJCalendar = getJCalendar(
-			resourceRequest, "endTime");
-		java.util.Calendar startTimeJCalendar = getJCalendar(
-			resourceRequest, "startTime");
-		int[] statuses = ParamUtil.getIntegerValues(
-			resourceRequest, "statuses");
-
 		List<CalendarBooking> calendarBookings =
 			Collections.<CalendarBooking>emptyList();
 
+		long[] calendarIds = ParamUtil.getLongValues(
+			resourceRequest, "calendarIds");
+
 		if (!ArrayUtil.isEmpty(calendarIds)) {
+			java.util.Calendar endTimeJCalendar = getJCalendar(
+				resourceRequest, "endTime");
+			java.util.Calendar startTimeJCalendar = getJCalendar(
+				resourceRequest, "startTime");
+			int[] statuses = ParamUtil.getIntegerValues(
+				resourceRequest, "statuses");
+
 			calendarBookings = _calendarBookingService.search(
 				themeDisplay.getCompanyId(), new long[0], calendarIds,
 				new long[0], -1, null, startTimeJCalendar.getTimeInMillis(),
@@ -1379,11 +1383,16 @@ public class CalendarPortlet extends MVCPortlet {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
+		long[] calendarIds = ParamUtil.getLongValues(
+			resourceRequest, "calendarIds");
+
+		if (ArrayUtil.isEmpty(calendarIds)) {
+			return;
+		}
+
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		long[] calendarIds = ParamUtil.getLongValues(
-			resourceRequest, "calendarIds");
 		int[] statuses = {
 			WorkflowConstants.STATUS_APPROVED,
 			CalendarBookingWorkflowConstants.STATUS_MAYBE,
@@ -1393,13 +1402,11 @@ public class CalendarPortlet extends MVCPortlet {
 		long endTime = ParamUtil.getLong(resourceRequest, "endTime");
 		String ruleName = ParamUtil.getString(resourceRequest, "ruleName");
 
-		if (calendarIds.length > 0) {
-			JSONObject jsonObject = CalendarUtil.getCalendarRenderingRules(
-				themeDisplay, calendarIds, statuses, startTime, endTime,
-				ruleName, getTimeZone(resourceRequest));
+		JSONObject jsonObject = CalendarUtil.getCalendarRenderingRules(
+			themeDisplay, calendarIds, statuses, startTime, endTime, ruleName,
+			getTimeZone(resourceRequest));
 
-			writeJSON(resourceRequest, resourceResponse, jsonObject);
-		}
+		writeJSON(resourceRequest, resourceResponse, jsonObject);
 	}
 
 	protected void serveCalendarResources(
@@ -1696,15 +1703,15 @@ public class CalendarPortlet extends MVCPortlet {
 		_groupLocalService = groupLocalService;
 	}
 
-	protected void setRenderRequestAttributes(RenderRequest renderRequest) {
-		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+	protected void setRenderRequestAttributes(
+		RenderRequest renderRequest, RenderResponse renderResponse) {
 
 		CalendarDisplayContext calendarDisplayContext =
 			new CalendarDisplayContext(
-				_groupLocalService, _calendarBookingLocalService,
-				_calendarBookingService, _calendarLocalService,
-				_calendarService, themeDisplay);
+				renderRequest, renderResponse, _groupLocalService,
+				_calendarBookingLocalService, _calendarBookingService,
+				_calendarLocalService, _calendarResourceLocalServiceService,
+				_calendarService);
 
 		renderRequest.setAttribute(
 			CalendarWebKeys.CALENDAR_DISPLAY_CONTEXT, calendarDisplayContext);
@@ -1854,6 +1861,10 @@ public class CalendarPortlet extends MVCPortlet {
 
 	private CalendarNotificationTemplateService
 		_calendarNotificationTemplateService;
+
+	@Reference
+	private CalendarResourceLocalService _calendarResourceLocalServiceService;
+
 	private CalendarResourceService _calendarResourceService;
 	private CalendarService _calendarService;
 

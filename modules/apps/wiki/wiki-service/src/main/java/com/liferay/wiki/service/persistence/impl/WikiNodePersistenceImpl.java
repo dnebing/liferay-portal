@@ -180,6 +180,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	@Override
 	public List<WikiNode> findByUuid(String uuid, int start, int end,
 		OrderByComparator<WikiNode> orderByComparator, boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -203,7 +205,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (WikiNode wikiNode : list) {
-					if (!Objects.equals(uuid, wikiNode.getUuid())) {
+					if (!uuid.equals(wikiNode.getUuid())) {
 						list = null;
 
 						break;
@@ -227,10 +229,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -411,6 +410,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	public WikiNode[] findByUuid_PrevAndNext(long nodeId, String uuid,
 		OrderByComparator<WikiNode> orderByComparator)
 		throws NoSuchNodeException {
+		uuid = Objects.toString(uuid, "");
+
 		WikiNode wikiNode = findByPrimaryKey(nodeId);
 
 		Session session = null;
@@ -456,10 +457,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -579,6 +577,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -592,10 +592,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -709,6 +706,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	@Override
 	public WikiNode fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -734,10 +733,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -821,6 +817,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -834,10 +832,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -979,6 +974,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	public List<WikiNode> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<WikiNode> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1006,7 +1003,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (WikiNode wikiNode : list) {
-					if (!Objects.equals(uuid, wikiNode.getUuid()) ||
+					if (!uuid.equals(wikiNode.getUuid()) ||
 							(companyId != wikiNode.getCompanyId())) {
 						list = null;
 
@@ -1031,10 +1028,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1233,6 +1227,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	public WikiNode[] findByUuid_C_PrevAndNext(long nodeId, String uuid,
 		long companyId, OrderByComparator<WikiNode> orderByComparator)
 		throws NoSuchNodeException {
+		uuid = Objects.toString(uuid, "");
+
 		WikiNode wikiNode = findByPrimaryKey(nodeId);
 
 		Session session = null;
@@ -1278,10 +1274,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1407,6 +1400,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1420,10 +1415,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2900,6 +2892,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	@Override
 	public WikiNode fetchByG_N(long groupId, String name,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		Object[] finderArgs = new Object[] { groupId, name };
 
 		Object result = null;
@@ -2927,10 +2921,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -3012,6 +3003,8 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	 */
 	@Override
 	public int countByG_N(long groupId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_N;
 
 		Object[] finderArgs = new Object[] { groupId, name };
@@ -3027,10 +3020,7 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -4533,6 +4523,9 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	public WikiNodePersistenceImpl() {
 		setModelClass(WikiNode.class);
 
+		setModelImplClass(WikiNodeImpl.class);
+		setEntityCacheEnabled(WikiNodeModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -5094,53 +5087,6 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	/**
 	 * Returns the wiki node with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the wiki node
-	 * @return the wiki node, or <code>null</code> if a wiki node with the primary key could not be found
-	 */
-	@Override
-	public WikiNode fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(WikiNodeModelImpl.ENTITY_CACHE_ENABLED,
-				WikiNodeImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		WikiNode wikiNode = (WikiNode)serializable;
-
-		if (wikiNode == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				wikiNode = (WikiNode)session.get(WikiNodeImpl.class, primaryKey);
-
-				if (wikiNode != null) {
-					cacheResult(wikiNode);
-				}
-				else {
-					entityCache.putResult(WikiNodeModelImpl.ENTITY_CACHE_ENABLED,
-						WikiNodeImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(WikiNodeModelImpl.ENTITY_CACHE_ENABLED,
-					WikiNodeImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return wikiNode;
-	}
-
-	/**
-	 * Returns the wiki node with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param nodeId the primary key of the wiki node
 	 * @return the wiki node, or <code>null</code> if a wiki node with the primary key could not be found
 	 */
@@ -5436,6 +5382,11 @@ public class WikiNodePersistenceImpl extends BasePersistenceImpl<WikiNode>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

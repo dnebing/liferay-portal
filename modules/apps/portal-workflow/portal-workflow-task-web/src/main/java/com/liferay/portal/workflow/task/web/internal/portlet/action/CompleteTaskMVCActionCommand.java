@@ -14,12 +14,21 @@
 
 package com.liferay.portal.workflow.task.web.internal.portlet.action;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.WorkflowInstance;
+import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
+import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
+
+import java.io.Serializable;
+
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -56,12 +65,33 @@ public class CompleteTaskMVCActionCommand
 			actionRequest, "transitionName");
 		String comment = ParamUtil.getString(actionRequest, "comment");
 
+		Map<String, Serializable> workflowContext = _getWorkflowContext(
+			themeDisplay.getCompanyId(), workflowTaskId);
+
+		workflowContext.put(
+			WorkflowConstants.CONTEXT_USER_ID,
+			String.valueOf(themeDisplay.getUserId()));
+
 		workflowTaskManager.completeWorkflowTask(
 			themeDisplay.getCompanyId(), themeDisplay.getUserId(),
-			workflowTaskId, transitionName, comment, null);
+			workflowTaskId, transitionName, comment, workflowContext);
 	}
 
 	@Reference
 	protected WorkflowTaskManager workflowTaskManager;
+
+	private Map<String, Serializable> _getWorkflowContext(
+			long companyId, long workflowTaskId)
+		throws PortalException {
+
+		WorkflowTask workflowTask = workflowTaskManager.getWorkflowTask(
+			companyId, workflowTaskId);
+
+		WorkflowInstance workflowInstance =
+			WorkflowInstanceManagerUtil.getWorkflowInstance(
+				companyId, workflowTask.getWorkflowInstanceId());
+
+		return workflowInstance.getWorkflowContext();
+	}
 
 }

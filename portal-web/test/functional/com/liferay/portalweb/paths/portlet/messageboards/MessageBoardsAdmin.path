@@ -8,16 +8,6 @@
 <tr><td rowspan="1" colspan="3">MessageBoardsAdmin</td></tr>
 </thead>
 <tbody>
-<tr>
-	<td>PORTLET_TITLE</td>
-	<td>//h2[@id='cpPortletTitle']/span[@class='portlet-title-text']</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
 <!--THREADS-->
 <tr>
 	<td>THREADS_RECYCLE_BIN_BUTTON</td>

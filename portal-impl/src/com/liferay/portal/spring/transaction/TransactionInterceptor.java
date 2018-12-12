@@ -14,39 +14,43 @@
 
 package com.liferay.portal.spring.transaction;
 
+import com.liferay.petra.lang.HashUtil;
+import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
+
 import java.lang.reflect.Method;
 
-import org.aopalliance.intercept.MethodInterceptor;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.aopalliance.intercept.MethodInvocation;
 
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.TransactionAttribute;
-import org.springframework.transaction.interceptor.TransactionAttributeSource;
 
 /**
  * @author Shuyang Zhou
  */
-public class TransactionInterceptor implements MethodInterceptor {
+public class TransactionInterceptor
+	extends AnnotationChainableMethodAdvice<Transactional> {
 
-	public TransactionAttributeSource getTransactionAttributeSource() {
-		return transactionAttributeSource;
+	public TransactionInterceptor() {
+		super(Transactional.class);
+	}
+
+	public TransactionAttribute getTransactionAttribute(
+		MethodInvocation methodInvocation) {
+
+		Object target = methodInvocation.getThis();
+
+		return _transactionAttributes.get(
+			new CacheKey(target.getClass(), methodInvocation.getMethod()));
 	}
 
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-		Method method = methodInvocation.getMethod();
-
-		Class<?> targetClass = null;
-
-		Object targetBean = methodInvocation.getThis();
-
-		if (targetBean != null) {
-			targetClass = targetBean.getClass();
-		}
-
-		TransactionAttribute transactionAttribute =
-			transactionAttributeSource.getTransactionAttribute(
-				method, targetClass);
+		TransactionAttribute transactionAttribute = getTransactionAttribute(
+			methodInvocation);
 
 		if (transactionAttribute == null) {
 			return methodInvocation.proceed();
@@ -56,20 +60,29 @@ public class TransactionInterceptor implements MethodInterceptor {
 			new TransactionAttributeAdapter(transactionAttribute);
 
 		return transactionExecutor.execute(
-			platformTransactionManager, transactionAttributeAdapter,
-			methodInvocation);
+			transactionAttributeAdapter, methodInvocation);
 	}
 
-	public void setPlatformTransactionManager(
-		PlatformTransactionManager platformTransactionManager) {
+	@Override
+	public boolean isEnabled(Class<?> targetClass, Method method) {
+		Transactional transactional = serviceBeanAopCacheManager.findAnnotation(
+			targetClass, method, Transactional.class);
 
-		this.platformTransactionManager = platformTransactionManager;
-	}
+		if (transactional == null) {
+			return false;
+		}
 
-	public void setTransactionAttributeSource(
-		TransactionAttributeSource transactionAttributeSource) {
+		TransactionAttribute transactionAttribute =
+			TransactionAttributeBuilder.build(transactional);
 
-		this.transactionAttributeSource = transactionAttributeSource;
+		if (transactionAttribute == null) {
+			return false;
+		}
+
+		_transactionAttributes.put(
+			new CacheKey(targetClass, method), transactionAttribute);
+
+		return true;
 	}
 
 	public void setTransactionExecutor(
@@ -78,8 +91,41 @@ public class TransactionInterceptor implements MethodInterceptor {
 		this.transactionExecutor = transactionExecutor;
 	}
 
-	protected PlatformTransactionManager platformTransactionManager;
-	protected TransactionAttributeSource transactionAttributeSource;
 	protected TransactionExecutor transactionExecutor;
+
+	private final ConcurrentMap<CacheKey, TransactionAttribute>
+		_transactionAttributes = new ConcurrentHashMap<>();
+
+	private static class CacheKey {
+
+		@Override
+		public boolean equals(Object obj) {
+			CacheKey cacheKey = (CacheKey)obj;
+
+			if (Objects.equals(_targetClass, cacheKey._targetClass) &&
+				Objects.equals(_method, cacheKey._method)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = HashUtil.hash(0, _targetClass);
+
+			return HashUtil.hash(hash, _method);
+		}
+
+		private CacheKey(Class<?> targetClass, Method method) {
+			_targetClass = targetClass;
+			_method = method;
+		}
+
+		private final Method _method;
+		private final Class<?> _targetClass;
+
+	}
 
 }

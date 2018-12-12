@@ -43,7 +43,7 @@ public class PortalUpgradeProcess extends UpgradeProcess {
 
 		try (PreparedStatement ps = connection.prepareStatement(
 				"select schemaVersion from Release_ where servletContextName " +
-					"= ?");) {
+					"= ?")) {
 
 			ps.setString(1, ReleaseConstants.DEFAULT_SERVLET_CONTEXT_NAME);
 
@@ -169,16 +169,26 @@ public class PortalUpgradeProcess extends UpgradeProcess {
 	private static final String _INITIAL_SCHEMA_VERSION = "0.1.0";
 
 	private static final TreeMap<Version, UpgradeProcess> _upgradeProcesses =
-		new TreeMap<>();
+		new TreeMap<Version, UpgradeProcess>() {
+			{
+				put(
+					new Version(_INITIAL_SCHEMA_VERSION),
+					new DummyUpgradeProcess());
+			}
+		};
 
 	static {
-		_upgradeProcesses.put(
-			new Version(_INITIAL_SCHEMA_VERSION), new DummyUpgradeProcess());
-
 		PortalUpgradeProcessRegistry portalUpgradeProcessRegistry =
 			new PortalUpgradeProcessRegistryImpl();
 
 		portalUpgradeProcessRegistry.registerUpgradeProcesses(
+			_upgradeProcesses);
+
+		PortalUpgradeProcessRegistry v72xPortalUpgradeProcessRegistry =
+			new com.liferay.portal.upgrade.v7_2_x.
+				PortalUpgradeProcessRegistryImpl();
+
+		v72xPortalUpgradeProcessRegistry.registerUpgradeProcesses(
 			_upgradeProcesses);
 	}
 

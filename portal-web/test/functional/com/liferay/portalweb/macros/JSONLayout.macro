@@ -1,21 +1,17 @@
 <definition>
-	<command name="_addLayout">
+	<command name="_addLayout" summary="Directly calls the JSON WS API to add a layout">
 		<if>
-			<not>
-				<isset var="groupId" />
-			</not>
+			<isset var="parentLayoutName" />
 			<then>
-				<fail message="Please set 'groupId'." />
-			</then>
-		</if>
-
-		<if>
-			<isset var="layoutName" />
-			<then>
-				<var method="URLUtil#encodeUTF8('${layoutName}')" name="layoutNameEncoded" />
+				<execute macro="JSONLayout#_getLayoutIdByName">
+					<return name="parentLayoutId" />
+					<var name="groupId" value="${groupId}" />
+					<var name="layoutName" value="${parentLayoutName}" />
+					<var name="privateLayout" value="${privateLayout}" />
+				</execute>
 			</then>
 			<else>
-				<fail message="Please set 'layoutName'." />
+				<var name="parentLayoutId" value="0" />
 			</else>
 		</if>
 
@@ -27,9 +23,9 @@
 			${portalURL}/api/jsonws/layout/add-layout \
 				-u test@liferay.com:test \
 				-d groupId=${groupId} \
-				-d privateLayout=false \
-				-d parentLayoutId=0 \
-				-d name=${layoutNameEncoded} \
+				-d privateLayout=${privateLayout} \
+				-d parentLayoutId=${parentLayoutId} \
+				-d name=${layoutName} \
 				-d title= \
 				-d description= \
 				-d type=portlet \
@@ -37,7 +33,7 @@
 				-d friendlyURL=
 		]]></var>
 
-		<execute macro="JSONGroup#getGroupName">
+		<execute macro="JSONGroup#_getGroupName">
 			<return name="groupName" />
 			<var name="groupId" value="${groupId}" />
 		</execute>
@@ -51,7 +47,65 @@
 		<var method="JSONCurlUtil#post('${curl}', '$[\'layoutId\']')" name="layoutId" />
 	</command>
 
-	<command name="addLayoutByGroupName">
+	<command name="_getLayoutIdByName" summary="Get the layoutId from a layout by using groupId and layoutName">
+		<if>
+			<not>
+				<isset var="groupId" />
+			</not>
+			<then>
+				<fail message="Please set 'groupId'." />
+			</then>
+		</if>
+
+		<if>
+			<not>
+				<isset var="layoutName" />
+			</not>
+			<then>
+				<fail message="Please set 'layoutName'." />
+			</then>
+		</if>
+
+		<if>
+			<not>
+				<equals arg1="${privateLayout}" arg2="true" />
+			</not>
+			<then>
+				<var name="privateLayout" value="false" />
+			</then>
+		</if>
+
+		<execute macro="JSONCompany#getPortalURL">
+			<return name="portalURL" />
+		</execute>
+
+		<var name="curl"><![CDATA[
+			${portalURL}/api/jsonws/layout/get-layouts \
+				-u test@liferay.com:test \
+				-d groupId=${groupId} \
+				-d privateLayout=${privateLayout}
+		]]></var>
+
+		<var method="JSONCurlUtil#post('${curl}', '$.[?(@[\'nameCurrentValue\'] == \'${layoutName}\')][\'layoutId\']')" name="layoutId" />
+
+		<var method="StringUtil#replace('${layoutId}', '[&quot;', '')" name="layoutId" />
+
+		<var method="StringUtil#replace('${layoutId}', '&quot;]', '')" name="layoutId" />
+
+		<if>
+			<equals arg1="${layoutId}" arg2="[]" />
+			<then>
+				<fail message="FAIL. Cannot find layout." />
+			</then>
+			<else>
+				<echo message="FOUND. Returning layoutId: ${groupId}" />
+			</else>
+		</if>
+
+		<return value="${layoutId}" />
+	</command>
+
+	<command name="addPrivateLayout" summary="Add a private site page or private child site page to an existing site or child site via groupKey">
 		<if>
 			<not>
 				<isset var="groupName" />
@@ -70,7 +124,7 @@
 			</then>
 		</if>
 
-		<execute macro="JSONGroup#getGroupIdByName">
+		<execute macro="JSONGroup#_getSiteIdByGroupName">
 			<return name="groupId" />
 			<var name="groupName" value="${groupName}" />
 		</execute>
@@ -78,6 +132,104 @@
 		<execute macro="JSONLayout#_addLayout">
 			<var name="groupId" value="${groupId}" />
 			<var name="layoutName" value="${layoutName}" />
+			<var name="parentLayoutName" value="${parentLayoutName}" />
+			<var name="privateLayout" value="true" />
+		</execute>
+	</command>
+
+	<command name="addPrivateLayoutByGroupName" summary="Add a private site page or private child site page to an existing site via groupName">
+		<if>
+			<not>
+				<isset var="groupName" />
+			</not>
+			<then>
+				<fail message="Please set 'groupName'." />
+			</then>
+		</if>
+
+		<if>
+			<not>
+				<isset var="layoutName" />
+			</not>
+			<then>
+				<fail message="Please set 'layoutName'." />
+			</then>
+		</if>
+
+		<execute macro="JSONGroup#_getGroupIdByName">
+			<return name="groupId" />
+			<var name="groupName" value="${groupName}" />
+		</execute>
+
+		<execute macro="JSONLayout#_addLayout">
+			<var name="groupId" value="${groupId}" />
+			<var name="layoutName" value="${layoutName}" />
+			<var name="parentLayoutName" value="${parentLayoutName}" />
+			<var name="privateLayout" value="true" />
+		</execute>
+	</command>
+
+	<command name="addPublicLayout" summary="Add a public site page  or public child site page to an existing site or child site via groupKey">
+		<if>
+			<not>
+				<isset var="groupName" />
+			</not>
+			<then>
+				<fail message="Please set 'groupName'." />
+			</then>
+		</if>
+
+		<if>
+			<not>
+				<isset var="layoutName" />
+			</not>
+			<then>
+				<fail message="Please set 'layoutName'." />
+			</then>
+		</if>
+
+		<execute macro="JSONGroup#_getSiteIdByGroupName">
+			<return name="groupId" />
+			<var name="groupName" value="${groupName}" />
+		</execute>
+
+		<execute macro="JSONLayout#_addLayout">
+			<var name="groupId" value="${groupId}" />
+			<var name="layoutName" value="${layoutName}" />
+			<var name="parentLayoutName" value="${parentLayoutName}" />
+			<var name="privateLayout" value="false" />
+		</execute>
+	</command>
+
+	<command name="addPublicLayoutByGroupName" summary="Add a public site page or public child site page to an existing site via groupName">
+		<if>
+			<not>
+				<isset var="groupName" />
+			</not>
+			<then>
+				<fail message="Please set 'groupName'." />
+			</then>
+		</if>
+
+		<if>
+			<not>
+				<isset var="layoutName" />
+			</not>
+			<then>
+				<fail message="Please set 'layoutName'." />
+			</then>
+		</if>
+
+		<execute macro="JSONGroup#_getGroupIdByName">
+			<return name="groupId" />
+			<var name="groupName" value="${groupName}" />
+		</execute>
+
+		<execute macro="JSONLayout#_addLayout">
+			<var name="groupId" value="${groupId}" />
+			<var name="layoutName" value="${layoutName}" />
+			<var name="parentLayoutName" value="${parentLayoutName}" />
+			<var name="privateLayout" value="false" />
 		</execute>
 	</command>
 </definition>

@@ -7,6 +7,7 @@
 	<command name="HypersonicToHypersonic" priority="5">
 		<property name="database.types" value="hypersonic" />
 		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="SetupWizard#HypersonicToHypersonic" />
 
 		<execute macro="SetupWizard#configurePG">
 			<var name="administratorEmail" value="test@liferay.com" />
@@ -27,6 +28,7 @@
 	<command name="HypersonicToMySQL" priority="5">
 		<property name="database.types" value="mysql" />
 		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="SetupWizard#HypersonicToMySQL" />
 
 		<execute macro="SetupWizard#configurePG">
 			<var name="administratorEmail" value="test@liferay.com" />
@@ -42,5 +44,122 @@
 		<execute macro="Smoke#viewWelcomePage" />
 
 		<execute macro="Smoke#runSmoke" />
+	</command>
+
+	<command name="HypersonicWithSpecialContent" priority="5">
+		<property name="database.types" value="hypersonic" />
+		<property name="portal.acceptance" value="false" />
+		<property name="test.name.skip.portal.instance" value="SetupWizard#HypersonicWithSpecialContent" />
+
+		<execute macro="SetupWizard#configurePortalNamePG">
+			<var name="portalName" value="" />
+		</execute>
+
+		<execute macro="SetupWizard#configureAdministratorUserPG">
+			<var name="administratorEmail" value="" />
+			<var name="administratorFirstName" value="" />
+			<var name="administratorLastName" value="" />
+		</execute>
+
+		<execute function="Click" locator1="TextInput#PORTAL_NAME" />
+
+		<execute macro="SetupWizard#configureDatabasePG">
+			<var name="databasePassword" value="" />
+			<var name="databaseType" value="Hypersonic" />
+			<var name="databaseUserName" value="" />
+			<var name="jdbcDriverClassName" value="" />
+			<var name="jdbcURL" value="" />
+		</execute>
+
+		<execute macro="SetupWizard#finishConfigurationPG" />
+
+		<for list="Portal Name,First Name,Last Name,Email,JDBC URL,JDBC Driver Class Name" param="filedName">
+			<execute function="AssertTextEquals#assertPartialText" locator1="TextInput#REQUIRED_ALERT" value1="This field is required.">
+				<var name="key_filedName" value="${filedName}" />
+			</execute>
+		</for>
+
+		<execute function="AssertTextEquals" locator1="SetupWizard#DATABASE_CHANGE_USER_NAME_FIELD" value1="" />
+		<execute function="AssertTextEquals" locator1="SetupWizard#DATABASE_CHANGE_PASSWORD_FIELD" value1="" />
+
+		<execute function="Refresh" />
+
+		<execute macro="SetupWizard#configurePortalNamePG">
+			<var name="portalName" value="1234567890!@#$%^&amp;*()~`" />
+		</execute>
+
+		<execute macro="SetupWizard#configureAdministratorUserPG">
+			<var name="administratorEmail" value="1234567890!@#$%^&amp;*()~`" />
+			<var name="administratorFirstName" value="1234567890!@#$%^&amp;*()~`" />
+			<var name="administratorLastName" value="1234567890!@#$%^&amp;*()~`" />
+		</execute>
+
+		<execute function="Click" locator1="TextInput#PORTAL_NAME" />
+
+		<execute function="AssertTextEquals#assertValue" locator1="TextInput#FIRST_NAME" value1="1234567890!@#$%^&amp;*()~`" />
+		<execute function="AssertTextEquals#assertValue" locator1="TextInput#LAST_NAME" value1="1234567890!@#$%^&amp;*()~`" />
+		<execute function="AssertTextEquals#assertValue" locator1="TextInput#PORTAL_NAME" value1="1234567890!@#$%^&amp;*()~`" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="Message#ERROR_ENTER_A_VALID_EMAIL_ADDRESS" value1="Please enter a valid email address." />
+	</command>
+
+	<command name="MySQLWithXSSContent" priority="5">
+		<property name="database.types" value="mysql" />
+		<property name="test.name.skip.portal.instance" value="SetupWizard#MySQLWithXSSContent" />
+
+		<execute macro="SetupWizard#configurePG">
+			<var name="administratorEmail" value="test@liferay.com" />
+			<var name="administratorFirstName"><![CDATA[<script>alert("xss")</script>]]></var>
+			<var name="administratorLastName"><![CDATA[<script>alert("xss")</script>]]></var>
+			<var method="PropsUtil#get('database.mysql.password')" name="databasePassword" />
+			<var name="databaseType" value="MySQL" />
+			<var method="PropsUtil#get('database.mysql.username')" name="databaseUserName" />
+			<var method="PropsUtil#get('database.mysql.driver')" name="jdbcDriverClassName" />
+			<var method="PropsUtil#get('database.mysql.url')" name="jdbcURL" />
+			<var name="portalName"><![CDATA[<script>alert("xss")</script>]]></var>
+		</execute>
+
+		<execute function="AssertAlertNotPresent" />
+
+		<var name="actualScript"><![CDATA[<script>alert("xss")</script>]]></var>
+		<var name="escapedScript"><![CDATA[\x3cscript\x3ealert("xss")\x3c/script\x3e]]></var>
+
+		<execute function="AssertHTMLSourceTextNotPresent" value1="${actualScript}" />
+		<execute function="AssertHTMLSourceTextPresent" value1="${escapedScript}" />
+	</command>
+
+	<command name="ViewConfiguredSetupWizardValue" priority="5">
+		<property name="database.types" value="mysql" />
+		<property name="test.name.skip.portal.instance" value="SetupWizard#ViewConfiguredSetupWizardValue" />
+
+		<execute macro="SetupWizard#configurePG">
+			<var name="administratorEmail" value="user@liferay.com" />
+			<var name="administratorFirstName" value="User" />
+			<var name="administratorLastName" value="User" />
+			<var method="PropsUtil#get('database.mysql.password')" name="databasePassword" />
+			<var name="databaseType" value="MySQL" />
+			<var method="PropsUtil#get('database.mysql.username')" name="databaseUserName" />
+			<var method="PropsUtil#get('database.mysql.driver')" name="jdbcDriverClassName" />
+			<var method="PropsUtil#get('database.mysql.url')" name="jdbcURL" />
+		</execute>
+
+		<var method="PropsUtil#get('liferay.home.dir.name')" name="liferayHome" />
+
+		<var method="FileUtil#read('${liferayHome}/portal-setup-wizard.properties')" name="fileContent" />
+
+		<if>
+			<and>
+				<contains string="${fileContent}" substring="admin.email.from.address=user@liferay.com" />
+				<contains string="${fileContent}" substring="admin.email.from.name=User User" />
+				<contains string="${fileContent}" substring="default.admin.email.address.prefix=user" />
+				<contains string="${fileContent}" substring="default.admin.first.name=User" />
+				<contains string="${fileContent}" substring="default.admin.last.name=User" />
+			</and>
+			<then>
+				<echo message="The configuration was saved successfully in portal-setup-wizard.properties!" />
+			</then>
+			<else>
+				<fail message="Fail to save the configuration in portal file portal-setup-wizard.properties." />
+			</else>
+		</if>
 	</command>
 </definition>

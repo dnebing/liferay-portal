@@ -84,6 +84,7 @@ public class LDAPServerConfigurationProviderImpl
 		return true;
 	}
 
+	@Override
 	public boolean delete(long companyId, long ldapServerId) {
 		Map<Long, ObjectValuePair<Configuration, LDAPServerConfiguration>>
 			objectValuePairs = _configurations.get(companyId);
@@ -420,8 +421,8 @@ public class LDAPServerConfigurationProviderImpl
 
 	private final Map
 		<Long,
-			Map<Long, ObjectValuePair<Configuration, LDAPServerConfiguration>>>
-				_configurations = new ConcurrentHashMap<>();
+		 Map<Long, ObjectValuePair<Configuration, LDAPServerConfiguration>>>
+			_configurations = new ConcurrentHashMap<>();
 	private final LDAPServerConfiguration _defaultLDAPServerConfiguration =
 		ConfigurableUtil.createConfigurable(
 			LDAPServerConfiguration.class, Collections.emptyMap());

@@ -212,13 +212,13 @@ public class PQLQuery extends PQLEntity {
 		char quotation = query.charAt(0);
 
 		for (int i = 1; i < query.length(); i++) {
-			char c = query.charAt(i);
-
 			if (escapeNextChar) {
 				escapeNextChar = false;
 
 				continue;
 			}
+
+			char c = query.charAt(i);
 
 			if (c == '\\') {
 				escapeNextChar = true;

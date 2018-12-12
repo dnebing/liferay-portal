@@ -123,8 +123,6 @@ public class ProppatchMethodImpl extends BasePropMethodImpl {
 
 			HttpServletRequest request = webDAVRequest.getHttpServletRequest();
 
-			WebDAVProps webDAVProps = getStoredProperties(webDAVRequest);
-
 			String xml = new String(
 				FileUtil.getBytes(request.getInputStream()));
 
@@ -137,6 +135,8 @@ public class ProppatchMethodImpl extends BasePropMethodImpl {
 					"Request XML: \n" +
 						Dom4jUtil.toString(xml, StringPool.FOUR_SPACES));
 			}
+
+			WebDAVProps webDAVProps = getStoredProperties(webDAVRequest);
 
 			Document document = SAXReaderUtil.read(xml);
 
@@ -169,18 +169,20 @@ public class ProppatchMethodImpl extends BasePropMethodImpl {
 				List<Element> customPropElements = propElement.elements();
 
 				for (Element customPropElement : customPropElements) {
-					String name = customPropElement.getName();
 					String prefix = customPropElement.getNamespacePrefix();
 					String uri = customPropElement.getNamespaceURI();
-					String text = customPropElement.getText();
 
 					Namespace namespace = WebDAVUtil.createNamespace(
 						prefix, uri);
+
+					String name = customPropElement.getName();
 
 					String instructionElementName =
 						instructionElement.getName();
 
 					if (instructionElementName.equals("set")) {
+						String text = customPropElement.getText();
+
 						if (Validator.isNull(text)) {
 							webDAVProps.addProp(name, prefix, uri);
 						}

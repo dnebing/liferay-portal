@@ -40,6 +40,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>USER_SEGMENT_RULE_SELECT_BUTTON</td>
+	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//a[contains(.,'Select')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td></td>
 	<td></td>
 	<td></td>
@@ -142,16 +147,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>USER_SEGMENT_RULE_BEHAVIOR_CONTENT_VISITED_SELECT_WEB_CONTENT_IFRAME</td>
-	<td>//iframe[contains(@id,'selectContent')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>USER_SEGMENT_RULE_BEHAVIOR_CONTENT_VISITED_SELECT_WEB_CONTENT_ARTICLE_CHOOSE_BUTTON</td>
-	<td>//tr[contains(.,'${key_webContentTitle}')]/td[6]//button</td>
-	<td></td>
-</tr>
-<tr>
 	<td>USER_SEGMENT_RULE_BEHAVIOR_CONTENT_VISITED_WEB_CONTENT_TITLE</td>
 	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//span[contains(@class,'lfr-card-title-text')]</td>
 	<td></td>
@@ -207,7 +202,7 @@
 <!--USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_MEMBER-->
 <tr>
 	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_MEMBER_SELECT</td>
-	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//select[contains(@id,'siteId') and contains(.,'${key_selectSiteMemberSite}')]</td>
+	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//div[contains(@id,'siteMemberNameContainer') and contains(.,'${key_selectSiteMemberSite}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -254,13 +249,23 @@
 </tr>
 <!--USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_ROLE-->
 <tr>
+	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_ROLE_SITE_ROLE_CHOOSE_BUTTON</td>
+	<td>//tr[contains(.,'${key_siteRole}')]/td[2]//button[contains(.,'Choose')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_ROLE_SITE_ROLE_SELECT</td>
-	<td>//div[contains(@class,'siterolerule')]//div[contains(@class,'field-editor') and contains(@class,'expanded')]//select[contains(@id,'roleId')]</td>
+	<td>//div[contains(@class,'siterolerule')]//div[contains(@class,'field-editor') and contains(@class,'expanded')]//div[contains(@id,'roleTitleContainer')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_ROLE_SITE_CHOOSE_BUTTON</td>
+	<td>//tr[contains(.,'${key_siteRoleSite}')]/td[3]//button[contains(.,'Choose')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_SITE_ROLE_SITE_SELECT</td>
-	<td>//div[contains(@class,'siterolerule')]//div[contains(@class,'field-editor') and contains(@class,'expanded')]//select[contains(@id,'siteId')]</td>
+	<td>//div[contains(@class,'siterolerule')]//div[contains(@class,'field-editor') and contains(@class,'expanded')]//div[contains(@id,'siteMemberNameContainer')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -271,7 +276,12 @@
 <!--USER_SEGMENT_RULE_USER_ATTRIBUTES_USERGROUP_MEMBER-->
 <tr>
 	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_USERGROUP_MEMBER_SELECT</td>
-	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//select[contains(@id,'userGroupId')]</td>
+	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//div[contains(@id,'userGroupNameContainer')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_USERGROUP_MEMBER_USER_GROUP_CHOOSE_BUTTON</td>
+	<td>//tr[contains(.,'${key_userGroupName}')]/td[3]//button[contains(.,'Choose')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -282,18 +292,7 @@
 <!--USER_SEGMENT_RULE_USER_ATTRIBUTES_USER_SIGNED_IN-->
 <tr>
 	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_USER_SIGNED_IN_MESSAGE</td>
-	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//p[@class='text-default']</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--USER_SEGMENT_RULE_USER_ATTRIBUTES_USER_LOGGED-->
-<tr>
-	<td>USER_SEGMENT_RULE_USER_ATTRIBUTES_USER_LOGGED_MESSAGE</td>
-	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]//div[contains(@class,'alert-info')]</td>
+	<td>//div[contains(@class,'field-editor') and contains(@class,'expanded')]/p[@class='text-secondary']</td>
 	<td></td>
 </tr>
 <tr>

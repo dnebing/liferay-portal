@@ -119,7 +119,7 @@ public class PortletPreferencesModelListener
 					layoutSetPrototype);
 			}
 			else if ((portletPreferences.getOwnerType() ==
-						 PortletKeys.PREFS_OWNER_TYPE_LAYOUT) &&
+						PortletKeys.PREFS_OWNER_TYPE_LAYOUT) &&
 					 (portletPreferences.getPlid() > 0)) {
 
 				Layout layout = LayoutLocalServiceUtil.fetchLayout(
@@ -131,7 +131,9 @@ public class PortletPreferencesModelListener
 
 				layout.setModifiedDate(new Date());
 
-				LayoutLocalServiceUtil.updateLayout(layout);
+				LayoutLocalServiceUtil.updateLayout(
+					layout.getGroupId(), layout.isPrivateLayout(),
+					layout.getLayoutId(), layout.getTypeSettings());
 			}
 		}
 		catch (Exception e) {

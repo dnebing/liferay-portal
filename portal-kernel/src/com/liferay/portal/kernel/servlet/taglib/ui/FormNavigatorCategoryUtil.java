@@ -50,14 +50,14 @@ public class FormNavigatorCategoryUtil {
 	}
 
 	public static String[] getKeys(String formNavigatorId) {
-		List<String> keys = new ArrayList<>();
-
 		List<FormNavigatorCategory> formNavigatorCategories =
 			getFormNavigatorCategories(formNavigatorId);
 
 		if (ListUtil.isEmpty(formNavigatorCategories)) {
 			return new String[] {""};
 		}
+
+		List<String> keys = new ArrayList<>();
 
 		for (FormNavigatorCategory formNavigatorCategory :
 				formNavigatorCategories) {
@@ -73,14 +73,14 @@ public class FormNavigatorCategoryUtil {
 	}
 
 	public static String[] getLabels(String formNavigatorId, Locale locale) {
-		List<String> labels = new ArrayList<>();
-
 		List<FormNavigatorCategory> formNavigatorCategories =
 			getFormNavigatorCategories(formNavigatorId);
 
 		if (ListUtil.isEmpty(formNavigatorCategories)) {
 			return new String[] {""};
 		}
+
+		List<String> labels = new ArrayList<>();
 
 		for (FormNavigatorCategory formNavigatorCategory :
 				formNavigatorCategories) {
@@ -145,9 +145,8 @@ public class FormNavigatorCategoryUtil {
 				if (serviceReference2 == null) {
 					return 0;
 				}
-				else {
-					return 1;
-				}
+
+				return 1;
 			}
 			else if (serviceReference2 == null) {
 				return -1;
@@ -160,9 +159,8 @@ public class FormNavigatorCategoryUtil {
 				if (propertyValue2 == null) {
 					return 0;
 				}
-				else {
-					return 1;
-				}
+
+				return 1;
 			}
 			else if (propertyValue2 == null) {
 				return -1;

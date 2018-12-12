@@ -147,11 +147,10 @@ public class BBCodeParser {
 		List<BBCodeItem> bbCodeItems, Stack<String> tags,
 		BBCodeToken bbCodeToken) {
 
-		String endTag = null;
 		int size = 0;
 
 		if (bbCodeToken != null) {
-			endTag = bbCodeToken.getEndTag();
+			String endTag = bbCodeToken.getEndTag();
 
 			for (size = tags.size() - 1; size >= 0; size--) {
 				if (endTag.equals(tags.elementAt(size))) {
@@ -224,12 +223,13 @@ public class BBCodeParser {
 		return false;
 	}
 
-	private final Set<String> _blockElements;
-	private final Set<String> _inlineElements;
-	private final Set<String> _selfCloseElements;
-	private final Pattern _tagPattern = Pattern.compile(
+	private static final Pattern _tagPattern = Pattern.compile(
 		"^/?(?:b|center|code|colou?r|email|font|i|img|justify|left|li|list" +
 			"|pre|q|quote|right|s|size|table|td|th|tr|u|url|\\*)$",
 		Pattern.CASE_INSENSITIVE);
+
+	private final Set<String> _blockElements;
+	private final Set<String> _inlineElements;
+	private final Set<String> _selfCloseElements;
 
 }

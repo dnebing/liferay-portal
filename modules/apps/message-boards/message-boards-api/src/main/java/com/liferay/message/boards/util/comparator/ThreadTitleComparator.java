@@ -29,8 +29,9 @@ public class ThreadTitleComparator<T> extends OrderByComparator<T> {
 	public static final String ORDER_BY_DESC =
 		"priority DESC, title DESC, modifiedDate DESC";
 
-	public static final String[] ORDER_BY_FIELDS =
-		{"priority", "title", "modifiedDate"};
+	public static final String[] ORDER_BY_FIELDS = {
+		"priority", "title", "modifiedDate"
+	};
 
 	public ThreadTitleComparator() {
 		this(false);
@@ -50,9 +51,8 @@ public class ThreadTitleComparator<T> extends OrderByComparator<T> {
 		if (_ascending) {
 			return value;
 		}
-		else {
-			return -value;
-		}
+
+		return -value;
 	}
 
 	@Override
@@ -60,9 +60,8 @@ public class ThreadTitleComparator<T> extends OrderByComparator<T> {
 		if (_ascending) {
 			return ORDER_BY_ASC;
 		}
-		else {
-			return ORDER_BY_DESC;
-		}
+
+		return ORDER_BY_DESC;
 	}
 
 	@Override

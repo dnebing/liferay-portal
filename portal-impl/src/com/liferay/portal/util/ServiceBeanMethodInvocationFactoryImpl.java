@@ -18,11 +18,13 @@ import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ServiceBeanMethodInvocationFactory;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.spring.aop.AopMethod;
+import com.liferay.portal.spring.aop.ChainableMethodAdvice;
 import com.liferay.portal.spring.aop.ServiceBeanMethodInvocation;
 
 import java.lang.reflect.Method;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,10 @@ import org.aopalliance.intercept.MethodInterceptor;
 /**
  * @author Brian Wing Shun Chan
  * @author Wesley Gong
+ * @deprecated As of Judson (7.1.x), replaced by {@link
+ *             com.liferay.portal.spring.transaction.TransactionInvokerImpl}
  */
+@Deprecated
 public class ServiceBeanMethodInvocationFactoryImpl
 	implements ServiceBeanMethodInvocationFactory {
 
@@ -48,12 +53,11 @@ public class ServiceBeanMethodInvocationFactoryImpl
 		}
 
 		ServiceBeanMethodInvocation serviceBeanMethodInvocation =
-			new ServiceBeanMethodInvocation(target, method, arguments);
-
-		List<MethodInterceptor> methodInterceptors = getMethodInterceptors(
-			methodInterceptorBeanIds);
-
-		serviceBeanMethodInvocation.setMethodInterceptors(methodInterceptors);
+			new ServiceBeanMethodInvocation(
+				new AopMethod(
+					target, method,
+					_getChainableMethodAdvices(methodInterceptorBeanIds)),
+				arguments);
 
 		try {
 			return serviceBeanMethodInvocation.proceed();
@@ -75,38 +79,55 @@ public class ServiceBeanMethodInvocationFactoryImpl
 		Object target, Class<?> targetClass, Method method,
 		Object[] arguments) {
 
-		return new ServiceBeanMethodInvocation(target, method, arguments);
+		return new ServiceBeanMethodInvocation(
+			new AopMethod(target, method, new ChainableMethodAdvice[0]),
+			arguments);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	protected List<MethodInterceptor> getMethodInterceptors(
+		String... methodInterceptorBeanIds) {
+
+		return Arrays.asList(
+			_getChainableMethodAdvices(methodInterceptorBeanIds));
+	}
+
+	private ChainableMethodAdvice[] _getChainableMethodAdvices(
 		String... methodInterceptorBeanIds) {
 
 		String methodInterceptorsKey = StringUtil.merge(
 			methodInterceptorBeanIds);
 
-		List<MethodInterceptor> methodInterceptors = _methodInterceptors.get(
-			methodInterceptorsKey);
+		ChainableMethodAdvice[] chainableMethodAdvices =
+			_chainableMethodAdvices.get(methodInterceptorsKey);
 
-		if (methodInterceptors != null) {
-			return methodInterceptors;
+		if (chainableMethodAdvices != null) {
+			return chainableMethodAdvices;
 		}
 
-		methodInterceptors = new ArrayList<>();
+		chainableMethodAdvices =
+			new ChainableMethodAdvice[methodInterceptorBeanIds.length];
 
-		for (String methodInterceptorBeanId : methodInterceptorBeanIds) {
-			MethodInterceptor methodInterceptor =
-				(MethodInterceptor)PortalBeanLocatorUtil.locate(
+		for (int i = 0; i < methodInterceptorBeanIds.length; i++) {
+			String methodInterceptorBeanId = methodInterceptorBeanIds[i];
+
+			ChainableMethodAdvice chainableMethodAdvice =
+				(ChainableMethodAdvice)PortalBeanLocatorUtil.locate(
 					methodInterceptorBeanId);
 
-			methodInterceptors.add(methodInterceptor);
+			chainableMethodAdvices[i] = chainableMethodAdvice;
 		}
 
-		_methodInterceptors.put(methodInterceptorsKey, methodInterceptors);
+		_chainableMethodAdvices.put(
+			methodInterceptorsKey, chainableMethodAdvices);
 
-		return methodInterceptors;
+		return chainableMethodAdvices;
 	}
 
-	private final Map<String, List<MethodInterceptor>> _methodInterceptors =
+	private final Map<String, ChainableMethodAdvice[]> _chainableMethodAdvices =
 		new HashMap<>();
 
 }

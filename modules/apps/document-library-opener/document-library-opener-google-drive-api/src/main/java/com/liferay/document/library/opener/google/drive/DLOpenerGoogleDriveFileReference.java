@@ -19,45 +19,77 @@ import java.io.File;
 import java.util.function.Supplier;
 
 /**
+ * Represents a link between a Documents and Media {@code FileEntry} and a
+ * Google Drive file. The methods in {@link DLOpenerGoogleDriveManager} return
+ * instances of this class, which you should never create directly.
+ *
  * @author Adolfo Pérez
  */
 public class DLOpenerGoogleDriveFileReference {
 
+	/**
+	 * Creates a new {@code DLOpenerGoogleDriveFileReference}.
+	 *
+	 * @param fileEntryId the primary key of the file entry
+	 * @param titleSupplier the supplier that provides the document's title when
+	 *        invoked
+	 * @param fileSupplier the supplier that provides the document's contents
+	 *        when invoked
+	 * @param backgroundTaskId the primary key of the background process that
+	 *        uploads the original file contents to Google Drive. If {@code 0},
+	 *        no upload task is in progress.
+	 */
 	public DLOpenerGoogleDriveFileReference(
-		String googleDriveFileId, long fileEntryId, String googleDocsEditURL,
-		Supplier<String> titleSupplier, Supplier<File> fileSupplier) {
+		long fileEntryId, Supplier<String> titleSupplier,
+		Supplier<File> fileSupplier, long backgroundTaskId) {
 
-		_googleDriveFileId = googleDriveFileId;
 		_fileEntryId = fileEntryId;
-		_googleDocsEditURL = googleDocsEditURL;
 		_titleSupplier = titleSupplier;
 		_fileSupplier = fileSupplier;
+		_backgroundTaskId = backgroundTaskId;
 	}
 
+	/**
+	 * Returns the primary key of the background task that uploads the original
+	 * file contents to Google Drive. If this method returns {@code 0}, no
+	 * upload task is in progress.
+	 *
+	 * @return the primary key of the background task
+	 */
+	public long getBackgroundTaskId() {
+		return _backgroundTaskId;
+	}
+
+	/**
+	 * Returns a file with this Google Drive file reference's content.
+	 *
+	 * @return the file
+	 */
 	public File getContentFile() {
 		return _fileSupplier.get();
 	}
 
+	/**
+	 * Returns the primary key of the file entry linked to this reference.
+	 *
+	 * @return the primary key of the file entry
+	 */
 	public long getFileEntryId() {
 		return _fileEntryId;
 	}
 
-	public String getGoogleDocsEditURL() {
-		return _googleDocsEditURL;
-	}
-
-	public String getGoogleDriveFileId() {
-		return _googleDriveFileId;
-	}
-
+	/**
+	 * Returns this Google Drive file reference's title.
+	 *
+	 * @return the title
+	 */
 	public String getTitle() {
 		return _titleSupplier.get();
 	}
 
+	private final long _backgroundTaskId;
 	private final long _fileEntryId;
 	private final Supplier<File> _fileSupplier;
-	private final String _googleDocsEditURL;
-	private final String _googleDriveFileId;
 	private final Supplier<String> _titleSupplier;
 
 }

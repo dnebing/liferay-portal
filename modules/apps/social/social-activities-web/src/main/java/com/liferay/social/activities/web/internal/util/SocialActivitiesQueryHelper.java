@@ -71,9 +71,8 @@ public class SocialActivitiesQueryHelper {
 			return _socialActivitySetLocalService.getUserGroupsActivitySets(
 				group.getClassPK(), start, end);
 		}
-		else {
-			return Collections.emptyList();
-		}
+
+		return Collections.emptyList();
 	}
 
 	public int getSocialActivitySetsCount(
@@ -85,8 +84,8 @@ public class SocialActivitiesQueryHelper {
 					group.getGroupId());
 			}
 
-			return _socialActivitySetLocalService
-				.getUserViewableActivitySetsCount(group.getClassPK());
+			return _socialActivitySetLocalService.
+				getUserViewableActivitySetsCount(group.getClassPK());
 		}
 		else if (group.isOrganization()) {
 			return _socialActivitySetLocalService.
@@ -112,9 +111,8 @@ public class SocialActivitiesQueryHelper {
 			return _socialActivitySetLocalService.
 				getUserGroupsActivitySetsCount(group.getClassPK());
 		}
-		else {
-			return 0;
-		}
+
+		return 0;
 	}
 
 	public enum Scope {

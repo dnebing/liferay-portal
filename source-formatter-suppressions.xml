@@ -14,6 +14,9 @@
 		<suppress checks="IndentationCheck" files="portal-impl/test/integration/com/liferay/portal/xmlrpc/XmlRpcParserTest\.java" />
 		<suppress checks="IndentationCheck" files="portal-impl/test/unit/com/liferay/portal/nio/intraband/proxy/IntrabandProxyUtilTest\.java" />
 		<suppress checks="IndentationCheck" files="portal-kernel/src/com/liferay/portal/kernel/io/BigEndianCodec\.java" />
+		<suppress checks="JavadocCheck" files="portal-kernel/src/com/liferay/portal/kernel/cal/DayAndPosition\.java" />
+		<suppress checks="JavadocCheck" files="portal-kernel/src/com/liferay/portal/kernel/cal/Duration\.java" />
+		<suppress checks="JavadocCheck" files="portal-kernel/src/com/liferay/portal/kernel/cal/Recurrence\.java" />
 		<suppress checks="JSONNamingCheck" files="portal-impl/src/com/liferay/portal/action/JSONServiceAction\.java" />
 		<suppress checks="JSONNamingCheck" files="portal-kernel/src/com/liferay/portal/kernel/backgroundtask/display/BaseBackgroundTaskDisplay\.java" />
 		<suppress checks="JSONNamingCheck" files="util-java/src/com/liferay/util/Autocomplete\.java" />
@@ -49,7 +52,6 @@
 		<suppress checks="PersistenceCallCheck" files="modules/apps/portal/portal-upgrade-test/src/testIntegration/java/com/liferay/portal/upgrade/test/BaseBuildAutoUpgradeTestCase\.java" />
 		<suppress checks="PlusStatementCheck" files="portal-kernel/src/com/liferay/portal/kernel/io/BigEndianCodec\.java" />
 		<suppress checks="ReferenceAnnotationCheck" files="portal-impl/test/integration/.*" />
-		<suppress checks="StaticCollectionCheck" files="portal-impl/src/com/liferay/portal/metadata/BaseRawMetadataProcessor\.java" />
 		<suppress checks="StaticVariableNameCheck" files="portal-impl/src/com/liferay/portal/language/LanguageResources\.java" />
 		<suppress checks="StaticVariableNameCheck" files="portal-impl/src/com/liferay/portal/util/PropsValues\.java" />
 		<suppress checks="StaticVariableNameCheck" files="portal-impl/test/integration/com/liferay/portal/security/pwd/bundle/pwdtoolkitutil/TestToolkit\.java" />
@@ -66,15 +68,24 @@
 		<suppress checks="SubnameCheck" files="portal-kernel/src/com/liferay/portal/kernel/util/PackagingUtil\.java" />
 		<suppress checks="SubnameCheck" files="portal-kernel/test/unit/com/liferay/portal/kernel/util/ListUtilTest\.java" />
 		<suppress checks="ValidatorIsNullCheck" files="portal-impl/src/com/liferay/portal/service/persistence/impl/UserFinderImpl\.java" />
+		<suppress checks="VariableDeclarationAsUsedCheck" files="portal-impl/src/com/liferay/portal/action/UpdateLayoutAction\.java" />
 
 		<!-- Temporary suppressions for private repos and subrepos -->
 
 		<suppress checks="ReferenceAnnotationCheck" files="modules/private/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/private/apps/commerce/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/private/apps/lcs/.*" />
+		<suppress checks="UnprocessedExceptionCheck" files="modules/test/poshi-runner/.*" />
 		<suppress checks="VariableNameCheck" files="modules/private/.*" />
 	</checkstyle>
 	<source-check>
 		<suppress checks="CDNCheck" files="test\.properties" />
 		<suppress checks="JavaCleanUpMethodVariablesCheck" files="util-taglib/src/com/liferay/taglib/util/IncludeTag\.java" />
+		<suppress checks="JavaCombineLinesCheck" files="portal-impl/src/com/liferay/portal/action/EditLayoutAction\.java" />
+		<suppress checks="JavaCombineLinesCheck" files="portal-impl/src/com/liferay/portal/model/impl/LayoutImpl\.java" />
+		<suppress checks="JavaCombineLinesCheck" files="portal-impl/test/unit/com/liferay/portal/upload/LiferayInputStreamTest\.java" />
 		<suppress checks="JavaDeserializationSecurityCheck" files="portal-impl/src/com/liferay/portal/bean/BeanPropertiesImpl\.java" />
 		<suppress checks="JavaDeserializationSecurityCheck" files="portal-kernel/src/com/liferay/portal/kernel/io/AnnotatedObjectInputStream\.java" />
 		<suppress checks="JavaDeserializationSecurityCheck" files="portal-kernel/src/com/liferay/portal/kernel/io/ProtectedObjectInputStream\.java" />
@@ -153,6 +164,20 @@
 		<suppress checks="JavaConfigurationCategoryCheck" files="modules/apps/commerce/.*" />
 		<suppress checks="JavaConfigurationCategoryCheck" files="modules/private/.*" />
 		<suppress checks="JavaDeprecatedKernelClassesCheck" files="modules/private/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/private/apps/commerce/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/private/apps/lcs/.*" />
+		<suppress checks="JavaElseStatementCheck" files="modules/test/poshi-runner/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/private/.*" />
+		<suppress checks="JavaInnerClassImportsCheck" files="modules/test/poshi-runner/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/apps/apio-architect/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/apps/commerce/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/private/apps/commerce/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/private/apps/lcs/.*" />
+		<suppress checks="JSONLineBreakCheck" files="modules/test/poshi-runner/.*" />
 		<suppress checks="PropertiesLiferayPluginPackageLiferayVersionsCheck" files="modules/private/apio-architect/.*" />
 		<suppress checks="PropertiesLiferayPluginPackageLiferayVersionsCheck" files="modules/private/commerce/.*" />
 		<suppress checks="XMLLookAndFeelCompatibilityVersionCheck" files="modules/private/apio-architect/.*" />

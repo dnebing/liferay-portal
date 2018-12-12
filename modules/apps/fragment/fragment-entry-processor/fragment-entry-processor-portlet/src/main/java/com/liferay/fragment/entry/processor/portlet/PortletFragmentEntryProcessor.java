@@ -23,6 +23,9 @@ import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -42,7 +45,6 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
@@ -51,6 +53,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.configuration.kernel.util.PortletConfigurationApplicationType;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -76,8 +79,34 @@ import org.osgi.service.component.annotations.Reference;
 public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 
 	@Override
+	public JSONArray getAvailableTagsJSONArray() {
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		for (String alias : _portletRegistry.getPortletAliases()) {
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+			StringBundler sb = new StringBundler(5);
+
+			sb.append("<lfr-widget-");
+			sb.append(alias);
+			sb.append("></lfr-widget-");
+			sb.append(alias);
+			sb.append(">");
+
+			jsonObject.put("content", sb.toString());
+
+			jsonObject.put("name", "lfr-widget-" + alias);
+
+			jsonArray.put(jsonObject);
+		}
+
+		return jsonArray;
+	}
+
+	@Override
 	public String processFragmentEntryLinkHTML(
-			FragmentEntryLink fragmentEntryLink, String html, String mode)
+			FragmentEntryLink fragmentEntryLink, String html, String mode,
+			Locale locale)
 		throws PortalException {
 
 		validateFragmentEntryHTML(html);
@@ -162,7 +191,7 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 				Objects.equals(mode, FragmentEntryLinkConstants.EDIT)) {
 
 				portletElement.appendChild(
-					_getPortletTopperElement(portletName, instanceId));
+					_getPortletTopperElement(portletName, instanceId, locale));
 			}
 
 			portletElement.appendChild(runtimeTagElement);
@@ -311,7 +340,7 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 	}
 
 	private Element _getPortletTopperElement(
-			String portletName, String instanceId)
+			String portletName, String instanceId, Locale locale)
 		throws PortalException {
 
 		Element portletTopperElement = new Element("header");
@@ -326,8 +355,7 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 
 		portletNameElement.attr("class", "portlet-name-text");
 
-		String portletTitle = _portal.getPortletTitle(
-			portletName, LocaleThreadLocal.getThemeDisplayLocale());
+		String portletTitle = _portal.getPortletTitle(portletName, locale);
 
 		portletNameElement.text(portletTitle);
 
@@ -359,8 +387,6 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 
 		Group group = _groupLocalService.getGroup(groupId);
 
-		long defaultPlid = _portal.getControlPanelPlid(group.getCompanyId());
-
 		String portletId = PortletIdCodec.encode(
 			PortletIdCodec.decodePortletName(portletName),
 			PortletIdCodec.decodeUserId(portletName), instanceId);
@@ -378,8 +404,9 @@ public class PortletFragmentEntryProcessor implements FragmentEntryProcessor {
 			jxPortletPreferences =
 				PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 					group.getCompanyId(), PortletKeys.PREFS_OWNER_ID_DEFAULT,
-					PortletKeys.PREFS_OWNER_TYPE_LAYOUT, defaultPlid, portletId,
-					defaultPreferences);
+					PortletKeys.PREFS_OWNER_TYPE_LAYOUT,
+					_portal.getControlPanelPlid(group.getCompanyId()),
+					portletId, defaultPreferences);
 
 			_updateLayoutPortletSetup(
 				portletPreferencesList, jxPortletPreferences);

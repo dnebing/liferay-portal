@@ -14,13 +14,14 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.internal.servlet.MainServlet;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.PortletContextFactory;
 import com.liferay.portal.kernel.portlet.PortletContextFactoryUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.model.impl.PortletAppImpl;
 import com.liferay.portal.model.impl.PortletImpl;
-import com.liferay.portal.servlet.MainServlet;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.test.rule.callback.MainServletTestCallback;
@@ -89,7 +90,7 @@ public class InvokerFilterContainerImplTest {
 		Portlet portlet = new PortletImpl();
 
 		portlet.setPortletApp(portletAppImpl);
-		portlet.setPortletClass("com.liferay.portlet.StrutsPortlet");
+		portlet.setPortletClass(MVCPortlet.class.getName());
 		portlet.setPortletId("InvokerFilterContainerImplTest");
 
 		PortletContext portletContext = PortletContextFactoryUtil.create(
@@ -110,6 +111,8 @@ public class InvokerFilterContainerImplTest {
 
 	@Test
 	public void testGetActionFilters() {
+		boolean found = false;
+
 		List<ActionFilter> actionFilters =
 			_invokerFilterContainerImpl.getActionFilters();
 
@@ -119,15 +122,19 @@ public class InvokerFilterContainerImplTest {
 			String className = clazz.getName();
 
 			if (className.equals(TestActionFilter.class.getName())) {
-				return;
+				found = true;
+
+				break;
 			}
 		}
 
-		Assert.fail();
+		Assert.assertTrue("Not found " + TestActionFilter.class, found);
 	}
 
 	@Test
 	public void testGetEventFilters() {
+		boolean found = false;
+
 		List<EventFilter> eventFilters =
 			_invokerFilterContainerImpl.getEventFilters();
 
@@ -137,15 +144,19 @@ public class InvokerFilterContainerImplTest {
 			String className = clazz.getName();
 
 			if (className.equals(TestEventFilter.class.getName())) {
-				return;
+				found = true;
+
+				break;
 			}
 		}
 
-		Assert.fail();
+		Assert.assertTrue("Not found " + TestEventFilter.class, found);
 	}
 
 	@Test
 	public void testGetRenderFilters() {
+		boolean found = false;
+
 		List<RenderFilter> renderFilters =
 			_invokerFilterContainerImpl.getRenderFilters();
 
@@ -155,15 +166,19 @@ public class InvokerFilterContainerImplTest {
 			String className = clazz.getName();
 
 			if (className.equals(TestRenderFilter.class.getName())) {
-				return;
+				found = true;
+
+				break;
 			}
 		}
 
-		Assert.fail();
+		Assert.assertTrue("Not found " + TestRenderFilter.class, found);
 	}
 
 	@Test
 	public void testGetResourceFilters() {
+		boolean found = false;
+
 		List<ResourceFilter> resourceFilters =
 			_invokerFilterContainerImpl.getResourceFilters();
 
@@ -173,11 +188,13 @@ public class InvokerFilterContainerImplTest {
 			String className = clazz.getName();
 
 			if (className.equals(TestResourceFilter.class.getName())) {
-				return;
+				found = true;
+
+				break;
 			}
 		}
 
-		Assert.fail();
+		Assert.assertTrue("Not found " + TestResourceFilter.class, found);
 	}
 
 	@Test

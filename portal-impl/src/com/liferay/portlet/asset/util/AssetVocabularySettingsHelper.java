@@ -32,11 +32,13 @@ import java.util.Set;
  */
 public class AssetVocabularySettingsHelper {
 
-	public static final long[] DEFAULT_SELECTED_CLASSNAME_IDS =
-		{AssetCategoryConstants.ALL_CLASS_NAME_ID};
+	public static final long[] DEFAULT_SELECTED_CLASSNAME_IDS = {
+		AssetCategoryConstants.ALL_CLASS_NAME_ID
+	};
 
-	public static final long[] DEFAULT_SELECTED_CLASSTYPE_PKS =
-		{AssetCategoryConstants.ALL_CLASS_TYPE_PK};
+	public static final long[] DEFAULT_SELECTED_CLASSTYPE_PKS = {
+		AssetCategoryConstants.ALL_CLASS_TYPE_PK
+	};
 
 	public AssetVocabularySettingsHelper() {
 		_properties = new UnicodeProperties(true);
@@ -198,9 +200,8 @@ public class AssetVocabularySettingsHelper {
 		if (parts.length == 1) {
 			return AssetCategoryConstants.ALL_CLASS_TYPE_PK;
 		}
-		else {
-			return GetterUtil.getLong(parts[1]);
-		}
+
+		return GetterUtil.getLong(parts[1]);
 	}
 
 	protected long[] getClassTypePKs(String[] classNameIdsAndClassTypePKs) {

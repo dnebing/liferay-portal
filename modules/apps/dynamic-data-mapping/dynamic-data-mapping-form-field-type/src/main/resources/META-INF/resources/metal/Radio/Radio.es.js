@@ -3,6 +3,7 @@ import 'clay-radio';
 import 'dynamic-data-mapping-form-field-type/metal/FieldBase/index.es';
 import {Config} from 'metal-state';
 import Component from 'metal-component';
+import dom from 'metal-dom';
 import Soy from 'metal-soy';
 import templates from './Radio.soy.js';
 
@@ -15,13 +16,31 @@ class Radio extends Component {
 	static STATE = {
 
 		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof FieldBase
+		 * @type {?bool}
+		 */
+
+		evaluable: Config.bool().value(false),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof Radio
+		 * @type {?(string|undefined)}
+		 */
+
+		fieldName: Config.string(),
+
+		/**
 		 * @default false
 		 * @instance
 		 * @memberof Radio
 		 * @type {?bool}
 		 */
 
-		editable: Config.bool().value(false),
+		readOnly: Config.bool().value(false),
 
 		/**
 		 * @default undefined
@@ -30,7 +49,7 @@ class Radio extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		helpText: Config.string(),
+		tip: Config.string(),
 
 		/**
 		 * @default undefined
@@ -39,16 +58,11 @@ class Radio extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		items: Config.arrayOf(
+		options: Config.arrayOf(
 			Config.shapeOf(
 				{
-					checked: Config.bool().value(false),
-					disabled: Config.bool().value(false),
-					id: Config.string(),
-					inline: Config.bool().value(false),
 					label: Config.string(),
 					name: Config.string(),
-					showLabel: Config.bool().value(true),
 					value: Config.string()
 				}
 			)
@@ -79,6 +93,15 @@ class Radio extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
+		inline: Config.bool().value(false),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof Radio
+		 * @type {?(string|undefined)}
+		 */
+
 		label: Config.string(),
 
 		/**
@@ -89,6 +112,15 @@ class Radio extends Component {
 		 */
 
 		predefinedValue: Config.string().value('Option 1'),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof FieldBase
+		 * @type {?(bool|undefined)}
+		 */
+
+		repeatable: Config.bool(),
 
 		/**
 		 * @default false
@@ -126,6 +158,26 @@ class Radio extends Component {
 
 		value: Config.string()
 	};
+
+	attached() {
+		dom.delegate(
+			this.element,
+			'change',
+			'input',
+			this._handleValueChanged.bind(this)
+		);
+	}
+
+	_handleValueChanged(event) {
+		this.emit(
+			'fieldEdited',
+			{
+				fieldInstance: this,
+				originalEvent: event,
+				value: event.delegateTarget.value
+			}
+		);
+	}
 }
 
 Soy.register(Radio, templates);

@@ -18,6 +18,7 @@ import com.liferay.dynamic.data.mapping.form.builder.context.DDMFormBuilderConte
 import com.liferay.dynamic.data.mapping.form.builder.settings.DDMFormBuilderSettingsRetriever;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderer;
+import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
 import com.liferay.dynamic.data.mapping.form.values.factory.DDMFormValuesFactory;
 import com.liferay.dynamic.data.mapping.form.web.internal.configuration.DDMFormWebConfiguration;
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.FieldSetPermissionCheckerHelper;
@@ -89,7 +90,9 @@ public class DDMFormAdminFieldSetDisplayContext
 		DDMFormInstanceVersionLocalService formInstanceVersionLocalService,
 		DDMFormFieldTypeServicesTracker formFieldTypeServicesTracker,
 		DDMFormFieldTypesSerializerTracker formFieldTypesSerializerTracker,
-		DDMFormRenderer formRenderer, DDMFormValuesFactory formValuesFactory,
+		DDMFormRenderer formRenderer,
+		DDMFormTemplateContextFactory formTemplateContextFactory,
+		DDMFormValuesFactory formValuesFactory,
 		DDMFormValuesMerger formValuesMerger,
 		DDMStructureLocalService structureLocalService,
 		DDMStructureService structureService, JSONFactory jsonFactory,
@@ -102,31 +105,32 @@ public class DDMFormAdminFieldSetDisplayContext
 			ddmFormWebConfiguration, formInstanceRecordLocalService,
 			ddmFormInstanceRecordWriterTracker, formInstanceService,
 			formInstanceVersionLocalService, formFieldTypeServicesTracker,
-			formFieldTypesSerializerTracker, formRenderer, formValuesFactory,
-			formValuesMerger, structureLocalService, structureService,
-			jsonFactory, npmResolver);
+			formFieldTypesSerializerTracker, formRenderer,
+			formTemplateContextFactory, formValuesFactory, formValuesMerger,
+			structureLocalService, structureService, jsonFactory, npmResolver);
 
 		_fieldSetPermissionCheckerHelper = new FieldSetPermissionCheckerHelper(
 			formAdminRequestHelper);
 	}
 
+	@Override
 	public List<DropdownItem> getActionItemsDropdownItems() {
 		return new DropdownItemList() {
 			{
 				add(
 					dropdownItem -> {
 						dropdownItem.putData("action", "deleteStructures");
-						dropdownItem.setIcon("trash");
+						dropdownItem.setIcon("times-circle");
 						dropdownItem.setLabel(
 							LanguageUtil.get(
-								formAdminRequestHelper.getRequest(),
-								"recycle-bin"));
+								formAdminRequestHelper.getRequest(), "delete"));
 						dropdownItem.setQuickAction(true);
 					});
 			}
 		};
 	}
 
+	@Override
 	public CreationMenu getCreationMenu() {
 		if (!_fieldSetPermissionCheckerHelper.isShowAddButton()) {
 			return null;
@@ -250,6 +254,7 @@ public class DDMFormAdminFieldSetDisplayContext
 		return getJSONObjectLocalizedPropertyFromRequest("name");
 	}
 
+	@Override
 	public <T> T getPermissionCheckerHelper() {
 		return (T)_fieldSetPermissionCheckerHelper;
 	}
@@ -332,6 +337,7 @@ public class DDMFormAdminFieldSetDisplayContext
 		return fieldSetSearch;
 	}
 
+	@Override
 	public String getSearchActionURL() {
 		RenderResponse renderResponse = getRenderResponse();
 

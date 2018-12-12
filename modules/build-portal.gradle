@@ -1,6 +1,8 @@
 import com.liferay.gradle.plugins.baseline.BaselinePlugin
 import com.liferay.gradle.plugins.baseline.BaselineTask
 
+import org.gradle.util.GUtil
+
 buildscript {
 	apply from: file("../modules/build-buildscript.gradle"), to: buildscript
 }
@@ -13,9 +15,12 @@ archivesBaseName = "com.liferay." + name.replace('-' as char, '.' as char)
 group = "com.liferay.portal"
 version = bndProperties.getProperty("Bundle-Version")
 
+classes {
+	dependsOn = []
+}
+
 jar {
 	archiveName = "${project.name}.jar"
-	dependsOn = []
 	destinationDir = projectDir
 	enabled = false
 }

@@ -251,7 +251,7 @@ public class XMLBuildFileCheck extends BaseFileCheck {
 			if (!importFile) {
 				addMessage(
 					fileName,
-					"Ant element points to non-existing build file '" +
+					"Ant element points to nonexistent build file '" +
 						buildFileName + "'");
 			}
 
@@ -288,9 +288,9 @@ public class XMLBuildFileCheck extends BaseFileCheck {
 		return targetNames;
 	}
 
-	private final Pattern _importFilePattern = Pattern.compile(
+	private static final Pattern _importFilePattern = Pattern.compile(
 		"<import file=\"(.*)\"");
-	private final Pattern _projectNamePattern = Pattern.compile(
+	private static final Pattern _projectNamePattern = Pattern.compile(
 		"/(\\w*-(ext|hooks|layouttpl|portlet|theme|web))/build\\.xml$");
 
 }

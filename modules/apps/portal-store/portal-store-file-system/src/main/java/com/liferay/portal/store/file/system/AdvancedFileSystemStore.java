@@ -23,7 +23,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.convert.documentlibrary.FileSystemStoreRootDirException;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -39,6 +38,7 @@ import java.util.Map;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * <p>
@@ -53,7 +53,10 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
 @Component(
 	configurationPid = "com.liferay.portal.store.file.system.configuration.AdvancedFileSystemStoreConfiguration",
 	configurationPolicy = ConfigurationPolicy.REQUIRE, immediate = true,
-	property = "store.type=com.liferay.portal.store.file.system.AdvancedFileSystemStore",
+	property = {
+		"service.ranking:Integer=0",
+		"store.type=com.liferay.portal.store.file.system.AdvancedFileSystemStore"
+	},
 	service = Store.class
 )
 public class AdvancedFileSystemStore extends FileSystemStore {
@@ -93,20 +96,12 @@ public class AdvancedFileSystemStore extends FileSystemStore {
 			File newFileNameVersionFile = new File(
 				newFileNameDir + StringPool.SLASH + newFileNameVersion);
 
-			boolean renamed = FileUtil.move(
-				fileNameVersionFile, newFileNameVersionFile);
-
-			if (!renamed) {
-				throw new SystemException(
-					StringBundler.concat(
-						"File name version file was not renamed from ",
-						fileNameVersionFile.getPath(), " to ",
-						newFileNameVersionFile.getPath()));
-			}
+			fileSystemHelper.move(fileNameVersionFile, newFileNameVersionFile);
 		}
 	}
 
 	@Activate
+	@Modified
 	@Override
 	protected void activate(Map<String, Object> properties) {
 		_advancedFileSystemStoreConfiguration =
@@ -122,6 +117,10 @@ public class AdvancedFileSystemStore extends FileSystemStore {
 		}
 
 		initializeRootDir();
+
+		fileSystemHelper = new FileSystemHelper(
+			_advancedFileSystemStoreConfiguration.useHardLinks(),
+			getRootDirPath());
 	}
 
 	protected void buildPath(StringBundler sb, String fileNameFragment) {
@@ -311,9 +310,10 @@ public class AdvancedFileSystemStore extends FileSystemStore {
 
 		for (String versionLabelFragment : versionLabels) {
 			int x = versionLabelFragment.lastIndexOf(CharPool.UNDERLINE);
-			int y = versionLabelFragment.lastIndexOf(CharPool.PERIOD);
 
 			if (x > -1) {
+				int y = versionLabelFragment.lastIndexOf(CharPool.PERIOD);
+
 				versionLabelFragment = versionLabelFragment.substring(x + 1, y);
 			}
 

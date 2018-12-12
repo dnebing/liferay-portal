@@ -43,6 +43,10 @@ public class BuildFactory {
 			return new ValidationBuild(url, (TopLevelBuild)parentBuild);
 		}
 
+		if (url.contains("git-bisect-tool-batch")) {
+			return new FreestyleBatchBuild(url, (TopLevelBuild)parentBuild);
+		}
+
 		for (String batchIndicator : _BATCH_INDICATORS) {
 			if (url.contains(batchIndicator)) {
 				return new BatchBuild(url, (TopLevelBuild)parentBuild);
@@ -53,6 +57,10 @@ public class BuildFactory {
 			url, (TopLevelBuild)parentBuild);
 
 		String jobName = topLevelBuild.getJobName();
+
+		if (jobName.equals("git-bisect-tool")) {
+			return new GitBisectToolBuild(url, (TopLevelBuild)parentBuild);
+		}
 
 		if ((parentBuild != null) &&
 			jobName.equals("test-portal-acceptance-pullrequest(ee-6.2.x)")) {
@@ -92,7 +100,8 @@ public class BuildFactory {
 			archiveProperties.getProperty("top.level.build.url"), null);
 	}
 
-	private static final String[] _BATCH_INDICATORS =
-		{"-batch", "-dist", "environment-"};
+	private static final String[] _BATCH_INDICATORS = {
+		"-batch", "-dist", "environment-"
+	};
 
 }

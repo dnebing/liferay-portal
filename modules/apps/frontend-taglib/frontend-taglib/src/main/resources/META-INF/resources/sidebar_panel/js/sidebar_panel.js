@@ -46,8 +46,16 @@ AUI.add(
 						instance._eventHandles = [
 							instance._searchContainer.on(
 								'rowToggled',
-								A.debounce(instance._onRowToggled, 50, instance),
+								A.debounce(instance._getSidebarContent, 50, instance),
 								instance
+							),
+							Liferay.after(
+								'refreshInfoPanel',
+								function() {
+									setTimeout(function() {
+										instance._getSidebarContent()
+									}, 0);
+								}
 							)
 						];
 					},
@@ -64,7 +72,7 @@ AUI.add(
 						}
 					},
 
-					_onRowToggled: function(event) {
+					_getSidebarContent: function(event) {
 						var instance = this;
 
 						A.io.request(

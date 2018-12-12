@@ -43,6 +43,10 @@ public class GradleDependencyVersionCheck extends BaseFileCheck {
 			String fileName, String absolutePath, String content)
 		throws IOException {
 
+		if (isExcludedPath(RUN_OUTSIDE_PORTAL_EXCLUDES, absolutePath)) {
+			return content;
+		}
+
 		int x = absolutePath.lastIndexOf(StringPool.SLASH);
 
 		int y = absolutePath.lastIndexOf(StringPool.SLASH, x - 1);
@@ -175,8 +179,6 @@ public class GradleDependencyVersionCheck extends BaseFileCheck {
 			return _publishedMajorVersionsMap;
 		}
 
-		Map<String, String> bundleVersionsMap = new HashMap<>();
-
 		String content = getPortalContent(_MODULES_PROPERTIES_FILE_NAME);
 
 		if (Validator.isNull(content)) {
@@ -184,6 +186,8 @@ public class GradleDependencyVersionCheck extends BaseFileCheck {
 
 			return _publishedMajorVersionsMap;
 		}
+
+		Map<String, String> bundleVersionsMap = new HashMap<>();
 
 		List<String> lines = ListUtil.fromString(content);
 
@@ -198,7 +202,6 @@ public class GradleDependencyVersionCheck extends BaseFileCheck {
 		_publishedMajorVersionsMap = new HashMap<>();
 
 		for (Map.Entry<String, String> entry : bundleVersionsMap.entrySet()) {
-			String bundleSymbolicName = entry.getKey();
 			String bundleVersion = entry.getValue();
 
 			String majorVersion = _getMajorVersion(bundleVersion);
@@ -216,7 +219,7 @@ public class GradleDependencyVersionCheck extends BaseFileCheck {
 			}
 
 			_publishedMajorVersionsMap.put(
-				bundleSymbolicName, publishedMajorVersion);
+				entry.getKey(), publishedMajorVersion);
 		}
 
 		return _publishedMajorVersionsMap;
@@ -249,13 +252,15 @@ public class GradleDependencyVersionCheck extends BaseFileCheck {
 	private static final String _MODULES_PROPERTIES_FILE_NAME =
 		"modules/modules.properties";
 
-	private final Pattern _dependenciesPattern = Pattern.compile(
+	private static final Pattern _dependenciesPattern = Pattern.compile(
 		"(\n|\\A)(\t*)dependencies \\{\n");
-	private final Pattern _dependencyNamePattern = Pattern.compile(
+	private static final Pattern _dependencyNamePattern = Pattern.compile(
 		".*, name: \"([^\"]*)\".*");
-	private final Pattern _dependencyVersionPattern = Pattern.compile(
+	private static final Pattern _dependencyVersionPattern = Pattern.compile(
 		".*, version: \"([^\"]*)\".*");
-	private final Pattern _majorVersionPattern = Pattern.compile("^[0-9]+");
+	private static final Pattern _majorVersionPattern = Pattern.compile(
+		"^[0-9]+");
+
 	private Map<String, Integer> _publishedMajorVersionsMap;
 
 }

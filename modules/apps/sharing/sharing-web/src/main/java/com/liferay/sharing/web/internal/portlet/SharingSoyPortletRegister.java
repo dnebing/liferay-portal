@@ -15,7 +15,7 @@
 package com.liferay.sharing.web.internal.portlet;
 
 import com.liferay.portal.portlet.bridge.soy.SoyPortletRegister;
-import com.liferay.sharing.web.internal.constants.SharingPortletKeys;
+import com.liferay.sharing.constants.SharingPortletKeys;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -42,7 +42,8 @@ import org.osgi.service.component.annotations.Component;
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=guest,power-user,user",
 		"javax.portlet.supports.mime-type=text/html"
-	}
+	},
+	service = SoyPortletRegister.class
 )
 public class SharingSoyPortletRegister implements SoyPortletRegister {
 }

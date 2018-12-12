@@ -146,8 +146,6 @@ public class ServicePreAction extends Action {
 
 		Company company = PortalUtil.getCompany(request);
 
-		long companyId = company.getCompanyId();
-
 		// CDN host
 
 		String cdnHost = PortalUtil.getCDNHost(request);
@@ -237,10 +235,6 @@ public class ServicePreAction extends Action {
 			companyLogoHeight = companyLogoImage.getHeight();
 			companyLogoWidth = companyLogoImage.getWidth();
 		}
-
-		String realCompanyLogo = companyLogo;
-		int realCompanyLogoHeight = companyLogoHeight;
-		int realCompanyLogoWidth = companyLogoWidth;
 
 		// User
 
@@ -371,7 +365,7 @@ public class ServicePreAction extends Action {
 
 			if (layoutGroup.isUser()) {
 				User layoutUser = UserLocalServiceUtil.getUserById(
-					companyId, layoutGroup.getClassPK());
+					company.getCompanyId(), layoutGroup.getClassPK());
 
 				updateUserLayouts(layoutUser);
 
@@ -516,9 +510,6 @@ public class ServicePreAction extends Action {
 
 		boolean hasUpdateLayoutPermission = false;
 
-		boolean customizedView = SessionParamUtil.getBoolean(
-			request, "customized_view", true);
-
 		if (layout != null) {
 			LayoutTypeAccessPolicy layoutTypeAccessPolicy =
 				LayoutTypeAccessPolicyTracker.getLayoutTypeAccessPolicy(layout);
@@ -578,6 +569,9 @@ public class ServicePreAction extends Action {
 			layoutTypePortlet = (LayoutTypePortlet)layout.getLayoutType();
 
 			boolean customizable = layoutTypePortlet.isCustomizable();
+
+			boolean customizedView = SessionParamUtil.getBoolean(
+				request, "customized_view", true);
 
 			if (!customizable || group.isLayoutPrototype() ||
 				group.isLayoutSetPrototype() || group.isStagingGroup()) {
@@ -687,14 +681,16 @@ public class ServicePreAction extends Action {
 			(layout.isTypeControlPanel() || group.isControlPanel())) {
 
 			String themeId = PrefsPropsUtil.getString(
-				companyId, PropsKeys.CONTROL_PANEL_LAYOUT_REGULAR_THEME_ID);
+				company.getCompanyId(),
+				PropsKeys.CONTROL_PANEL_LAYOUT_REGULAR_THEME_ID);
 			String colorSchemeId =
 				ColorSchemeFactoryUtil.getDefaultRegularColorSchemeId();
 
-			theme = ThemeLocalServiceUtil.getTheme(companyId, themeId);
+			theme = ThemeLocalServiceUtil.getTheme(
+				company.getCompanyId(), themeId);
 
 			colorScheme = ThemeLocalServiceUtil.getColorScheme(
-				companyId, theme.getThemeId(), colorSchemeId);
+				company.getCompanyId(), theme.getThemeId(), colorSchemeId);
 
 			request.setAttribute(WebKeys.COLOR_SCHEME, colorScheme);
 
@@ -733,8 +729,8 @@ public class ServicePreAction extends Action {
 
 		lifecycle = ParamUtil.getString(request, "p_t_lifecycle", lifecycle);
 
+		String async = ParamUtil.getString(request, "p_p_async");
 		String hub = ParamUtil.getString(request, "p_p_hub");
-
 		boolean isolated = ParamUtil.getBoolean(request, "p_p_isolated");
 
 		boolean widget = false;
@@ -767,6 +763,7 @@ public class ServicePreAction extends Action {
 		themeDisplay.setServerPort(PortalUtil.getForwardedPort(request));
 		themeDisplay.setWidget(widget);
 
+		themeDisplay.setAsync(async.equals("1"));
 		themeDisplay.setCompany(company);
 		themeDisplay.setCompanyLogo(companyLogo);
 		themeDisplay.setCompanyLogoHeight(companyLogoHeight);
@@ -810,9 +807,9 @@ public class ServicePreAction extends Action {
 		themeDisplay.setPermissionChecker(permissionChecker);
 		themeDisplay.setPlid(plid);
 		themeDisplay.setPpid(ppid);
-		themeDisplay.setRealCompanyLogo(realCompanyLogo);
-		themeDisplay.setRealCompanyLogoHeight(realCompanyLogoHeight);
-		themeDisplay.setRealCompanyLogoWidth(realCompanyLogoWidth);
+		themeDisplay.setRealCompanyLogo(companyLogo);
+		themeDisplay.setRealCompanyLogoHeight(companyLogoHeight);
+		themeDisplay.setRealCompanyLogoWidth(companyLogoWidth);
 		themeDisplay.setRealUser(realUser);
 		themeDisplay.setRefererGroupId(refererGroupId);
 		themeDisplay.setScopeGroupId(scopeGroupId);
@@ -1016,7 +1013,7 @@ public class ServicePreAction extends Action {
 
 		if (!user.isActive() ||
 			(PrefsPropsUtil.getBoolean(
-				companyId, PropsKeys.TERMS_OF_USE_REQUIRED) &&
+				company.getCompanyId(), PropsKeys.TERMS_OF_USE_REQUIRED) &&
 			 !user.isAgreedToTermsOfUse())) {
 
 			themeDisplay.setShowMyAccountIcon(false);
@@ -1538,6 +1535,17 @@ public class ServicePreAction extends Action {
 			List<Layout> layouts, long doAsGroupId)
 		throws PortalException {
 
+		return getViewableLayoutComposite(
+			request, user, permissionChecker, layout, layouts, doAsGroupId,
+			false);
+	}
+
+	protected LayoutComposite getViewableLayoutComposite(
+			HttpServletRequest request, User user,
+			PermissionChecker permissionChecker, Layout layout,
+			List<Layout> layouts, long doAsGroupId, boolean ignoreHiddenLayouts)
+		throws PortalException {
+
 		if ((layouts == null) || layouts.isEmpty()) {
 			return new LayoutComposite(layout, layouts);
 		}
@@ -1553,7 +1561,7 @@ public class ServicePreAction extends Action {
 		List<Layout> accessibleLayouts = new ArrayList<>();
 
 		for (Layout curLayout : layouts) {
-			if (!curLayout.isHidden() &&
+			if ((ignoreHiddenLayouts || !curLayout.isHidden()) &&
 				hasAccessPermission(
 					permissionChecker, curLayout, doAsGroupId, false)) {
 
@@ -1597,7 +1605,8 @@ public class ServicePreAction extends Action {
 		List<Layout> layouts = defaultLayoutComposite.getLayouts();
 
 		return getViewableLayoutComposite(
-			request, user, permissionChecker, layout, layouts, doAsGroupId);
+			request, user, permissionChecker, layout, layouts, doAsGroupId,
+			true);
 	}
 
 	protected boolean hasAccessPermission(

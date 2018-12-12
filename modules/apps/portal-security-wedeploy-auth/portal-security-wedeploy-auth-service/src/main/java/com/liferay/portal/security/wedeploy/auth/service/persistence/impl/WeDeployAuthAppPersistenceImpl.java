@@ -163,6 +163,9 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 	@Override
 	public WeDeployAuthApp fetchByRU_CI(String redirectURI, String clientId,
 		boolean retrieveFromCache) {
+		redirectURI = Objects.toString(redirectURI, "");
+		clientId = Objects.toString(clientId, "");
+
 		Object[] finderArgs = new Object[] { redirectURI, clientId };
 
 		Object result = null;
@@ -188,10 +191,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindRedirectURI = false;
 
-			if (redirectURI == null) {
-				query.append(_FINDER_COLUMN_RU_CI_REDIRECTURI_1);
-			}
-			else if (redirectURI.equals("")) {
+			if (redirectURI.isEmpty()) {
 				query.append(_FINDER_COLUMN_RU_CI_REDIRECTURI_3);
 			}
 			else {
@@ -202,10 +202,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindClientId = false;
 
-			if (clientId == null) {
-				query.append(_FINDER_COLUMN_RU_CI_CLIENTID_1);
-			}
-			else if (clientId.equals("")) {
+			if (clientId.isEmpty()) {
 				query.append(_FINDER_COLUMN_RU_CI_CLIENTID_3);
 			}
 			else {
@@ -300,6 +297,9 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 	 */
 	@Override
 	public int countByRU_CI(String redirectURI, String clientId) {
+		redirectURI = Objects.toString(redirectURI, "");
+		clientId = Objects.toString(clientId, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_RU_CI;
 
 		Object[] finderArgs = new Object[] { redirectURI, clientId };
@@ -313,10 +313,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindRedirectURI = false;
 
-			if (redirectURI == null) {
-				query.append(_FINDER_COLUMN_RU_CI_REDIRECTURI_1);
-			}
-			else if (redirectURI.equals("")) {
+			if (redirectURI.isEmpty()) {
 				query.append(_FINDER_COLUMN_RU_CI_REDIRECTURI_3);
 			}
 			else {
@@ -327,10 +324,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindClientId = false;
 
-			if (clientId == null) {
-				query.append(_FINDER_COLUMN_RU_CI_CLIENTID_1);
-			}
-			else if (clientId.equals("")) {
+			if (clientId.isEmpty()) {
 				query.append(_FINDER_COLUMN_RU_CI_CLIENTID_3);
 			}
 			else {
@@ -452,6 +446,9 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 	@Override
 	public WeDeployAuthApp fetchByCI_CS(String clientId, String clientSecret,
 		boolean retrieveFromCache) {
+		clientId = Objects.toString(clientId, "");
+		clientSecret = Objects.toString(clientSecret, "");
+
 		Object[] finderArgs = new Object[] { clientId, clientSecret };
 
 		Object result = null;
@@ -478,10 +475,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindClientId = false;
 
-			if (clientId == null) {
-				query.append(_FINDER_COLUMN_CI_CS_CLIENTID_1);
-			}
-			else if (clientId.equals("")) {
+			if (clientId.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_CS_CLIENTID_3);
 			}
 			else {
@@ -492,10 +486,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindClientSecret = false;
 
-			if (clientSecret == null) {
-				query.append(_FINDER_COLUMN_CI_CS_CLIENTSECRET_1);
-			}
-			else if (clientSecret.equals("")) {
+			if (clientSecret.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_CS_CLIENTSECRET_3);
 			}
 			else {
@@ -590,6 +581,9 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 	 */
 	@Override
 	public int countByCI_CS(String clientId, String clientSecret) {
+		clientId = Objects.toString(clientId, "");
+		clientSecret = Objects.toString(clientSecret, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_CI_CS;
 
 		Object[] finderArgs = new Object[] { clientId, clientSecret };
@@ -603,10 +597,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindClientId = false;
 
-			if (clientId == null) {
-				query.append(_FINDER_COLUMN_CI_CS_CLIENTID_1);
-			}
-			else if (clientId.equals("")) {
+			if (clientId.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_CS_CLIENTID_3);
 			}
 			else {
@@ -617,10 +608,7 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 			boolean bindClientSecret = false;
 
-			if (clientSecret == null) {
-				query.append(_FINDER_COLUMN_CI_CS_CLIENTSECRET_1);
-			}
-			else if (clientSecret.equals("")) {
+			if (clientSecret.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_CS_CLIENTSECRET_3);
 			}
 			else {
@@ -674,6 +662,9 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 
 	public WeDeployAuthAppPersistenceImpl() {
 		setModelClass(WeDeployAuthApp.class);
+
+		setModelImplClass(WeDeployAuthAppImpl.class);
+		setEntityCacheEnabled(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1067,54 +1058,6 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 	/**
 	 * Returns the we deploy auth app with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the we deploy auth app
-	 * @return the we deploy auth app, or <code>null</code> if a we deploy auth app with the primary key could not be found
-	 */
-	@Override
-	public WeDeployAuthApp fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED,
-				WeDeployAuthAppImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		WeDeployAuthApp weDeployAuthApp = (WeDeployAuthApp)serializable;
-
-		if (weDeployAuthApp == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				weDeployAuthApp = (WeDeployAuthApp)session.get(WeDeployAuthAppImpl.class,
-						primaryKey);
-
-				if (weDeployAuthApp != null) {
-					cacheResult(weDeployAuthApp);
-				}
-				else {
-					entityCache.putResult(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED,
-						WeDeployAuthAppImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(WeDeployAuthAppModelImpl.ENTITY_CACHE_ENABLED,
-					WeDeployAuthAppImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return weDeployAuthApp;
-	}
-
-	/**
-	 * Returns the we deploy auth app with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param weDeployAuthAppId the primary key of the we deploy auth app
 	 * @return the we deploy auth app, or <code>null</code> if a we deploy auth app with the primary key could not be found
 	 */
@@ -1406,6 +1349,11 @@ public class WeDeployAuthAppPersistenceImpl extends BasePersistenceImpl<WeDeploy
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

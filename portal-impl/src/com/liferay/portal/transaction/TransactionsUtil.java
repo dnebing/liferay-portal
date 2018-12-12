@@ -14,24 +14,12 @@
 
 package com.liferay.portal.transaction;
 
-import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.spring.aop.ServiceBeanAopCacheManager;
-import com.liferay.portal.spring.aop.ServiceBeanAopCacheManagerUtil;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.aopalliance.intercept.MethodInvocation;
 
 /**
  * @author Miguel Pastor
@@ -45,38 +33,7 @@ public class TransactionsUtil {
 
 		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = false;
 
-		try {
-			Field field = ReflectionUtil.getDeclaredField(
-				ServiceBeanAopCacheManager.class, "_annotations");
-
-			field.set(
-				null,
-				new HashMap<MethodInvocation, Annotation[]>() {
-
-					@Override
-					public Annotation[] get(Object key) {
-						return _annotations;
-					}
-
-					private final Annotation[] _annotations = {
-						new Skip() {
-
-							@Override
-							public Class<? extends Annotation>
-								annotationType() {
-
-								return Skip.class;
-							}
-
-						}
-					};
-
-				});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(
-				"Unexpected error disabling transactions", e);
-		}
+		_enabled = false;
 	}
 
 	public static void enableTransactions() {
@@ -87,22 +44,16 @@ public class TransactionsUtil {
 		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = GetterUtil.getBoolean(
 			PropsUtil.get(PropsKeys.SPRING_HIBERNATE_SESSION_DELEGATED));
 
-		try {
-			Field field = ReflectionUtil.getDeclaredField(
-				ServiceBeanAopCacheManager.class, "_annotations");
+		_enabled = true;
+	}
 
-			field.set(
-				null, new ConcurrentHashMap<MethodInvocation, Annotation[]>());
-
-			ServiceBeanAopCacheManagerUtil.reset();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(
-				"Unexpected error disabling transactions", e);
-		}
+	public static boolean isEnabled() {
+		return _enabled;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		TransactionsUtil.class);
+
+	private static boolean _enabled = true;
 
 }

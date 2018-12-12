@@ -17,10 +17,6 @@
 		<execute function="Click" locator1="ControlMenuAddPanel#ADD_PORTLET_LINK" value1="Add" />
 	</command>
 
-	<command name="_mobileClickAddPortlet">
-		<execute function="AssertClick" locator1="ControlMenuAddPanel#ADD_PORTLET_LINK" value1="Add" />
-	</command>
-
 	<command name="addDuplicatePG">
 		<var name="portletTypeKey" value="PORTLET" />
 
@@ -262,7 +258,7 @@
 			<var name="menuItem" value="Remove" />
 		</execute>
 
-		<execute function="Confirm" value1="Are you sure you want to remove this component?" />
+		<execute function="AssertConfirm" value1="Are you sure you want to remove this component?" />
 	</command>
 
 	<command name="dragAndDropPortletToColumnPG" summary="Drag and drop the '${portletName}' portlet from column ${columnNumberFrom} to column ${columnNumberTo}">
@@ -318,10 +314,14 @@
 		<execute function="MouseOver" locator1="Portlet#SPECIFIC_TITLE" />
 	</command>
 
-	<command name="openAdminURL">
-		<execute macro="Navigator#openSpecificURL">
-			<var name="url" value="${adminURL}" />
-		</execute>
+	<command name="saveAndCloseConfig">
+		<execute macro="Button#clickSave" />
+
+		<execute function="SelectFrameTop" />
+
+		<execute function="Click" locator1="Icon#CLOSE" />
+
+		<execute function="WaitForElementNotPresent" locator1="IFrame#DIALOG" />
 	</command>
 
 	<command name="selectApplicationDecorator">
@@ -329,9 +329,17 @@
 	</command>
 
 	<command name="selectTreeNode">
-		<execute function="AssertClick#assertPartialTextClickAt" locator1="Treeview#NODE_UNSELECTED" value1="${nodeName}">
-			<var name="key_nodeName" value="${nodeName}" />
-		</execute>
+		<if>
+			<condition function="IsElementPresent" locator1="Treeview#NODE_UNSELECTED">
+				<var name="key_nodeName" value="${nodeName}" />
+			</condition>
+
+			<then>
+				<execute function="AssertClick#assertPartialTextClickAt" locator1="Treeview#NODE_UNSELECTED" value1="${nodeName}">
+					<var name="key_nodeName" value="${nodeName}" />
+				</execute>
+			</then>
+		</if>
 
 		<execute function="AssertElementPresent" locator1="Treeview#NODE_SELECTED">
 			<var name="key_nodeName" value="${nodeName}" />
@@ -345,7 +353,7 @@
 	<command name="shutdownSpecificServer">
 		<description message="This will shutdown the server at a specific bundle at ${base_branch}-bundles-${bundle_index}\tomcat." />
 
-		<var method="StringUtil#replace('${nodePort}', '080','')" name="leadingPortNumber" />
+		<var method="StringUtil#replace('${nodePort}', '080', '')" name="leadingPortNumber" />
 
 		<var method="MathUtil#difference('${leadingPortNumber}', '8')" name="bundleIndex" />
 
@@ -373,7 +381,7 @@
 	<command name="startSpecificServer">
 		<description message="This will start the server at a specific bundle at ${base_branch}-bundles-${bundle_index}\tomcat." />
 
-		<var method="StringUtil#replace('${nodePort}', '080','')" name="leadingPortNumber" />
+		<var method="StringUtil#replace('${nodePort}', '080', '')" name="leadingPortNumber" />
 
 		<var method="MathUtil#difference('${leadingPortNumber}', '8')" name="bundleIndex" />
 
@@ -449,28 +457,6 @@
 		<execute function="SikuliClick" locator1="Portlet#SIGN_IN_CUSTOM_LOOK_AND_FEEL" />
 	</command>
 
-	<command name="viewDefaultDisplayStyle">
-		<execute function="AssertElementPresent" locator1="Icon#DISPLAY_STYLE_ACTIVE">
-			<var name="key_displayStyle" value="${displayStyle}" />
-		</execute>
-	</command>
-
-	<command name="viewDisplayStyles">
-		<for list="${displayStyleList}" param="displayStyle">
-			<var method="StringUtil#upperCase('${displayStyle}')" name="displayStyleUppercase" />
-
-			<execute function="AssertElementPresent" locator1="Icon#DISPLAY_STYLE_${displayStyleUppercase}" />
-		</for>
-	</command>
-
-	<command name="viewDisplayStylesNotPresent">
-		<for list="${displayStyleList}" param="displayStyle">
-			<var method="StringUtil#upperCase('${displayStyle}')" name="displayStyleUppercase" />
-
-			<execute function="AssertElementNotPresent" locator1="Icon#DISPLAY_STYLE_${displayStyleUppercase}" />
-		</for>
-	</command>
-
 	<command name="viewDuplicatePG">
 		<var name="i" value="0" />
 
@@ -488,6 +474,10 @@
 
 	<command name="viewEmptyMessage">
 		<execute function="AssertTextEquals#assertPartialText" locator1="Message#EMPTY_INFO" value1="${message}" />
+	</command>
+
+	<command name="viewNoPermissionPG">
+		<execute function="AssertTextEquals" locator1="Message#ERROR" value1="You do not have the roles required to access this portlet." />
 	</command>
 
 	<command name="viewNoPortletsPresentPG">
@@ -516,12 +506,14 @@
 		</if>
 	</command>
 
-	<command name="viewPillTitle" summary="Assert that the ${portletName} portlet title has the text '${portletName}' in ALL CAPS">
-		<var name="key_portletName" value="${portletName}" />
+	<command name="viewPortletOptions">
+		<execute function="MouseOver#mouseOverNotVisible" locator1="Portlet#OPTIONS_ICON" />
 
-		<var method="StringUtil#upperCase('${portletName}')" name="portletNameUppercase" />
+		<execute function="Click" locator1="Portlet#OPTIONS_ICON" />
 
-		<execute function="AssertTextEquals" locator1="Portlet#TITLE" value1="${portletNameUppercase}" />
+		<execute function="AssertTextEquals" locator1="MenuItem#ANY_MENU_ITEM" value1="${OptionsName}">
+			<var name="key_menuItem" value="${OptionsName}" />
+		</execute>
 	</command>
 
 	<command name="viewPortletOptionsMenulist">

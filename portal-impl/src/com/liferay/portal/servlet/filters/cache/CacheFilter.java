@@ -87,9 +87,8 @@ public class CacheFilter extends BasePortalFilter {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected String getCacheKey(HttpServletRequest request) {
@@ -209,8 +208,8 @@ public class CacheFilter extends BasePortalFilter {
 				privateLayout = true;
 			}
 			else if (servletPath.startsWith(
-						 PropsValues.
-							 LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING)) {
+						PropsValues.
+							LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING)) {
 
 				privateLayout = false;
 			}
@@ -277,9 +276,8 @@ public class CacheFilter extends BasePortalFilter {
 		if (request.getAttribute(SKIP_FILTER) != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected boolean isCacheableData(
@@ -351,9 +349,8 @@ public class CacheFilter extends BasePortalFilter {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected boolean isInclude(HttpServletRequest request) {
@@ -363,9 +360,8 @@ public class CacheFilter extends BasePortalFilter {
 		if (uri == null) {
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
 	@Override

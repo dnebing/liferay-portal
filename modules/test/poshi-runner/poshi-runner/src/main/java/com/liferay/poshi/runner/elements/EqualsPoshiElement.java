@@ -14,7 +14,10 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.dom4j.Attribute;
 import org.dom4j.Element;
@@ -36,7 +39,8 @@ public class EqualsPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new EqualsPoshiElement(parentPoshiElement, poshiScript);
@@ -46,18 +50,20 @@ public class EqualsPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		String[] equalsContentArray = poshiScript.split("==");
 
 		String arg1 = equalsContentArray[0].trim();
 
-		arg1 = getQuotedContent(arg1);
+		arg1 = getDoubleQuotedContent(arg1);
 
 		addAttribute("arg1", arg1);
 
 		String arg2 = equalsContentArray[1].trim();
 
-		arg2 = getQuotedContent(arg2);
+		arg2 = getDoubleQuotedContent(arg2);
 
 		addAttribute("arg2", arg2);
 	}
@@ -87,7 +93,8 @@ public class EqualsPoshiElement extends PoshiElement {
 	}
 
 	protected EqualsPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}
@@ -97,27 +104,20 @@ public class EqualsPoshiElement extends PoshiElement {
 		return "equals";
 	}
 
+	@Override
+	protected Pattern getConditionPattern() {
+		return _conditionPattern;
+	}
+
 	private boolean _isElementType(
 		PoshiElement parentPoshiElement, String poshiScript) {
 
-		if (!isConditionValidInParent(parentPoshiElement)) {
-			return false;
-		}
-
-		if (poshiScript.contains(" && ") || poshiScript.contains(" || ") ||
-			poshiScript.startsWith("!(") ||
-			poshiScript.startsWith("else if (")) {
-
-			return false;
-		}
-
-		if (poshiScript.contains("==")) {
-			return true;
-		}
-
-		return false;
+		return isConditionElementType(parentPoshiElement, poshiScript);
 	}
 
 	private static final String _ELEMENT_NAME = "equals";
+
+	private static final Pattern _conditionPattern = Pattern.compile(
+		"^\"[\\s\\S]*\"[\\s]*==[\\s]*\"[\\s\\S]*\"$");
 
 }

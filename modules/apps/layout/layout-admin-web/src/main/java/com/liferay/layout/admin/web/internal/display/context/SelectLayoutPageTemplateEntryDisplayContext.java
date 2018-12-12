@@ -106,7 +106,7 @@ public class SelectLayoutPageTemplateEntryDisplayContext {
 					LayoutTypeControllerTracker.getLayoutTypeController(type);
 
 				return layoutTypeController.isInstanceable() &&
-					layoutTypeController.isPrimaryType();
+					   layoutTypeController.isPrimaryType();
 			});
 
 		return _primaryTypes;
@@ -116,6 +116,16 @@ public class SelectLayoutPageTemplateEntryDisplayContext {
 		List<String> types = getPrimaryTypes();
 
 		return types.size();
+	}
+
+	public String getRedirect() {
+		if (_redirect != null) {
+			return _redirect;
+		}
+
+		_redirect = ParamUtil.getString(_request, "redirect");
+
+		return _redirect;
 	}
 
 	public String getSelectedTab() {
@@ -141,7 +151,7 @@ public class SelectLayoutPageTemplateEntryDisplayContext {
 					LayoutTypeControllerTracker.getLayoutTypeController(type);
 
 				return layoutTypeController.isInstanceable() &&
-					!layoutTypeController.isPrimaryType();
+					   !layoutTypeController.isPrimaryType();
 			});
 
 		return _types;
@@ -187,6 +197,7 @@ public class SelectLayoutPageTemplateEntryDisplayContext {
 
 	private Long _layoutPageTemplateCollectionId;
 	private List<String> _primaryTypes;
+	private String _redirect;
 	private final HttpServletRequest _request;
 	private String _selectedTab;
 	private final ThemeDisplay _themeDisplay;

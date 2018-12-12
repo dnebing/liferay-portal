@@ -66,7 +66,7 @@ renderResponse.setTitle((role == null) ? LanguageUtil.get(request, "new-role") :
 	<portlet:param name="type" value="<%= String.valueOf(type) %>" />
 </portlet:renderURL>
 
-<aui:form action="<%= editRoleURL %>" cssClass="container-fluid container-fluid-max-xl container-form-lg" method="post" name="fm">
+<aui:form action="<%= editRoleURL %>" cssClass="container-fluid container-fluid-max-xl container-form-view" method="post" name="fm">
 	<aui:input name="redirect" type="hidden" value="<%= editRoleRenderURL %>" />
 	<aui:input name="roleId" type="hidden" value="<%= roleId %>" />
 
@@ -140,13 +140,17 @@ renderResponse.setTitle((role == null) ? LanguageUtil.get(request, "new-role") :
 				</c:if>
 			</c:if>
 
+			<%
+			String nameLabel = LanguageUtil.get(request, "role-key");
+			%>
+
 			<liferay-ui:error exception="<%= RoleNameException.class %>">
 				<p>
-					<liferay-ui:message arguments="<%= new String[] {RoleConstants.NAME_LABEL, RoleConstants.getNameGeneralRestrictions(locale, PropsValues.ROLES_NAME_ALLOW_NUMERIC), RoleConstants.NAME_RESERVED_WORDS} %>" key="the-x-cannot-be-x-or-a-reserved-word-such-as-x" />
+					<liferay-ui:message arguments="<%= new String[] {nameLabel, RoleConstants.getNameGeneralRestrictions(locale, PropsValues.ROLES_NAME_ALLOW_NUMERIC), RoleConstants.NAME_RESERVED_WORDS} %>" key="the-x-cannot-be-x-or-a-reserved-word-such-as-x" />
 				</p>
 
 				<p>
-					<liferay-ui:message arguments="<%= new String[] {RoleConstants.NAME_LABEL, RoleConstants.NAME_INVALID_CHARACTERS} %>" key="the-x-cannot-contain-the-following-invalid-characters-x" />
+					<liferay-ui:message arguments="<%= new String[] {nameLabel, RoleConstants.NAME_INVALID_CHARACTERS} %>" key="the-x-cannot-contain-the-following-invalid-characters-x" />
 				</p>
 			</liferay-ui:error>
 
@@ -192,19 +196,34 @@ renderResponse.setTitle((role == null) ? LanguageUtil.get(request, "new-role") :
 </aui:form>
 
 <c:if test="<%= role == null %>">
-	<aui:script sandbox="<%= true %>">
-		var form = $(document.<portlet:namespace />fm);
+	<aui:script require="metal-debounce/src/debounce">
+		const form = document.getElementById('<portlet:namespace />fm');
 
-		var nameInput = form.fm('name');
-		var titleInput = form.fm('title');
+		if (form) {
+			const nameInput = form.querySelector('#<portlet:namespace />name');
+			const titleInput = form.querySelector('#<portlet:namespace />title');
 
-		var onTitleInput = _.debounce(
-			function(event) {
-				nameInput.val(titleInput.val().substring(0, nameInput.attr('maxlength')));
-			},
-			200
-		);
+			if (nameInput && titleInput) {
+				const debounce = metalDebounceSrcDebounce.default;
 
-		titleInput.on('input', onTitleInput);
+				const handleOnTitleInput = function(event) {
+					let value = event.target.value;
+
+					if (nameInput.hasAttribute('maxLength')) {
+						value = value.substring(
+							0,
+							nameInput.getAttribute('maxLength')
+						);
+					}
+
+					nameInput.value = value;
+				};
+
+				titleInput.addEventListener(
+					'input',
+					debounce(handleOnTitleInput, 200)
+				);
+			}
+		}
 	</aui:script>
 </c:if>

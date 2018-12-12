@@ -14,11 +14,13 @@
 
 package com.liferay.portal.kernel.portlet;
 
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.TempAttributesServletRequest;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -32,11 +34,16 @@ import com.liferay.portal.kernel.xml.QName;
 
 import java.io.IOException;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.portlet.Event;
+import javax.portlet.MimeResponse;
+import javax.portlet.PortletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -123,13 +130,49 @@ public class PortletContainerUtil {
 			}
 		}
 
-		if (Validator.isNotNull(location)) {
+		if (Validator.isNull(location)) {
+			return;
+		}
+
+		PortletApp portletApp = portlet.getPortletApp();
+
+		if ((portletApp.getSpecMajorVersion() >= 3) &&
+			portlet.isActionURLRedirect()) {
+
+			Layout layout = (Layout)request.getAttribute(WebKeys.LAYOUT);
+
+			LiferayPortletURL liferayPortletURL = PortletURLFactoryUtil.create(
+				request, portlet, layout, PortletRequest.RENDER_PHASE,
+				MimeResponse.Copy.ALL);
+
 			try {
-				response.sendRedirect(location);
+				URL locationURL = new URL(location);
+
+				URL renderURL = new URL(liferayPortletURL.toString());
+
+				String protocol = locationURL.getProtocol();
+				String host = locationURL.getHost();
+				int port = locationURL.getPort();
+
+				if (protocol.equals(renderURL.getProtocol()) &&
+					host.equals(renderURL.getHost()) &&
+					(port == renderURL.getPort()) &&
+					_hasSamePortletIdParameter(
+						locationURL.getQuery(), renderURL.getQuery())) {
+
+					location = liferayPortletURL.toString();
+				}
 			}
-			catch (IOException ioe) {
-				throw new PortletContainerException(ioe);
+			catch (MalformedURLException murle) {
+				throw new PortletContainerException(murle);
 			}
+		}
+
+		try {
+			response.sendRedirect(location);
+		}
+		catch (IOException ioe) {
+			throw new PortletContainerException(ioe);
 		}
 	}
 
@@ -265,6 +308,55 @@ public class PortletContainerUtil {
 
 	public void setPortletContainer(PortletContainer portletContainer) {
 		_portletContainer = portletContainer;
+	}
+
+	private static boolean _hasSamePortletIdParameter(
+		String queryString1, String queryString2) {
+
+		if ((queryString1 == null) || (queryString2 == null)) {
+			return false;
+		}
+
+		int x1 = queryString1.indexOf("p_p_id=");
+
+		if (x1 < 0) {
+			return false;
+		}
+
+		int x2 = queryString2.indexOf("p_p_id=");
+
+		if (x2 < 0) {
+			return false;
+		}
+
+		x1 += 7;
+		x2 += 7;
+
+		int y1 = queryString1.indexOf(CharPool.AMPERSAND, x1);
+
+		if (y1 < 0) {
+			y1 = queryString1.length();
+		}
+
+		int length = y1 - x1;
+
+		int y2 = length + x2;
+
+		if (y2 > queryString2.length()) {
+			return false;
+		}
+
+		if ((y2 != queryString2.length()) &&
+			(queryString2.charAt(y2) != CharPool.AMPERSAND)) {
+
+			return false;
+		}
+
+		if (queryString1.regionMatches(x1, queryString2, x2, length)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private static void _processEvents(

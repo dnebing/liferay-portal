@@ -29,7 +29,9 @@ import com.liferay.dynamic.data.mapping.model.DDMFormLayoutRow;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.person.apio.architect.identifier.PersonIdentifier;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.structure.apio.architect.model.FormLayoutPage;
+import com.liferay.structure.apio.architect.util.StructureFieldConverter;
 import com.liferay.structure.apio.architect.util.StructureRepresentorBuilderHelper;
 import com.liferay.structure.apio.internal.model.FormLayoutPageImpl;
 
@@ -46,9 +48,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * Provides the information necessary to expose Structure resources through a
+ * Provides the information necessary to expose structure resources through a
  * web API. The resources are mapped from the internal model {@code
  * DDMStructure}.
  *
@@ -96,7 +99,7 @@ public class StructureRepresentorBuilderHelperImpl
 		).addLocalizedStringByLocale(
 			"style", getLocalizedString(DDMFormField::getStyle)
 		).addLocalizedStringByLocale(
-			"tip", getLocalizedString(DDMFormField::getTip)
+			"tooltip", getLocalizedString(DDMFormField::getTip)
 		).addNested(
 			"validation", DDMFormField::getDDMFormFieldValidation,
 			StructureRepresentorBuilderHelperImpl::_buildValidationProperties
@@ -106,16 +109,16 @@ public class StructureRepresentorBuilderHelperImpl
 				DDMFormField::getDDMFormFieldOptions),
 			this::_buildFieldOptions
 		).addString(
-			"additionalType", DDMFormField::getType
-		).addString(
 			"dataSourceType",
 			getDDMFormFieldPropertyFunction(
 				String.class::cast, "dataSourceType")
 		).addString(
-			"dataType", DDMFormField::getDataType
+			"dataType", this::_getDDMFormFieldDataType
 		).addString(
 			"displayStyle",
 			getDDMFormFieldPropertyFunction(String.class::cast, "displayStyle")
+		).addString(
+			"inputControl", this::_getDDMFormFieldInputControl
 		).addString(
 			"name", DDMFormField::getName
 		).addString(
@@ -141,21 +144,18 @@ public class StructureRepresentorBuilderHelperImpl
 			"description", DDMStructure::getDescription
 		).addLocalizedStringByLocale(
 			"name", DDMStructure::getName
-		).addNestedList(
-			"formPages", this::getFormLayoutPages,
-			formLayoutPageBuilder ->
-				buildFormLayoutPageFirstStep(formLayoutPageBuilder).build()
 		).addStringList(
 			"availableLanguages",
 			ddmStructure -> Arrays.asList(
-				ddmStructure.getAvailableLanguageIds())
+				LocaleUtil.toW3cLanguageIds(
+					ddmStructure.getAvailableLanguageIds()))
 		);
 	}
 
 	@Override
 	public NestedRepresentor.FirstStep<FormLayoutPage>
-		buildFormLayoutPageFirstStep(NestedRepresentor.Builder<FormLayoutPage>
-		builder) {
+		buildFormLayoutPageFirstStep(
+			NestedRepresentor.Builder<FormLayoutPage> builder) {
 
 		return builder.types(
 			"FormLayoutPage"
@@ -163,10 +163,6 @@ public class StructureRepresentorBuilderHelperImpl
 			"headline", FormLayoutPage::getTitle
 		).addLocalizedStringByLocale(
 			"text", FormLayoutPage::getDescription
-		).addNestedList(
-			"fields", FormLayoutPage::getFields,
-			ddmFormFieldBuilder -> buildDDMFormFieldFirstStep(
-				ddmFormFieldBuilder).build()
 		);
 	}
 
@@ -241,7 +237,7 @@ public class StructureRepresentorBuilderHelperImpl
 		return builder.types(
 			"FormFieldProperties"
 		).addString(
-			"error", DDMFormFieldValidation::getErrorMessage
+			"errorMessage", DDMFormFieldValidation::getErrorMessage
 		).addString(
 			"expression", DDMFormFieldValidation::getExpression
 		).build();
@@ -305,7 +301,7 @@ public class StructureRepresentorBuilderHelperImpl
 	private static List<String> _getNestedFieldNames(
 		List<String> ddmFormFieldNames, DDMStructure ddmStructure) {
 
-		List<DDMFormField> ddmFormFields = ddmStructure.getDDMFormFields(false);
+		List<DDMFormField> ddmFormFields = ddmStructure.getDDMFormFields(true);
 
 		Stream<DDMFormField> ddmFormFieldStream = ddmFormFields.stream();
 
@@ -343,5 +339,18 @@ public class StructureRepresentorBuilderHelperImpl
 			"value", Map.Entry::getKey
 		).build();
 	}
+
+	private String _getDDMFormFieldDataType(DDMFormField ddmFormField) {
+		return _structureFieldConverter.getFieldDataType(
+			ddmFormField.getDataType(), ddmFormField.getType());
+	}
+
+	private String _getDDMFormFieldInputControl(DDMFormField ddmFormField) {
+		return _structureFieldConverter.getFieldInputControl(
+			ddmFormField.getType());
+	}
+
+	@Reference
+	private StructureFieldConverter _structureFieldConverter;
 
 }

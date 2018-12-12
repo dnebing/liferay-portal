@@ -23,6 +23,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import org.springframework.transaction.PlatformTransactionManager;
+
 /**
  * @author Shuyang Zhou
  */
@@ -88,8 +90,25 @@ public class DefaultTransactionExecutorTest
 	}
 
 	@Override
-	protected TransactionExecutor createTransactionExecutor() {
-		return new DefaultTransactionExecutor();
+	protected void assertTransactionExecutorThreadLocal(
+		TransactionHandler transactionHandler, boolean inTransaction) {
+
+		if (inTransaction) {
+			Assert.assertSame(
+				transactionHandler,
+				TransactionExecutorThreadLocal.getCurrentTransactionExecutor());
+		}
+		else {
+			Assert.assertNull(
+				TransactionExecutorThreadLocal.getCurrentTransactionExecutor());
+		}
+	}
+
+	@Override
+	protected TransactionExecutor createTransactionExecutor(
+		PlatformTransactionManager platformTransactionManager) {
+
+		return new DefaultTransactionExecutor(platformTransactionManager);
 	}
 
 	private final RecordTransactionLifecycleListener

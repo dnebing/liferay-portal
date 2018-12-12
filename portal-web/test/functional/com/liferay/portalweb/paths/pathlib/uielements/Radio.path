@@ -9,23 +9,18 @@
 </thead>
 <tbody>
 <tr>
-	<td>ADVANCED</td>
-	<td>//input[contains(@id,'advanced') and @type='radio']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>AUTOMATIC_URL</td>
 	<td>//label[contains(.,'Automatic')]/input[@type='radio']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>CUSTOM_URL</td>
-	<td>//label[contains(.,'Custom')]/input[@type='radio']</td>
+	<td>CHOOSE_MENU</td>
+	<td>//label[contains(.,'Choose Menu')]/input[@type='radio']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>BASIC</td>
-	<td>//input[contains(@id,'basic') and @type='radio']</td>
+	<td>CUSTOM_URL</td>
+	<td>//label[contains(.,'Custom')]/input[@type='radio']</td>
 	<td></td>
 </tr>
 <tr>
@@ -49,13 +44,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>LOCAL_LIVE</td>
-	<td>//label[contains(.,'Local Live')]/input[@type='radio']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>MAJOR_VERSION</td>
-	<td>//input[contains(@id,'MajorVersion_1')]</td>
+	<td>//label[contains(.,'Major Version')]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -64,38 +54,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>NONE</td>
-	<td>//label[contains(.,'None')]/input[@type='radio']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>OVERWRITE</td>
-	<td>//label[contains(.,'Overwrite')]/input[@type='radio']</td>
-	<td></td>
-</tr>
-<tr>
 	<td>PRIMARY</td>
 	<td>//label[contains(.,'Primary')]/input[@type='radio']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>RANGE_ALL</td>
-	<td>//label[contains(.,'All')]/input[contains(@id,'rangeAll')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>RANGE_LAST</td>
-	<td>//input[contains(@id,'rangeLast')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>REMOTE_LIVE</td>
-	<td>//label[contains(.,'Remote Live')]/input[@type='radio']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SAME_LOOK</td>
-	<td>//input[contains(@id,'InheritLookAndFeel')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -106,6 +66,21 @@
 <tr>
 	<td>SOCIAL_BOOKMARKS_DISPLAY_STYLE</td>
 	<td>//label[contains(.,'${key_displayStyle}')]/input[@type='radio']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>WORKFLOW_DEFAULT_WORKFLOW</td>
+	<td>//input[contains(@id,'restrictionTypeWorkflow')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>WORKFLOW_PARENT_FOLDER</td>
+	<td>//input[contains(@id,'restrictionTypeInherit')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>WORKFLOW_SPECIFIC_RESTRICTIONS</td>
+	<td>//input[contains(@id,'restrictionTypeDefined')]</td>
 	<td></td>
 </tr>
 </tbody>

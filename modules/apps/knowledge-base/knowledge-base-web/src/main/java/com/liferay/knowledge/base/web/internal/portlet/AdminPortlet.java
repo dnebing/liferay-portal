@@ -33,11 +33,13 @@ import com.liferay.knowledge.base.web.internal.upload.KBArticleAttachmentKBUploa
 import com.liferay.portal.kernel.exception.NoSuchSubscriptionException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Release;
+import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -209,15 +211,18 @@ public class AdminPortlet extends BaseKBPortlet {
 			boolean prioritizeByNumericalPrefix = ParamUtil.getBoolean(
 				uploadPortletRequest, "prioritizeByNumericalPrefix");
 
-			try (InputStream inputStream =
-					uploadPortletRequest.getFileAsStream("file")) {
+			try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
+					"file")) {
 
 				ServiceContext serviceContext =
 					ServiceContextFactory.getInstance(
 						AdminPortlet.class.getName(), actionRequest);
 
-				serviceContext.setGuestPermissions(
-					new String[] {ActionKeys.VIEW});
+				ModelPermissions modelPermissions =
+					serviceContext.getModelPermissions();
+
+				modelPermissions.addRolePermissions(
+					RoleConstants.GUEST, ActionKeys.VIEW);
 
 				int importedKBArticlesCount =
 					kbArticleService.addKBArticlesMarkdown(
@@ -339,12 +344,7 @@ public class AdminPortlet extends BaseKBPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws PortalException {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			KBWebKeys.THEME_DISPLAY);
-
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
-
-		long kbFolderId = ParamUtil.getLong(actionRequest, "kbFolderId");
 
 		long parentResourceClassNameId = ParamUtil.getLong(
 			actionRequest, "parentResourceClassNameId");
@@ -357,11 +357,17 @@ public class AdminPortlet extends BaseKBPortlet {
 			KBFolder.class.getName(), actionRequest);
 
 		if (cmd.equals(Constants.ADD)) {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(
+					KBWebKeys.THEME_DISPLAY);
+
 			kbFolderService.addKBFolder(
 				themeDisplay.getScopeGroupId(), parentResourceClassNameId,
 				parentResourcePrimKey, name, description, serviceContext);
 		}
 		else if (cmd.equals(Constants.UPDATE)) {
+			long kbFolderId = ParamUtil.getLong(actionRequest, "kbFolderId");
+
 			kbFolderService.updateKBFolder(
 				parentResourceClassNameId, parentResourcePrimKey, kbFolderId,
 				name, description, serviceContext);
@@ -372,11 +378,7 @@ public class AdminPortlet extends BaseKBPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		String portletId = _portal.getPortletId(actionRequest);
-
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
-
-		long kbTemplateId = ParamUtil.getLong(actionRequest, "kbTemplateId");
 
 		String title = ParamUtil.getString(actionRequest, "title");
 		String content = ParamUtil.getString(actionRequest, "content");
@@ -385,10 +387,15 @@ public class AdminPortlet extends BaseKBPortlet {
 			KBTemplate.class.getName(), actionRequest);
 
 		if (cmd.equals(Constants.ADD)) {
+			String portletId = _portal.getPortletId(actionRequest);
+
 			kbTemplateService.addKBTemplate(
 				portletId, title, content, serviceContext);
 		}
 		else if (cmd.equals(Constants.UPDATE)) {
+			long kbTemplateId = ParamUtil.getLong(
+				actionRequest, "kbTemplateId");
+
 			kbTemplateService.updateKBTemplate(
 				kbTemplateId, title, content, serviceContext);
 		}

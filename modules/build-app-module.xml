@@ -109,7 +109,10 @@
 		</loadproperties>
 
 		<if>
-			<contains string="${basedir}" substring="private${file.separator}" />
+			<or>
+				<contains string="${basedir}" substring="private${file.separator}" />
+				<istrue value="${download.artifact.private.override}" />
+			</or>
 			<then>
 				<get
 					dest="${dist.dir}"
@@ -159,7 +162,10 @@
 			<isset property="artifact.sources.url" />
 			<then>
 				<if>
-					<contains string="${basedir}" substring="private${file.separator}" />
+					<or>
+						<contains string="${basedir}" substring="private${file.separator}" />
+						<istrue value="${download.artifact.private.override}" />
+					</or>
 					<then>
 						<get
 							dest="${dist.dir}/sources"
@@ -205,7 +211,10 @@
 		</loadproperties>
 
 		<if>
-			<contains string="${basedir}" substring="private${file.separator}" />
+			<or>
+				<contains string="${basedir}" substring="private${file.separator}" />
+				<istrue value="${download.artifact.private.override}" />
+			</or>
 			<then>
 				<get
 					dest="${dist.dir}"
@@ -241,7 +250,7 @@
 				<tokenfilter>
 					<filetokenizer />
 					<replaceregex flags="g" pattern="[0-9a-f]{40}\^\.\.[0-9a-f]{40}=" replace="" />
-					<replaceregex flags="g" pattern="\n|\r\n" replace=" " />
+					<replaceregex flags="g" pattern="\r?\n" replace=" " />
 				</tokenfilter>
 			</filterchain>
 		</loadfile>
@@ -263,19 +272,19 @@
 				<tokenfilter>
 					<filetokenizer />
 
-					<replaceregex pattern="[\s\S]* Bundle Version ${artifact.version.previous.release}" replace="" />
+					<replaceregex pattern="[\s\S]* Bundle Version ${artifact.version.previous.release}\s" replace="" />
 				</tokenfilter>
 
 				<linecontainsregexp>
 					<regexp pattern="[0-9a-f]{40}\^\.\.[0-9a-f]{40}" />
 				</linecontainsregexp>
 
-				<headfilter lines="-1" skip="1" />
+				<headfilter lines="1" />
 
 				<tokenfilter>
 					<filetokenizer />
 					<replaceregex flags="g" pattern="[0-9a-f]{40}\^\.\.[0-9a-f]{40}=" replace="" />
-					<replaceregex flags="g" pattern="\n|\r\n" replace=" " />
+					<replaceregex flags="g" pattern="\r?\n" replace=" " />
 				</tokenfilter>
 			</filterchain>
 		</loadfile>

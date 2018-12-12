@@ -39,7 +39,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -61,23 +60,15 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marcellus Tavares
  */
-@Component(immediate = true)
+@Component(immediate = true, service = DDMFormTemplateContextFactory.class)
 public class DDMFormTemplateContextFactoryImpl
 	implements DDMFormTemplateContextFactory {
-
-	@Activate
-	public void activate() {
-		_ddmFormTemplateContextFactoryHelper =
-			new DDMFormTemplateContextFactoryHelper(
-				_ddmDataProviderInstanceService);
-	}
 
 	@Override
 	public Map<String, Object> create(
@@ -134,11 +125,6 @@ public class DDMFormTemplateContextFactoryImpl
 
 		templateContext.put("currentPage", currentPage);
 
-		templateContext.put(
-			"dataProviderSettings",
-			_ddmFormTemplateContextFactoryHelper.getDataProviderSettings(
-				ddmForm));
-
 		setDDMFormFieldsEvaluableProperty(ddmForm);
 
 		templateContext.put(
@@ -191,12 +177,13 @@ public class DDMFormTemplateContextFactoryImpl
 
 		String submitLabel = GetterUtil.getString(
 			ddmFormRenderingContext.getSubmitLabel(),
-			LanguageUtil.get(locale, "submit"));
+			LanguageUtil.get(resourceBundle, "submit-form"));
 
 		templateContext.put("submitLabel", submitLabel);
 
 		templateContext.put(
 			"templateNamespace", getTemplateNamespace(ddmFormLayout));
+		templateContext.put("viewMode", ddmFormRenderingContext.isViewMode());
 
 		return templateContext;
 	}
@@ -232,7 +219,6 @@ public class DDMFormTemplateContextFactoryImpl
 			_ddmFormEvaluator);
 		ddmFormPagesTemplateContextFactory.setDDMFormFieldTypeServicesTracker(
 			_ddmFormFieldTypeServicesTracker);
-		ddmFormPagesTemplateContextFactory.setJSONFactory(_jsonFactory);
 
 		return ddmFormPagesTemplateContextFactory.create();
 	}
@@ -270,8 +256,7 @@ public class DDMFormTemplateContextFactoryImpl
 	protected ResourceBundle getResourceBundle(Locale locale) {
 		List<ResourceBundle> resourceBundles = new ArrayList<>();
 
-		ResourceBundle portalResourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", locale, PortalClassLoaderUtil.getClassLoader());
+		ResourceBundle portalResourceBundle = _portal.getResourceBundle(locale);
 
 		resourceBundles.add(portalResourceBundle);
 
@@ -390,8 +375,9 @@ public class DDMFormTemplateContextFactoryImpl
 	private DDMFormFieldTypesSerializerTracker
 		_ddmFormFieldTypesSerializerTracker;
 
-	private DDMFormTemplateContextFactoryHelper
-		_ddmFormTemplateContextFactoryHelper;
+	private final DDMFormTemplateContextFactoryHelper
+		_ddmFormTemplateContextFactoryHelper =
+			new DDMFormTemplateContextFactoryHelper();
 
 	@Reference
 	private JSONFactory _jsonFactory;

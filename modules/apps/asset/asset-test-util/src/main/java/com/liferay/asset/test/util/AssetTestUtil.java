@@ -25,6 +25,7 @@ import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyServiceUtil;
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -97,13 +98,19 @@ public class AssetTestUtil {
 	}
 
 	public static AssetTag addTag(long groupId) throws Exception {
+		return addTag(groupId, RandomTestUtil.randomString());
+	}
+
+	public static AssetTag addTag(long groupId, String assetTagName)
+		throws PortalException {
+
 		long userId = TestPropsValues.getUserId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(groupId, userId);
 
 		return AssetTagLocalServiceUtil.addTag(
-			userId, groupId, RandomTestUtil.randomString(), serviceContext);
+			userId, groupId, assetTagName, serviceContext);
 	}
 
 	public static AssetVocabulary addVocabulary(long groupId) throws Exception {

@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Leonardo Barros
  */
-@Component(immediate = true)
+@Component(immediate = true, service = DDMBeanTranslator.class)
 public class DDMBeanTranslatorImpl implements DDMBeanTranslator {
 
 	@Override
@@ -156,8 +156,8 @@ public class DDMBeanTranslatorImpl implements DDMBeanTranslator {
 	}
 
 	@Override
-	public com.liferay.dynamic.data.mapping.kernel.DDMFormField
-		translate(DDMFormField ddmFormField) {
+	public com.liferay.dynamic.data.mapping.kernel.DDMFormField translate(
+		DDMFormField ddmFormField) {
 
 		if (ddmFormField == null) {
 			return null;
@@ -300,9 +300,8 @@ public class DDMBeanTranslatorImpl implements DDMBeanTranslator {
 		if (value.isLocalized()) {
 			return translateLocalizedValue(value);
 		}
-		else {
-			return translateUnlocalizedValue(value);
-		}
+
+		return translateUnlocalizedValue(value);
 	}
 
 	protected com.liferay.dynamic.data.mapping.kernel.DDMFormFieldOptions
@@ -371,9 +370,8 @@ public class DDMBeanTranslatorImpl implements DDMBeanTranslator {
 		if (value.isLocalized()) {
 			return translateLocalizedValue(value);
 		}
-		else {
-			return translateUnlocalizedValue(value);
-		}
+
+		return translateUnlocalizedValue(value);
 	}
 
 	protected LocalizedValue translateLocalizedValue(

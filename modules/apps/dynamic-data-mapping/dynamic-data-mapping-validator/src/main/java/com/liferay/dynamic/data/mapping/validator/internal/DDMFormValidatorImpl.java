@@ -63,7 +63,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Marcellus Tavares
  */
-@Component(immediate = true)
+@Component(immediate = true, service = DDMFormValidator.class)
 public class DDMFormValidatorImpl implements DDMFormValidator {
 
 	@Override
@@ -362,13 +362,15 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 			ddmFormAvailableLocales, ddmFormDefaultLocale);
 	}
 
-	private static final String[] _DDM_FORM_FIELD_INDEX_TYPES =
-		{StringPool.BLANK, "keyword", "text"};
+	private static final String[] _DDM_FORM_FIELD_INDEX_TYPES = {
+		StringPool.BLANK, "keyword", "text"
+	};
+
+	private static final Pattern _ddmFormFieldNamePattern = Pattern.compile(
+		"([^\\p{Punct}|\\p{Space}$]|_)+");
+	private static final Pattern _ddmFormFieldTypePattern = Pattern.compile(
+		"([^\\p{Punct}|\\p{Space}$]|[-_])+");
 
 	private DDMExpressionFactory _ddmExpressionFactory;
-	private final Pattern _ddmFormFieldNamePattern = Pattern.compile(
-		"([^\\p{Punct}|\\p{Space}$]|_)+");
-	private final Pattern _ddmFormFieldTypePattern = Pattern.compile(
-		"([^\\p{Punct}|\\p{Space}$]|[-_])+");
 
 }

@@ -49,8 +49,8 @@ public class AtomCollectionAdapterRegistryUtil {
 		Registry registry = RegistryUtil.getRegistry();
 
 		_serviceTracker = registry.trackServices(
-			(Class<AtomCollectionAdapter<?>>)(Class<?>)
-				AtomCollectionAdapter.class,
+			(Class<AtomCollectionAdapter<?>>)
+				(Class<?>)AtomCollectionAdapter.class,
 			new AtomCollectionAdapterServiceTrackerCustomizer());
 
 		_serviceTracker.open();
@@ -74,9 +74,8 @@ public class AtomCollectionAdapterRegistryUtil {
 
 	private final Map<String, AtomCollectionAdapter<?>>
 		_atomCollectionAdapters = new ConcurrentHashMap<>();
-	private final
-		ServiceTracker<AtomCollectionAdapter<?>, AtomCollectionAdapter<?>>
-			_serviceTracker;
+	private final ServiceTracker
+		<AtomCollectionAdapter<?>, AtomCollectionAdapter<?>> _serviceTracker;
 
 	private class AtomCollectionAdapterServiceTrackerCustomizer
 		implements ServiceTrackerCustomizer

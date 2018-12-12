@@ -162,9 +162,8 @@ public class TemplateNode extends LinkedHashMap<String, Object> {
 
 			return data;
 		}
-		else {
-			return (String)get("data");
-		}
+
+		return (String)get("data");
 	}
 
 	public String getFriendlyUrl() {
@@ -240,13 +239,13 @@ public class TemplateNode extends LinkedHashMap<String, Object> {
 			return StringPool.BLANK;
 		}
 
-		StringBundler sb = new StringBundler(5);
-
 		String layoutType = getLayoutType();
 
 		if (Validator.isNull(layoutType)) {
 			return StringPool.BLANK;
 		}
+
+		StringBundler sb = new StringBundler(5);
 
 		if (layoutType.equals(_LAYOUT_TYPE_PRIVATE_GROUP)) {
 			sb.append(PortalUtil.getPathFriendlyURLPrivateGroup());

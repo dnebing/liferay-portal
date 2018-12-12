@@ -57,10 +57,7 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 				<%
 				Map<String, Object> rowData = new HashMap<String, Object>();
 
-				if (journalDisplayContext.isShowEditActions()) {
-					rowData.put("draggable", JournalArticlePermission.contains(permissionChecker, curArticle, ActionKeys.DELETE) || JournalArticlePermission.contains(permissionChecker, curArticle, ActionKeys.UPDATE));
-				}
-
+				rowData.put("draggable", JournalArticlePermission.contains(permissionChecker, curArticle, ActionKeys.DELETE) || JournalArticlePermission.contains(permissionChecker, curArticle, ActionKeys.UPDATE));
 				rowData.put("title", HtmlUtil.escape(curArticle.getTitle(locale)));
 
 				row.setData(rowData);
@@ -123,11 +120,9 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 							</h6>
 						</liferay-ui:search-container-column-text>
 
-						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
-							<liferay-ui:search-container-column-jsp
-								path="/article_action.jsp"
-							/>
-						</c:if>
+						<liferay-ui:search-container-column-jsp
+							path="/article_action.jsp"
+						/>
 					</c:when>
 					<c:when test='<%= displayStyle.equals("icon") %>'>
 
@@ -144,7 +139,7 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 							<c:choose>
 								<c:when test="<%= Validator.isNotNull(articleImageURL) %>">
 									<liferay-frontend:vertical-card
-										actionJsp='<%= journalDisplayContext.isShowEditActions() ? "/article_action.jsp" : null %>'
+										actionJsp="/article_action.jsp"
 										actionJspServletContext="<%= application %>"
 										imageUrl="<%= HtmlUtil.escape(articleImageURL) %>"
 										resultRow="<%= row %>"
@@ -157,7 +152,7 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 								</c:when>
 								<c:otherwise>
 									<liferay-frontend:icon-vertical-card
-										actionJsp='<%= journalDisplayContext.isShowEditActions() ? "/article_action.jsp" : null %>'
+										actionJsp="/article_action.jsp"
 										actionJspServletContext="<%= application %>"
 										icon="web-content"
 										resultRow="<%= row %>"
@@ -180,27 +175,28 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						</c:if>
 
 						<liferay-ui:search-container-column-jsp
-							cssClass="table-cell-content"
+							cssClass="table-cell-expand table-cell-minw-200 table-title"
 							href="<%= editURL %>"
 							name="title"
 							path="/article_title.jsp"
 						/>
 
 						<liferay-ui:search-container-column-text
-							cssClass="table-cell-content"
+							cssClass="table-cell-expand table-cell-minw-200"
 							name="description"
 							value="<%= StringUtil.shorten(HtmlUtil.stripHtml(curArticle.getDescription(locale)), 200) %>"
 						/>
 
 						<c:if test="<%= journalDisplayContext.isSearch() %>">
 							<liferay-ui:search-container-column-text
-								cssClass="table-cell-content"
+								cssClass="table-cell-expand-smallest table-cell-minw-200"
 								name="path"
 								value="<%= JournalHelperUtil.getAbsolutePath(liferayPortletRequest, curArticle.getFolderId()) %>"
 							/>
 						</c:if>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand-smallest table-cell-minw-100"
 							name="author"
 							value="<%= HtmlUtil.escape(PortalUtil.getUserName(curArticle)) %>"
 						/>
@@ -210,11 +206,13 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						/>
 
 						<liferay-ui:search-container-column-date
+							cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 							name="modified-date"
 							value="<%= curArticle.getModifiedDate() %>"
 						/>
 
 						<liferay-ui:search-container-column-date
+							cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 							name="display-date"
 							value="<%= curArticle.getDisplayDate() %>"
 						/>
@@ -224,15 +222,14 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						%>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand-smallest table-cell-minw-100"
 							name="type"
 							value="<%= HtmlUtil.escape(ddmStructure.getName(locale)) %>"
 						/>
 
-						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
-							<liferay-ui:search-container-column-jsp
-								path="/article_action.jsp"
-							/>
-						</c:if>
+						<liferay-ui:search-container-column-jsp
+							path="/article_action.jsp"
+						/>
 					</c:otherwise>
 				</c:choose>
 			</c:when>
@@ -255,7 +252,6 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 				rowURL.setParameter("groupId", String.valueOf(curFolder.getGroupId()));
 				rowURL.setParameter("folderId", String.valueOf(curFolder.getFolderId()));
 				rowURL.setParameter("displayStyle", displayStyle);
-				rowURL.setParameter("showEditActions", String.valueOf(journalDisplayContext.isShowEditActions()));
 				%>
 
 				<c:choose>
@@ -290,11 +286,9 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 							</h6>
 						</liferay-ui:search-container-column-text>
 
-						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
-							<liferay-ui:search-container-column-jsp
-								path="/folder_action.jsp"
-							/>
-						</c:if>
+						<liferay-ui:search-container-column-jsp
+							path="/folder_action.jsp"
+						/>
 					</c:when>
 					<c:when test='<%= displayStyle.equals("icon") %>'>
 
@@ -306,7 +300,7 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 							colspan="<%= 2 %>"
 						>
 							<liferay-frontend:horizontal-card
-								actionJsp='<%= journalDisplayContext.isShowEditActions() ? "/folder_action.jsp" : null %>'
+								actionJsp="/folder_action.jsp"
 								actionJspServletContext="<%= application %>"
 								resultRow="<%= row %>"
 								rowChecker="<%= articleSearchContainer.getRowChecker() %>"
@@ -330,19 +324,20 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						</c:if>
 
 						<liferay-ui:search-container-column-text
-							cssClass="table-cell-content"
+							cssClass="table-cell-expand table-cell-minw-200 table-list-title"
 							href="<%= rowURL.toString() %>"
 							name="title"
 							value="<%= HtmlUtil.escape(curFolder.getName()) %>"
 						/>
 
 						<liferay-ui:search-container-column-text
-							cssClass="table-cell-content"
+							cssClass="table-cell-expand table-cell-minw-200"
 							name="description"
 							value="<%= HtmlUtil.escape(curFolder.getDescription()) %>"
 						/>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand-smallest table-cell-minw-150"
 							name="author"
 							value="<%= HtmlUtil.escape(PortalUtil.getUserName(curFolder)) %>"
 						/>
@@ -353,25 +348,26 @@ String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 						/>
 
 						<liferay-ui:search-container-column-date
+							cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 							name="modified-date"
 							value="<%= curFolder.getModifiedDate() %>"
 						/>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 							name="display-date"
 							value="--"
 						/>
 
 						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand-smallest table-cell-minw-150"
 							name="type"
 							value='<%= LanguageUtil.get(request, "folder") %>'
 						/>
 
-						<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
-							<liferay-ui:search-container-column-jsp
-								path="/folder_action.jsp"
-							/>
-						</c:if>
+						<liferay-ui:search-container-column-jsp
+							path="/folder_action.jsp"
+						/>
 					</c:otherwise>
 				</c:choose>
 			</c:when>

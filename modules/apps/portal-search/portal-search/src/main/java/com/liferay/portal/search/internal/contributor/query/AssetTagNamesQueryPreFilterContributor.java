@@ -41,7 +41,8 @@ public class AssetTagNamesQueryPreFilterContributor
 			return;
 		}
 
-		TermsFilter termsFilter = new TermsFilter(Field.ASSET_TAG_NAMES);
+		TermsFilter termsFilter = new TermsFilter(
+			Field.ASSET_TAG_NAMES + ".raw");
 
 		termsFilter.addValues(assetTagNames);
 

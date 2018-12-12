@@ -78,12 +78,10 @@ public class SaveFormInstanceMVCActionCommand
 
 			actionRequest.setAttribute(WebKeys.REDIRECT, portletURL.toString());
 		}
-		catch (
-			DDMFormValidationException.MustSetValidValidationExpression msvve) {
+		catch (DDMFormValidationException.
+					MustSetValidValidationExpression msvve) {
 
-			Class<?> exceptionClass = msvve.getClass();
-
-			SessionErrors.add(actionRequest, exceptionClass.getName());
+			SessionErrors.add(actionRequest, msvve.getClass(), msvve);
 		}
 	}
 

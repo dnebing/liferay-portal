@@ -52,9 +52,8 @@ public class CalendarUtil {
 		if (millis1 > millis2) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public static boolean beforeByDay(Date date1, Date date2) {
@@ -64,9 +63,8 @@ public class CalendarUtil {
 		if (millis1 < millis2) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public static boolean equalsByDay(Date date1, Date date2) {
@@ -76,9 +74,8 @@ public class CalendarUtil {
 		if (millis1 == millis2) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public static int getAge(Date date, Calendar today) {
@@ -168,9 +165,8 @@ public class CalendarUtil {
 		if ((((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0)) {
 			return 29;
 		}
-		else {
-			return 28;
-		}
+
+		return 28;
 	}
 
 	public static int getGregorianDay(Calendar cal) {
@@ -290,9 +286,8 @@ public class CalendarUtil {
 		if (date == null) {
 			return null;
 		}
-		else {
-			return new Timestamp(date.getTime());
-		}
+
+		return new Timestamp(date.getTime());
 	}
 
 	public static boolean isAfter(
@@ -341,8 +336,8 @@ public class CalendarUtil {
 		cal2.set(Calendar.YEAR, year);
 
 		if ((cal2.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) &&
-			(cal2.get(Calendar.WEEK_OF_YEAR) == cal1.get(
-				Calendar.WEEK_OF_YEAR))) {
+			(cal2.get(Calendar.WEEK_OF_YEAR) ==
+				cal1.get(Calendar.WEEK_OF_YEAR))) {
 
 			return false;
 		}

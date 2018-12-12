@@ -39,11 +39,6 @@
 	<td>//select[contains(@id,'dataRange0')]</td>
 	<td></td>
 </tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
 </tbody>
 </table>
 </body>

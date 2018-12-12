@@ -91,7 +91,7 @@
 	min-width: 200px;
 }
 
-.lfr-email-column, .lfr-website-column {
+.lfr-email-column, .lfr-mobile-column, .lfr-website-column {
 	min-width: 100px;
 
 	@include sm {
@@ -101,11 +101,6 @@
 	.checkbox-container .form-group {
 		margin-bottom: 0;
 	}
-}
-
-.lfr-role-column {
-	word-break: break-all \9;
-	word-wrap: break-word;
 }
 
 .user-info .user-details {

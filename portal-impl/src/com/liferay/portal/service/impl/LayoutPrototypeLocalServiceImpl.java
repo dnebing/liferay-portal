@@ -147,8 +147,8 @@ public class LayoutPrototypeLocalServiceImpl
 
 		if (!CompanyThreadLocal.isDeleteInProcess() &&
 			(layoutPersistence.countByC_L(
-				layoutPrototype.getCompanyId(),
-				layoutPrototype.getUuid()) > 0)) {
+				layoutPrototype.getCompanyId(), layoutPrototype.getUuid()) >
+					0)) {
 
 			throw new RequiredLayoutPrototypeException();
 		}
@@ -265,10 +265,9 @@ public class LayoutPrototypeLocalServiceImpl
 			return layoutPrototypePersistence.findByC_A(
 				companyId, active, start, end, obc);
 		}
-		else {
-			return layoutPrototypePersistence.findByCompanyId(
-				companyId, start, end, obc);
-		}
+
+		return layoutPrototypePersistence.findByCompanyId(
+			companyId, start, end, obc);
 	}
 
 	@Override
@@ -276,9 +275,8 @@ public class LayoutPrototypeLocalServiceImpl
 		if (active != null) {
 			return layoutPrototypePersistence.countByC_A(companyId, active);
 		}
-		else {
-			return layoutPrototypePersistence.countByCompanyId(companyId);
-		}
+
+		return layoutPrototypePersistence.countByCompanyId(companyId);
 	}
 
 	@Override

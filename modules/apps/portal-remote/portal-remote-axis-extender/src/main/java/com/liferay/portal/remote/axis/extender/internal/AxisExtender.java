@@ -49,7 +49,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 /**
  * @author Carlos Sierra Andrés
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class AxisExtender {
 
 	@Activate
@@ -149,8 +149,8 @@ public class AxisExtender {
 									name = name.substring(1);
 								}
 
-								return
-									BundleUtil.getResourceInBundleOrFragments(
+								return BundleUtil.
+									getResourceInBundleOrFragments(
 										bundle, name);
 							}
 

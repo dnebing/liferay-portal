@@ -661,6 +661,9 @@
 		<field name="userName" type="String" />
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
+		<field name="parentPlid" type="long" />
+		<field name="leftPlid" type="long" />
+		<field name="rightPlid" type="long" />
 		<field name="privateLayout" type="boolean" />
 		<field name="layoutId" type="long" />
 		<field name="parentLayoutId" type="long" />
@@ -998,7 +1001,9 @@
 		<field name="minUpperCase" type="int">
 			<hint name="display-width">20</hint>
 		</field>
-		<field name="regex" type="String" />
+		<field name="regex" type="String">
+			<hint-collection name="TEXTAREA" />
+		</field>
 		<field name="history" type="boolean" />
 		<field name="historyCount" type="int" />
 		<field name="expireable" type="boolean" />

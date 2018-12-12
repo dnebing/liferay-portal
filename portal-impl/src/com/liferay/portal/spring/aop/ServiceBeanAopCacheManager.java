@@ -14,160 +14,191 @@
 
 package com.liferay.portal.spring.aop;
 
-import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.petra.lang.HashUtil;
+import com.liferay.petra.reflect.AnnotationLocator;
+import com.liferay.portal.transaction.TransactionsUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 
 /**
  * @author Shuyang Zhou
  */
 public class ServiceBeanAopCacheManager {
 
-	public static <T> T getAnnotation(
-		MethodInvocation methodInvocation,
-		Class<? extends Annotation> annotationType, T defaultValue) {
+	public ServiceBeanAopCacheManager(
+		List<ChainableMethodAdvice> chainableMethodAdvices) {
 
-		Annotation[] annotations = _annotations.get(
-			methodInvocation.getMethod());
+		for (ChainableMethodAdvice chainableMethodAdvice :
+				chainableMethodAdvices) {
 
-		if (annotations == _nullAnnotations) {
-			return defaultValue;
-		}
+			chainableMethodAdvice.setServiceBeanAopCacheManager(this);
 
-		if (annotations == null) {
-			return null;
-		}
+			if (chainableMethodAdvice instanceof
+					AnnotationChainableMethodAdvice) {
 
-		for (Annotation annotation : annotations) {
-			if (annotation.annotationType() == annotationType) {
-				return (T)annotation;
+				AnnotationChainableMethodAdvice<?>
+					annotationChainableMethodAdvice =
+						(AnnotationChainableMethodAdvice<?>)
+							chainableMethodAdvice;
+
+				Class<? extends Annotation> annotationClass =
+					annotationChainableMethodAdvice.getAnnotationClass();
+
+				_annotationClasses.add(annotationClass);
 			}
 		}
 
-		return defaultValue;
+		_fullChainableMethodAdvices = chainableMethodAdvices.toArray(
+			new ChainableMethodAdvice[chainableMethodAdvices.size()]);
 	}
 
-	public static void putAnnotations(
-		MethodInvocation methodInvocation, Annotation[] annotations) {
+	public <T> T findAnnotation(
+		Class<?> targetClass, Method method,
+		Class<? extends Annotation> annotationType) {
 
-		if (ArrayUtil.isEmpty(annotations)) {
-			annotations = _nullAnnotations;
+		Annotation[] annotationArray = _methodAnnotations.get(method);
+
+		if (annotationArray == _nullAnnotations) {
+			return null;
 		}
 
-		_annotations.put(methodInvocation.getMethod(), annotations);
-	}
+		T annotation = null;
 
-	public MethodInterceptorsBag getMethodInterceptorsBag(
-		MethodInvocation methodInvocation) {
+		if (annotationArray == null) {
+			List<Annotation> annotations = AnnotationLocator.locate(
+				method, targetClass);
 
-		return _methodInterceptorBags.get(methodInvocation.getMethod());
-	}
+			Iterator<Annotation> iterator = annotations.iterator();
 
-	public Map
-		<Class<? extends Annotation>, AnnotationChainableMethodAdvice<?>[]>
-			getRegisteredAnnotationChainableMethodAdvices() {
+			while (iterator.hasNext()) {
+				Annotation curAnnotation = iterator.next();
 
-		return _annotationChainableMethodAdvices;
-	}
+				Class<? extends Annotation> curAnnotationType =
+					curAnnotation.annotationType();
 
-	public boolean isRegisteredAnnotationClass(
-		Class<? extends Annotation> annotationClass) {
+				if (!_annotationClasses.contains(curAnnotationType)) {
+					iterator.remove();
+				}
+				else if (annotationType == curAnnotationType) {
+					annotation = (T)curAnnotation;
+				}
+			}
 
-		return _annotationChainableMethodAdvices.containsKey(annotationClass);
-	}
-
-	public void putMethodInterceptorsBag(
-		MethodInvocation methodInvocation,
-		MethodInterceptorsBag methodInterceptorsBag) {
-
-		_methodInterceptorBags.put(
-			methodInvocation.getMethod(), methodInterceptorsBag);
-	}
-
-	public void registerAnnotationChainableMethodAdvice(
-		Class<? extends Annotation> annotationClass,
-		AnnotationChainableMethodAdvice<?> annotationChainableMethodAdvice) {
-
-		AnnotationChainableMethodAdvice<?>[] annotationChainableMethodAdvices =
-			_annotationChainableMethodAdvices.get(annotationClass);
-
-		if (annotationChainableMethodAdvices == null) {
-			annotationChainableMethodAdvices =
-				new AnnotationChainableMethodAdvice<?>[1];
-
-			annotationChainableMethodAdvices[0] =
-				annotationChainableMethodAdvice;
+			if (annotations.isEmpty()) {
+				_methodAnnotations.put(method, _nullAnnotations);
+			}
+			else {
+				_methodAnnotations.put(
+					method,
+					annotations.toArray(new Annotation[annotations.size()]));
+			}
 		}
 		else {
-			annotationChainableMethodAdvices = ArrayUtil.append(
-				annotationChainableMethodAdvices,
-				annotationChainableMethodAdvice);
+			for (Annotation curAnnotation : annotationArray) {
+				if (curAnnotation.annotationType() == annotationType) {
+					return (T)curAnnotation;
+				}
+			}
 		}
 
-		_annotationChainableMethodAdvices.put(
-			annotationClass, annotationChainableMethodAdvices);
+		return annotation;
 	}
 
-	public void removeMethodInterceptor(
-		MethodInvocation methodInvocation,
-		MethodInterceptor methodInterceptor) {
-
-		Method method = methodInvocation.getMethod();
-
-		MethodInterceptorsBag methodInterceptorsBag =
-			_methodInterceptorBags.get(method);
-
-		if (methodInterceptorsBag == null) {
-			return;
+	public AopMethod getAopMethod(Object target, Method method) {
+		if (!TransactionsUtil.isEnabled()) {
+			return new AopMethod(target, method, _emptyChainableMethodAdvices);
 		}
 
-		ArrayList<MethodInterceptor> methodInterceptors = new ArrayList<>(
-			methodInterceptorsBag.getMergedMethodInterceptors());
-
-		methodInterceptors.remove(methodInterceptor);
-
-		MethodInterceptorsBag newMethodInterceptorsBag = null;
-
-		if (methodInterceptors.equals(
-				methodInterceptorsBag.getClassLevelMethodInterceptors())) {
-
-			newMethodInterceptorsBag = new MethodInterceptorsBag(
-				methodInterceptorsBag.getClassLevelMethodInterceptors(),
-				methodInterceptorsBag.getClassLevelMethodInterceptors());
-		}
-		else {
-			methodInterceptors.trimToSize();
-
-			newMethodInterceptorsBag = new MethodInterceptorsBag(
-				methodInterceptorsBag.getClassLevelMethodInterceptors(),
-				methodInterceptors);
-		}
-
-		_methodInterceptorBags.put(method, newMethodInterceptorsBag);
+		return _aopMethods.computeIfAbsent(
+			new CacheKey(target, method), this::_createAopMethod);
 	}
 
 	public void reset() {
-		_annotations.clear();
-		_methodInterceptorBags.clear();
+		_aopMethods.clear();
 	}
 
-	private static final Map<Method, Annotation[]> _annotations =
-		new ConcurrentHashMap<>();
+	private AopMethod _createAopMethod(CacheKey cacheKey) {
+		Object target = cacheKey._target;
+
+		Class<?> targetClass = target.getClass();
+
+		Method method = cacheKey._method;
+
+		List<ChainableMethodAdvice> filteredChainableMethodAdvices =
+			new ArrayList<>();
+
+		for (ChainableMethodAdvice chainableMethodAdvice :
+				_fullChainableMethodAdvices) {
+
+			if (chainableMethodAdvice.isEnabled(targetClass, method)) {
+				filteredChainableMethodAdvices.add(chainableMethodAdvice);
+			}
+		}
+
+		ChainableMethodAdvice[] chainableMethodAdvices =
+			_emptyChainableMethodAdvices;
+
+		if (!filteredChainableMethodAdvices.isEmpty()) {
+			chainableMethodAdvices = filteredChainableMethodAdvices.toArray(
+				new ChainableMethodAdvice
+					[filteredChainableMethodAdvices.size()]);
+		}
+
+		return new AopMethod(target, method, chainableMethodAdvices);
+	}
+
+	private static final ChainableMethodAdvice[] _emptyChainableMethodAdvices =
+		new ChainableMethodAdvice[0];
 	private static final Annotation[] _nullAnnotations = new Annotation[0];
 
-	private final
-		Map<Class<? extends Annotation>, AnnotationChainableMethodAdvice<?>[]>
-			_annotationChainableMethodAdvices = new HashMap<>();
-	private final Map<Method, MethodInterceptorsBag> _methodInterceptorBags =
+	private final Set<Class<? extends Annotation>> _annotationClasses =
+		new HashSet<>();
+	private final Map<CacheKey, AopMethod> _aopMethods =
 		new ConcurrentHashMap<>();
+	private final ChainableMethodAdvice[] _fullChainableMethodAdvices;
+	private final Map<Method, Annotation[]> _methodAnnotations =
+		new ConcurrentHashMap<>();
+
+	private static class CacheKey {
+
+		@Override
+		public boolean equals(Object obj) {
+			CacheKey cacheKey = (CacheKey)obj;
+
+			if (Objects.equals(_target, cacheKey._target) &&
+				Objects.equals(_method, cacheKey._method)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = HashUtil.hash(0, _target);
+
+			return HashUtil.hash(hash, _method);
+		}
+
+		private CacheKey(Object target, Method method) {
+			_target = target;
+			_method = method;
+		}
+
+		private final Method _method;
+		private final Object _target;
+
+	}
 
 }

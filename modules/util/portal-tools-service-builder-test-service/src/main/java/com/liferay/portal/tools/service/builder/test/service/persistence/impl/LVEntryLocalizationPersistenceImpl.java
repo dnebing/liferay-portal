@@ -16,8 +16,6 @@ package com.liferay.portal.tools.service.builder.test.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.petra.string.StringBundler;
-
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -30,6 +28,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.portal.tools.service.builder.test.exception.NoSuchLVEntryLocalizationException;
 import com.liferay.portal.tools.service.builder.test.model.LVEntryLocalization;
@@ -670,6 +669,8 @@ public class LVEntryLocalizationPersistenceImpl extends BasePersistenceImpl<LVEn
 	@Override
 	public LVEntryLocalization fetchByLvEntryId_LanguageId(long lvEntryId,
 		String languageId, boolean retrieveFromCache) {
+		languageId = Objects.toString(languageId, "");
+
 		Object[] finderArgs = new Object[] { lvEntryId, languageId };
 
 		Object result = null;
@@ -698,10 +699,7 @@ public class LVEntryLocalizationPersistenceImpl extends BasePersistenceImpl<LVEn
 
 			boolean bindLanguageId = false;
 
-			if (languageId == null) {
-				query.append(_FINDER_COLUMN_LVENTRYID_LANGUAGEID_LANGUAGEID_1);
-			}
-			else if (languageId.equals("")) {
+			if (languageId.isEmpty()) {
 				query.append(_FINDER_COLUMN_LVENTRYID_LANGUAGEID_LANGUAGEID_3);
 			}
 			else {
@@ -785,6 +783,8 @@ public class LVEntryLocalizationPersistenceImpl extends BasePersistenceImpl<LVEn
 	 */
 	@Override
 	public int countByLvEntryId_LanguageId(long lvEntryId, String languageId) {
+		languageId = Objects.toString(languageId, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_LVENTRYID_LANGUAGEID;
 
 		Object[] finderArgs = new Object[] { lvEntryId, languageId };
@@ -800,10 +800,7 @@ public class LVEntryLocalizationPersistenceImpl extends BasePersistenceImpl<LVEn
 
 			boolean bindLanguageId = false;
 
-			if (languageId == null) {
-				query.append(_FINDER_COLUMN_LVENTRYID_LANGUAGEID_LANGUAGEID_1);
-			}
-			else if (languageId.equals("")) {
+			if (languageId.isEmpty()) {
 				query.append(_FINDER_COLUMN_LVENTRYID_LANGUAGEID_LANGUAGEID_3);
 			}
 			else {

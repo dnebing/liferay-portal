@@ -92,6 +92,7 @@ public class ScopeLocatorImpl implements ScopeLocator {
 		PrefixHandlerFactory prefixHandlerFactory =
 			_scopedPrefixHandlerFactories.getService(
 				companyId, applicationName);
+
 		ServiceReference<?> serviceReference =
 			serviceReferenceServiceTuple.getServiceReference();
 
@@ -159,6 +160,7 @@ public class ScopeLocatorImpl implements ScopeLocator {
 
 		ScopeFinder scopeFinder = _scopedScopeFinders.getService(
 			companyId, applicationName);
+
 		ScopeMapper scopeMapper = _scopedScopeMapper.getService(
 			companyId, applicationName);
 		Collection<String> scopes = scopeFinder.findScopes();
@@ -192,10 +194,9 @@ public class ScopeLocatorImpl implements ScopeLocator {
 					if (prefixHandlerFactory != null) {
 						return prefixHandlerFactory;
 					}
-					else {
-						return propertyAccessor ->
-							PrefixHandler.PASSTHROUGH_PREFIXHANDLER;
-					}
+
+					return propertyAccessor ->
+						PrefixHandler.PASSTHROUGH_PREFIXHANDLER;
 				}));
 		setScopedScopeFinders(
 			_scopedServiceTrackerMapFactory.create(
@@ -211,9 +212,8 @@ public class ScopeLocatorImpl implements ScopeLocator {
 					if (scopeMapper != null) {
 						return scopeMapper;
 					}
-					else {
-						return ScopeMapper.PASSTHROUGH_SCOPEMAPPER;
-					}
+
+					return ScopeMapper.PASSTHROUGH_SCOPEMAPPER;
 				}));
 		setScopedScopeMatcherFactories(
 			ServiceTrackerMapFactory.openSingleValueMap(

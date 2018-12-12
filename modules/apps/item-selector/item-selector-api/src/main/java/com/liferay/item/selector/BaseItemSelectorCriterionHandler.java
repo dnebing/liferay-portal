@@ -33,14 +33,13 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Roberto Díaz
  */
 public abstract class BaseItemSelectorCriterionHandler
-	<T extends ItemSelectorCriterion> implements ItemSelectorCriterionHandler {
+	<T extends ItemSelectorCriterion>
+		implements ItemSelectorCriterionHandler {
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<ItemSelectorView<T>> getItemSelectorViews(
 		ItemSelectorCriterion itemSelectorCriterion) {
-
-		List<ItemSelectorView<T>> filteredItemSelectedViews = new ArrayList<>();
 
 		List<ItemSelectorView> itemSelectorViews =
 			_serviceTrackerMap.getService(itemSelectorCriterion.getClass());
@@ -48,6 +47,8 @@ public abstract class BaseItemSelectorCriterionHandler
 		if (itemSelectorViews == null) {
 			return Collections.emptyList();
 		}
+
+		List<ItemSelectorView<T>> filteredItemSelectedViews = new ArrayList<>();
 
 		for (ItemSelectorView itemSelectorView : itemSelectorViews) {
 			List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
@@ -129,7 +130,7 @@ public abstract class BaseItemSelectorCriterionHandler
 
 	private ServiceTracker
 		<ItemSelectorViewReturnTypeProviderHandler,
-			ItemSelectorViewReturnTypeProviderHandler> _serviceTracker;
+		 ItemSelectorViewReturnTypeProviderHandler> _serviceTracker;
 	private ServiceTrackerMap<Class, List<ItemSelectorView>> _serviceTrackerMap;
 
 	private class ItemSelectorViewServiceReferenceMapper

@@ -16,6 +16,9 @@ package com.liferay.portal.search.facet.faceted.searcher.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.test.util.search.JournalArticleBlueprint;
+import com.liferay.journal.test.util.search.JournalArticleContent;
+import com.liferay.journal.test.util.search.JournalArticleTitle;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
@@ -27,9 +30,6 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.facet.Facet;
 import com.liferay.portal.search.facet.tag.AssetTagNamesFacetFactory;
-import com.liferay.portal.search.test.journal.util.JournalArticleBlueprint;
-import com.liferay.portal.search.test.journal.util.JournalArticleContent;
-import com.liferay.portal.search.test.journal.util.JournalArticleTitle;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -80,7 +80,7 @@ public class AssetTagNamesFacetedSearcherTest
 
 		assertEntryClassNames(
 			Arrays.asList(JournalArticle.class.getName(), User.class.getName()),
-			hits, keyword);
+			hits, searchContext);
 
 		Map<String, Integer> frequencies = Collections.singletonMap(
 			StringUtil.toLowerCase(tag), 1);
@@ -149,7 +149,7 @@ public class AssetTagNamesFacetedSearcherTest
 		Hits hits = search(searchContext);
 
 		assertEntryClassNames(
-			Arrays.asList(User.class.getName()), hits, keyword);
+			Arrays.asList(User.class.getName()), hits, searchContext);
 
 		Map<String, Integer> frequencies = Collections.singletonMap(
 			tagToLowerCase, 1);
@@ -188,10 +188,12 @@ public class AssetTagNamesFacetedSearcherTest
 	}
 
 	protected void assertEntryClassNames(
-		Collection<String> entryClassNames, Hits hits, String keyword) {
+		Collection<String> entryClassNames, Hits hits,
+		SearchContext searchContext) {
 
 		DocumentsAssert.assertValuesIgnoreRelevance(
-			keyword, hits.getDocs(), Field.ENTRY_CLASS_NAME, entryClassNames);
+			(String)searchContext.getAttribute("queryString"), hits.getDocs(),
+			Field.ENTRY_CLASS_NAME, entryClassNames);
 	}
 
 	protected void assertTags(String keywords, Map<String, String> expected)
@@ -201,7 +203,7 @@ public class AssetTagNamesFacetedSearcherTest
 
 		Hits hits = search(searchContext);
 
-		assertTags(keywords, hits, expected);
+		assertTags(keywords, hits, expected, searchContext);
 	}
 
 	@Inject

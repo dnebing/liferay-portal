@@ -18,11 +18,12 @@
 
 <style type="text/css">
 	.geomap {
-		margin: 10px 0 10px 0;
+		margin: 10px 0;
 	}
+
 	.geomap svg {
-		width: 100%;
 		height: 500px !important;
+		width: 100%;
 	}
 </style>
 
@@ -205,7 +206,7 @@
 							[220, 245, 305],
 							[240, 275, 295],
 							[200, 235, 325],
-							[110, 145, 235],
+							[110, 145, 235]
 						],
 						id: 'data3'
 					};
@@ -216,7 +217,6 @@
 							resolve(oldData);
 						}
 					);
-
 				},
 				4000
 			);

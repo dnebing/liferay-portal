@@ -17,15 +17,15 @@ package com.liferay.portal.security.sso.openid.connect.internal;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.UserEmailAddressException;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.util.PwdGenerator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.sso.openid.connect.OpenIdConnectServiceException;
-import com.liferay.portal.security.sso.openid.connect.OpenIdConnectUserInfoProcessor;
+import com.liferay.portal.security.sso.openid.connect.internal.exception.StrangersNotAllowedException;
 
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 
@@ -48,9 +48,6 @@ public class OpenIdConnectUserInfoProcessorImpl
 	public long processUserInfo(UserInfo userInfo, long companyId)
 		throws PortalException {
 
-		String firstName = userInfo.getGivenName();
-		String lastName = userInfo.getFamilyName();
-
 		InternetAddress internetAddress = userInfo.getEmail();
 
 		String emailAddress = internetAddress.getAddress();
@@ -61,6 +58,11 @@ public class OpenIdConnectUserInfoProcessorImpl
 		if (user != null) {
 			return user.getUserId();
 		}
+
+		checkAddUser(companyId, emailAddress);
+
+		String firstName = userInfo.getGivenName();
+		String lastName = userInfo.getFamilyName();
 
 		if (Validator.isNull(firstName) || Validator.isNull(lastName) ||
 			Validator.isNull(emailAddress)) {
@@ -82,12 +84,9 @@ public class OpenIdConnectUserInfoProcessorImpl
 		}
 
 		long creatorUserId = 0;
-		boolean autoPassword = false;
-
-		String password1 = PwdGenerator.getPassword();
-
-		String password2 = password1;
-
+		boolean autoPassword = true;
+		String password1 = null;
+		String password2 = null;
 		boolean autoScreenName = true;
 		String screenName = StringPool.BLANK;
 		long facebookId = 0;
@@ -122,6 +121,23 @@ public class OpenIdConnectUserInfoProcessorImpl
 		user = _userLocalService.updatePasswordReset(user.getUserId(), false);
 
 		return user.getUserId();
+	}
+
+	protected void checkAddUser(long companyId, String emailAddress)
+		throws PortalException {
+
+		Company company = _companyLocalService.getCompany(companyId);
+
+		if (!company.isStrangers()) {
+			throw new StrangersNotAllowedException(companyId);
+		}
+
+		if (!company.isStrangersWithMx() &&
+			company.hasCompanyMx(emailAddress)) {
+
+			throw new UserEmailAddressException.MustNotUseCompanyMx(
+				emailAddress);
+		}
 	}
 
 	@Reference

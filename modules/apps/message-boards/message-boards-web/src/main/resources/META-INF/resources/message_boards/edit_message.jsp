@@ -234,6 +234,7 @@ if (portletTitleBasedNavigation) {
 						<liferay-ui:search-container
 							emptyResultsMessage="this-message-does-not-have-file-attachments"
 							headerNames="file-name,size,action"
+							id="messageAttachments"
 							total="<%= existingAttachmentsFileEntries.size() %>"
 						>
 							<liferay-ui:search-container-results
@@ -279,16 +280,19 @@ if (portletTitleBasedNavigation) {
 										markupView="lexicon"
 										message="<%= StringPool.BLANK %>"
 									>
-										<liferay-ui:icon-delete
-											trash="<%= trashHelper.isTrashEnabled(scopeGroupId) %>"
-											url="<%= deleteURL %>"
-										/>
+										<div class="delete-attachment" data-rowid="<%= fileEntry.getFileEntryId() %>" data-url="<%= deleteURL.toString() %>">
+											<liferay-ui:icon-delete
+												trash="<%= trashHelper.isTrashEnabled(scopeGroupId) %>"
+												url="javascript:;"
+											/>
+										</div>
 									</liferay-ui:icon-menu>
 								</liferay-ui:search-container-column-text>
 							</liferay-ui:search-container-row>
 
 							<liferay-ui:search-iterator
 								markupView="lexicon"
+								paginate="<%= false %>"
 							/>
 						</liferay-ui:search-container>
 					</c:if>
@@ -297,7 +301,10 @@ if (portletTitleBasedNavigation) {
 
 			<c:if test="<%= curParentMessage == null %>">
 				<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="categorization">
-					<aui:input name="tags" type="assetTags" />
+					<liferay-asset:asset-tags-selector
+						className="<%= MBMessage.class.getName() %>"
+						classPK="<%= (message != null) ? message.getMessageId() : 0 %>"
+					/>
 				</aui:fieldset>
 			</c:if>
 

@@ -34,8 +34,9 @@ public class MBObjectsModifiedDateComparator<T> extends OrderByComparator<T> {
 		"modelCategory ASC, priority DESC, modifiedDate DESC, name ASC, " +
 			"modelId ASC";
 
-	public static final String[] ORDER_BY_FIELDS =
-		{"modelCategory", "priority", "modifiedDate", "name", "modelId"};
+	public static final String[] ORDER_BY_FIELDS = {
+		"modelCategory", "priority", "modifiedDate", "name", "modelId"
+	};
 
 	public MBObjectsModifiedDateComparator() {
 		this(false);
@@ -55,9 +56,8 @@ public class MBObjectsModifiedDateComparator<T> extends OrderByComparator<T> {
 		if (_ascending) {
 			return value;
 		}
-		else {
-			return -value;
-		}
+
+		return -value;
 	}
 
 	@Override
@@ -65,9 +65,8 @@ public class MBObjectsModifiedDateComparator<T> extends OrderByComparator<T> {
 		if (_ascending) {
 			return ORDER_BY_ASC;
 		}
-		else {
-			return ORDER_BY_DESC;
-		}
+
+		return ORDER_BY_DESC;
 	}
 
 	@Override

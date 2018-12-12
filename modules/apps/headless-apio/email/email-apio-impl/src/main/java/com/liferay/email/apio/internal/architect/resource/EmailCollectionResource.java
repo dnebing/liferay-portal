@@ -31,9 +31,8 @@ import org.osgi.service.component.annotations.Reference;
  * through a web API.
  *
  * @author Javier Gamarra
- * @review
  */
-@Component(immediate = true)
+@Component(immediate = true, service = ItemResource.class)
 public class EmailCollectionResource
 	implements ItemResource<EmailAddress, Long, EmailIdentifier> {
 

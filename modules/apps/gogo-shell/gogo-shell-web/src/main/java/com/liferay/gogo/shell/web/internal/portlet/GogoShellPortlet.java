@@ -16,6 +16,7 @@ package com.liferay.gogo.shell.web.internal.portlet;
 
 import com.liferay.gogo.shell.web.internal.constants.GogoShellPortletKeys;
 import com.liferay.gogo.shell.web.internal.constants.GogoShellWebKeys;
+import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -27,11 +28,12 @@ import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import java.util.ResourceBundle;
@@ -169,12 +171,11 @@ public class GogoShellPortlet extends MVCPortlet {
 	protected void checkCommand(String command, ThemeDisplay themeDisplay)
 		throws Exception {
 
-		Matcher matcher = _exitShutdownPattern.matcher(command);
+		Matcher matcher = _pattern.matcher(command);
 
 		if (matcher.find()) {
-			ResourceBundle resourceBundle =
-				_resourceBundleLoader.loadResourceBundle(
-					themeDisplay.getLocale());
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+				themeDisplay.getLocale(), GogoShellPortlet.class);
 
 			throw new Exception(
 				LanguageUtil.format(
@@ -215,7 +216,7 @@ public class GogoShellPortlet extends MVCPortlet {
 			errorUnsyncByteArrayOutputStream);
 
 		CommandSession commandSession = _commandProcessor.createSession(
-			null, outputPrintStream, errorPrintStream);
+			_emptyInputStream, outputPrintStream, errorPrintStream);
 
 		commandSession.put("prompt", "g!");
 
@@ -250,16 +251,15 @@ public class GogoShellPortlet extends MVCPortlet {
 		return null;
 	}
 
-	private static final Pattern _exitShutdownPattern = Pattern.compile(
-		"(\\bexit\\b|\\bshutdown\\b)");
+	private static final InputStream _emptyInputStream =
+		new UnsyncByteArrayInputStream(new byte[0]);
+	private static final Pattern _pattern = Pattern.compile(
+		"\\b(close|disconnect|exit|shutdown)\\b");
 
 	@Reference
 	private CommandProcessor _commandProcessor;
 
 	@Reference
 	private Portal _portal;
-
-	@Reference(target = "(bundle.symbolic.name=com.liferay.gogo.shell.web)")
-	private ResourceBundleLoader _resourceBundleLoader;
 
 }

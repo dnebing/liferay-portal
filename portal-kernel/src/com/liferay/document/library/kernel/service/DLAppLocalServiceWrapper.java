@@ -333,6 +333,18 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	}
 
 	/**
+	* Deletes the file version. File versions can only be deleted if it is
+	* approved and there are other approved file versions available.
+	*
+	* @param fileVersionId the primary key of the file version
+	*/
+	@Override
+	public void deleteFileVersion(long fileVersionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_dlAppLocalService.deleteFileVersion(fileVersionId);
+	}
+
+	/**
 	* Deletes the folder and all of its subfolders and file entries.
 	*
 	* @param folderId the primary key of the folder
@@ -591,6 +603,54 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	}
 
 	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link #updateFileEntry(long, long, String, String, String, String, String, DLVersionNumberIncrease, byte[], ServiceContext)}
+	*/
+	@Deprecated
+	@Override
+	public com.liferay.portal.kernel.repository.model.FileEntry updateFileEntry(
+		long userId, long fileEntryId, String sourceFileName, String mimeType,
+		String title, String description, String changeLog,
+		boolean majorVersion, byte[] bytes,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _dlAppLocalService.updateFileEntry(userId, fileEntryId,
+			sourceFileName, mimeType, title, description, changeLog,
+			majorVersion, bytes, serviceContext);
+	}
+
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link #updateFileEntry(long, long, String, String, String, String, String, DLVersionNumberIncrease, File, ServiceContext)}
+	*/
+	@Deprecated
+	@Override
+	public com.liferay.portal.kernel.repository.model.FileEntry updateFileEntry(
+		long userId, long fileEntryId, String sourceFileName, String mimeType,
+		String title, String description, String changeLog,
+		boolean majorVersion, java.io.File file,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _dlAppLocalService.updateFileEntry(userId, fileEntryId,
+			sourceFileName, mimeType, title, description, changeLog,
+			majorVersion, file, serviceContext);
+	}
+
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link #updateFileEntry(long, long, String, String, String, String, String, boolean, InputStream, long, ServiceContext)}
+	*/
+	@Deprecated
+	@Override
+	public com.liferay.portal.kernel.repository.model.FileEntry updateFileEntry(
+		long userId, long fileEntryId, String sourceFileName, String mimeType,
+		String title, String description, String changeLog,
+		boolean majorVersion, java.io.InputStream is, long size,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _dlAppLocalService.updateFileEntry(userId, fileEntryId,
+			sourceFileName, mimeType, title, description, changeLog,
+			majorVersion, is, size, serviceContext);
+	}
+
+	/**
 	* Updates a file entry and associated metadata based on a byte array
 	* object. If the file data is <code>null</code>, then only the associated
 	* metadata (i.e., <code>title</code>, <code>description</code>, and
@@ -614,7 +674,8 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	* @param description the file's new description
 	* @param changeLog the file's version change log (optionally
 	<code>null</code>)
-	* @param majorVersion whether the new file version is a major version
+	* @param dlVersionNumberIncrease the kind of version number increase to
+	apply for these changes.
 	* @param bytes the file's data (optionally <code>null</code>)
 	* @param serviceContext the service context to be applied. Can set the
 	asset category IDs, asset tag names, and expando bridge
@@ -628,12 +689,13 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	public com.liferay.portal.kernel.repository.model.FileEntry updateFileEntry(
 		long userId, long fileEntryId, String sourceFileName, String mimeType,
 		String title, String description, String changeLog,
-		boolean majorVersion, byte[] bytes,
+		com.liferay.document.library.kernel.model.DLVersionNumberIncrease dlVersionNumberIncrease,
+		byte[] bytes,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _dlAppLocalService.updateFileEntry(userId, fileEntryId,
 			sourceFileName, mimeType, title, description, changeLog,
-			majorVersion, bytes, serviceContext);
+			dlVersionNumberIncrease, bytes, serviceContext);
 	}
 
 	/**
@@ -660,7 +722,8 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	* @param description the file's new description
 	* @param changeLog the file's version change log (optionally
 	<code>null</code>)
-	* @param majorVersion whether the new file version is a major version
+	* @param dlVersionNumberIncrease the kind of version number increase to
+	apply for these changes.
 	* @param file the file's data (optionally <code>null</code>)
 	* @param serviceContext the service context to be applied. Can set the
 	asset category IDs, asset tag names, and expando bridge
@@ -674,12 +737,13 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	public com.liferay.portal.kernel.repository.model.FileEntry updateFileEntry(
 		long userId, long fileEntryId, String sourceFileName, String mimeType,
 		String title, String description, String changeLog,
-		boolean majorVersion, java.io.File file,
+		com.liferay.document.library.kernel.model.DLVersionNumberIncrease dlVersionNumberIncrease,
+		java.io.File file,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _dlAppLocalService.updateFileEntry(userId, fileEntryId,
 			sourceFileName, mimeType, title, description, changeLog,
-			majorVersion, file, serviceContext);
+			dlVersionNumberIncrease, file, serviceContext);
 	}
 
 	/**
@@ -706,7 +770,8 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	* @param description the file's new description
 	* @param changeLog the file's version change log (optionally
 	<code>null</code>)
-	* @param majorVersion whether the new file version is a major version
+	* @param dlVersionNumberIncrease the kind of version number increase to
+	apply for these changes.
 	* @param is the file's data (optionally <code>null</code>)
 	* @param size the file's size (optionally <code>0</code>)
 	* @param serviceContext the service context to be applied. Can set the
@@ -721,12 +786,13 @@ public class DLAppLocalServiceWrapper implements DLAppLocalService,
 	public com.liferay.portal.kernel.repository.model.FileEntry updateFileEntry(
 		long userId, long fileEntryId, String sourceFileName, String mimeType,
 		String title, String description, String changeLog,
-		boolean majorVersion, java.io.InputStream is, long size,
+		com.liferay.document.library.kernel.model.DLVersionNumberIncrease dlVersionNumberIncrease,
+		java.io.InputStream is, long size,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _dlAppLocalService.updateFileEntry(userId, fileEntryId,
 			sourceFileName, mimeType, title, description, changeLog,
-			majorVersion, is, size, serviceContext);
+			dlVersionNumberIncrease, is, size, serviceContext);
 	}
 
 	/**

@@ -120,6 +120,7 @@ public class JSONWebServiceNaming {
 
 		for (int i = 0; i < parameterTypes.length; i++) {
 			Type type = types[i];
+
 			Class<?> parameterType = parameterTypes[i];
 
 			if (parameterType.isArray()) {
@@ -210,8 +211,9 @@ public class JSONWebServiceNaming {
 		PropsUtil.getArray(PropsKeys.JSON_SERVICE_INVALID_METHOD_NAMES));
 	protected String[] excludedPaths = PropsUtil.getArray(
 		PropsKeys.JSONWS_WEB_SERVICE_PATHS_EXCLUDES);
-	protected String[] excludedTypesNames =
-		{InputStream.class.getName(), OutputStream.class.getName(), "javax."};
+	protected String[] excludedTypesNames = {
+		InputStream.class.getName(), OutputStream.class.getName(), "javax."
+	};
 	protected String[] includedPaths = PropsUtil.getArray(
 		PropsKeys.JSONWS_WEB_SERVICE_PATHS_INCLUDES);
 	protected Set<String> invalidHttpMethods = SetUtil.fromArray(

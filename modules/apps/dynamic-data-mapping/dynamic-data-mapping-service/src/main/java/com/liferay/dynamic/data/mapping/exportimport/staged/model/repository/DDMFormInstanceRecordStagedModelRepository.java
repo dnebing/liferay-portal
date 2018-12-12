@@ -78,6 +78,8 @@ public class DDMFormInstanceRecordStagedModelRepository
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
 			ddmFormInstanceRecord);
 
+		serviceContext.setAttribute("validateDDMFormValues", Boolean.FALSE);
+
 		if (portletDataContext.isDataStrategyMirror()) {
 			serviceContext.setUuid(ddmFormInstanceRecord.getUuid());
 		}
@@ -150,32 +152,27 @@ public class DDMFormInstanceRecordStagedModelRepository
 			exportActionableDynamicQuery.getAddCriteriaMethod();
 
 		exportActionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				addCriteriaMethod.addCriteria(dynamicQuery);
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					addCriteriaMethod.addCriteria(dynamicQuery);
+				Property formInstanceRecordIdProperty =
+					PropertyFactoryUtil.forName("formInstanceRecordId");
 
-					Property formInstanceRecordIdProperty =
-						PropertyFactoryUtil.forName("formInstanceRecordId");
+				DynamicQuery formInstanceRecordVersionDynamicQuery =
+					getRecordVersionDynamicQuery();
 
-					DynamicQuery formInstanceRecordVersionDynamicQuery =
-						getRecordVersionDynamicQuery();
+				dynamicQuery.add(
+					formInstanceRecordIdProperty.in(
+						formInstanceRecordVersionDynamicQuery));
 
-					dynamicQuery.add(
-						formInstanceRecordIdProperty.in(
-							formInstanceRecordVersionDynamicQuery));
+				Property formInstanceIdProperty = PropertyFactoryUtil.forName(
+					"formInstanceId");
 
-					Property formInstanceIdProperty =
-						PropertyFactoryUtil.forName("formInstanceId");
+				DynamicQuery formInstanceDynamicQuery =
+					getFormInstanceDynamicQuery();
 
-					DynamicQuery formInstanceDynamicQuery =
-						getFormInstanceDynamicQuery();
-
-					dynamicQuery.add(
-						formInstanceIdProperty.in(formInstanceDynamicQuery));
-				}
-
+				dynamicQuery.add(
+					formInstanceIdProperty.in(formInstanceDynamicQuery));
 			});
 
 		return exportActionableDynamicQuery;
@@ -218,6 +215,8 @@ public class DDMFormInstanceRecordStagedModelRepository
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
 			ddmFormInstanceRecord);
+
+		serviceContext.setAttribute("validateDDMFormValues", Boolean.FALSE);
 
 		DDMFormInstanceRecord importedFormInstanceRecord =
 			_ddmFormInstanceRecordLocalService.updateFormInstanceRecord(

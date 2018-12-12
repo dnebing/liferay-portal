@@ -1,40 +1,28 @@
-task reJar(type: Jar)
+import com.liferay.gradle.plugins.patcher.PatchTask
 
-configurations {
-	archives.artifacts.removeAll {
-		it.archiveTask in [jarSources, zipJavadoc]
-	}
+apply plugin: "com.liferay.patcher"
 
-	configAdmin
-}
+task patch(type: PatchTask)
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 dependencies {
-	configAdmin group: "org.apache.felix", name: "org.apache.felix.configadmin", transitive: false, version: "1.8.8"
+	compileOnly group: "org.apache.felix", name: "org.apache.felix.configadmin", transitive: false, version: "1.9.8"
+	compileOnly group: "org.osgi", name: "org.osgi.core", version: "6.0.0"
+	compileOnly group: "org.osgi", name: "osgi.cmpn", version: "6.0.0"
 }
 
-jar {
-	deleteAllActions()
-	dependsOn = [reJar]
+liferay {
+	deployDir = file("${liferayHome}/osgi/static")
 }
 
-reJar {
-	exclude "OSGI-INF/permissions.perm"
-	includeEmptyDirs = false
-
-	from zipTree(
-		{
-			configurations.configAdmin.singleFile
-		})
-
-	manifest {
-		from {
-			copy {
-				from zipTree(configurations.configAdmin.singleFile)
-				include "META-INF/MANIFEST.MF"
-				into temporaryDir
-			}
-
-			new File(temporaryDir, "META-INF/MANIFEST.MF")
-		}
+patch {
+	ext {
+		autoClean = false
 	}
+
+	fileNames "org/apache/felix/cm/impl/persistence/PersistenceManagerTracker.java"
+
+	originalLibModuleName = "org.apache.felix.configadmin"
 }

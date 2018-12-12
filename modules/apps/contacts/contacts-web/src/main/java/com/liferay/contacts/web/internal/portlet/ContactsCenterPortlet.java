@@ -159,18 +159,16 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		long[] userIds = getUserIds(actionRequest);
-
 		int type = ParamUtil.getInteger(actionRequest, "type");
 
 		if (type == SocialRelationConstants.TYPE_BI_CONNECTION) {
 			return;
 		}
 
-		for (long userId : userIds) {
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		for (long userId : getUserIds(actionRequest)) {
 			if (userId == themeDisplay.getUserId()) {
 				continue;
 			}
@@ -615,8 +613,8 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			else if (e instanceof ContactNameException.MustHaveLastName) {
 				message = "please-enter-a-valid-last-name";
 			}
-			else if (e instanceof UserEmailAddressException.
-						 MustNotBeDuplicate) {
+			else if (e instanceof
+						UserEmailAddressException.MustNotBeDuplicate) {
 
 				message = "the-email-address-you-requested-is-already-taken";
 			}
@@ -719,13 +717,12 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		long entryId = ParamUtil.getLong(actionRequest, "entryId");
 
 		if (entryId > 0) {
 			Entry entry = entryLocalService.getEntry(entryId);
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 			if (entry.getUserId() == themeDisplay.getUserId()) {
 				entryLocalService.deleteEntry(entryId);
@@ -861,7 +858,7 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			}
 		}
 		else if (filterBy.equals(
-					 ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS) &&
+					ContactsConstants.FILTER_BY_TYPE_MY_CONTACTS) &&
 				 !portletId.equals(ContactsPortletKeys.MEMBERS)) {
 
 			List<Entry> entries = entryLocalService.search(

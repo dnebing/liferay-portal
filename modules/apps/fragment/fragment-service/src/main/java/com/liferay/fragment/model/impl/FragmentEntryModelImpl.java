@@ -90,6 +90,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 			{ "html", Types.VARCHAR },
 			{ "js", Types.VARCHAR },
 			{ "previewFileEntryId", Types.BIGINT },
+			{ "type_", Types.INTEGER },
 			{ "lastPublishDate", Types.TIMESTAMP },
 			{ "status", Types.INTEGER },
 			{ "statusByUserId", Types.BIGINT },
@@ -114,6 +115,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		TABLE_COLUMNS_MAP.put("html", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("js", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("previewFileEntryId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("type_", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("lastPublishDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("statusByUserId", Types.BIGINT);
@@ -121,7 +123,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		TABLE_COLUMNS_MAP.put("statusDate", Types.TIMESTAMP);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table FragmentEntry (uuid_ VARCHAR(75) null,fragmentEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,fragmentCollectionId LONG,fragmentEntryKey VARCHAR(75) null,name VARCHAR(75) null,css STRING null,html STRING null,js STRING null,previewFileEntryId LONG,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+	public static final String TABLE_SQL_CREATE = "create table FragmentEntry (uuid_ VARCHAR(75) null,fragmentEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,fragmentCollectionId LONG,fragmentEntryKey VARCHAR(75) null,name VARCHAR(75) null,css STRING null,html STRING null,js STRING null,previewFileEntryId LONG,type_ INTEGER,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 	public static final String TABLE_SQL_DROP = "drop table FragmentEntry";
 	public static final String ORDER_BY_JPQL = " ORDER BY fragmentEntry.name ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY FragmentEntry.name ASC";
@@ -143,7 +145,8 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 	public static final long GROUPID_COLUMN_BITMASK = 8L;
 	public static final long NAME_COLUMN_BITMASK = 16L;
 	public static final long STATUS_COLUMN_BITMASK = 32L;
-	public static final long UUID_COLUMN_BITMASK = 64L;
+	public static final long TYPE_COLUMN_BITMASK = 64L;
+	public static final long UUID_COLUMN_BITMASK = 128L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -173,6 +176,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		model.setHtml(soapModel.getHtml());
 		model.setJs(soapModel.getJs());
 		model.setPreviewFileEntryId(soapModel.getPreviewFileEntryId());
+		model.setType(soapModel.getType());
 		model.setLastPublishDate(soapModel.getLastPublishDate());
 		model.setStatus(soapModel.getStatus());
 		model.setStatusByUserId(soapModel.getStatusByUserId());
@@ -257,6 +261,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		attributes.put("html", getHtml());
 		attributes.put("js", getJs());
 		attributes.put("previewFileEntryId", getPreviewFileEntryId());
+		attributes.put("type", getType());
 		attributes.put("lastPublishDate", getLastPublishDate());
 		attributes.put("status", getStatus());
 		attributes.put("statusByUserId", getStatusByUserId());
@@ -359,6 +364,12 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 
 		if (previewFileEntryId != null) {
 			setPreviewFileEntryId(previewFileEntryId);
+		}
+
+		Integer type = (Integer)attributes.get("type");
+
+		if (type != null) {
+			setType(type);
 		}
 
 		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
@@ -680,6 +691,29 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 
 	@JSON
 	@Override
+	public int getType() {
+		return _type;
+	}
+
+	@Override
+	public void setType(int type) {
+		_columnBitmask |= TYPE_COLUMN_BITMASK;
+
+		if (!_setOriginalType) {
+			_setOriginalType = true;
+
+			_originalType = _type;
+		}
+
+		_type = type;
+	}
+
+	public int getOriginalType() {
+		return _originalType;
+	}
+
+	@JSON
+	@Override
 	public Date getLastPublishDate() {
 		return _lastPublishDate;
 	}
@@ -898,6 +932,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		fragmentEntryImpl.setHtml(getHtml());
 		fragmentEntryImpl.setJs(getJs());
 		fragmentEntryImpl.setPreviewFileEntryId(getPreviewFileEntryId());
+		fragmentEntryImpl.setType(getType());
 		fragmentEntryImpl.setLastPublishDate(getLastPublishDate());
 		fragmentEntryImpl.setStatus(getStatus());
 		fragmentEntryImpl.setStatusByUserId(getStatusByUserId());
@@ -982,6 +1017,10 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		fragmentEntryModelImpl._originalFragmentEntryKey = fragmentEntryModelImpl._fragmentEntryKey;
 
 		fragmentEntryModelImpl._originalName = fragmentEntryModelImpl._name;
+
+		fragmentEntryModelImpl._originalType = fragmentEntryModelImpl._type;
+
+		fragmentEntryModelImpl._setOriginalType = false;
 
 		fragmentEntryModelImpl._originalStatus = fragmentEntryModelImpl._status;
 
@@ -1080,6 +1119,8 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 
 		fragmentEntryCacheModel.previewFileEntryId = getPreviewFileEntryId();
 
+		fragmentEntryCacheModel.type = getType();
+
 		Date lastPublishDate = getLastPublishDate();
 
 		if (lastPublishDate != null) {
@@ -1115,7 +1156,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(41);
+		StringBundler sb = new StringBundler(43);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -1147,6 +1188,8 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		sb.append(getJs());
 		sb.append(", previewFileEntryId=");
 		sb.append(getPreviewFileEntryId());
+		sb.append(", type=");
+		sb.append(getType());
 		sb.append(", lastPublishDate=");
 		sb.append(getLastPublishDate());
 		sb.append(", status=");
@@ -1164,7 +1207,7 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(64);
+		StringBundler sb = new StringBundler(67);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.fragment.model.FragmentEntry");
@@ -1231,6 +1274,10 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 		sb.append(getPreviewFileEntryId());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>type</column-name><column-value><![CDATA[");
+		sb.append(getType());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>lastPublishDate</column-name><column-value><![CDATA[");
 		sb.append(getLastPublishDate());
 		sb.append("]]></column-value></column>");
@@ -1285,6 +1332,9 @@ public class FragmentEntryModelImpl extends BaseModelImpl<FragmentEntry>
 	private String _html;
 	private String _js;
 	private long _previewFileEntryId;
+	private int _type;
+	private int _originalType;
+	private boolean _setOriginalType;
 	private Date _lastPublishDate;
 	private int _status;
 	private int _originalStatus;

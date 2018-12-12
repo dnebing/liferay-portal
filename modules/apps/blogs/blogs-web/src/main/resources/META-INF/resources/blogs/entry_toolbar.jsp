@@ -68,21 +68,6 @@ boolean showOnlyIcons = ParamUtil.getBoolean(request, "showOnlyIcons");
 		</div>
 	</c:if>
 
-	<c:if test="<%= blogsPortletInstanceConfiguration.enableFlags() && showFlags %>">
-		<div class="autofit-col">
-			<div class="flags">
-				<liferay-flags:flags
-					className="<%= BlogsEntry.class.getName() %>"
-					classPK="<%= entry.getEntryId() %>"
-					contentTitle="<%= BlogsEntryUtil.getDisplayTitle(resourceBundle, entry) %>"
-					enabled="<%= !entry.isInTrash() %>"
-					message='<%= entry.isInTrash() ? "flags-are-disabled-because-this-entry-is-in-the-recycle-bin" : StringPool.BLANK %>'
-					reportedUserId="<%= entry.getUserId() %>"
-				/>
-			</div>
-		</div>
-	</c:if>
-
 	<c:if test="<%= blogsPortletInstanceConfiguration.enableRatings() %>">
 		<div class="autofit-col">
 			<div class="ratings">
@@ -92,6 +77,21 @@ boolean showOnlyIcons = ParamUtil.getBoolean(request, "showOnlyIcons");
 					inTrash="<%= entry.isInTrash() %>"
 					ratingsEntry="<%= ratingsEntry %>"
 					ratingsStats="<%= ratingsStats %>"
+				/>
+			</div>
+		</div>
+	</c:if>
+
+	<c:if test="<%= blogsPortletInstanceConfiguration.enableFlags() && showFlags %>">
+		<div class="autofit-col">
+			<div class="flags">
+				<liferay-flags:flags
+					className="<%= BlogsEntry.class.getName() %>"
+					classPK="<%= entry.getEntryId() %>"
+					contentTitle="<%= BlogsEntryUtil.getDisplayTitle(resourceBundle, entry) %>"
+					enabled="<%= !entry.isInTrash() %>"
+					message='<%= entry.isInTrash() ? "flags-are-disabled-because-this-entry-is-in-the-recycle-bin" : null %>'
+					reportedUserId="<%= entry.getUserId() %>"
 				/>
 			</div>
 		</div>

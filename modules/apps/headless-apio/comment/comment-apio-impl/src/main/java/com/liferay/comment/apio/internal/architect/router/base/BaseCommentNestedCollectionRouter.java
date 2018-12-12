@@ -32,14 +32,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Base class for {@code Comment} {@code NestedCollectionRouters}.
+ * Defines the base class for the {@code *CommentNestedCollectionRouter}
+ * classes.
  *
  * @author Alejandro Hernández
- * @review
  */
 public abstract class BaseCommentNestedCollectionRouter
-	<T extends Identifier<Long>> implements
-		NestedCollectionRouter<Comment, Long, CommentIdentifier, Long, T> {
+	<T extends Identifier<Long>>
+		implements NestedCollectionRouter
+			<Comment, Long, CommentIdentifier, Long, T> {
 
 	@Override
 	public NestedCollectionRoutes<Comment, Long, Long> collectionRoutes(
@@ -65,18 +66,16 @@ public abstract class BaseCommentNestedCollectionRouter
 	/**
 	 * Returns the {@code CommentManager} used to retrieve comments.
 	 *
-	 * @return the {@code CommentManager} instance
-	 * @review
+	 * @return the comment manager
 	 */
 	protected abstract CommentManager getCommentManager();
 
 	/**
-	 * Transforms a {@code classPK} into its {@link GroupedModel}.
+	 * Transforms a class primary key into its {@code GroupedModel}.
 	 *
-	 * @param  classPK the class PK
+	 * @param  classPK the class primary key
 	 * @return the grouped model
-	 * @throws PortalException if getting the {@code GroupedModel} fails
-	 * @review
+	 * @throws PortalException if getting the grouped model fails
 	 */
 	protected abstract GroupedModel getGroupedModel(long classPK)
 		throws PortalException;
@@ -87,10 +86,9 @@ public abstract class BaseCommentNestedCollectionRouter
 		throws PortalException {
 
 		GroupedModel groupedModel = getGroupedModel(classPK);
-		long resourcePrimKey = getResourcePrimKey(classPK);
 
 		int count = getCommentManager().getRootCommentsCount(
-			groupedModel.getModelClassName(), resourcePrimKey,
+			groupedModel.getModelClassName(), classPK,
 			WorkflowConstants.STATUS_APPROVED);
 
 		if (count == 0) {
@@ -102,15 +100,11 @@ public abstract class BaseCommentNestedCollectionRouter
 			groupedModel.getModelClassName(), classPK);
 
 		List<Comment> comments = getCommentManager().getRootComments(
-			groupedModel.getModelClassName(), resourcePrimKey,
+			groupedModel.getModelClassName(), classPK,
 			WorkflowConstants.STATUS_APPROVED, pagination.getStartPosition(),
 			pagination.getEndPosition());
 
 		return new PageItems<>(comments, count);
-	}
-
-	protected long getResourcePrimKey(long classPK) throws PortalException {
-		return classPK;
 	}
 
 }

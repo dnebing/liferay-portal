@@ -1,0 +1,68 @@
+@import "./FragmentEntryLink";
+
+@import "./FragmentEntryLinkList.scss";
+
+@import "./FragmentEntryLinkEditables";
+
+@import "./FragmentsEditorToolbar";
+
+@import "./FragmentsEditorSidebar";
+
+@import "./SelectMappingDialog";
+
+@import "./SidebarLayoutsSection";
+
+@import "./variables";
+
+.lfr-edit-mode__disabled-area {
+	cursor: not-allowed;
+	position: relative;
+}
+
+.lfr-edit-mode__disabled-area:after {
+	background-color: rgba(255, 255, 255, 0);
+	content: '';
+	display: block;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	transition: background-color ease 0.3s;
+	width: 100%;
+}
+
+.lfr-edit-mode__disabled-area:hover:after {
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+.fragments-editor-toolbar {
+	transition: padding ease 0.5s;
+
+	&__add-fragment-button {
+		display: none;
+	}
+
+	body.open-admin-panel & {
+		padding-right: $contextualSidebarContentPadding;
+	}
+}
+
+.has-control-menu.has-edit-mode-menu #wrapper {
+	margin-top: $controlMenuHeight + $managementBarHeight;
+
+	@media (min-width: 768px) {
+		& {
+			margin-top: $desktopControlMenuHeight + $managementBarHeight;
+		}
+	}
+}
+
+.disabled-area-popover {
+	opacity: 0;
+	pointer-events: none;
+
+	&--visible {
+		opacity: 1;
+		pointer-events: all;
+	}
+}

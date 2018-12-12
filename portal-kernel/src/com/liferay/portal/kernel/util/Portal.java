@@ -737,23 +737,55 @@ public interface Portal {
 
 	public int[] getGroupFriendlyURLIndex(String requestURI);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGroupPermissions(HttpServletRequest request);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGroupPermissions(
 		HttpServletRequest request, String className);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGroupPermissions(PortletRequest portletRequest);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGroupPermissions(
 		PortletRequest portletRequest, String className);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGuestPermissions(HttpServletRequest request);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGuestPermissions(
 		HttpServletRequest request, String className);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGuestPermissions(PortletRequest portletRequest);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public String[] getGuestPermissions(
 		PortletRequest portletRequest, String className);
 
@@ -1368,6 +1400,12 @@ public interface Portal {
 
 	public boolean isSecure(HttpServletRequest request);
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #isSkipPortletContentRendering(Group, LayoutTypePortlet,
+	 *             PortletDisplay, String)}
+	 */
+	@Deprecated
 	public boolean isSkipPortletContentProcessing(
 			Group group, HttpServletRequest httpServletRequest,
 			LayoutTypePortlet layoutTypePortlet, PortletDisplay portletDisplay,

@@ -39,9 +39,9 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 
 	@Override
 	protected void doVisitToken(DetailAST detailAST) {
-		DetailAST parentAST = detailAST.getParent();
+		DetailAST parentDetailAST = detailAST.getParent();
 
-		if (parentAST != null) {
+		if (parentDetailAST != null) {
 			return;
 		}
 
@@ -62,18 +62,20 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 	}
 
 	private void _checkDynamicMethod(
-		DetailAST classDefAST, DetailAST methodDefAST, String methodName,
-		String defaultUnbindMethodName) {
+		DetailAST classDefinitionDetailAST, DetailAST methodDefinitionDetailAST,
+		String methodName, String defaultUnbindMethodName) {
 
-		String methodBody = _getMethodBody(methodDefAST);
+		String methodBody = _getMethodBody(methodDefinitionDetailAST);
 
 		Matcher matcher = _referenceMethodContentPattern.matcher(
 			StringUtil.trim(methodBody));
 
 		if (!matcher.find()) {
-			if (!_containsMethod(classDefAST, defaultUnbindMethodName)) {
+			if (!_containsMethod(
+					classDefinitionDetailAST, defaultUnbindMethodName)) {
+
 				log(
-					methodDefAST.getLineNo(),
+					methodDefinitionDetailAST,
 					_MSG_MISSING_DYNAMIC_POLICY_UNBIND);
 			}
 
@@ -82,59 +84,63 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 
 		String variableName = matcher.group(1);
 
-		List<DetailAST> variableDefASTList = DetailASTUtil.getAllChildTokens(
-			classDefAST, true, TokenTypes.VARIABLE_DEF);
+		List<DetailAST> variableDefinitionDetailASTList =
+			DetailASTUtil.getAllChildTokens(
+				classDefinitionDetailAST, true, TokenTypes.VARIABLE_DEF);
 
-		for (DetailAST variableDefAST : variableDefASTList) {
-			DetailAST identAST = variableDefAST.findFirstToken(
-				TokenTypes.IDENT);
+		for (DetailAST variableDefinitionDetailAST :
+				variableDefinitionDetailASTList) {
 
-			if (!variableName.equals(identAST.getText())) {
+			DetailAST identDetailAST =
+				variableDefinitionDetailAST.findFirstToken(TokenTypes.IDENT);
+
+			if (!variableName.equals(identDetailAST.getText())) {
 				continue;
 			}
 
 			if (AnnotationUtil.containsAnnotation(
-					variableDefAST, "Reference")) {
+					variableDefinitionDetailAST, "Reference")) {
 
 				return;
 			}
 
-			DetailAST modifiersAST = variableDefAST.findFirstToken(
-				TokenTypes.MODIFIERS);
+			DetailAST modifiersDetailAST =
+				variableDefinitionDetailAST.findFirstToken(
+					TokenTypes.MODIFIERS);
 
-			if (!modifiersAST.branchContains(TokenTypes.LITERAL_STATIC)) {
+			if (!modifiersDetailAST.branchContains(TokenTypes.LITERAL_STATIC)) {
 				log(
-					methodDefAST.getLineNo(), _MSG_MOVE_REFERENCE, methodName,
+					methodDefinitionDetailAST, _MSG_MOVE_REFERENCE, methodName,
 					variableName);
 			}
 		}
 	}
 
 	private void _checkGreedyOption(
-		DetailAST annotationAST, String policyName) {
+		DetailAST annotationDetailAST, String policyName) {
 
 		String policyOptionName = _getAnnotationMemberValue(
-			annotationAST, "policyOption", _POLICY_OPTION_RELUCTANT);
+			annotationDetailAST, "policyOption", _POLICY_OPTION_RELUCTANT);
 
 		if (policyOptionName.endsWith(_POLICY_OPTION_GREEDY) &&
 			policyName.endsWith(_POLICY_STATIC)) {
 
-			log(annotationAST.getLineNo(), _MSG_INCORRECT_GREEDY_POLICY_OPTION);
+			log(annotationDetailAST, _MSG_INCORRECT_GREEDY_POLICY_OPTION);
 		}
 	}
 
 	private void _checkReferenceAnnotation(DetailAST detailAST) {
-		DetailAST annotationAST = AnnotationUtil.getAnnotation(
+		DetailAST annotationDetailAST = AnnotationUtil.getAnnotation(
 			detailAST, "Reference");
 
-		if (annotationAST == null) {
+		if (annotationDetailAST == null) {
 			return;
 		}
 
 		String policyName = _getAnnotationMemberValue(
-			annotationAST, "policy", _POLICY_STATIC);
+			annotationDetailAST, "policy", _POLICY_STATIC);
 
-		_checkGreedyOption(annotationAST, policyName);
+		_checkGreedyOption(annotationDetailAST, policyName);
 
 		if (detailAST.getType() == TokenTypes.VARIABLE_DEF) {
 			_checkVolatileVariable(detailAST, policyName);
@@ -142,40 +148,43 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 			return;
 		}
 
-		DetailAST classDefAST = DetailASTUtil.getParentWithTokenType(
-			detailAST, TokenTypes.CLASS_DEF);
+		DetailAST classDefinitionDetailAST =
+			DetailASTUtil.getParentWithTokenType(
+				detailAST, TokenTypes.CLASS_DEF);
 
-		if (classDefAST == null) {
+		if (classDefinitionDetailAST == null) {
 			return;
 		}
 
 		String unbindName = _getAnnotationMemberValue(
-			annotationAST, "unbind", null);
+			annotationDetailAST, "unbind", null);
 
-		DetailAST identAST = detailAST.findFirstToken(TokenTypes.IDENT);
+		DetailAST identDetailAST = detailAST.findFirstToken(TokenTypes.IDENT);
 
-		String methodName = identAST.getText();
+		String methodName = identDetailAST.getText();
 
 		String defaultUnbindMethodName = _getDefaultUnbindMethodName(
 			methodName);
 
 		_checkUnbind(
-			classDefAST, defaultUnbindMethodName, unbindName, policyName,
-			annotationAST.getLineNo());
+			classDefinitionDetailAST, defaultUnbindMethodName, unbindName,
+			policyName, annotationDetailAST.getLineNo());
 
 		if (policyName.endsWith(_POLICY_DYNAMIC) && (unbindName == null)) {
 			_checkDynamicMethod(
-				classDefAST, detailAST, methodName, defaultUnbindMethodName);
+				classDefinitionDetailAST, detailAST, methodName,
+				defaultUnbindMethodName);
 		}
 	}
 
 	private void _checkUnbind(
-		DetailAST classDefAST, String defaultUnbindMethodName,
+		DetailAST classDefinitionDetailAST, String defaultUnbindMethodName,
 		String unbindName, String policyName, int lineNo) {
 
 		if (unbindName == null) {
 			if (policyName.endsWith(_POLICY_STATIC) &&
-				!_containsMethod(classDefAST, defaultUnbindMethodName)) {
+				!_containsMethod(
+					classDefinitionDetailAST, defaultUnbindMethodName)) {
 
 				log(lineNo, _MSG_MISSING_STATIC_POLICY_UNBIND, _NO_UNBIND);
 			}
@@ -191,33 +200,39 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 	}
 
 	private void _checkVolatileVariable(
-		DetailAST variableDefAST, String policyName) {
+		DetailAST variableDefinitionDetailAST, String policyName) {
 
 		if (!policyName.endsWith(_POLICY_DYNAMIC)) {
 			return;
 		}
 
-		DetailAST modifiersAST = variableDefAST.findFirstToken(
-			TokenTypes.MODIFIERS);
+		DetailAST modifiersDetailAST =
+			variableDefinitionDetailAST.findFirstToken(TokenTypes.MODIFIERS);
 
-		if (!modifiersAST.branchContains(TokenTypes.LITERAL_VOLATILE)) {
-			DetailAST identAST = variableDefAST.findFirstToken(
-				TokenTypes.IDENT);
+		if (!modifiersDetailAST.branchContains(TokenTypes.LITERAL_VOLATILE)) {
+			DetailAST identDetailAST =
+				variableDefinitionDetailAST.findFirstToken(TokenTypes.IDENT);
 
 			log(
-				identAST.getLineNo(), _MSG_MISSING_VOLATILE,
-				identAST.getText());
+				identDetailAST, _MSG_MISSING_VOLATILE,
+				identDetailAST.getText());
 		}
 	}
 
-	private boolean _containsMethod(DetailAST classDefAST, String methodName) {
-		List<DetailAST> methodDefASTList = DetailASTUtil.getAllChildTokens(
-			classDefAST, true, TokenTypes.METHOD_DEF);
+	private boolean _containsMethod(
+		DetailAST classDefinitionDetailAST, String methodName) {
 
-		for (DetailAST methodDefAST : methodDefASTList) {
-			DetailAST identAST = methodDefAST.findFirstToken(TokenTypes.IDENT);
+		List<DetailAST> methodDefinitionDetailASTList =
+			DetailASTUtil.getAllChildTokens(
+				classDefinitionDetailAST, true, TokenTypes.METHOD_DEF);
 
-			if (methodName.equals(identAST.getText())) {
+		for (DetailAST methodDefinitionDetailAST :
+				methodDefinitionDetailASTList) {
+
+			DetailAST identDetailAST = methodDefinitionDetailAST.findFirstToken(
+				TokenTypes.IDENT);
+
+			if (methodName.equals(identDetailAST.getText())) {
 				return true;
 			}
 		}
@@ -226,33 +241,36 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 	}
 
 	private String _getAnnotationMemberValue(
-		DetailAST anontationAST, String name, String defaultValue) {
+		DetailAST anontationDetailAST, String name, String defaultValue) {
 
-		List<DetailAST> annotationMemberValuePairASTList =
+		List<DetailAST> annotationMemberValuePairDetailASTList =
 			DetailASTUtil.getAllChildTokens(
-				anontationAST, false, TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+				anontationDetailAST, false,
+				TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
 
-		for (DetailAST annotationMemberValuePairAST :
-				annotationMemberValuePairASTList) {
+		for (DetailAST annotationMemberValuePairDetailAST :
+				annotationMemberValuePairDetailASTList) {
 
-			DetailAST identAST = annotationMemberValuePairAST.findFirstToken(
-				TokenTypes.IDENT);
+			DetailAST identDetailAST =
+				annotationMemberValuePairDetailAST.findFirstToken(
+					TokenTypes.IDENT);
 
-			String annotationMemberName = identAST.getText();
+			String annotationMemberName = identDetailAST.getText();
 
 			if (!annotationMemberName.equals(name)) {
 				continue;
 			}
 
-			DetailAST expressionAST =
-				annotationMemberValuePairAST.findFirstToken(TokenTypes.EXPR);
+			DetailAST expressionDetailAST =
+				annotationMemberValuePairDetailAST.findFirstToken(
+					TokenTypes.EXPR);
 
-			if (expressionAST == null) {
+			if (expressionDetailAST == null) {
 				return null;
 			}
 
 			FullIdent expressionIdent = FullIdent.createFullIdentBelow(
-				expressionAST);
+				expressionDetailAST);
 
 			return expressionIdent.getText();
 		}
@@ -268,15 +286,17 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 		return "un" + methodName;
 	}
 
-	private String _getMethodBody(DetailAST methodDefAST) {
-		DetailAST slistAST = methodDefAST.findFirstToken(TokenTypes.SLIST);
+	private String _getMethodBody(DetailAST methodDefinitionDetailAST) {
+		DetailAST slistDetailAST = methodDefinitionDetailAST.findFirstToken(
+			TokenTypes.SLIST);
 
-		int start = DetailASTUtil.getStartLine(slistAST);
-		int end = DetailASTUtil.getEndLine(slistAST);
+		int startLineNumber = DetailASTUtil.getStartLineNumber(slistDetailAST);
+		int endLineNumber = DetailASTUtil.getEndLineNumber(slistDetailAST);
 
-		StringBundler sb = new StringBundler((end - start - 1) * 2);
+		StringBundler sb = new StringBundler(
+			(endLineNumber - startLineNumber - 1) * 2);
 
-		for (int i = start + 1; i < end; i++) {
+		for (int i = startLineNumber + 1; i < endLineNumber; i++) {
 			sb.append(getLine(i - 1));
 			sb.append("\n");
 		}
@@ -310,7 +330,7 @@ public class ReferenceAnnotationCheck extends BaseCheck {
 
 	private static final String _POLICY_STATIC = "STATIC";
 
-	private final Pattern _referenceMethodContentPattern = Pattern.compile(
-		"^(\\w+) =\\s+\\w+;$");
+	private static final Pattern _referenceMethodContentPattern =
+		Pattern.compile("^(\\w+) =\\s+\\w+;$");
 
 }

@@ -16,8 +16,13 @@ package com.liferay.knowledge.base.internal.upgrade;
 
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.knowledge.base.internal.upgrade.v2_0_2.UpgradeKBArticle;
+import com.liferay.knowledge.base.internal.upgrade.v3_0_0.util.KBArticleTable;
+import com.liferay.knowledge.base.internal.upgrade.v3_0_0.util.KBCommentTable;
+import com.liferay.knowledge.base.internal.upgrade.v3_0_0.util.KBFolderTable;
+import com.liferay.knowledge.base.internal.upgrade.v3_0_0.util.KBTemplateTable;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.settings.SettingsFactory;
+import com.liferay.portal.kernel.upgrade.BaseUpgradeSQLServerDatetime;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
 import org.osgi.service.component.annotations.Component;
@@ -26,7 +31,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Adolfo Pérez
  */
-@Component(immediate = true, service = UpgradeStepRegistrator.class)
+@Component(service = UpgradeStepRegistrator.class)
 public class KnowledgeBaseServiceUpgrade implements UpgradeStepRegistrator {
 
 	@Override
@@ -123,6 +128,14 @@ public class KnowledgeBaseServiceUpgrade implements UpgradeStepRegistrator {
 				UpgradePortletSettings(_settingsFactory));
 
 		registry.register("2.0.1", "2.0.2", new UpgradeKBArticle());
+
+		registry.register(
+			"2.0.2", "3.0.0",
+			new BaseUpgradeSQLServerDatetime(
+				new Class<?>[] {
+					KBArticleTable.class, KBCommentTable.class,
+					KBFolderTable.class, KBTemplateTable.class
+				}));
 	}
 
 	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")

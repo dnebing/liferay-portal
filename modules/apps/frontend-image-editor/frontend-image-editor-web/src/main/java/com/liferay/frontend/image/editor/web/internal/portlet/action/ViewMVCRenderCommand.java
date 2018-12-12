@@ -85,6 +85,11 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 
 		template.put("saveFileName", saveFileName);
 
+		String saveMimeType = ParamUtil.getString(
+			renderRequest, "saveMimeType");
+
+		template.put("saveMimeType", saveMimeType);
+
 		String saveParamName = ParamUtil.getString(
 			renderRequest, "saveParamName");
 
@@ -136,9 +141,6 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 
 		List<Map<String, Object>> imageEditorToolsContexts = new ArrayList<>();
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		List<ImageEditorCapabilityDescriptor>
 			toolImageEditorCapabilityDescriptors =
 				_imageEditorCapabilityTracker.
@@ -147,6 +149,9 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 		if (toolImageEditorCapabilityDescriptors == null) {
 			return imageEditorToolsContexts;
 		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		List<List<ImageEditorCapabilityDescriptor>>
 			imageEditorCapabilityDescriptorsList =

@@ -144,10 +144,7 @@ public class JSPDefineObjectsCheck extends BaseFileCheck {
 			"ResourceBundleUtil.getBundle(\"content.Language\", locale, " +
 				"getClass()"
 		},
-		{
-			"WindowState", "windowState",
-			"liferayPortletRequest.getWindowState()"
-		}
+		{"WindowState", "windowState", "liferayPortletRequest.getWindowState()"}
 	};
 
 	private static final String[][] _LIFERAY_THEME_DEFINE_OBJECTS = {
@@ -256,9 +253,9 @@ public class JSPDefineObjectsCheck extends BaseFileCheck {
 		}
 	};
 
-	private final Pattern _defineObjectsPattern = Pattern.compile(
+	private static final Pattern _defineObjectsPattern = Pattern.compile(
 		"\n\t*(<.*:defineObjects />)(\n|$)");
-	private final Pattern _missingEmptyLineBetweenDefineOjbectsPattern =
+	private static final Pattern _missingEmptyLineBetweenDefineOjbectsPattern =
 		Pattern.compile("<.*:defineObjects />\n<.*:defineObjects />\n");
 
 }

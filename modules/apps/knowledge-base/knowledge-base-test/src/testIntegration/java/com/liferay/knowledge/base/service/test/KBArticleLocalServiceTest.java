@@ -59,6 +59,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -267,6 +268,20 @@ public class KBArticleLocalServiceTest {
 		Assert.assertTrue(Validator.isNotNull(kbArticle.getUrlTitle()));
 	}
 
+	@Test
+	public void testAddKBArticleWithCustomHTML() throws Exception {
+		String content =
+			"<a href=\"http://www.liferay.com\" target=\"_blank\" />";
+
+		KBArticle kbArticle = KBArticleLocalServiceUtil.addKBArticle(
+			_user.getUserId(), _kbFolderClassNameId,
+			KBFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+			StringUtil.randomString(), StringUtil.randomString(), content,
+			StringUtil.randomString(), null, null, null, _serviceContext);
+
+		Assert.assertEquals(content, kbArticle.getContent());
+	}
+
 	@Test(expected = KBArticleUrlTitleException.class)
 	public void testAddKBArticleWithDuplicateURLTitle() throws Exception {
 		String urlTitle = StringUtil.randomString();
@@ -321,6 +336,7 @@ public class KBArticleLocalServiceTest {
 			null, _serviceContext);
 	}
 
+	@Ignore
 	@Test(expected = KBArticleUrlTitleException.class)
 	public void testAddKBArticleWithLargeURLTitle() throws Exception {
 		int urlTitleMaxSize = ModelHintsUtil.getMaxLength(

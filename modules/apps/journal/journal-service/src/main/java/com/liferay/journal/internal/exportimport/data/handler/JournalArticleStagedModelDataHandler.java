@@ -254,6 +254,7 @@ public class JournalArticleStagedModelDataHandler
 		groupId = MapUtil.getLong(groupIds, groupId);
 
 		String articleArticleId = referenceElement.attributeValue("article-id");
+
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
@@ -675,13 +676,13 @@ public class JournalArticleStagedModelDataHandler
 			ddmStructureKeys, article.getDDMStructureKey(),
 			article.getDDMStructureKey());
 
-		Map<String, Long> ddmStructureIds =
-			(Map<String, Long>)portletDataContext.getNewPrimaryKeysMap(
-				DDMStructure.class);
-
 		long ddmStructureId = 0;
 
 		if (article.getClassNameId() != 0) {
+			Map<String, Long> ddmStructureIds =
+				(Map<String, Long>)portletDataContext.getNewPrimaryKeysMap(
+					DDMStructure.class);
+
 			ddmStructureId = ddmStructureIds.get(article.getClassPK());
 		}
 
@@ -816,17 +817,19 @@ public class JournalArticleStagedModelDataHandler
 
 			JournalArticle importedArticle = null;
 
-			String articleResourceUuid = articleElement.attributeValue(
-				"article-resource-uuid");
-
 			// Used when importing LARs with journal schemas under 1.1.0
 
 			_setLegacyValues(article);
 
 			if (portletDataContext.isDataStrategyMirror()) {
 				serviceContext.setUuid(article.getUuid());
+
+				String articleResourceUuid = articleElement.attributeValue(
+					"article-resource-uuid");
+
 				serviceContext.setAttribute(
 					"articleResourceUuid", articleResourceUuid);
+
 				serviceContext.setAttribute("urlTitle", article.getUrlTitle());
 
 				boolean preloaded = GetterUtil.getBoolean(
@@ -1012,8 +1015,6 @@ public class JournalArticleStagedModelDataHandler
 		String articleResourceUuid, long groupId, String articleId,
 		String newArticleId, boolean preloaded) {
 
-		JournalArticle existingArticle = null;
-
 		JournalArticleResource journalArticleResource =
 			_journalArticleResourceLocalService.
 				fetchJournalArticleResourceByUuidAndGroupId(
@@ -1027,6 +1028,8 @@ public class JournalArticleStagedModelDataHandler
 		if (!preloaded) {
 			return null;
 		}
+
+		JournalArticle existingArticle = null;
 
 		if (Validator.isNotNull(newArticleId)) {
 			existingArticle = _journalArticleLocalService.fetchArticle(

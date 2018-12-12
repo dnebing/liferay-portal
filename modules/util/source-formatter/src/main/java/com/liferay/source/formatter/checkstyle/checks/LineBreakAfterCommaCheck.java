@@ -32,27 +32,24 @@ public class LineBreakAfterCommaCheck extends BaseCheck {
 
 	@Override
 	protected void doVisitToken(DetailAST detailAST) {
-		DetailAST parentAST = detailAST.getParent();
-
-		if (parentAST.getType() == TokenTypes.TYPE_ARGUMENTS) {
-			return;
-		}
-
 		String line = getLine(detailAST.getLineNo() - 1);
 
 		if (DetailASTUtil.isAtLineEnd(detailAST, line)) {
 			return;
 		}
 
-		DetailAST previousSiblingAST = detailAST.getPreviousSibling();
+		int lineNo = detailAST.getLineNo();
 
-		if (detailAST.getLineNo() !=
-				DetailASTUtil.getStartLine(previousSiblingAST)) {
+		if ((lineNo !=
+				DetailASTUtil.getStartLineNumber(
+					detailAST.getPreviousSibling())) ||
+			(lineNo !=
+				DetailASTUtil.getEndLineNumber(detailAST.getNextSibling()))) {
 
 			String s = StringUtil.trim(
 				line.substring(0, detailAST.getColumnNo() + 1));
 
-			log(detailAST.getLineNo(), _MSG_INCORRECT_LINE_BREAK, s);
+			log(lineNo, _MSG_INCORRECT_LINE_BREAK, s);
 		}
 	}
 

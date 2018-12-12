@@ -198,7 +198,7 @@
 
 		<execute function="KeyPress#keyPressNoError" locator1="KaleoDesignerEditWorkflow#VIEW_FORM_CONNECTOR" value1="\DELETE" />
 
-		<execute function="Confirm" value1="Are you sure you want to delete the selected connector(s)?" />
+		<execute function="AssertConfirm" value1="Are you sure you want to delete the selected connector(s)?" />
 
 		<execute function="Pause" locator1="1000" />
 
@@ -213,7 +213,7 @@
 
 		<execute function="ClickNoError" locator1="KaleoDesignerEditWorkflow#VIEW_FORM_NODE_DELETE_ICON" />
 
-		<execute function="Confirm" value1="Are you sure you want to delete the selected node(s)?" />
+		<execute function="AssertConfirm" value1="Are you sure you want to delete the selected node(s)?" />
 
 		<execute function="Pause" locator1="1000" />
 
@@ -223,62 +223,23 @@
 	</command>
 
 	<command name="editConnectorName">
-		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME" />
+		<execute function="DoubleClick" locator1="DDMEditStructure#SETTINGS_NAME" />
 
-		<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME_FIELD" value1="${connectorName}" />
+		<execute function="Type" locator1="TextInput#TEXT" value1="${connectorName}" />
 
 		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
 
-		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME" value1="${connectorName}" />
+		<execute function="AssertTextEquals" locator1="DDMEditStructure#SETTINGS_NAME" value1="${connectorName}" />
 	</command>
 
 	<command name="editExecutionType">
 		<execute function="Select" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_EXECUTION_TYPE_SELECT" value1="${nodeExecutionType}" />
 	</command>
 
-	<command name="editNodeActions">
-		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_ACTIONS" />
-
-		<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_NAME" value1="${nodeActionsName}" />
-		<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_DESCRIPTION" value1="${nodeActionsDescription}" />
-
-		<if>
-			<isset var="nodeActionsScript" />
-			<then>
-				<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_SCRIPT" value1="${nodeActionsScript}" />
-			</then>
-		</if>
-
-		<if>
-			<isset var="nodeActionsScriptLanguage" />
-			<then>
-				<execute function="Select" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_SCRIPT_LANGUAGE_SELECT" value1="${nodeActionsScriptLanguage}" />
-			</then>
-		</if>
-
-		<if>
-			<isset var="nodeActionsExecutionType" />
-			<then>
-				<execute macro="KaleoDesigner#editExecutionType">
-					<var name="nodeExecutionType" value="${nodeActionsExecutionType}" />
-				</execute>
-			</then>
-		</if>
-
-		<if>
-			<isset var="nodeActionsPriority" />
-			<then>
-				<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_PRIORITY" value1="${nodeActionsPriority}" />
-			</then>
-		</if>
-
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-	</command>
-
 	<command name="editNodeAssignments">
 		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_ASSIGNMENTS" />
 
-		<execute function="Select" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_ASSIGNMENT_TYPE_SELECT" value1="${nodeAssignmentType}" />
+		<execute function="Select" locator1="Select#ASSIGNMENT_TYPE" value1="${nodeAssignmentType}" />
 
 		<if>
 			<equals arg1="${nodeAssignmentType}" arg2="Role" />
@@ -322,7 +283,7 @@
 	<command name="editNodeDescription">
 		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_DESCRIPTION" />
 
-		<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_DESCRIPTION_FIELD" value1="${nodeDescription}" />
+		<execute function="Type" locator1="DDMEditStructure#SETTINGS_CELL_EDITOR_TEXT_AREA" value1="${nodeDescription}" />
 
 		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
 
@@ -330,13 +291,13 @@
 	</command>
 
 	<command name="editNodeName">
-		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME" />
+		<execute function="DoubleClick" locator1="DDMEditStructure#SETTINGS_NAME" />
 
-		<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME_FIELD" value1="${nodeName}" />
+		<execute function="Type" locator1="TextInput#TEXT" value1="${nodeName}" />
 
 		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
 
-		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME" value1="${nodeName}" />
+		<execute function="AssertTextEquals" locator1="DDMEditStructure#SETTINGS_NAME" value1="${nodeName}" />
 	</command>
 
 	<command name="editNodeNotifications">
@@ -378,7 +339,7 @@
 		<if>
 			<isset var="nodeNotificationsRecipientType" />
 			<then>
-				<execute function="Select" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_NOTIFICATIONS_RECIPIENT_EDITOR_TYPE_SELECT" value1="${nodeNotificationsRecipientType}" />
+				<execute function="Select" locator1="Select#ASSIGNMENT_TYPE" value1="${nodeNotificationsRecipientType}" />
 
 				<if>
 					<equals arg1="${nodeNotificationsRecipientType}" arg2="Role" />
@@ -417,24 +378,6 @@
 		<execute function="Type#typeAceEditorNoMouseOver" locator1="KaleoDesignerEditWorkflow#SETTINGS_SCRIPT_CONTENT" value1="${nodeScript}" />
 
 		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-	</command>
-
-	<command name="editNodeScriptLanguage">
-		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_SCRIPT_LANGUAGE" />
-
-		<execute function="Select" locator1="KaleoDesignerEditWorkflow#SETTINGS_SCRIPT_LANGUAGE" value1="${nodeScriptLanguage}" />
-
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-	</command>
-
-	<command name="editNodeSettings">
-		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME" />
-
-		<execute function="Type" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME_FIELD" value1="${nodeName}" />
-
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-
-		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_NAME" value1="${nodeName}" />
 	</command>
 
 	<command name="editNodeTimer">
@@ -494,28 +437,6 @@
 		<execute function="Click" locator1="KaleoDesignerEditWorkflow#SOURCE_KALEO_XML_CONTENT_SPECIFIC_LINE" />
 
 		<execute function="TypeScreen" locator1="${kdSourceXML}" />
-	</command>
-
-	<command name="eraseDefinitionViaSourceXML">
-		<execute function="AssertClick" locator1="KaleoDesignerEditWorkflow#SOURCE_KALEO_XML_TAB" value1="Source" />
-
-		<execute function="Pause" locator1="1000" />
-
-		<execute function="Type#typeAceEditorNoMouseOver" locator1="KaleoDesignerEditWorkflow#SOURCE_KALEO_XML_CONTENT" value1="" />
-
-		<execute function="Pause" locator1="1000" />
-
-		<execute function="AssertClick" locator1="KaleoDesignerEditWorkflow#DIAGRAM_TAB" value1="Diagram" />
-
-		<execute function="Pause" locator1="1000" />
-	</command>
-
-	<command name="latestVersionDraft">
-		<execute function="AssertClick" locator1="KaleoDesignerEditWorkflow#DRAFT_HISTORY_LATEST_VERSION_BUTTON" value1="Latest Version" />
-	</command>
-
-	<command name="removeNodeSettingsSection">
-		<execute function="AssertClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_REMOVE_SECTION" value1="Remove" />
 	</command>
 
 	<command name="restoreDraft">
@@ -601,45 +522,6 @@
 		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_EXECUTION_TYPE_SELECT" value1="${nodeExecutionType}" />
 	</command>
 
-	<command name="viewNodeActions">
-		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_ACTIONS" value1="${nodeActionsName}" />
-
-		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_ACTIONS" />
-
-		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_NAME" value1="${nodeActionsName}" />
-		<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_DESCRIPTION" value1="${nodeActionsDescription}" />
-
-		<if>
-			<isset var="nodeActionsScript" />
-			<then>
-				<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_SCRIPT" value1="${nodeActionsScript}" />
-			</then>
-		</if>
-
-		<if>
-			<isset var="nodeActionsScriptLanguage" />
-			<then>
-				<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_SCRIPT_LANGUAGE_SELECT" value1="${nodeActionsScriptLanguage}" />
-			</then>
-		</if>
-
-		<if>
-			<isset var="nodeActionsExecutionType" />
-			<then>
-				<execute macro="KaleoDesigner#viewExecutionType">
-					<var name="nodeExecutionType" value="${nodeActionsExecutionType}" />
-				</execute>
-			</then>
-		</if>
-
-		<if>
-			<isset var="nodeActionsPriority" />
-			<then>
-				<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_PRIORITY" value1="${nodeActionsPriority}" />
-			</then>
-		</if>
-	</command>
-
 	<command name="viewNodeAssignments">
 		<if>
 			<equals arg1="${nodeAssignmentType}" arg2="Role" />
@@ -653,7 +535,7 @@
 
 		<execute function="DoubleClick" locator1="KaleoDesignerEditWorkflow#SETTINGS_ASSIGNMENTS" />
 
-		<execute function="AssertElementPresent" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_ASSIGNMENT_TYPE_SELECT" />
+		<execute function="AssertElementPresent" locator1="Select#ASSIGNMENT_TYPE" />
 	</command>
 
 	<command name="viewNodeNotifications">
@@ -709,7 +591,7 @@
 				<if>
 					<equals arg1="${nodeNotificationsRecipientType}" arg2="Role" />
 					<then>
-						<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_NOTIFICATIONS_RECIPIENT_EDITOR_TYPE_SELECT" value1="${nodeNotificationsRecipientType}" />
+						<execute function="AssertTextEquals" locator1="Select#ASSIGNMENT_TYPE" value1="${nodeNotificationsRecipientType}" />
 						<execute function="AssertTextEquals" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_NOTIFICATIONS_RECIPIENT_EDITOR_ROLE_SEARCH" value1="${nodeNotificationsRecipientRole}" />
 					</then>
 				</if>
@@ -717,7 +599,7 @@
 				<if>
 					<equals arg1="${nodeNotificationsRecipientType}" arg2="Role Type" />
 					<then>
-						<execute function="AssertSelectedLabel" locator1="KaleoDesignerEditWorkflow#SETTINGS_CELL_EDITOR_NOTIFICATIONS_RECIPIENT_EDITOR_TYPE_SELECT" value1="Role Type" />
+						<execute function="AssertSelectedLabel" locator1="Select#ASSIGNMENT_TYPE" value1="Role Type" />
 
 						<if>
 							<equals arg1="${nodeNotificationsRecipientType}" arg2="Role" />

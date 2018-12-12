@@ -33,7 +33,6 @@ import com.liferay.knowledge.base.model.KBFolder;
 import com.liferay.knowledge.base.service.KBArticleLocalService;
 import com.liferay.knowledge.base.service.KBFolderLocalService;
 import com.liferay.knowledge.base.util.AdminHelper;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -49,6 +48,7 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portlet.documentlibrary.lar.FileEntryUtil;
 
 import java.io.InputStream;
+import java.io.Serializable;
 
 import java.util.List;
 import java.util.Map;
@@ -96,7 +96,7 @@ public class KBArticleStagedModelDataHandler
 
 		return _kbArticleLocalService.getKBArticlesByUuidAndCompanyId(
 			uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS,
-			new StagedModelModifiedDateComparator<KBArticle>());
+			new StagedModelModifiedDateComparator<>());
 	}
 
 	@Override
@@ -114,7 +114,8 @@ public class KBArticleStagedModelDataHandler
 		PortletDataContext portletDataContext, KBArticle kbArticle) {
 
 		return !portletDataContext.isModelCounted(
-			KBArticle.class.getName(), kbArticle.getResourcePrimKey());
+			KBArticle.class.getName(),
+			(Serializable)kbArticle.getResourcePrimKey());
 	}
 
 	@Override
@@ -153,8 +154,7 @@ public class KBArticleStagedModelDataHandler
 		Element kbArticleElement = portletDataContext.getExportDataElement(
 			kbArticle);
 
-		exportKBArticleAttachments(
-			portletDataContext, kbArticleElement, kbArticle);
+		exportKBArticleAttachments(portletDataContext, kbArticle);
 
 		String content =
 			_kbArticleExportImportContentProcessor.
@@ -183,6 +183,7 @@ public class KBArticleStagedModelDataHandler
 		long resourcePrimaryKey = MapUtil.getLong(
 			kbArticleResourcePrimKeys, kbArticle.getResourcePrimKey(),
 			kbArticle.getResourcePrimKey());
+
 		long parentResourcePrimKey = MapUtil.getLong(
 			kbArticleResourcePrimKeys, kbArticle.getParentResourcePrimKey(),
 			kbArticle.getParentResourcePrimKey());
@@ -222,14 +223,6 @@ public class KBArticleStagedModelDataHandler
 				KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 		}
 
-		String urlTitle = kbArticle.getUrlTitle();
-
-		if (Validator.isNotNull(urlTitle) &&
-			!urlTitle.startsWith(StringPool.SLASH)) {
-
-			kbArticle.setUrlTitle(StringPool.SLASH + urlTitle);
-		}
-
 		String[] sections = _adminHelper.unescapeSections(
 			kbArticle.getSections());
 
@@ -263,8 +256,9 @@ public class KBArticleStagedModelDataHandler
 
 				if (existingKBArticle == null) {
 					Map<Long, Long> kbFolderIds =
-						(Map<Long, Long>)portletDataContext.
-							getNewPrimaryKeysMap(KBFolder.class);
+						(Map<Long, Long>)
+							portletDataContext.getNewPrimaryKeysMap(
+								KBFolder.class);
 
 					long kbFolderId = MapUtil.getLong(
 						kbFolderIds, kbArticle.getKbFolderId(),
@@ -354,8 +348,7 @@ public class KBArticleStagedModelDataHandler
 	}
 
 	protected void exportKBArticleAttachments(
-			PortletDataContext portletDataContext, Element kbArticleElement,
-			KBArticle kbArticle)
+			PortletDataContext portletDataContext, KBArticle kbArticle)
 		throws Exception {
 
 		List<FileEntry> attachmentsFileEntries =
@@ -433,8 +426,6 @@ public class KBArticleStagedModelDataHandler
 		Element stagedModelElement =
 			portletDataContext.getImportDataStagedModelElement(stagedModel);
 
-		long kbArticleClassNameId = _portal.getClassNameId(
-			KBArticleConstants.getClassName());
 		long kbFolderClassNameId = _portal.getClassNameId(
 			KBFolderConstants.getClassName());
 
@@ -445,6 +436,9 @@ public class KBArticleStagedModelDataHandler
 		if (referencesElement == null) {
 			return;
 		}
+
+		long kbArticleClassNameId = _portal.getClassNameId(
+			KBArticleConstants.getClassName());
 
 		List<Element> referenceElements = referencesElement.elements();
 
@@ -465,37 +459,6 @@ public class KBArticleStagedModelDataHandler
 				break;
 			}
 		}
-	}
-
-	@Reference(unbind = "-")
-	protected void setAdminUtilHelper(AdminHelper adminHelper) {
-		_adminHelper = adminHelper;
-	}
-
-	@Reference(unbind = "-")
-	protected void setKBArticleLocalService(
-		KBArticleLocalService kbArticleLocalService) {
-
-		_kbArticleLocalService = kbArticleLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setKBFolderLocalService(
-		KBFolderLocalService kbFolderLocalService) {
-
-		_kbFolderLocalService = kbFolderLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setPortal(Portal portal) {
-		_portal = portal;
-	}
-
-	@Reference(unbind = "-")
-	protected void setPortletFileRepository(
-		PortletFileRepository portletFileRepository) {
-
-		_portletFileRepository = portletFileRepository;
 	}
 
 	private InputStream _getKBArticalAttachmentInputStream(
@@ -527,15 +490,23 @@ public class KBArticleStagedModelDataHandler
 	private static final Log _log = LogFactoryUtil.getLog(
 		KBArticleStagedModelDataHandler.class);
 
+	@Reference
 	private AdminHelper _adminHelper;
 
 	@Reference
 	private KBArticleExportImportContentProcessor
 		_kbArticleExportImportContentProcessor;
 
+	@Reference
 	private KBArticleLocalService _kbArticleLocalService;
+
+	@Reference
 	private KBFolderLocalService _kbFolderLocalService;
+
+	@Reference
 	private Portal _portal;
+
+	@Reference
 	private PortletFileRepository _portletFileRepository;
 
 }

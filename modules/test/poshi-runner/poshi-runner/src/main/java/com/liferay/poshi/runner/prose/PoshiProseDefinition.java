@@ -75,7 +75,10 @@ public class PoshiProseDefinition extends BasePoshiProse {
 
 		for (Map.Entry<String, String> entry : _tagMap.entrySet()) {
 			definitionElement.add(
-				new DefaultAttribute(entry.getKey(), entry.getValue()));
+				Dom4JUtil.getNewElement(
+					"property", null,
+					new DefaultAttribute("name", entry.getKey()),
+					new DefaultAttribute("value", entry.getValue())));
 		}
 
 		for (PoshiProseScenario poshiProseScenario : _poshiProseScenarios) {
@@ -85,9 +88,10 @@ public class PoshiProseDefinition extends BasePoshiProse {
 		return definitionElement;
 	}
 
-	private final Pattern _definitionPattern = Pattern.compile(
+	private static final Pattern _definitionPattern = Pattern.compile(
 		"(?s)(?<tags>\\@.*?)?(?<feature>Feature:.*?)?" +
 			"(?<scenarios>(Setup|Teardown|Scenario).*)");
+
 	private final String _fileName;
 	private final List<PoshiProseScenario> _poshiProseScenarios =
 		new ArrayList<>();

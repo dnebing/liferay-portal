@@ -30,59 +30,88 @@
 
 </aui:select>
 
-<aui:script sandbox="<%= true %>" use="liferay-portlet-url">
-	var formData = {};
+<aui:script use="liferay-portlet-url">
+	const form = document.getElementById('<portlet:namespace />fm');
+	const select = document.getElementById('<portlet:namespace />languageId');
 
-	var select = $('#<portlet:namespace />languageId');
+	if (form && select) {
+		const maxLengthsCache = {};
 
-	var userDetailsURL = Liferay.PortletURL.createURL('<%= themeDisplay.getURLCurrent() %>');
+		const userNameFields = document.getElementById('<portlet:namespace />userNameFields');
 
-	var userNameFields = $('#<portlet:namespace />userNameFields');
+		select.addEventListener(
+			'change',
+			function(event) {
+				const currentFormData = new FormData(form);
 
-	select.on(
-		'change',
-		function(event) {
-			_.forEach(
-				$('#<portlet:namespace />fm').formToArray(),
-				function(item, index) {
-					if (userNameFields.find('#' + item.name).length) {
-						formData[item.name] = item.value;
+				for (const tuple of currentFormData) {
+					const fieldName = tuple[0];
+
+					const field = userNameFields.querySelector('#' + fieldName);
+
+					if (field && field.hasAttribute('maxLength')) {
+						maxLengthsCache[fieldName] = field.getAttribute('maxLength');
 					}
 				}
-			);
 
-			userDetailsURL.setParameter('languageId', select.val());
+				userNameFields.insertAdjacentHTML('beforebegin', '<div class="loading-animation" id="<portlet:namespace />loadingUserNameFields"></div>');
 
-			$.ajax(
-				userDetailsURL.toString(),
-				{
-					beforeSend: function() {
-						userNameFields.before('<div class="loading-animation" id="<portlet:namespace />loadingUserNameFields"></div>');
+				userNameFields.classList.add('hide');
 
-						userNameFields.hide();
-					},
-					complete: function() {
-						$('#<portlet:namespace />loadingUserNameFields').remove();
+				const cleanUp = function() {
+					const loadingAnimation = document.getElementById('<portlet:namespace />loadingUserNameFields');
 
-						userNameFields.show();
+					if (loadingAnimation) {
+						loadingAnimation.parentNode.removeChild(loadingAnimation);
+					}
 
-						_.forEach(
-							formData,
-							function(item, index) {
-								userNameFields.find('#' + index).val(item);
+					if (userNameFields.classList.contains('hide')) {
+						userNameFields.classList.remove('hide');
+					}
+
+					for (const tuple of currentFormData) {
+						const fieldName = tuple[0];
+
+						const newField = userNameFields.querySelector('#' + fieldName);
+
+						if (newField) {
+							newField.value = tuple[1];
+
+							if (maxLengthsCache.hasOwnProperty(fieldName)) {
+								newField.setAttribute('maxLength', maxLengthsCache[fieldName]);
 							}
-						);
-					},
-					success: function(responseData) {
-						var responseUserNameFields = $(responseData).find('#<portlet:namespace />userNameFields').html();
+						}
+					}
+				};
 
-						userNameFields.html(responseUserNameFields);
-					},
-					timeout: 5000
-				}
-			);
-		}
-	);
+				const userDetailsURL = Liferay.PortletURL.createURL('<%= themeDisplay.getURLCurrent() %>');
+
+				userDetailsURL.setParameter('languageId', select.value);
+
+				fetch(userDetailsURL.toString())
+					.then(
+						function(response) {
+							return response.text();
+						}
+					)
+					.then(
+						function(responseData) {
+							const temp = document.implementation.createHTMLDocument();
+
+							temp.body.innerHTML = responseData;
+
+							const newUserNameFields = temp.getElementById('<portlet:namespace />userNameFields');
+
+							if (newUserNameFields) {
+								userNameFields.innerHTML = newUserNameFields.innerHTML;
+							}
+						}
+					)
+					.then(cleanUp)
+					.catch(cleanUp);
+			}
+		);
+	}
 </aui:script>
 
 <%

@@ -26,12 +26,7 @@
 />
 
 <clay:management-toolbar
-	actionDropdownItems="<%= layoutsAdminDisplayContext.getActionDropdownItems() %>"
-	componentId="pagesManagementToolbar"
-	creationMenu="<%= layoutsAdminDisplayContext.isShowAddRootLayoutButton() ? layoutsAdminDisplayContext.getCreationMenu() : null %>"
-	itemsTotal="<%= layoutsAdminDisplayContext.getTotalItems() %>"
-	searchContainerId="pages"
-	showSearch="<%= false %>"
+	displayContext="<%= new LayoutsAdminManagementToolbarDisplayContext(liferayPortletRequest, liferayPortletResponse, request, layoutsAdminDisplayContext) %>"
 />
 
 <liferay-ui:error exception="<%= LayoutTypeException.class %>">
@@ -52,23 +47,32 @@
 <aui:form action="<%= deleteLayoutURL %>" cssClass="container-fluid-1280" name="fm">
 	<c:choose>
 		<c:when test="<%= layoutsAdminDisplayContext.hasLayouts() %>">
+			<c:choose>
+				<c:when test="<%= layoutsAdminDisplayContext.isFlattenedView() %>">
+					<liferay-util:include page="/flattened_view.jsp" servletContext="<%= application %>" />
+				</c:when>
+				<c:otherwise>
 
-			<%
-			Map<String, Object> context = new HashMap<>();
+					<%
+					Map<String, Object> context = new HashMap<>();
 
-			context.put("breadcrumbEntries", layoutsAdminDisplayContext.getBreadcrumbEntriesJSONArray());
-			context.put("layoutColumns", layoutsAdminDisplayContext.getLayoutColumnsJSONArray());
-			context.put("pathThemeImages", themeDisplay.getPathThemeImages());
-			context.put("portletNamespace", renderResponse.getNamespace());
-			context.put("searchContainerId", "pages");
-			context.put("siteNavigationMenuNames", layoutsAdminDisplayContext.getAutoSiteNavigationMenuNames());
-			%>
+					context.put("breadcrumbEntries", layoutsAdminDisplayContext.getBreadcrumbEntriesJSONArray());
+					context.put("getItemChildrenURL", layoutsAdminDisplayContext.getLayoutChildrenURL());
+					context.put("layoutColumns", layoutsAdminDisplayContext.getLayoutColumnsJSONArray());
+					context.put("moveLayoutColumnItemURL", layoutsAdminDisplayContext.getMoveLayoutColumnItemURL());
+					context.put("pathThemeImages", themeDisplay.getPathThemeImages());
+					context.put("portletNamespace", renderResponse.getNamespace());
+					context.put("searchContainerId", "pages");
+					context.put("siteNavigationMenuNames", layoutsAdminDisplayContext.getAutoSiteNavigationMenuNames());
+					%>
 
-			<soy:component-renderer
-				context="<%= context %>"
-				module="layout-admin-web/js/miller_columns/Layout.es"
-				templateNamespace="com.liferay.layout.admin.web.Layout.render"
-			/>
+					<soy:component-renderer
+						context="<%= context %>"
+						module="layout-admin-web/js/miller_columns/Layout.es"
+						templateNamespace="com.liferay.layout.admin.web.Layout.render"
+					/>
+				</c:otherwise>
+			</c:choose>
 		</c:when>
 		<c:otherwise>
 			<liferay-frontend:empty-result-message

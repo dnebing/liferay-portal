@@ -9,24 +9,9 @@
 </thead>
 <tbody>
 <tr>
-	<td>EDIT_LIVE_DELETE</td>
-	<td>//li/a[@title='Delete']</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>ADD</td>
 	<td>//*[@data-qa-id='controlMenu']//*[@data-qa-id='add']</td>
 	<td></td>
-</tr>
-<tr>
-	<td>ADMIN</td>
-	<td>//li[@id='_145_adminLinks']/a</td>
-	<td>Admin Drop Down Button</td>
 </tr>
 <tr>
 	<td>EDIT_COG</td>

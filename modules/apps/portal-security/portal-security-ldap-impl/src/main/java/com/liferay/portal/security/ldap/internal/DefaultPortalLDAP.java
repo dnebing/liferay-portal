@@ -437,8 +437,9 @@ public class DefaultPortalLDAP implements PortalLDAP {
 		SystemLDAPConfiguration systemLDAPConfiguration =
 			_systemLDAPConfigurationProvider.getConfiguration(companyId);
 
-		String[] attributeIds =
-			{_getNextRange(systemLDAPConfiguration, attribute.getID())};
+		String[] attributeIds = {
+			_getNextRange(systemLDAPConfiguration, attribute.getID())
+		};
 
 		while (true) {
 			List<SearchResult> searchResults = new ArrayList<>();
@@ -521,9 +522,8 @@ public class DefaultPortalLDAP implements PortalLDAP {
 		if (Validator.isNull(baseDN)) {
 			return name;
 		}
-		else {
-			return name.concat(StringPool.COMMA).concat(baseDN);
-		}
+
+		return name.concat(StringPool.COMMA).concat(baseDN);
 	}
 
 	@Override
@@ -812,9 +812,8 @@ public class DefaultPortalLDAP implements PortalLDAP {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override

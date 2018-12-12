@@ -1,26 +1,30 @@
-(function(_, Liferay) {
+(function(Liferay) {
 	Liferay.lazyLoad = function() {
 		var failureCallback;
+
+		var isFunction = function(val) {
+			return typeof val === 'function';
+		};
+
 		var modules;
 		var successCallback;
 
-		if (_.isArray(arguments[0])) {
+		if (Array.isArray(arguments[0])) {
 			modules = arguments[0];
 
-			successCallback = _.isFunction(arguments[1]) ? arguments[1] : null;
-			failureCallback = _.isFunction(arguments[2]) ? arguments[2] : null;
+			successCallback = isFunction(arguments[1]) ? arguments[1] : null;
+			failureCallback = isFunction(arguments[2]) ? arguments[2] : null;
 		}
 		else {
 			modules = [];
 
 			for (var i = 0; i < arguments.length; ++i) {
-				if (_.isString(arguments[i])) {
+				if (typeof arguments[i] === 'string') {
 					modules[i] = arguments[i];
 				}
-				else if (_.isFunction(arguments[i])) {
+				else if (isFunction(arguments[i])) {
 					successCallback = arguments[i];
-					failureCallback = _.isFunction(arguments[++i]) ? arguments[i] : null;
-
+					failureCallback = isFunction(arguments[++i]) ? arguments[i] : null;
 					break;
 				}
 			}
@@ -46,4 +50,4 @@
 			);
 		};
 	};
-})(AUI._, Liferay);
+})(Liferay);

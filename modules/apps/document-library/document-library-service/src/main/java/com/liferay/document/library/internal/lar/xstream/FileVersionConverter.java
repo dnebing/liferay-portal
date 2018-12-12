@@ -53,10 +53,11 @@ public class FileVersionConverter extends BaseXStreamConverter {
 			Class<?> clazz = BeanPropertiesUtil.getObjectType(
 				dlFileVersion, nodeName);
 
-			Object convertedValue = xStreamUnmarshallingContext.convertAnother(
-				xStreamHierarchicalStreamReader.getValue(), clazz);
-
 			if (fields.contains(nodeName)) {
+				Object convertedValue =
+					xStreamUnmarshallingContext.convertAnother(
+						xStreamHierarchicalStreamReader.getValue(), clazz);
+
 				if (nodeName.equals(FieldConstants.ESCAPED_MODEL)) {
 					escapedModel = (Boolean)convertedValue;
 				}
@@ -77,32 +78,32 @@ public class FileVersionConverter extends BaseXStreamConverter {
 		return fields;
 	}
 
-	protected static List<String> fields = new LinkedList<>();
-
-	static {
-		fields.add(FieldConstants.CHANGE_LOG);
-		fields.add(FieldConstants.COMPANY_ID);
-		fields.add(FieldConstants.CREATE_DATE);
-		fields.add(FieldConstants.DESCRIPTION);
-		fields.add(FieldConstants.ESCAPED_MODEL);
-		fields.add(FieldConstants.EXTENSION);
-		fields.add(FieldConstants.EXTRA_SETTINGS);
-		fields.add(FieldConstants.FILE_ENTRY_ID);
-		fields.add(FieldConstants.FILE_VERSION_ID);
-		fields.add(FieldConstants.GROUP_ID);
-		fields.add(FieldConstants.MIME_TYPE);
-		fields.add(FieldConstants.MODIFIED_DATE);
-		fields.add(FieldConstants.REPOSITORY_ID);
-		fields.add(FieldConstants.SIZE);
-		fields.add(FieldConstants.STATUS);
-		fields.add(FieldConstants.STATUS_BY_USER_ID);
-		fields.add(FieldConstants.STATUS_BY_USER_NAME);
-		fields.add(FieldConstants.STATUS_DATE);
-		fields.add(FieldConstants.TITLE);
-		fields.add(FieldConstants.USER_ID);
-		fields.add(FieldConstants.USER_NAME);
-		fields.add(FieldConstants.UUID);
-		fields.add(FieldConstants.VERSION);
-	}
+	protected static List<String> fields = new LinkedList<String>() {
+		{
+			add(FieldConstants.CHANGE_LOG);
+			add(FieldConstants.COMPANY_ID);
+			add(FieldConstants.CREATE_DATE);
+			add(FieldConstants.DESCRIPTION);
+			add(FieldConstants.ESCAPED_MODEL);
+			add(FieldConstants.EXTENSION);
+			add(FieldConstants.EXTRA_SETTINGS);
+			add(FieldConstants.FILE_ENTRY_ID);
+			add(FieldConstants.FILE_VERSION_ID);
+			add(FieldConstants.GROUP_ID);
+			add(FieldConstants.MIME_TYPE);
+			add(FieldConstants.MODIFIED_DATE);
+			add(FieldConstants.REPOSITORY_ID);
+			add(FieldConstants.SIZE);
+			add(FieldConstants.STATUS);
+			add(FieldConstants.STATUS_BY_USER_ID);
+			add(FieldConstants.STATUS_BY_USER_NAME);
+			add(FieldConstants.STATUS_DATE);
+			add(FieldConstants.TITLE);
+			add(FieldConstants.USER_ID);
+			add(FieldConstants.USER_NAME);
+			add(FieldConstants.UUID);
+			add(FieldConstants.VERSION);
+		}
+	};
 
 }

@@ -76,6 +76,7 @@ public class ActionUtil {
 
 		long nodeId = ParamUtil.getLong(renderRequest, "nodeId");
 		String title = ParamUtil.getString(renderRequest, "title");
+
 		double sourceVersion = ParamUtil.getDouble(
 			renderRequest, "sourceVersion");
 		double targetVersion = ParamUtil.getDouble(
@@ -369,8 +370,6 @@ public class ActionUtil {
 	public static List<WikiPage> getPages(PortletRequest portletRequest)
 		throws PortalException {
 
-		long nodeId = ParamUtil.getLong(portletRequest, "nodeId");
-
 		String[] titles = ParamUtil.getStringValues(
 			portletRequest, "rowIdsWikiPage");
 
@@ -379,6 +378,8 @@ public class ActionUtil {
 		}
 
 		List<WikiPage> pages = new ArrayList<>();
+
+		long nodeId = ParamUtil.getLong(portletRequest, "nodeId");
 
 		for (String title : titles) {
 			if (Validator.isNotNull(title)) {
@@ -419,9 +420,8 @@ public class ActionUtil {
 		if ((categoryId > 0) || Validator.isNotNull(tag)) {
 			return "/wiki/view_categorized_pages.jsp";
 		}
-		else {
-			return defaultForward;
-		}
+
+		return defaultForward;
 	}
 
 }

@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Preston Crary
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class KBArticleModelResourcePermissionRegistrar {
 
 	@Activate
@@ -112,18 +112,19 @@ public class KBArticleModelResourcePermissionRegistrar {
 				return null;
 			}
 
-			long parentResourceClassNameId =
-				kbArticle.getParentResourceClassNameId();
 			long parentResourcePrimKey = kbArticle.getParentResourcePrimKey();
-
-			long kbFolderClassNameId = PortalUtil.getClassNameId(
-				KBFolderConstants.getClassName());
 
 			if (parentResourcePrimKey ==
 					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
 				return null;
 			}
+
+			long parentResourceClassNameId =
+				kbArticle.getParentResourceClassNameId();
+
+			long kbFolderClassNameId = PortalUtil.getClassNameId(
+				KBFolderConstants.getClassName());
 
 			if (parentResourceClassNameId == kbFolderClassNameId) {
 				if (!_kbFolderModelResourcePermission.contains(

@@ -19,6 +19,7 @@ import com.liferay.frontend.js.loader.modules.extender.npm.JSBundleProcessor;
 import com.liferay.frontend.js.loader.modules.extender.npm.JSModuleAlias;
 import com.liferay.frontend.js.loader.modules.extender.npm.JSPackageDependency;
 import com.liferay.frontend.js.loader.modules.extender.npm.ModuleNameUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -41,8 +42,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Component;
@@ -120,6 +119,45 @@ public class FlatNPMBundleProcessor implements JSBundleProcessor {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * Get the arguments passed to the AMD define() call.
+	 *
+	 * @param url URL of module file
+	 * @return the arguments or null if not found or read failed
+	 * @review
+	 */
+	private String _getDefineArgs(URL url) {
+		try {
+			String urlContent = _normalizeModuleContent(
+				StringUtil.read(url.openStream()));
+
+			int x = urlContent.indexOf("Liferay.Loader.define");
+
+			if (x < 0) {
+				return null;
+			}
+
+			x = urlContent.indexOf(CharPool.OPEN_BRACKET, x + 21);
+
+			if (x < 0) {
+				return null;
+			}
+
+			int y = urlContent.indexOf(CharPool.CLOSE_BRACKET, x + 1);
+
+			if (y < 0) {
+				return null;
+			}
+
+			return urlContent.substring(x + 1, y);
+		}
+		catch (IOException ioe) {
+			_log.error("Unable to read URL: " + url, ioe);
+
+			return null;
+		}
 	}
 
 	private JSONObject _getJSONObject(
@@ -206,24 +244,11 @@ public class FlatNPMBundleProcessor implements JSBundleProcessor {
 	 * Returns the dependencies of a module given its URL. The dependencies are
 	 * parsed by reading the module's JavaScript code.
 	 *
-	 * @param  url the {@link URL} of the module
+	 * @param  defineArgs the arguments to the AMD's define() call
 	 * @return the dependencies of the module
 	 */
-	private Collection<String> _parseModuleDependencies(URL url)
-		throws IOException {
-
-		String urlContent = _normalizeModuleContent(
-			StringUtil.read(url.openStream()));
-
-		Matcher matcher = _moduleDefinitionPattern.matcher(urlContent);
-
-		if (!matcher.find()) {
-			return Collections.emptyList();
-		}
-
-		String group = matcher.group(1);
-
-		String[] dependencies = group.split(",");
+	private Collection<String> _parseModuleDependencies(String defineArgs) {
+		String[] dependencies = defineArgs.split(",");
 
 		if ((dependencies.length == 1) && dependencies[0].equals("")) {
 			return Collections.emptyList();
@@ -375,20 +400,17 @@ public class FlatNPMBundleProcessor implements JSBundleProcessor {
 				continue;
 			}
 
-			String name = path.substring(location.length() + 2);
+			String defineArgs = _getDefineArgs(url);
 
-			name = ModuleNameUtil.toModuleName(name);
-
-			Collection<String> dependencies = null;
-
-			try {
-				dependencies = _parseModuleDependencies(url);
-			}
-			catch (IOException ioe) {
-				_log.error("Unable to read URL: " + url, ioe);
-
+			if (defineArgs == null) {
 				continue;
 			}
+
+			String name = ModuleNameUtil.toModuleName(
+				path.substring(location.length() + 2));
+
+			Collection<String> dependencies = _parseModuleDependencies(
+				defineArgs);
 
 			FlatJSModule flatJSModule = new FlatJSModule(
 				flatJSPackage, name, dependencies);
@@ -511,9 +533,6 @@ public class FlatNPMBundleProcessor implements JSBundleProcessor {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		FlatNPMBundleProcessor.class);
-
-	private static final Pattern _moduleDefinitionPattern = Pattern.compile(
-		"Liferay\\.Loader\\.define.*\\[(.*)\\].*");
 
 	@Reference
 	private JSONFactory _jsonFactory;

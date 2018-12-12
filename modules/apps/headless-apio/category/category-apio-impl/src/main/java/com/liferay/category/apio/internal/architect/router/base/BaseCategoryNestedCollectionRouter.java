@@ -42,23 +42,23 @@ import java.util.Locale;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Base class for {@code AssetCategory} {@code NestedCollectionRouter}.
+ * Provides the base class for the {@code *CategoryNestedCollectionRouter}
+ * classes.
  *
  * @author Eduardo Perez
- * @review
  */
 public abstract class BaseCategoryNestedCollectionRouter
-	<T extends Identifier<Long>> implements
-		NestedCollectionRouter
+	<T extends Identifier<Long>>
+		implements NestedCollectionRouter
 			<AssetCategory, Long, CategoryIdentifier, Long, T> {
 
 	/**
-	 * Creates a new {@link AssetCategory} and links it to {@link AssetEntry}
-	 * identified by the provided ID.
+	 * Creates a new {@code AssetCategory} and links it to the {@code
+	 * AssetEntry} that corresponds to the provided ID.
 	 *
-	 * @param  classPK the {@link AssetEntry} ID
+	 * @param  classPK the {@code AssetEntry} ID
 	 * @param  nestedCategoryForm the form containing the new category data
-	 * @return the newly created {@link AssetCategory}
+	 * @return the new {@code AssetCategory}
 	 */
 	protected AssetCategory addAssetCategory(
 			long classPK, NestedCategoryForm nestedCategoryForm)
@@ -79,26 +79,24 @@ public abstract class BaseCategoryNestedCollectionRouter
 			nestedCategoryForm.getDescriptions(locale),
 			assetVocabulary.getVocabularyId(), null, new ServiceContext());
 
-		long resourcePrimKey = getResourcePrimKey(classPK);
-
 		AssetEntry assetEntry = assetEntryLocalService.getEntry(
-			getClassName(), resourcePrimKey);
+			getClassName(), classPK);
 
 		long[] categoryIds = ArrayUtil.append(
 			assetEntry.getCategoryIds(), assetCategory.getCategoryId());
 
 		assetEntryService.updateEntry(
 			assetEntry.getGroupId(), assetEntry.getCreateDate(), null,
-			assetEntry.getClassName(), resourcePrimKey,
-			assetEntry.getClassUuid(), assetEntry.getClassTypeId(), categoryIds,
-			assetEntry.getTagNames(), assetEntry.isListable(),
-			assetEntry.isVisible(), assetEntry.getStartDate(),
-			assetEntry.getEndDate(), assetEntry.getPublishDate(),
-			assetEntry.getExpirationDate(), assetEntry.getMimeType(),
-			assetEntry.getTitle(), assetEntry.getDescription(),
-			assetEntry.getSummary(), assetEntry.getUrl(),
-			assetEntry.getLayoutUuid(), assetEntry.getHeight(),
-			assetEntry.getWidth(), assetEntry.getPriority());
+			assetEntry.getClassName(), classPK, assetEntry.getClassUuid(),
+			assetEntry.getClassTypeId(), categoryIds, assetEntry.getTagNames(),
+			assetEntry.isListable(), assetEntry.isVisible(),
+			assetEntry.getStartDate(), assetEntry.getEndDate(),
+			assetEntry.getPublishDate(), assetEntry.getExpirationDate(),
+			assetEntry.getMimeType(), assetEntry.getTitle(),
+			assetEntry.getDescription(), assetEntry.getSummary(),
+			assetEntry.getUrl(), assetEntry.getLayoutUuid(),
+			assetEntry.getHeight(), assetEntry.getWidth(),
+			assetEntry.getPriority());
 
 		return assetCategory;
 	}
@@ -106,43 +104,34 @@ public abstract class BaseCategoryNestedCollectionRouter
 	protected abstract String getClassName();
 
 	protected PageItems<AssetCategory> getPageItems(
-			Pagination pagination, long classPK)
-		throws PortalException {
-
-		long resourcePrimKey = getResourcePrimKey(classPK);
+		Pagination pagination, long classPK) {
 
 		long classNameId = classNameLocalService.getClassNameId(getClassName());
 
 		List<AssetCategory> assetCategories =
 			assetCategoryService.getCategories(
-				classNameId, resourcePrimKey, pagination.getStartPosition(),
+				classNameId, classPK, pagination.getStartPosition(),
 				pagination.getEndPosition());
 		int count = assetCategoryService.getCategoriesCount(
-			classNameId, resourcePrimKey);
+			classNameId, classPK);
 
 		return new PageItems<>(assetCategories, count);
 	}
 
-	protected long getResourcePrimKey(long classPK) throws PortalException {
-		return classPK;
-	}
-
 	/**
-	 * Links an {@link AssetCategory} to an {@link AssetEntry} identified by the
-	 * provided ID.
+	 * Links an {@code AssetCategory} to an {@code AssetEntry} that corresponds
+	 * to the provided ID.
 	 *
-	 * @param  classPK the {@link AssetEntry} ID
+	 * @param  classPK the {@code AssetEntry} ID
 	 * @param  linkedCategoryForm the form containing the category to link
-	 * @return the newly created {@link AssetCategory}
+	 * @return the new {@code AssetCategory}
 	 */
 	protected AssetCategory linkAssetCategory(
 			long classPK, LinkedCategoryForm linkedCategoryForm)
 		throws PortalException {
 
-		long resourcePrimKey = getResourcePrimKey(classPK);
-
 		AssetEntry assetEntry = assetEntryLocalService.getEntry(
-			getClassName(), resourcePrimKey);
+			getClassName(), classPK);
 
 		long categoryId = linkedCategoryForm.getCategoryId();
 
@@ -154,16 +143,16 @@ public abstract class BaseCategoryNestedCollectionRouter
 
 		assetEntryService.updateEntry(
 			assetEntry.getGroupId(), assetEntry.getCreateDate(), null,
-			assetEntry.getClassName(), resourcePrimKey,
-			assetEntry.getClassUuid(), assetEntry.getClassTypeId(), categoryIds,
-			assetEntry.getTagNames(), assetEntry.isListable(),
-			assetEntry.isVisible(), assetEntry.getStartDate(),
-			assetEntry.getEndDate(), assetEntry.getPublishDate(),
-			assetEntry.getExpirationDate(), assetEntry.getMimeType(),
-			assetEntry.getTitle(), assetEntry.getDescription(),
-			assetEntry.getSummary(), assetEntry.getUrl(),
-			assetEntry.getLayoutUuid(), assetEntry.getHeight(),
-			assetEntry.getWidth(), assetEntry.getPriority());
+			assetEntry.getClassName(), classPK, assetEntry.getClassUuid(),
+			assetEntry.getClassTypeId(), categoryIds, assetEntry.getTagNames(),
+			assetEntry.isListable(), assetEntry.isVisible(),
+			assetEntry.getStartDate(), assetEntry.getEndDate(),
+			assetEntry.getPublishDate(), assetEntry.getExpirationDate(),
+			assetEntry.getMimeType(), assetEntry.getTitle(),
+			assetEntry.getDescription(), assetEntry.getSummary(),
+			assetEntry.getUrl(), assetEntry.getLayoutUuid(),
+			assetEntry.getHeight(), assetEntry.getWidth(),
+			assetEntry.getPriority());
 
 		return assetCategory;
 	}

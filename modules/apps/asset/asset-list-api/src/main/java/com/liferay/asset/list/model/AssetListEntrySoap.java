@@ -34,6 +34,7 @@ public class AssetListEntrySoap implements Serializable {
 	public static AssetListEntrySoap toSoapModel(AssetListEntry model) {
 		AssetListEntrySoap soapModel = new AssetListEntrySoap();
 
+		soapModel.setUuid(model.getUuid());
 		soapModel.setAssetListEntryId(model.getAssetListEntryId());
 		soapModel.setGroupId(model.getGroupId());
 		soapModel.setCompanyId(model.getCompanyId());
@@ -41,9 +42,10 @@ public class AssetListEntrySoap implements Serializable {
 		soapModel.setUserName(model.getUserName());
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
-		soapModel.setTypeSettings(model.getTypeSettings());
 		soapModel.setTitle(model.getTitle());
 		soapModel.setType(model.getType());
+		soapModel.setTypeSettings(model.getTypeSettings());
+		soapModel.setLastPublishDate(model.getLastPublishDate());
 
 		return soapModel;
 	}
@@ -94,6 +96,14 @@ public class AssetListEntrySoap implements Serializable {
 
 	public void setPrimaryKey(long pk) {
 		setAssetListEntryId(pk);
+	}
+
+	public String getUuid() {
+		return _uuid;
+	}
+
+	public void setUuid(String uuid) {
+		_uuid = uuid;
 	}
 
 	public long getAssetListEntryId() {
@@ -152,14 +162,6 @@ public class AssetListEntrySoap implements Serializable {
 		_modifiedDate = modifiedDate;
 	}
 
-	public String getTypeSettings() {
-		return _typeSettings;
-	}
-
-	public void setTypeSettings(String typeSettings) {
-		_typeSettings = typeSettings;
-	}
-
 	public String getTitle() {
 		return _title;
 	}
@@ -176,6 +178,23 @@ public class AssetListEntrySoap implements Serializable {
 		_type = type;
 	}
 
+	public String getTypeSettings() {
+		return _typeSettings;
+	}
+
+	public void setTypeSettings(String typeSettings) {
+		_typeSettings = typeSettings;
+	}
+
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+	}
+
+	private String _uuid;
 	private long _assetListEntryId;
 	private long _groupId;
 	private long _companyId;
@@ -183,7 +202,8 @@ public class AssetListEntrySoap implements Serializable {
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
-	private String _typeSettings;
 	private String _title;
 	private int _type;
+	private String _typeSettings;
+	private Date _lastPublishDate;
 }

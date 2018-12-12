@@ -25,14 +25,12 @@ import com.liferay.site.navigation.constants.SiteNavigationConstants;
 @ProviderType
 public class SiteNavigationMenuImpl extends SiteNavigationMenuBaseImpl {
 
+	@Override
 	public String getTypeKey() {
 		String navigationTypeKey = StringPool.BLANK;
 
 		if (getType() == SiteNavigationConstants.TYPE_PRIMARY) {
 			navigationTypeKey = "primary-navigation";
-		}
-		else if (getType() == SiteNavigationConstants.TYPE_PRIVATE) {
-			navigationTypeKey = "private-navigation";
 		}
 		else if (getType() == SiteNavigationConstants.TYPE_SECONDARY) {
 			navigationTypeKey = "secondary-navigation";
@@ -44,6 +42,7 @@ public class SiteNavigationMenuImpl extends SiteNavigationMenuBaseImpl {
 		return navigationTypeKey;
 	}
 
+	@Override
 	public boolean isPrimary() {
 		if (getType() == SiteNavigationConstants.TYPE_PRIMARY) {
 			return true;

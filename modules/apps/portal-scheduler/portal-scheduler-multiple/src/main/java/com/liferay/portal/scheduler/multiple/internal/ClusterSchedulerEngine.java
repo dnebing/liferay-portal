@@ -356,8 +356,10 @@ public class ClusterSchedulerEngine
 
 								if (_log.isInfoEnabled()) {
 									_log.info(
-										"Memory clustered job is not yet " +
-											"deployed on master");
+										StringBundler.concat(
+											"Memory clustered job ",
+											getFullName(jobName, groupName),
+											" is not yet deployed on master"));
 								}
 							}
 							else {
@@ -366,7 +368,11 @@ public class ClusterSchedulerEngine
 						}
 						catch (Exception e) {
 							_log.error(
-								"Unable to get a response from master", e);
+								StringBundler.concat(
+									"Unable to get a response from master for ",
+									"memory clustered job ",
+									getFullName(jobName, groupName)),
+								e);
 						}
 					}
 				}
@@ -574,6 +580,25 @@ public class ClusterSchedulerEngine
 				List<SchedulerResponse> schedulerResponses = future.get(
 					_callMasterTimeout, TimeUnit.SECONDS);
 
+				if (schedulerResponses == null) {
+					if (_log.isWarnEnabled()) {
+						StringBundler sb = new StringBundler(8);
+
+						sb.append("Property \"");
+						sb.append(PropsKeys.SCHEDULER_ENABLED);
+						sb.append("\" is disabled in the master node. To ");
+						sb.append("ensure consistent behavior, this property ");
+						sb.append("must have the same value in all cluster ");
+						sb.append("nodes. If scheduler needs to be enabled, ");
+						sb.append("please stop all nodes and restart them in ");
+						sb.append("an ordered way.");
+
+						_log.warn(sb.toString());
+					}
+
+					return;
+				}
+
 				_memoryClusteredJobs.clear();
 
 				for (SchedulerResponse schedulerResponse : schedulerResponses) {
@@ -628,9 +653,9 @@ public class ClusterSchedulerEngine
 			memoryClusteredJobs = _memoryClusteredJobs.entrySet();
 
 		Iterator
-			<Map.Entry<String,
-				ObjectValuePair<SchedulerResponse, TriggerState>>> itr =
-					memoryClusteredJobs.iterator();
+			<Map.Entry
+				<String, ObjectValuePair<SchedulerResponse, TriggerState>>>
+					itr = memoryClusteredJobs.iterator();
 
 		while (itr.hasNext()) {
 			Map.Entry<String, ObjectValuePair<SchedulerResponse, TriggerState>>

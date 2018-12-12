@@ -14,19 +14,26 @@
 
 package com.liferay.sharing.document.library.internal.display.context;
 
+import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.display.context.BaseDLViewFileVersionDisplayContext;
 import com.liferay.document.library.display.context.DLViewFileVersionDisplayContext;
+import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.servlet.taglib.ui.Menu;
 import com.liferay.portal.kernel.servlet.taglib.ui.MenuItem;
 import com.liferay.portal.kernel.servlet.taglib.ui.ToolbarItem;
+import com.liferay.portal.kernel.settings.PortletInstanceSettingsLocator;
+import com.liferay.portal.kernel.settings.Settings;
+import com.liferay.portal.kernel.settings.SettingsFactoryUtil;
+import com.liferay.portal.kernel.settings.TypedSettings;
+import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.sharing.document.library.internal.display.context.logic.SharingDLDisplayContextHelper;
+import com.liferay.sharing.display.context.util.SharingMenuItemFactory;
+import com.liferay.sharing.display.context.util.SharingToolbarItemFactory;
+import com.liferay.sharing.document.library.internal.security.permission.SharingPermissionHelper;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -44,54 +51,38 @@ public class SharingDLViewFileVersionDisplayContext
 	public SharingDLViewFileVersionDisplayContext(
 		DLViewFileVersionDisplayContext parentDLDisplayContext,
 		HttpServletRequest request, HttpServletResponse response,
-		FileVersion fileVersion, ResourceBundleLoader resourceBundleLoader) {
+		FileEntry fileEntry, FileVersion fileVersion,
+		ResourceBundle resourceBundle,
+		SharingMenuItemFactory sharingMenuItemFactory,
+		SharingToolbarItemFactory sharingToolbarItemFactory,
+		SharingPermissionHelper sharingPermissionHelper) {
 
 		super(_UUID, parentDLDisplayContext, request, response, fileVersion);
 
-		_resourceBundleLoader = resourceBundleLoader;
-
+		_request = request;
+		_fileEntry = fileEntry;
+		_resourceBundle = resourceBundle;
 		_themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
-
-		try {
-			FileEntry fileEntry = null;
-
-			if (fileVersion != null) {
-				fileEntry = fileVersion.getFileEntry();
-			}
-
-			_fileEntry = fileEntry;
-
-			_sharingDLDisplayContextHelper = new SharingDLDisplayContextHelper(
-				fileEntry, request);
-		}
-		catch (PortalException pe) {
-			throw new SystemException(
-				"Unable to create sharing document library view file version " +
-					"display context for file version " + fileVersion,
-				pe);
-		}
+		_sharingMenuItemFactory = sharingMenuItemFactory;
+		_sharingToolbarItemFactory = sharingToolbarItemFactory;
+		_sharingPermissionHelper = sharingPermissionHelper;
 	}
 
 	@Override
 	public Menu getMenu() throws PortalException {
 		Menu menu = super.getMenu();
 
-		if (!_sharingDLDisplayContextHelper.isShowShareAction()) {
+		if (!_isShowShareAction()) {
 			return menu;
 		}
 
 		List<MenuItem> menuItems = menu.getMenuItems();
 
-		ResourceBundle resourceBundle =
-			_resourceBundleLoader.loadResourceBundle(_themeDisplay.getLocale());
-
-		SharingDLDisplayContextHelper sharingDLDisplayContextHelper =
-			new SharingDLDisplayContextHelper(_fileEntry, request);
-
 		menuItems.add(
-			sharingDLDisplayContextHelper.
-				getJavacriptEditWithImageEditorMenuItem(resourceBundle));
+			_sharingMenuItemFactory.createShareMenuItem(
+				DLFileEntryConstants.getClassName(),
+				_fileEntry.getFileEntryId(), _request, _resourceBundle));
 
 		return menu;
 	}
@@ -100,29 +91,64 @@ public class SharingDLViewFileVersionDisplayContext
 	public List<ToolbarItem> getToolbarItems() throws PortalException {
 		List<ToolbarItem> toolbarItems = super.getToolbarItems();
 
-		if (!_sharingDLDisplayContextHelper.isShowShareAction()) {
+		if (!_isShowShareAction()) {
 			return toolbarItems;
 		}
 
-		ResourceBundle resourceBundle =
-			_resourceBundleLoader.loadResourceBundle(_themeDisplay.getLocale());
-
-		SharingDLDisplayContextHelper imageEditorDLDisplayContextHelper =
-			new SharingDLDisplayContextHelper(_fileEntry, request);
-
 		toolbarItems.add(
-			imageEditorDLDisplayContextHelper.
-				getJavacriptEditWithImageEditorToolbarItem(resourceBundle));
+			_sharingToolbarItemFactory.createShareToolbarItem(
+				DLFileEntryConstants.getClassName(),
+				_fileEntry.getFileEntryId(), _request, _resourceBundle));
 
 		return toolbarItems;
+	}
+
+	private boolean _isShowActions() throws PortalException {
+		PortletDisplay portletDisplay = _themeDisplay.getPortletDisplay();
+
+		String portletName = portletDisplay.getPortletName();
+
+		if (portletName.equals(DLPortletKeys.DOCUMENT_LIBRARY_ADMIN)) {
+			return true;
+		}
+
+		Settings settings = SettingsFactoryUtil.getSettings(
+			new PortletInstanceSettingsLocator(
+				_themeDisplay.getLayout(), portletDisplay.getId()));
+
+		TypedSettings typedSettings = new TypedSettings(settings);
+
+		return typedSettings.getBooleanValue("showActions");
+	}
+
+	private boolean _isShowShareAction() throws PortalException {
+		if (_showImageEditorAction != null) {
+			return _showImageEditorAction;
+		}
+
+		_showImageEditorAction = false;
+
+		if (_themeDisplay.isSignedIn() && _isShowActions() &&
+			_sharingPermissionHelper.isShareable(
+				_themeDisplay.getPermissionChecker(),
+				_fileEntry.getFileEntryId())) {
+
+			_showImageEditorAction = true;
+		}
+
+		return _showImageEditorAction;
 	}
 
 	private static final UUID _UUID = UUID.fromString(
 		"6d7d30de-01fa-49db-a422-d78748aa03a7");
 
 	private final FileEntry _fileEntry;
-	private final ResourceBundleLoader _resourceBundleLoader;
-	private final SharingDLDisplayContextHelper _sharingDLDisplayContextHelper;
+	private final HttpServletRequest _request;
+	private final ResourceBundle _resourceBundle;
+	private final SharingMenuItemFactory _sharingMenuItemFactory;
+	private final SharingPermissionHelper _sharingPermissionHelper;
+	private final SharingToolbarItemFactory _sharingToolbarItemFactory;
+	private Boolean _showImageEditorAction;
 	private final ThemeDisplay _themeDisplay;
 
 }

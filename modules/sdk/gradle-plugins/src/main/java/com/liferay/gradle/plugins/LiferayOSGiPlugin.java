@@ -373,6 +373,7 @@ public class LiferayOSGiPlugin implements Plugin<Project> {
 				@Override
 				public void execute(Task task) {
 					Logger logger = task.getLogger();
+
 					Project project = task.getProject();
 
 					project.delete("liferay/logs");
@@ -396,8 +397,6 @@ public class LiferayOSGiPlugin implements Plugin<Project> {
 					DirectDeployTask directDeployTask = (DirectDeployTask)task;
 
 					Project project = directDeployTask.getProject();
-
-					File warFile = directDeployTask.getWebAppFile();
 
 					Jar jar = (Jar)GradleUtil.getTask(
 						project, JavaPlugin.JAR_TASK_NAME);
@@ -446,6 +445,8 @@ public class LiferayOSGiPlugin implements Plugin<Project> {
 						},
 						{deployedPluginDirName, "WEB-INF/tld/*"}
 					};
+
+					File warFile = directDeployTask.getWebAppFile();
 
 					FileUtil.jar(project, warFile, "preserve", true, filesets);
 
@@ -804,8 +805,8 @@ public class LiferayOSGiPlugin implements Plugin<Project> {
 
 						@Override
 						public Boolean call() throws Exception {
-							return
-								liferayOSGiExtension.isExpandCompileInclude();
+							return liferayOSGiExtension.
+								isExpandCompileInclude();
 						}
 
 					});

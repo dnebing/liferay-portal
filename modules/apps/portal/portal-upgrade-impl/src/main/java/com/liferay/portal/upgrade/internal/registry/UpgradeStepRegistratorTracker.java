@@ -18,8 +18,6 @@ import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.configuration.ConfigurationFactoryUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.upgrade.UpgradeStep;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -42,6 +40,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -50,7 +49,11 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 /**
  * @author Carlos Sierra Andrés
  */
-@Component(immediate = true)
+@Component(
+	configurationPid = "com.liferay.portal.upgrade.internal.configuration.ReleaseManagerConfiguration",
+	configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true,
+	service = {}
+)
 public class UpgradeStepRegistratorTracker {
 
 	@Activate
@@ -75,9 +78,6 @@ public class UpgradeStepRegistratorTracker {
 	@Reference(target = ModuleServiceLifecycle.DATABASE_INITIALIZED)
 	protected ModuleServiceLifecycle moduleServiceLifecycle;
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		UpgradeStepRegistratorTracker.class);
-
 	private BundleContext _bundleContext;
 	private ReleaseManagerConfiguration _releaseManagerConfiguration;
 
@@ -91,7 +91,7 @@ public class UpgradeStepRegistratorTracker {
 	private class UpgradeStepRegistratorServiceTrackerCustomizer
 		implements ServiceTrackerCustomizer
 			<UpgradeStepRegistrator,
-				Collection<ServiceRegistration<UpgradeStep>>> {
+			 Collection<ServiceRegistration<UpgradeStep>>> {
 
 		@Override
 		public Collection<ServiceRegistration<UpgradeStep>> addingService(
@@ -113,22 +113,17 @@ public class UpgradeStepRegistratorTracker {
 
 			int buildNumber = 0;
 
-			try {
+			ClassLoader classLoader = clazz.getClassLoader();
+
+			if (classLoader.getResource("service.properties") != null) {
 				Configuration configuration =
 					ConfigurationFactoryUtil.getConfiguration(
-						clazz.getClassLoader(), "service");
+						classLoader, "service");
 
 				Properties properties = configuration.getProperties();
 
 				buildNumber = GetterUtil.getInteger(
 					properties.getProperty("build.number"));
-			}
-			catch (Exception e) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						"Unable to read service.properties for " +
-							bundleSymbolicName);
-				}
 			}
 
 			UpgradeStepRegistry upgradeStepRegistry = new UpgradeStepRegistry(

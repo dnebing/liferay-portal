@@ -14,7 +14,9 @@
 
 package com.liferay.portal.servlet.filters.autologin;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.util.ProxyFactory;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.SyntheticBundleRule;
 import com.liferay.portal.util.test.AtomicState;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.junit.AfterClass;
@@ -32,8 +35,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-
-import org.mockito.Mockito;
 
 /**
  * @author Philip Jones
@@ -61,34 +62,27 @@ public class AutoLoginFilterTest {
 	public void testDoFilter() throws IOException, ServletException {
 		AutoLoginFilter autoLoginFilter = new AutoLoginFilter();
 
-		HttpServletRequest httpServletRequest = Mockito.mock(
-			HttpServletRequest.class);
-
-		Mockito.when(
-			httpServletRequest.getRequestURI()
-		).thenReturn(
-			""
-		);
-
-		HttpSession httpSession = Mockito.mock(HttpSession.class);
-
-		Mockito.when(
-			httpSession.getAttribute("j_username")
-		).thenReturn(
-			null
-		);
-
-		Mockito.when(
-			httpServletRequest.getSession()
-		).thenReturn(
-			httpSession
-		);
-
-		FilterChain filterChain = Mockito.mock(FilterChain.class);
+		FilterChain filterChain = ProxyFactory.newDummyInstance(
+			FilterChain.class);
 
 		_atomicState.reset();
 
-		autoLoginFilter.doFilter(httpServletRequest, null, filterChain);
+		autoLoginFilter.doFilter(
+			new HttpServletRequestWrapper(
+				ProxyFactory.newDummyInstance(HttpServletRequest.class)) {
+
+				@Override
+				public String getRequestURI() {
+					return StringPool.BLANK;
+				}
+
+				@Override
+				public HttpSession getSession() {
+					return ProxyFactory.newDummyInstance(HttpSession.class);
+				}
+
+			},
+			null, filterChain);
 
 		Assert.assertTrue(_atomicState.isSet());
 	}

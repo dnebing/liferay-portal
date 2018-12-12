@@ -23,7 +23,6 @@ import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.dynamic.data.mapping.kernel.Value;
 import com.liferay.dynamic.data.mapping.util.FieldsToDDMFormValuesConverter;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.util.JournalContent;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.journal.web.asset.JournalArticleDDMFormValuesReader;
 import com.liferay.petra.string.StringPool;
@@ -33,7 +32,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.HashMap;
@@ -50,17 +48,11 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = AssetDisplayContributor.class)
 public class JournalArticleAssetDisplayContributor
-	extends BaseAssetDisplayContributor<JournalArticle>
-	implements AssetDisplayContributor {
+	extends BaseAssetDisplayContributor<JournalArticle> {
 
 	@Override
 	public String getClassName() {
 		return JournalArticle.class.getName();
-	}
-
-	@Override
-	protected String[] getAssetEntryModelFields() {
-		return null;
 	}
 
 	@Override
@@ -84,8 +76,8 @@ public class JournalArticleAssetDisplayContributor
 			Map<String, List<DDMFormFieldValue>> ddmFormFieldsValuesMap =
 				ddmFormValues.getDDMFormFieldValuesMap();
 
-			for (Map.Entry<String, List<DDMFormFieldValue>>
-					entry: ddmFormFieldsValuesMap.entrySet()) {
+			for (Map.Entry<String, List<DDMFormFieldValue>> entry :
+					ddmFormFieldsValuesMap.entrySet()) {
 
 				List<DDMFormFieldValue> ddmFormFieldValues = entry.getValue();
 
@@ -112,23 +104,6 @@ public class JournalArticleAssetDisplayContributor
 		return classTypeValues;
 	}
 
-	@Override
-	protected Object getFieldValue(
-		JournalArticle article, String field, Locale locale) {
-
-		return StringPool.BLANK;
-	}
-
-	@Override
-	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.journal.web)", unbind = "-"
-	)
-	protected void setResourceBundleLoader(
-		ResourceBundleLoader resourceBundleLoader) {
-
-		this.resourceBundleLoader = resourceBundleLoader;
-	}
-
 	private String _transformFileEntryURL(String data) {
 		try {
 			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(data);
@@ -143,7 +118,8 @@ public class JournalArticleAssetDisplayContributor
 			FileEntry fileEntry = _dlAppService.getFileEntryByUuidAndGroupId(
 				uuid, groupId);
 
-			return DLUtil.getImagePreviewURL(fileEntry, null);
+			return DLUtil.getDownloadURL(
+				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK);
 		}
 		catch (Exception e) {
 			if (_log.isDebugEnabled()) {
@@ -162,9 +138,6 @@ public class JournalArticleAssetDisplayContributor
 
 	@Reference
 	private FieldsToDDMFormValuesConverter _fieldsToDDMFormValuesConverter;
-
-	@Reference
-	private JournalContent _journalContent;
 
 	@Reference
 	private JournalConverter _journalConverter;

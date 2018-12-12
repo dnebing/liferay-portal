@@ -14,6 +14,8 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import org.dom4j.Comment;
 import org.dom4j.tree.DefaultComment;
 
@@ -47,7 +49,9 @@ public abstract class PoshiComment
 		super(comment.getText());
 	}
 
-	protected PoshiComment(String poshiScript) {
+	protected PoshiComment(String poshiScript)
+		throws PoshiScriptParserException {
+
 		this();
 
 		setPoshiScript(poshiScript);

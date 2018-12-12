@@ -20,6 +20,7 @@ import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -32,6 +33,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -182,6 +184,8 @@ public class ModulesStructureTest {
 
 						if (Files.exists(dirPath.resolve("app.bnd"))) {
 							_testEquals(buildGradlePath, _APP_BUILD_GRADLE);
+
+							_testRelengAppProprties(dirPath);
 						}
 						else {
 							Assert.assertFalse(
@@ -380,7 +384,7 @@ public class ModulesStructureTest {
 						_testAntPluginIgnoreFiles(dirPath);
 					}
 					else if (StringUtil.startsWith(
-								 dirName, "frontend-theme-") &&
+								dirName, "frontend-theme-") &&
 							 Files.exists(dirPath.resolve("gulpfile.js"))) {
 
 						_testThemeIgnoreFiles(
@@ -645,11 +649,54 @@ public class ModulesStructureTest {
 			Path dirPath, String buildGradleTemplate)
 		throws IOException {
 
-		if (Files.notExists(dirPath.resolve("build-ext.gradle"))) {
-			buildGradleTemplate = StringUtil.removeSubstring(
-				buildGradleTemplate,
-				StringPool.NEW_LINE + StringPool.NEW_LINE +
-					"apply from: \"build-ext.gradle\"");
+		List<String> sortedBuildExtGradleFileNames = new ArrayList<>();
+
+		if (Files.exists(dirPath.resolve("build-ext.gradle"))) {
+			sortedBuildExtGradleFileNames.add("build-ext.gradle");
+		}
+
+		Set<String> buildExtGradleFileNames = new TreeSet<>(
+			String.CASE_INSENSITIVE_ORDER);
+
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(
+				dirPath)) {
+
+			for (Path path : directoryStream) {
+				if (Files.isDirectory(path)) {
+					continue;
+				}
+
+				String fileName = String.valueOf(path.getFileName());
+
+				if (!fileName.endsWith(".gradle")) {
+					continue;
+				}
+
+				if (!fileName.startsWith("build-ext-")) {
+					continue;
+				}
+
+				buildExtGradleFileNames.add(fileName);
+			}
+		}
+
+		sortedBuildExtGradleFileNames.addAll(buildExtGradleFileNames);
+
+		if (!sortedBuildExtGradleFileNames.isEmpty()) {
+			StringBundler sb = new StringBundler(
+				4 * sortedBuildExtGradleFileNames.size() + 2);
+
+			sb.append(buildGradleTemplate);
+			sb.append(StringPool.NEW_LINE);
+
+			for (String fileName : sortedBuildExtGradleFileNames) {
+				sb.append(StringPool.NEW_LINE);
+				sb.append("apply from: \"");
+				sb.append(fileName);
+				sb.append("\"");
+			}
+
+			buildGradleTemplate = sb.toString();
 		}
 
 		final Set<String> pluginNames = new TreeSet<>();
@@ -800,8 +847,17 @@ public class ModulesStructureTest {
 			GradleDependency gradleDependency, Path dirPath)
 		throws IOException {
 
-		if (!_masterBranch || dirPath.equals(_modulesDirPath) ||
+		if (dirPath.equals(_modulesDirPath) ||
 			gradleDependency.isProjectDependency()) {
+
+			return false;
+		}
+
+		Path lfrbuildRelengSkipUpdateFileVersionsPath = dirPath.resolve(
+			".lfrbuild-releng-skip-update-file-versions");
+
+		if (!Files.exists(lfrbuildRelengSkipUpdateFileVersionsPath) &&
+			!_masterBranch) {
 
 			return false;
 		}
@@ -931,9 +987,9 @@ public class ModulesStructureTest {
 		Path gradlePropertiesPath = dirPath.resolve("gradle.properties");
 		Path settingsGradlePath = dirPath.resolve("settings.gradle");
 
-		String buildGradle = ModulesStructureTestUtil.read(buildGradlePath);
-
 		if (!privateRepo && !readOnlyRepo) {
+			String buildGradle = ModulesStructureTestUtil.read(buildGradlePath);
+
 			Assert.assertEquals(
 				"Incorrect " + buildGradlePath,
 				_getGitRepoBuildGradle(dirPath, buildGradleTemplate),
@@ -1094,9 +1150,6 @@ public class ModulesStructureTest {
 				repositoryPrivateUsername, "build.repository.private.username");
 		}
 
-		String settingsGradle = ModulesStructureTestUtil.read(
-			settingsGradlePath);
-
 		if (Files.notExists(dirPath.resolve("settings-ext.gradle"))) {
 			settingsGradleTemplate = StringUtil.removeSubstring(
 				settingsGradleTemplate,
@@ -1105,6 +1158,9 @@ public class ModulesStructureTest {
 		}
 
 		if (!privateRepo && !readOnlyRepo) {
+			String settingsGradle = ModulesStructureTestUtil.read(
+				settingsGradlePath);
+
 			Assert.assertEquals(
 				"Incorrect " + settingsGradlePath, settingsGradleTemplate,
 				settingsGradle);
@@ -1308,6 +1364,55 @@ public class ModulesStructureTest {
 		}
 	}
 
+	private void _testRelengAppProprties(Path dirPath) throws IOException {
+		if (_branchName.contains("master")) {
+			return;
+		}
+
+		String dirName = String.valueOf(dirPath.getFileName());
+
+		if (_excludedRelengAppProprtiesDirNames.contains(dirName)) {
+			return;
+		}
+
+		Path appBndPath = dirPath.resolve("app.bnd");
+
+		if (!Files.exists(appBndPath)) {
+			return;
+		}
+
+		try (InputStream inputStream = Files.newInputStream(appBndPath)) {
+			Properties properties = new Properties();
+
+			properties.load(inputStream);
+
+			String liferayRelengBundle = properties.getProperty(
+				"Liferay-Releng-Bundle");
+
+			if (!GetterUtil.getBoolean(liferayRelengBundle)) {
+				return;
+			}
+
+			StringBundler sb = new StringBundler(5);
+
+			sb.append(".releng/");
+
+			if (_isInPrivateModulesDir(dirPath)) {
+				sb.append("private/");
+			}
+
+			sb.append("apps/");
+			sb.append(dirName);
+			sb.append("/app.properties");
+
+			Path appPropertiesPath = _modulesDirPath.resolve(sb.toString());
+
+			Assert.assertTrue(
+				"Missing " + appPropertiesPath,
+				Files.exists(appPropertiesPath));
+		}
+	}
+
 	private void _testThemeBuildScripts(Path dirPath) throws IOException {
 		if (!ModulesStructureTestUtil.contains(
 				dirPath.resolve("package.json"), "\"liferay-theme-tasks\":")) {
@@ -1356,8 +1461,9 @@ public class ModulesStructureTest {
 
 	private static final String[] _GIT_IGNORE_LINE_PREFIXES = {"/wedeploy/"};
 
-	private static final String[] _GIT_IGNORE_OPTIONAL_LINES =
-		{"gradle-ext.properties"};
+	private static final String[] _GIT_IGNORE_OPTIONAL_LINES = {
+		"gradle-ext.properties"
+	};
 
 	private static final String _GIT_REPO_FILE_NAME = ".gitrepo";
 
@@ -1365,8 +1471,9 @@ public class ModulesStructureTest {
 		"project.group";
 
 	private static final String[]
-		_GIT_REPO_GRADLE_PROJECT_GROUP_RESERVED_PREFIXES =
-			{"com.liferay.plugins", "com.liferay.portal"};
+		_GIT_REPO_GRADLE_PROJECT_GROUP_RESERVED_PREFIXES = {
+			"com.liferay.plugins", "com.liferay.portal"
+		};
 
 	private static final String _GIT_REPO_GRADLE_PROJECT_PATH_PREFIX_KEY =
 		"project.path.prefix";
@@ -1392,12 +1499,14 @@ public class ModulesStructureTest {
 	private static final Set<String> _excludedDirNames = SetUtil.fromList(
 		Arrays.asList(
 			"bin", "build", "classes", "node_modules", "test-classes", "tmp"));
+	private static final Set<String> _excludedRelengAppProprtiesDirNames =
+		SetUtil.fromList(Arrays.asList("bean-portlet", "portal-odata"));
 	private static final Pattern _gitRepoGradleProjectGroupPattern =
 		Pattern.compile("com\\.liferay(?:\\.[a-z]+)+");
 	private static final Set<String> _gitRepoGradlePropertiesKeys =
 		SetUtil.fromList(
 			Arrays.asList(
-				"jira.project.keys", "org.gradle.parallel",
+				"jira.project.keys", "org.gradle.daemon", "org.gradle.parallel",
 				"pom.scm.connection", "pom.scm.developerConnection",
 				"pom.scm.url"));
 	private static final List<String> _gradleConfigurations = Arrays.asList(

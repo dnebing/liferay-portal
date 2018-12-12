@@ -76,7 +76,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -101,10 +100,8 @@ public class SyncDownloadServlet extends HttpServlet {
 		throws IOException, ServletException {
 
 		try {
-			HttpSession session = request.getSession();
-
 			if (PortalSessionThreadLocal.getHttpSession() == null) {
-				PortalSessionThreadLocal.setHttpSession(session);
+				PortalSessionThreadLocal.setHttpSession(request.getSession());
 			}
 
 			User user = _portal.getUser(request);
@@ -168,7 +165,6 @@ public class SyncDownloadServlet extends HttpServlet {
 			}
 			else {
 				long groupId = GetterUtil.getLong(pathArray[0]);
-				String fileUuid = pathArray[1];
 
 				Group group = _groupLocalService.fetchGroup(groupId);
 
@@ -182,9 +178,9 @@ public class SyncDownloadServlet extends HttpServlet {
 					return;
 				}
 
-				boolean patch = ParamUtil.getBoolean(request, "patch");
+				String fileUuid = pathArray[1];
 
-				if (patch) {
+				if (ParamUtil.getBoolean(request, "patch")) {
 					sendPatch(
 						request, response, user.getUserId(), groupId, fileUuid);
 				}

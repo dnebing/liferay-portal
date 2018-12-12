@@ -14,49 +14,79 @@
 
 package com.liferay.structured.content.apio.architect.sort;
 
+import com.liferay.structured.content.apio.architect.entity.EntityField;
+
 import java.io.Serializable;
 
+import java.util.Locale;
+
 /**
- * Models a Sort Field.
+ * Models a sort field.
  *
- * @author Cristina González
- * @review
+ * @author     Cristina González
+ * @deprecated As of Judson (7.1.x), replaced by {@link
+ *             com.liferay.portal.odata.sort.SortField}
  */
+@Deprecated
 public class SortField implements Serializable {
 
 	/**
 	 * Creates a new sort field.
 	 *
-	 * @param  fieldName - the name of the field
-	 * @param  asc - if the sort should be ascending
-	 * @review
+	 * @param entityField the entity field
+	 * @param asc whether the sort should be ascending
 	 */
-	public SortField(String fieldName, boolean asc) {
-		_fieldName = fieldName;
+	public SortField(EntityField entityField, boolean asc) {
+		if (entityField == null) {
+			throw new IllegalArgumentException("Entity field is null");
+		}
+
 		_asc = asc;
+		_entityField = entityField;
 	}
 
 	/**
-	 * Returns the name of the field.
-	 *
-	 * @return - the name of the field
-	 * @review
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #SortField(EntityField, boolean)}
 	 */
-	public String getFieldName() {
-		return _fieldName;
+	@Deprecated
+	public SortField(String fieldName, boolean asc) {
+		throw new UnsupportedOperationException(
+			"This constructor is deprecated and replaced by #SortField(" +
+				"EntityField, boolean)");
 	}
 
 	/**
-	 * Returns if the sort field is ascending or not.
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #getSortableFieldName}
+	 */
+	@Deprecated
+	public String getFieldName() {
+		throw new UnsupportedOperationException(
+			"This method is deprecated and replaced by #getSortableFieldName");
+	}
+
+	/**
+	 * Returns the field's name.
 	 *
-	 * @return - if the sort field is ascending or not
-	 * @review
+	 * @param  locale the locale
+	 * @return the field's name
+	 */
+	public String getSortableFieldName(Locale locale) {
+		return _entityField.getSortableName(locale);
+	}
+
+	/**
+	 * Returns {@code true} if the sort field is ascending.
+	 *
+	 * @return {@code true} if the sort field is ascending; {@code false}
+	 *         otherwise
 	 */
 	public boolean isAscending() {
 		return _asc;
 	}
 
 	private final boolean _asc;
-	private final String _fieldName;
+	private final EntityField _entityField;
 
 }

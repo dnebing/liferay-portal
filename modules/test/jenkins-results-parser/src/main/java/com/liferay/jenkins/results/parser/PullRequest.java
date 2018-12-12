@@ -93,8 +93,7 @@ public class PullRequest {
 		}
 		catch (IOException ioe) {
 			throw new RuntimeException(
-				"Unable to post comment in GitHub pull request " +
-					getURL(),
+				"Unable to post comment in GitHub pull request " + getURL(),
 				ioe);
 		}
 	}
@@ -167,7 +166,7 @@ public class PullRequest {
 		while (true) {
 			try {
 				JSONArray jsonArray = JenkinsResultsParserUtil.toJSONArray(
-					gitHubApiUrl + page);
+					gitHubApiUrl + page, false);
 
 				if (jsonArray.length() == 0) {
 					break;
@@ -188,8 +187,8 @@ public class PullRequest {
 		return comments;
 	}
 
-	public Commit getCommit() {
-		return CommitFactory.newCommit(
+	public GitHubRemoteGitCommit getGitHubRemoteGitCommit() {
+		return GitCommitFactory.newGitHubRemoteGitCommit(
 			getOwnerUsername(), getGitHubRemoteGitRepositoryName(),
 			getSenderSHA());
 	}
@@ -197,8 +196,8 @@ public class PullRequest {
 	public GitHubRemoteGitRepository getGitHubRemoteGitRepository() {
 		if (_gitHubRemoteGitRepository == null) {
 			_gitHubRemoteGitRepository =
-				(GitHubRemoteGitRepository)GitRepositoryFactory.
-					getRemoteGitRepository(
+				(GitHubRemoteGitRepository)
+					GitRepositoryFactory.getRemoteGitRepository(
 						"github.com", _gitHubRemoteGitRepositoryName,
 						getOwnerUsername());
 		}
@@ -329,17 +328,25 @@ public class PullRequest {
 	}
 
 	public boolean isAutoCloseCommentAvailable() {
+		if (_autoCloseCommentAvailable != null) {
+			return _autoCloseCommentAvailable;
+		}
+
 		List<Comment> comments = getComments();
 
 		for (Comment comment : comments) {
 			String commentBody = comment.getBody();
 
 			if (commentBody.contains("auto-close=\"false\"")) {
-				return true;
+				_autoCloseCommentAvailable = true;
+
+				return _autoCloseCommentAvailable;
 			}
 		}
 
-		return false;
+		_autoCloseCommentAvailable = false;
+
+		return _autoCloseCommentAvailable;
 	}
 
 	public void refresh() {
@@ -386,6 +393,10 @@ public class PullRequest {
 
 			ioe.printStackTrace();
 		}
+	}
+
+	public void resetAutoCloseCommentAvailable() {
+		_autoCloseCommentAvailable = null;
 	}
 
 	public void setTestSuiteStatus(TestSuiteStatus testSuiteStatus) {
@@ -450,10 +461,11 @@ public class PullRequest {
 			return;
 		}
 
-		Commit commit = getCommit();
+		GitHubRemoteGitCommit gitHubRemoteGitCommit =
+			getGitHubRemoteGitCommit();
 
-		Commit.Status status = Commit.Status.valueOf(
-			testSuiteStatus.toString());
+		GitHubRemoteGitCommit.Status status =
+			GitHubRemoteGitCommit.Status.valueOf(testSuiteStatus.toString());
 
 		String context = _TEST_SUITE_NAME_DEFAULT;
 
@@ -484,7 +496,8 @@ public class PullRequest {
 			sb.append(" has PASSED.");
 		}
 
-		commit.setStatus(status, context, sb.toString(), targetURL);
+		gitHubRemoteGitCommit.setStatus(
+			status, context, sb.toString(), targetURL);
 	}
 
 	public static class Comment {
@@ -590,6 +603,7 @@ public class PullRequest {
 			"https://github.com/(?<owner>[^/]+)/",
 			"(?<gitHubRemoteGitRepositoryName>[^/]+)/pull/(?<number>\\d+)"));
 
+	private Boolean _autoCloseCommentAvailable;
 	private GitHubRemoteGitRepository _gitHubRemoteGitRepository;
 	private String _gitHubRemoteGitRepositoryName;
 	private JSONObject _jsonObject;

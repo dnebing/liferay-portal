@@ -225,7 +225,11 @@ public class NpmInstallTask extends ExecuteNpmTask {
 	protected List<String> getCompleteArgs() {
 		List<String> completeArgs = super.getCompleteArgs();
 
-		if (isUseNpmCI() && (getPackageLockJsonFile() != null)) {
+		if (_npmCacheVerify) {
+			completeArgs.add("cache");
+			completeArgs.add("verify");
+		}
+		else if (isUseNpmCI() && (getPackageLockJsonFile() != null)) {
 			completeArgs.add("ci");
 		}
 		else {
@@ -460,6 +464,30 @@ public class NpmInstallTask extends ExecuteNpmTask {
 		return false;
 	}
 
+	private void _npmCacheVerify() {
+		Logger logger = getLogger();
+
+		try {
+			_npmCacheVerify = true;
+
+			super.executeNode();
+		}
+		catch (Exception e) {
+			if (logger.isWarnEnabled()) {
+				String message = "Unable to run \"npm cache verify\"";
+
+				if (Validator.isNotNull(e.getMessage())) {
+					message = e.getMessage() + ". " + message;
+				}
+
+				logger.warn(message);
+			}
+		}
+		finally {
+			_npmCacheVerify = false;
+		}
+	}
+
 	private void _npmInstall(boolean reset) throws Exception {
 		Logger logger = getLogger();
 		int npmInstallRetries = getNpmInstallRetries();
@@ -484,6 +512,8 @@ public class NpmInstallTask extends ExecuteNpmTask {
 					logger.warn(
 						ioe.getMessage() + ". Running \"npm install\" again");
 				}
+
+				_npmCacheVerify();
 			}
 		}
 	}
@@ -544,6 +574,7 @@ public class NpmInstallTask extends ExecuteNpmTask {
 	private Object _nodeModulesCacheDir;
 	private boolean _nodeModulesCacheNativeSync = true;
 	private Object _nodeModulesDigestFile;
+	private boolean _npmCacheVerify;
 	private Object _removeShrinkwrappedUrls;
 	private Object _useNpmCI;
 

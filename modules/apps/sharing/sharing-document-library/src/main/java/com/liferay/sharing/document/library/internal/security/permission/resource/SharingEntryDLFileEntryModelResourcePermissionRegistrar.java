@@ -25,7 +25,7 @@ import com.liferay.portal.kernel.security.permission.resource.PortletResourcePer
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portlet.documentlibrary.constants.DLConstants;
-import com.liferay.sharing.constants.SharingEntryActionKey;
+import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.service.SharingEntryLocalService;
 
 import java.util.Dictionary;
@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Sergio González
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class SharingEntryDLFileEntryModelResourcePermissionRegistrar {
 
 	public static final String COMPONENT_NAME =
@@ -109,15 +109,15 @@ public class SharingEntryDLFileEntryModelResourcePermissionRegistrar {
 				return true;
 			}
 
-			if (SharingEntryActionKey.isSupportedActionId(actionId)) {
-				SharingEntryActionKey sharingEntryActionKey =
-					SharingEntryActionKey.parseFromActionId(actionId);
+			if (SharingEntryAction.isSupportedActionId(actionId)) {
+				SharingEntryAction sharingEntryAction =
+					SharingEntryAction.parseFromActionId(actionId);
 
 				long classNameId = _classNameLocalService.getClassNameId(name);
 
 				if (_sharingEntryLocalService.hasSharingPermission(
 						permissionChecker.getUserId(), classNameId,
-						dlFileEntry.getFileEntryId(), sharingEntryActionKey)) {
+						dlFileEntry.getFileEntryId(), sharingEntryAction)) {
 
 					return true;
 				}

@@ -16,6 +16,7 @@ package com.liferay.document.library.web.internal.portlet.configuration.icon;
 
 import com.liferay.document.library.constants.DLPortletKeys;
 import com.liferay.document.library.kernel.util.DLUtil;
+import com.liferay.document.library.kernel.versioning.VersioningStrategy;
 import com.liferay.document.library.web.internal.display.context.logic.UIItemsBuilder;
 import com.liferay.document.library.web.internal.portlet.action.ActionUtil;
 import com.liferay.document.library.web.internal.util.DLTrashUtil;
@@ -28,7 +29,7 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
 
@@ -41,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Roberto Díaz
@@ -61,8 +64,9 @@ public class OpenInMSOfficeFileEntryPortletConfigurationIcon
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		ResourceBundle resourceBundle =
-			_resourceBundleLoader.loadResourceBundle(themeDisplay.getLocale());
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			themeDisplay.getLocale(),
+			OpenInMSOfficeFileEntryPortletConfigurationIcon.class);
 
 		return LanguageUtil.get(resourceBundle, "open-in-ms-office");
 	}
@@ -125,12 +129,13 @@ public class OpenInMSOfficeFileEntryPortletConfigurationIcon
 				(ThemeDisplay)portletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
-			ResourceBundle resourceBundle =
-				_resourceBundleLoader.loadResourceBundle(
-					themeDisplay.getLocale());
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+				themeDisplay.getLocale(),
+				OpenInMSOfficeFileEntryPortletConfigurationIcon.class);
 
 			UIItemsBuilder uiItemsBuilder = new UIItemsBuilder(
-				request, fileVersion, resourceBundle, _dlTrashUtil);
+				request, fileVersion, resourceBundle, _dlTrashUtil,
+				_versioningStrategy);
 
 			return uiItemsBuilder.isOpenInMsOfficeActionAvailable();
 		}
@@ -157,8 +162,9 @@ public class OpenInMSOfficeFileEntryPortletConfigurationIcon
 	private Portal _portal;
 
 	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.document.library.web)"
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY
 	)
-	private ResourceBundleLoader _resourceBundleLoader;
+	private volatile VersioningStrategy _versioningStrategy;
 
 }

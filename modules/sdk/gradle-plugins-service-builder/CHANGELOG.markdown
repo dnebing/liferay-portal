@@ -640,9 +640,93 @@ version 1.0.237.
 - [LPS-84615]: Update the [Liferay Portal Tools Service Builder] dependency to
 version 1.0.238.
 
+## 2.1.56 - 2018-08-30
+
+### Changed
+- [LPS-84891]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.239.
+
+## 2.1.57 - 2018-09-25
+
+### Changed
+- [LPS-85556]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.240.
+
+## 2.1.58 - 2018-10-01
+
+### Changed
+- [LPS-84138]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.241.
+
+## 2.1.59 - 2018-10-16
+
+### Changed
+- [LPS-85849]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.242.
+
+## 2.1.60 - 2018-10-16
+
+### Changed
+- [LPS-85556]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.243.
+
+## 2.1.61 - 2018-10-18
+
+### Changed
+- [LPS-85556]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.244.
+
+## 2.1.62 - 2018-11-02
+
+### Changed
+- [LPS-86835]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.245.
+
+## 2.1.63 - 2018-11-08
+
+### Changed
+- [LPS-86916]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.246.
+
+## 2.1.64 - 2018-11-16
+
+### Changed
+- [LPS-86916]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.247.
+
+## 2.1.65 - 2018-11-16
+
+### Changed
+- [LPS-87466]: Update the [Liferay Gradle Util] dependency to version 1.0.32.
+
+## 2.1.66 - 2018-11-19
+
+### Changed
+- [LPS-87466]: Update the [Liferay Gradle Util] dependency to version 1.0.33.
+
+## 2.2.0 - 2018-11-27
+
+### Changed
+- [LPS-86406]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.248.
+
+## 2.2.1 - 2018-12-03
+
+### Changed
+- [LPS-86406]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.249.
+
+## 2.2.2 - 2018-12-03
+
+### Changed
+- [LPS-66010]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.250.
+
+[Liferay Gradle Util]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-util
 [Liferay Portal Tools Service Builder]: https://github.com/liferay/liferay-portal/tree/master/modules/util/portal-tools-service-builder
 [LPS-53392]: https://issues.liferay.com/browse/LPS-53392
 [LPS-58672]: https://issues.liferay.com/browse/LPS-58672
+[LPS-66010]: https://issues.liferay.com/browse/LPS-66010
 [LPS-66797]: https://issues.liferay.com/browse/LPS-66797
 [LPS-66891]: https://issues.liferay.com/browse/LPS-66891
 [LPS-68101]: https://issues.liferay.com/browse/LPS-68101
@@ -722,4 +806,12 @@ version 1.0.238.
 [LPS-82828]: https://issues.liferay.com/browse/LPS-82828
 [LPS-83483]: https://issues.liferay.com/browse/LPS-83483
 [LPS-83761]: https://issues.liferay.com/browse/LPS-83761
+[LPS-84138]: https://issues.liferay.com/browse/LPS-84138
 [LPS-84615]: https://issues.liferay.com/browse/LPS-84615
+[LPS-84891]: https://issues.liferay.com/browse/LPS-84891
+[LPS-85556]: https://issues.liferay.com/browse/LPS-85556
+[LPS-85849]: https://issues.liferay.com/browse/LPS-85849
+[LPS-86406]: https://issues.liferay.com/browse/LPS-86406
+[LPS-86835]: https://issues.liferay.com/browse/LPS-86835
+[LPS-86916]: https://issues.liferay.com/browse/LPS-86916
+[LPS-87466]: https://issues.liferay.com/browse/LPS-87466

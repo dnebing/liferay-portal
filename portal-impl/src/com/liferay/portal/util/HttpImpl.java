@@ -89,7 +89,11 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.ConnectionConfig;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.cookie.ClientCookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -137,7 +141,14 @@ public class HttpImpl implements Http {
 		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
 
 		_poolingHttpClientConnectionManager =
-			new PoolingHttpClientConnectionManager();
+			new PoolingHttpClientConnectionManager(
+				RegistryBuilder.<ConnectionSocketFactory>create(
+				).register(
+					Http.HTTP, PlainConnectionSocketFactory.getSocketFactory()
+				).register(
+					Http.HTTPS,
+					SSLConnectionSocketFactory.getSystemSocketFactory()
+				).build());
 
 		_poolingHttpClientConnectionManager.setDefaultMaxPerRoute(
 			_MAX_CONNECTIONS_PER_HOST);
@@ -1279,8 +1290,6 @@ public class HttpImpl implements Http {
 	 */
 	@Override
 	public String URLtoString(URL url) throws IOException {
-		String xml = null;
-
 		if (url == null) {
 			return null;
 		}
@@ -1301,6 +1310,8 @@ public class HttpImpl implements Http {
 			return null;
 		}
 
+		String xml = null;
+
 		try (InputStream inputStream = urlConnection.getInputStream();
 			UnsyncByteArrayOutputStream unsyncByteArrayOutputStream =
 				new UnsyncByteArrayOutputStream()) {
@@ -1308,7 +1319,7 @@ public class HttpImpl implements Http {
 			byte[] bytes = new byte[512];
 
 			for (int i = inputStream.read(bytes, 0, 512); i != -1;
-					i = inputStream.read(bytes, 0, 512)) {
+				 i = inputStream.read(bytes, 0, 512)) {
 
 				unsyncByteArrayOutputStream.write(bytes, 0, i);
 			}
@@ -1868,13 +1879,11 @@ public class HttpImpl implements Http {
 				}
 			}
 
-			long contentLengthLong = 0;
-
 			Header contentLengthHeader = closeableHttpResponse.getFirstHeader(
 				HttpHeaders.CONTENT_LENGTH);
 
 			if (contentLengthHeader != null) {
-				contentLengthLong = GetterUtil.getLong(
+				long contentLengthLong = GetterUtil.getLong(
 					contentLengthHeader.getValue());
 
 				response.setContentLengthLong(contentLengthLong);

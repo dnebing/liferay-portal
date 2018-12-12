@@ -3,18 +3,31 @@ Liferay.Loader.require.apply(
 	$MODULES.concat(
 		[
 			function(Component) {
-				var context = $CONTEXT;
+				var context = Object.assign(
+					$CONTEXT,
+					Liferay.getComponentCache('$ID')
+				);
 
-				var destroyConfig = {
+				var componentConfig = {
+					cacheState: context.cacheState,
 					destroyOnNavigate: true,
 					portletId: context.portletId
 				};
 
-				Liferay.component(
-					'$ID',
-					new Component.default(context, '#$ID'),
-					destroyConfig
-				);
+				if ($WRAPPER) {
+					Liferay.component(
+						'$ID',
+						new Component.default(context, '#$ID'),
+						componentConfig
+					);
+				}
+				else {
+					Liferay.component(
+						'$ID',
+						new Component.default(context),
+						componentConfig
+					);
+				}
 			},
 			function(error) {
 				console.error('Unable to load ' + $MODULES);

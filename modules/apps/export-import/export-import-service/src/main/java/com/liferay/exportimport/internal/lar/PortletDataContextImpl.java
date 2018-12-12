@@ -21,6 +21,7 @@ import com.liferay.asset.kernel.model.AssetLink;
 import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetLinkLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.model.ExpandoColumn;
 import com.liferay.expando.kernel.model.adapter.StagedExpandoColumn;
@@ -81,7 +82,7 @@ import com.liferay.portal.kernel.model.Team;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
 import com.liferay.portal.kernel.model.WorkflowedModel;
 import com.liferay.portal.kernel.model.adapter.ModelAdapterUtil;
-import com.liferay.portal.kernel.model.adapter.StagedWorkflowDefinitionLink;
+import com.liferay.portal.kernel.model.adapter.StagedGroupedWorkflowDefinitionLink;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -382,7 +383,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 				roleIdsToActionIds.entrySet()) {
 
 			long roleId = entry.getKey();
-			Set<String> availableActionIds = entry.getValue();
 
 			Role role = RoleLocalServiceUtil.fetchRole(roleId);
 
@@ -403,7 +403,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 			}
 
 			KeyValuePair permission = new KeyValuePair(
-				roleName, StringUtil.merge(availableActionIds));
+				roleName, StringUtil.merge(entry.getValue()));
 
 			permissions.add(permission);
 		}
@@ -1530,9 +1530,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 		if (_startDate != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1696,8 +1695,6 @@ public class PortletDataContextImpl implements PortletDataContext {
 		for (KeyValuePair permission : permissions) {
 			String roleName = permission.getKey();
 
-			Role role = null;
-
 			Team team = null;
 
 			if (ExportImportPermissionUtil.isTeamRoleName(roleName)) {
@@ -1715,6 +1712,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 					continue;
 				}
 			}
+
+			Role role = null;
 
 			try {
 				if (team != null) {
@@ -1800,9 +1799,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1812,9 +1810,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -1954,9 +1951,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -2275,8 +2271,13 @@ public class PortletDataContextImpl implements PortletDataContext {
 
 		// Permissions
 
+		String xml = getZipEntryAsString(
+			ExportImportPathUtil.getSourceRootPath(this) +
+				"/portlet-data-permissions.xml");
+
 		if (!MapUtil.getBoolean(
-				_parameterMap, PortletDataHandlerKeys.PERMISSIONS)) {
+				_parameterMap, PortletDataHandlerKeys.PERMISSIONS) ||
+			Validator.isNull(xml)) {
 
 			serviceContext.setAddGroupPermissions(true);
 			serviceContext.setAddGuestPermissions(true);
@@ -2349,7 +2350,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 					WorkflowConstants.ACTION_PUBLISH);
 			}
 			else if (workflowedModel.getStatus() ==
-						 WorkflowConstants.STATUS_DRAFT) {
+						WorkflowConstants.STATUS_DRAFT) {
 
 				serviceContext.setWorkflowAction(
 					WorkflowConstants.ACTION_SAVE_DRAFT);
@@ -2968,23 +2969,36 @@ public class PortletDataContextImpl implements PortletDataContext {
 			long classPK = ExportImportClassedModelUtil.getClassPK(
 				stagedGroupedModel);
 
-			WorkflowDefinitionLink workflowDefinitionLink =
+			List<WorkflowDefinitionLink> workflowDefinitionLinks =
 				WorkflowDefinitionLinkLocalServiceUtil.
-					fetchWorkflowDefinitionLink(
+					fetchWorkflowDefinitionLinks(
 						stagedGroupedModel.getCompanyId(),
-						stagedGroupedModel.getGroupId(), className, classPK,
-						-1);
+						stagedGroupedModel.getGroupId(), className, classPK);
 
-			if (workflowDefinitionLink != null) {
-				StagedWorkflowDefinitionLink stagedWorkflowDefinitionLink =
-					ModelAdapterUtil.adapt(
-						workflowDefinitionLink, WorkflowDefinitionLink.class,
-						StagedWorkflowDefinitionLink.class);
+			for (WorkflowDefinitionLink workflowDefinitionLink :
+					workflowDefinitionLinks) {
+
+				StagedGroupedWorkflowDefinitionLink
+					stagedGroupedWorkflowDefinitionLink =
+						ModelAdapterUtil.adapt(
+							workflowDefinitionLink,
+							WorkflowDefinitionLink.class,
+							StagedGroupedWorkflowDefinitionLink.class);
 
 				StagedModelDataHandlerUtil.exportStagedModel(
-					this, stagedWorkflowDefinitionLink);
+					this, stagedGroupedWorkflowDefinitionLink);
 			}
 		}
+	}
+
+	private long _getOldPrimaryKey(Map<Long, Long> map, long value) {
+		for (Map.Entry<Long, Long> entry : map.entrySet()) {
+			if (entry.getValue() == value) {
+				return entry.getKey();
+			}
+		}
+
+		return 0;
 	}
 
 	private String _getPortletXmlPath() {
@@ -3012,15 +3026,43 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private void _importWorkflowDefinitionLink(ClassedModel classedModel)
 		throws PortletDataException {
 
-		Element stagedWorkflowDefinitionLinkElements =
-			getImportDataGroupElement(StagedWorkflowDefinitionLink.class);
+		Element stagedGroupedWorkflowDefinitionLinkElements =
+			getImportDataGroupElement(
+				StagedGroupedWorkflowDefinitionLink.class);
 
-		for (Element stagedWorkflowDefinitionLinkElement :
-				stagedWorkflowDefinitionLinkElements.elements()) {
+		Map<Long, Long> primaryKeys = (Map<Long, Long>)getNewPrimaryKeysMap(
+			classedModel.getModelClass());
+
+		for (Element stagedGroupedWorkflowDefinitionLinkElement :
+				stagedGroupedWorkflowDefinitionLinkElements.elements()) {
+
+			String referrerClassName = GetterUtil.getString(
+				stagedGroupedWorkflowDefinitionLinkElement.attributeValue(
+					"referrer-class-name"));
+			long referrerClassPK = GetterUtil.getLong(
+				stagedGroupedWorkflowDefinitionLinkElement.attributeValue(
+					"referrer-class-pk"));
+
+			String className = classedModel.getModelClassName();
+
+			long newPrimaryKey = GetterUtil.getLong(
+				classedModel.getPrimaryKeyObj());
+
+			long oldPrimaryKey = _getOldPrimaryKey(primaryKeys, newPrimaryKey);
+
+			if (!referrerClassName.equals(className) ||
+				(referrerClassPK != oldPrimaryKey)) {
+
+				continue;
+			}
 
 			String displayName =
-				stagedWorkflowDefinitionLinkElement.attributeValue(
+				stagedGroupedWorkflowDefinitionLinkElement.attributeValue(
 					"display-name");
+
+			if (Validator.isNull(displayName)) {
+				continue;
+			}
 
 			WorkflowDefinition workflowDefinition = null;
 
@@ -3040,44 +3082,47 @@ public class PortletDataContextImpl implements PortletDataContext {
 				return;
 			}
 
-			Element referencesElement =
-				stagedWorkflowDefinitionLinkElement.element("references");
+			if ((workflowDefinition != null) &&
+				(!WorkflowDefinitionLinkLocalServiceUtil.
+					hasWorkflowDefinitionLink(
+						getCompanyId(), getScopeGroupId(), className,
+						newPrimaryKey))) {
 
-			List<Element> referenceElements = referencesElement.elements(
-				"reference");
+				try {
+					long importedClassPK = GetterUtil.getLong(
+						classedModel.getPrimaryKeyObj());
 
-			for (Element referenceElement : referenceElements) {
-				String className = referenceElement.attributeValue(
-					"class-name");
-				long classPK = GetterUtil.getLong(
-					referenceElement.attributeValue("class-pk"));
+					String referrerUuid =
+						stagedGroupedWorkflowDefinitionLinkElement.
+							attributeValue("uuid");
 
-				WorkflowDefinitionLink workflowDefinitionLink =
-					WorkflowDefinitionLinkLocalServiceUtil.
-						fetchWorkflowDefinitionLink(
-							getCompanyId(), getScopeGroupId(), className,
-							classPK, -1);
-
-				if ((workflowDefinition != null) &&
-					(workflowDefinitionLink == null)) {
-
-					try {
-						long importedClassPK = GetterUtil.getLong(
-							classedModel.getPrimaryKeyObj());
-
-						PermissionChecker permissionChecker =
-							PermissionThreadLocal.getPermissionChecker();
-
+					WorkflowDefinitionLink referrerWorkflowDefinitionLink =
 						WorkflowDefinitionLinkLocalServiceUtil.
-							addWorkflowDefinitionLink(
-								permissionChecker.getUserId(), getCompanyId(),
-								getScopeGroupId(), className, importedClassPK,
-								-1, workflowDefinition.getName(),
-								workflowDefinition.getVersion());
+							getWorkflowDefinitionLink(
+								Long.valueOf(referrerUuid));
+
+					long typePK = referrerWorkflowDefinitionLink.getTypePK();
+
+					if (typePK != -1) {
+						Map<Long, Long> ddmPrimaryKeys =
+							(Map<Long, Long>)getNewPrimaryKeysMap(
+								DDMStructure.class.getName());
+
+						typePK = ddmPrimaryKeys.getOrDefault(typePK, typePK);
 					}
-					catch (PortalException pe) {
-						throw new PortletDataException(pe.getMessage(), pe);
-					}
+
+					PermissionChecker permissionChecker =
+						PermissionThreadLocal.getPermissionChecker();
+
+					WorkflowDefinitionLinkLocalServiceUtil.
+						addWorkflowDefinitionLink(
+							permissionChecker.getUserId(), getCompanyId(),
+							getScopeGroupId(), className, importedClassPK,
+							typePK, workflowDefinition.getName(),
+							workflowDefinition.getVersion());
+				}
+				catch (PortalException pe) {
+					throw new PortletDataException(pe.getMessage(), pe);
 				}
 			}
 		}

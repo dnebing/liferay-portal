@@ -190,13 +190,11 @@ public class CookieKeys {
 			return _SESSION_COOKIE_DOMAIN;
 		}
 
-		String host = request.getServerName();
-
 		if (_SESSION_COOKIE_USE_FULL_HOSTNAME) {
 			return StringPool.BLANK;
 		}
 
-		return getDomain(host);
+		return getDomain(request.getServerName());
 	}
 
 	public static String getDomain(String host) {
@@ -245,9 +243,8 @@ public class CookieKeys {
 		if (jsessionid != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public static boolean isEncodedCookie(String name) {
@@ -256,9 +253,8 @@ public class CookieKeys {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public static void validateSupportCookie(HttpServletRequest request)
@@ -289,9 +285,8 @@ public class CookieKeys {
 		if (cookie == null) {
 			return null;
 		}
-		else {
-			return cookie.getValue();
-		}
+
+		return cookie.getValue();
 	}
 
 	private static Map<String, Cookie> _getCookieMap(

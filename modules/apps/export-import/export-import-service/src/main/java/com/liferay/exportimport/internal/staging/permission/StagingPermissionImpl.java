@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Jorge Ferrer
  */
-@Component(immediate = true)
+@Component(immediate = true, service = StagingPermission.class)
 public class StagingPermissionImpl implements StagingPermission {
 
 	@Override
@@ -92,9 +92,8 @@ public class StagingPermissionImpl implements StagingPermission {
 
 			return false;
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	@Reference(unbind = "-")

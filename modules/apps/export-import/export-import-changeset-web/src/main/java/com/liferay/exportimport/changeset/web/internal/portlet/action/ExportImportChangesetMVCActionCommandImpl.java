@@ -47,11 +47,11 @@ import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -79,8 +79,9 @@ import org.osgi.service.component.annotations.Reference;
 		"javax.portlet.name=" + ChangesetPortletKeys.CHANGESET,
 		"mvc.command.name=exportImportChangeset"
 	},
-	service =
-		{ExportImportChangesetMVCActionCommand.class, MVCActionCommand.class}
+	service = {
+		ExportImportChangesetMVCActionCommand.class, MVCActionCommand.class
+	}
 )
 public class ExportImportChangesetMVCActionCommandImpl
 	extends BaseMVCActionCommand
@@ -191,11 +192,11 @@ public class ExportImportChangesetMVCActionCommandImpl
 			portletId = portletDisplay.getId();
 		}
 
-		Portlet portlet = _portletLocalService.getPortletById(portletId);
-
 		long backgroundTaskId = 0;
 
 		if (cmd.equals(Constants.EXPORT)) {
+			Portlet portlet = _portletLocalService.getPortletById(portletId);
+
 			Map<String, Serializable> settingsMap =
 				_exportImportConfigurationSettingsMapFactory.
 					buildExportPortletSettingsMap(
@@ -289,7 +290,7 @@ public class ExportImportChangesetMVCActionCommandImpl
 
 				try {
 					currentThread.setContextClassLoader(
-						ClassLoaderUtil.getPortalClassLoader());
+						PortalClassLoaderUtil.getClassLoader());
 
 					Group liveGroup = GroupServiceHttp.getGroup(
 						httpPrincipal, liveGroupId);

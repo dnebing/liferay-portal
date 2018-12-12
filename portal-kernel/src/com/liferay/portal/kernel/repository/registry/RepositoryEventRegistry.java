@@ -22,9 +22,15 @@ import com.liferay.portal.kernel.repository.event.RepositoryEventType;
  */
 public interface RepositoryEventRegistry {
 
-	public <S extends RepositoryEventType, T>
-		void registerRepositoryEventListener(
+	public <S extends RepositoryEventType, T> void
+		registerRepositoryEventListener(
 			Class<S> repositoryEventTypeClass, Class<T> modelClass,
 			RepositoryEventListener<S, T> repositoryEventListeners);
+
+	public default <S extends RepositoryEventType, T> void
+		unregisterRepositoryEventListener(
+			Class<S> repositoryEventTypeClass, Class<T> modelClass,
+			RepositoryEventListener<S, T> repositoryEventListener) {
+	}
 
 }

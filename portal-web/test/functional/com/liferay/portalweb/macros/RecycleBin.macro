@@ -13,7 +13,7 @@
 			<var name="menuItem" value="Delete" />
 		</execute>
 
-		<execute function="Confirm#waitForConfirmation" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<execute function="AssertConfirm#waitForConfirmation" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute macro="Alert#viewSuccessMessage" />
 		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="The Recycle Bin is empty." />
@@ -31,19 +31,11 @@
 
 		<execute function="Uncheck#uncheckToggleSwitchNoErrorNoAssert" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
 
-		<execute function="Confirm" value1="Disabling the Recycle Bin prevents the restoring of content that has been moved to the Recycle Bin." />
+		<execute function="AssertConfirm" value1="Disabling the Recycle Bin prevents the restoring of content that has been moved to the Recycle Bin." />
 
 		<execute function="AssertNotChecked#assertNotCheckedNotVisible" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
 
 		<execute macro="PortletEntry#save" />
-	</command>
-
-	<command name="dragAndDropContentToRecycleBin">
-		<var name="key_webContentTitle" value="${assetName}" />
-
-		<execute function="AssertTextEquals" locator1="WC#ENTRY_LIST_TITLE" value1="${assetName}" />
-
-		<execute function="DragAndDrop" locator1="WC#ENTRY_LIST_TITLE" locator2="RecycleBin#RECYCLE_BIN" value1="${assetName}" />
 	</command>
 
 	<command name="emptyCP">
@@ -54,7 +46,7 @@
 			<then>
 				<execute function="AssertClickNoError" locator1="RecycleBin#EMPTY_RECYCLE_BIN" value1="Empty the Recycle Bin" />
 
-				<execute function="Confirm#waitForConfirmation" value1="Are you sure you want to empty the Recycle Bin?" />
+				<execute function="AssertConfirm#waitForConfirmation" value1="Are you sure you want to empty the Recycle Bin?" />
 
 				<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="The Recycle Bin is empty." />
 			</then>
@@ -68,6 +60,12 @@
 
 		<execute macro="SiteAdmin#viewPortletTitle">
 			<var name="portletTitle" value="Recycle Bin" />
+		</execute>
+	</command>
+
+	<command name="openRecycleBinAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/${siteURLKey}/~/control_panel/manage/-/recycle_bin/entries" />
 		</execute>
 	</command>
 
@@ -90,9 +88,9 @@
 
 		<execute function="SelectFrame" locator1="RecycleBin#RECYCLE_BIN_FOLDER_WARNING_IFRAME" />
 
-		<execute function="AssertTextEquals" locator1="RecycleBin#RECYCLE_BIN_FOLDER_WARNING_INFO" value1="The original Folder does not exist anymore. Choose a different Folder to restore ${documentName}." />
+		<execute function="AssertTextEquals" locator1="Message#USER_BLOCKED" value1="The original Folder does not exist anymore. Choose a different Folder to restore ${documentName}." />
 
-		<execute function="AssertClick" locator1="RecycleBin#RECYCLE_BIN_FOLDER_WARNING_CHOOSE_THIS_FOLDER_BUTTON" value1="Choose This Folder" />
+		<execute function="AssertClick" locator1="Button#CHOOSE_THIS_FOLDER" value1="Choose This Folder" />
 
 		<execute function="SelectFrameTop" value1="relative=top" />
 
@@ -160,39 +158,6 @@
 		<execute macro="PortletEntry#save" />
 	</command>
 
-	<command name="restoreWarningCP">
-		<var name="key_assetName" value="${assetName}" />
-
-		<execute function="AssertTextEquals" locator1="RecycleBin#RECYCLE_BIN_TABLE_NAME" value1="${assetName}" />
-		<execute function="AssertTextEquals" locator1="RecycleBin#RECYCLE_BIN_TABLE_TYPE" value1="${assetType}" />
-
-		<execute macro="LexiconEntry#openEntryMenu">
-			<var name="rowEntry" value="${assetName}" />
-		</execute>
-
-		<execute macro="MenuItem#click">
-			<var name="menuItem" value="Restore" />
-		</execute>
-
-		<execute function="AssertTextEquals" locator1="Message#ERROR" value1="An entry with name ${assetName} already exists." />
-
-		<execute function="Click" locator1="RecycleBin#RECYCLE_BIN_WARNING_KEEP_AND_RENAME_RADIO" />
-
-		<execute function="Type" locator1="RecycleBin#RECYCLE_BIN_WARNING_KEEP_AND_RENAME_FIELD" value1="${newAssetName}" />
-
-		<execute macro="Button#clickSave" />
-
-		<var name="key_assetType" value="${newAssetName}" />
-
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS_CONTENT" value1="${newAssetName}" />
-
-		<var name="key_assetRestoreLocation" value="${assetRestoreLocation}" />
-
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS_RESTORE_LOCATION" value1="${assetRestoreLocation}" />
-		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="The Recycle Bin is empty." />
-		<execute function="AssertElementNotPresent" locator1="RecycleBin#RECYCLE_BIN_TABLE_NAME" />
-	</command>
-
 	<command name="undoMoveToRecycleBin">
 		<execute function="AssertClick" locator1="Button#UNDO" value1="Undo" />
 	</command>
@@ -218,7 +183,7 @@
 					<var name="maxAgeField" value="${maxAgeField}" />
 				</execute>
 
-				<execute function="AssertTextEquals#assertPartialText" locator1="Message#RECYCLE_BIN_INFO" value1="The Recycle Bin shows all assets removed by users. Assets can be restored or permanently deleted." />
+				<execute function="AssertTextEquals#assertPartialText" locator1="Message#TOOLTIP" value1="The Recycle Bin shows all assets removed by users. Assets can be restored or permanently deleted." />
 			</then>
 		</if>
 
@@ -265,12 +230,6 @@
 	</command>
 
 	<command name="viewRecycleBinMaxAge">
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#RECYCLE_BIN_INFO" value1="Entries that have been in the Recycle Bin for more than ${maxAgeField} are automatically deleted." />
-	</command>
-
-	<command name="viewRecyclebinViaSiteSettingsCP">
-		<execute function="AssertClick" locator1="SitesEditSite#MENU_BASIC_INFORMATION_RECYCLE_BIN" value1="Recycle Bin" />
-
-		<execute function="AssertTextEquals#assertValue" locator1="TextInput#TRASH_ENTRIES_MAX_AGE" value1="${maxAgeField}" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="Message#TOOLTIP" value1="Entries that have been in the Recycle Bin for more than ${maxAgeField} are automatically deleted." />
 	</command>
 </definition>

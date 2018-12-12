@@ -16,28 +16,27 @@ package com.liferay.media.object.apio.internal.architect.form;
 
 import com.liferay.apio.architect.file.BinaryFile;
 import com.liferay.apio.architect.form.Form;
+import com.liferay.category.apio.architect.identifier.CategoryIdentifier;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Instances of this class represent the values extracted from a media object
- * form.
+ * Represents the values extracted from a media object form.
  *
  * @author Javier Gamarra
- * @review
  */
 public class MediaObjectCreatorForm {
 
 	/**
-	 * Builds a {@code Form} that generates {@code MediaObjectCreatorForm}
-	 * depending on the HTTP body.
+	 * Builds a {@code Form} that generates a {@code MediaObjectCreatorForm}
+	 * that depends on the HTTP body.
 	 *
 	 * @param  formBuilder the {@code Form} builder
-	 * @return a folder form
-	 * @review
+	 * @return the folder form
 	 */
 	public static Form<MediaObjectCreatorForm> buildForm(
 		Form.Builder<MediaObjectCreatorForm> formBuilder) {
@@ -48,59 +47,44 @@ public class MediaObjectCreatorForm {
 			__ -> "This form can be used to create a media object"
 		).constructor(
 			MediaObjectCreatorForm::new
-		).addOptionalString(
-			"changeLog", MediaObjectCreatorForm::setChangelog
+		).addOptionalLinkedModelList(
+			"category", CategoryIdentifier.class,
+			MediaObjectCreatorForm::setCategories
 		).addOptionalString(
 			"description", MediaObjectCreatorForm::setDescription
 		).addOptionalString(
-			"headline", MediaObjectCreatorForm::setTitle
+			"title", MediaObjectCreatorForm::setTitle
 		).addOptionalStringList(
 			"keywords", MediaObjectCreatorForm::setKeywords
 		).addRequiredFile(
 			"binaryFile", MediaObjectCreatorForm::setBinaryFile
-		).addRequiredString(
-			"name", MediaObjectCreatorForm::setName
 		).build();
 	}
 
 	/**
-	 * Returns the media object's binaries
+	 * Returns the media object's binaries.
 	 *
-	 * @return the media object's binaries
-	 * @review
+	 * @return the binaries
 	 */
 	public BinaryFile getBinaryFile() {
 		return _binaryFile;
 	}
 
-	/**
-	 * Returns the media object's changelog
-	 *
-	 * @return the media object's changelog
-	 * @review
-	 */
-	public String getChangelog() {
-		return _changelog;
+	public List<Long> getCategories() {
+		return _categories;
 	}
 
 	/**
 	 * Returns the media object's description
 	 *
-	 * @return the media object's description
-	 * @review
+	 * @return the description
 	 */
 	public String getDescription() {
 		return _description;
 	}
 
-	/**
-	 * Returns the media object's name
-	 *
-	 * @return the media object's name
-	 * @review
-	 */
-	public String getName() {
-		return _name;
+	public List<String> getKeywords() {
+		return _keywords;
 	}
 
 	/**
@@ -108,13 +92,17 @@ public class MediaObjectCreatorForm {
 	 *
 	 * @param  groupId the group ID
 	 * @return the service context
-	 * @review
 	 */
 	public ServiceContext getServiceContext(long groupId) {
 		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
+
+		if (ListUtil.isNotEmpty(_categories)) {
+			serviceContext.setAssetCategoryIds(
+				ArrayUtil.toLongArray(_categories));
+		}
 
 		if (ListUtil.isNotEmpty(_keywords)) {
 			serviceContext.setAssetTagNames(ArrayUtil.toStringArray(_keywords));
@@ -126,21 +114,20 @@ public class MediaObjectCreatorForm {
 	}
 
 	/**
-	 * Returns the media object's title
+	 * Returns the media object's title.
 	 *
-	 * @return the media object's title
-	 * @review
+	 * @return the title
 	 */
-	public String getTitle() {
-		return _title;
+	public Optional<String> getTitleOptional() {
+		return Optional.ofNullable(_title);
 	}
 
 	public void setBinaryFile(BinaryFile binaryFile) {
 		_binaryFile = binaryFile;
 	}
 
-	public void setChangelog(String changelog) {
-		_changelog = changelog;
+	public void setCategories(List<Long> categories) {
+		_categories = categories;
 	}
 
 	public void setDescription(String description) {
@@ -151,19 +138,14 @@ public class MediaObjectCreatorForm {
 		_keywords = keywords;
 	}
 
-	public void setName(String name) {
-		_name = name;
-	}
-
 	public void setTitle(String title) {
 		_title = title;
 	}
 
 	private BinaryFile _binaryFile;
-	private String _changelog;
+	private List<Long> _categories;
 	private String _description;
 	private List<String> _keywords;
-	private String _name;
 	private String _title;
 
 }

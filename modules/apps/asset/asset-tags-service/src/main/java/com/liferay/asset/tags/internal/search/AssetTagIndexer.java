@@ -16,7 +16,6 @@ package com.liferay.asset.tags.internal.search;
 
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
-import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -55,7 +54,7 @@ public class AssetTagIndexer extends BaseIndexer<AssetTag> {
 		setDefaultSelectedFieldNames(
 			Field.COMPANY_ID, Field.GROUP_ID, Field.UID);
 		setFilterSearch(true);
-		setPermissionAware(true);
+		setPermissionAware(false);
 	}
 
 	@Override
@@ -140,27 +139,20 @@ public class AssetTagIndexer extends BaseIndexer<AssetTag> {
 
 		indexableActionableDynamicQuery.setCompanyId(companyId);
 		indexableActionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<AssetTag>() {
+			(AssetTag tag) -> {
+				try {
+					Document document = getDocument(tag);
 
-				@Override
-				public void performAction(AssetTag tag) {
-					try {
-						Document document = getDocument(tag);
-
-						if (document != null) {
-							indexableActionableDynamicQuery.addDocuments(
-								document);
-						}
-					}
-					catch (PortalException pe) {
-						if (_log.isWarnEnabled()) {
-							_log.warn(
-								"Unable to index asset tag " + tag.getTagId(),
-								pe);
-						}
+					if (document != null) {
+						indexableActionableDynamicQuery.addDocuments(document);
 					}
 				}
-
+				catch (PortalException pe) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Unable to index asset tag " + tag.getTagId(), pe);
+					}
+				}
 			});
 
 		indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());

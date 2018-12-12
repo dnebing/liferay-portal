@@ -55,6 +55,7 @@ public class CompatClassImportsCheck extends BaseFileCheck {
 
 		for (Map.Entry<String, String> entry : compatClassNamesMap.entrySet()) {
 			String compatClassName = entry.getKey();
+
 			String extendedClassName = entry.getValue();
 
 			Pattern pattern = Pattern.compile(extendedClassName + "\\W");
@@ -84,8 +85,9 @@ public class CompatClassImportsCheck extends BaseFileCheck {
 
 		_compatClassNamesMap = new HashMap<>();
 
-		String[] includes =
-			{"**/portal-compat-shared/src/com/liferay/compat/**/*.java"};
+		String[] includes = {
+			"**/portal-compat-shared/src/com/liferay/compat/**/*.java"
+		};
 
 		String baseDirName = getBaseDirName();
 

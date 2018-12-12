@@ -23,6 +23,8 @@ import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
+import com.liferay.asset.list.model.AssetListEntry;
+import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
 import com.liferay.asset.publisher.util.AssetPublisherHelper;
 import com.liferay.asset.publisher.web.configuration.AssetPublisherWebConfiguration;
@@ -814,7 +816,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 				}
 			}
 			else if (name.equals(
-						 "anyClassTypeDLFileEntryAssetRendererFactory") ||
+						"anyClassTypeDLFileEntryAssetRendererFactory") ||
 					 (name.equals("classTypeIds") &&
 					  anyAssetTypeClassName.equals(
 						  DLFileEntry.class.getName())) ||
@@ -867,7 +869,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 				}
 			}
 			else if (name.equals(
-						 "anyClassTypeJournalArticleAssetRendererFactory") ||
+						"anyClassTypeJournalArticleAssetRendererFactory") ||
 					 (name.equals("classTypeIds") &&
 					  anyAssetTypeClassName.equals(
 						  JournalArticle.class.getName())) ||
@@ -918,6 +920,19 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 					updateExportPortletPreferencesClassPKs(
 						portletDataContext, portlet, portletPreferences, name,
 						DDMStructure.class.getName());
+				}
+			}
+			else if (name.equals("assetListEntryId")) {
+				long assetListEntryId = GetterUtil.getLong(
+					portletPreferences.getValue("assetListEntryId", null));
+
+				AssetListEntry assetListEntry =
+					_assetListEntryLocalService.fetchAssetListEntry(
+						assetListEntryId);
+
+				if (assetListEntry != null) {
+					StagedModelDataHandlerUtil.exportReferenceStagedModel(
+						portletDataContext, portletId, assetListEntry);
 				}
 			}
 			else if (name.equals("assetVocabularyId")) {
@@ -1106,7 +1121,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 				updateImportClassNameIds(portletPreferences, name);
 			}
 			else if (name.equals(
-						 "anyClassTypeDLFileEntryAssetRendererFactory") ||
+						"anyClassTypeDLFileEntryAssetRendererFactory") ||
 					 (name.equals("classTypeIds") &&
 					  anyAssetTypeClassName.equals(
 						  DLFileEntry.class.getName())) ||
@@ -1118,7 +1133,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 					DLFileEntryType.class, companyGroup.getGroupId());
 			}
 			else if (name.equals(
-						 "anyClassTypeJournalArticleAssetRendererFactory") ||
+						"anyClassTypeJournalArticleAssetRendererFactory") ||
 					 (name.equals("classTypeIds") &&
 					  anyAssetTypeClassName.equals(
 						  JournalArticle.class.getName())) ||
@@ -1157,6 +1172,11 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 				updateImportScopeIds(
 					portletDataContext, portletPreferences, name,
 					companyGroup.getGroupId(), portletDataContext.getPlid());
+			}
+			else if (name.equals("assetListEntryId")) {
+				updateImportPortletPreferencesClassPKs(
+					portletDataContext, portletPreferences, name,
+					AssetListEntry.class, companyGroup.getGroupId());
 			}
 		}
 
@@ -1381,6 +1401,7 @@ public class AssetPublisherExportImportPortletPreferencesProcessor
 		AssetPublisherExportImportPortletPreferencesProcessor.class);
 
 	private AssetCategoryLocalService _assetCategoryLocalService;
+	private AssetListEntryLocalService _assetListEntryLocalService;
 	private AssetPublisherWebConfiguration _assetPublisherWebConfiguration;
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 	private CompanyLocalService _companyLocalService;

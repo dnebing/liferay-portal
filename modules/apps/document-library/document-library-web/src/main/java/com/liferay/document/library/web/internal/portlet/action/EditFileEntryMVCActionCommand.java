@@ -34,6 +34,7 @@ import com.liferay.document.library.kernel.exception.NoSuchFolderException;
 import com.liferay.document.library.kernel.exception.RequiredFileException;
 import com.liferay.document.library.kernel.exception.SourceFileNameException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLTrashService;
 import com.liferay.document.library.kernel.util.DLUtil;
@@ -263,8 +264,8 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 		long folderId = ParamUtil.getLong(uploadPortletRequest, "folderId");
 		String sourceFileName = uploadPortletRequest.getFileName("file");
 
-		try (InputStream inputStream =
-				uploadPortletRequest.getFileAsStream("file")) {
+		try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
+				"file")) {
 
 			String tempFileName = TempFileEntryUtil.getTempFileName(
 				sourceFileName);
@@ -306,8 +307,11 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 		long fileEntryId = ParamUtil.getLong(actionRequest, "fileEntryId");
 
-		boolean majorVersion = ParamUtil.getBoolean(
-			actionRequest, "majorVersion");
+		DLVersionNumberIncrease dlVersionNumberIncrease =
+			DLVersionNumberIncrease.valueOf(
+				ParamUtil.getString(actionRequest, "versionIncrease"),
+				DLVersionNumberIncrease.AUTOMATIC);
+
 		String changeLog = ParamUtil.getString(actionRequest, "changeLog");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
@@ -315,7 +319,8 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 		if (fileEntryId > 0) {
 			_dlAppService.checkInFileEntry(
-				fileEntryId, majorVersion, changeLog, serviceContext);
+				fileEntryId, dlVersionNumberIncrease, changeLog,
+				serviceContext);
 		}
 		else {
 			long[] fileEntryIds = ParamUtil.getLongValues(
@@ -323,7 +328,8 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 			for (long curFileEntryId : fileEntryIds) {
 				_dlAppService.checkInFileEntry(
-					curFileEntryId, majorVersion, changeLog, serviceContext);
+					curFileEntryId, dlVersionNumberIncrease, changeLog,
+					serviceContext);
 			}
 		}
 	}
@@ -631,7 +637,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 					vocabularyTitle);
 			}
 			else if (ace.getType() ==
-						 AssetCategoryException.TOO_MANY_CATEGORIES) {
+						AssetCategoryException.TOO_MANY_CATEGORIES) {
 
 				errorMessage = themeDisplay.translate(
 					"you-cannot-select-more-than-one-category-for-x",
@@ -884,15 +890,25 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 			uploadPortletRequest, "description");
 		String changeLog = ParamUtil.getString(
 			uploadPortletRequest, "changeLog");
-		boolean majorVersion = ParamUtil.getBoolean(
-			uploadPortletRequest, "majorVersion");
+
+		DLVersionNumberIncrease dlVersionNumberIncrease =
+			DLVersionNumberIncrease.valueOf(
+				ParamUtil.getString(uploadPortletRequest, "versionIncrease"),
+				DLVersionNumberIncrease.AUTOMATIC);
+
+		boolean updateVersionDetails = ParamUtil.getBoolean(
+			uploadPortletRequest, "updateVersionDetails");
+
+		if (!updateVersionDetails) {
+			dlVersionNumberIncrease = DLVersionNumberIncrease.AUTOMATIC;
+		}
 
 		if (cmd.equals(Constants.ADD_DYNAMIC)) {
 			title = uploadPortletRequest.getFileName("file");
 		}
 
-		try (InputStream inputStream =
-				uploadPortletRequest.getFileAsStream("file")) {
+		try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
+				"file")) {
 
 			String contentType = uploadPortletRequest.getContentType("file");
 			long size = uploadPortletRequest.getSize("file");
@@ -955,8 +971,8 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 				fileEntry = _dlAppService.updateFileEntryAndCheckIn(
 					fileEntryId, sourceFileName, contentType, title,
-					description, changeLog, majorVersion, inputStream, size,
-					serviceContext);
+					description, changeLog, dlVersionNumberIncrease,
+					inputStream, size, serviceContext);
 			}
 			else {
 
@@ -964,8 +980,8 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 
 				fileEntry = _dlAppService.updateFileEntry(
 					fileEntryId, sourceFileName, contentType, title,
-					description, changeLog, majorVersion, inputStream, size,
-					serviceContext);
+					description, changeLog, dlVersionNumberIncrease,
+					inputStream, size, serviceContext);
 			}
 
 			return fileEntry;

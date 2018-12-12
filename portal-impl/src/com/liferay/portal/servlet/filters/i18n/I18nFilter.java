@@ -79,9 +79,8 @@ public class I18nFilter extends BasePortalFilter {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected String getDefaultLanguageId(HttpServletRequest request) {
@@ -164,11 +163,10 @@ public class I18nFilter extends BasePortalFilter {
 
 		String groupFriendlyURL = StringPool.BLANK;
 
-		int friendlyURLStart = 0;
 		int friendlyURLEnd = 0;
 
 		if (groupFriendlyURLIndex != null) {
-			friendlyURLStart = groupFriendlyURLIndex[0];
+			int friendlyURLStart = groupFriendlyURLIndex[0];
 			friendlyURLEnd = groupFriendlyURLIndex[1];
 
 			groupFriendlyURL = requestURI.substring(
@@ -269,9 +267,8 @@ public class I18nFilter extends BasePortalFilter {
 		if (request.getAttribute(SKIP_FILTER) != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected boolean isForwardedByI18nServlet(HttpServletRequest request) {
@@ -280,18 +277,16 @@ public class I18nFilter extends BasePortalFilter {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected boolean isWidget(HttpServletRequest request) {
 		if (request.getAttribute(WebKeys.WIDGET) != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected String prependI18nLanguageId(
@@ -319,6 +314,10 @@ public class I18nFilter extends BasePortalFilter {
 				defaultLanguageId, requestedLanguageId);
 		}
 		else if (prependFriendlyUrlStyle == 2) {
+			if (PropsValues.LOCALE_DEFAULT_REQUEST) {
+				return LocaleUtil.toLanguageId(PortalUtil.getLocale(request));
+			}
+
 			return requestedLanguageId;
 		}
 		else if (prependFriendlyUrlStyle == 3) {
@@ -329,10 +328,9 @@ public class I18nFilter extends BasePortalFilter {
 
 				return requestedLanguageId;
 			}
-			else {
-				return prependIfRequestedLocaleDiffersFromDefaultLocale(
-					defaultLanguageId, requestedLanguageId);
-			}
+
+			return prependIfRequestedLocaleDiffersFromDefaultLocale(
+				defaultLanguageId, requestedLanguageId);
 		}
 
 		return null;

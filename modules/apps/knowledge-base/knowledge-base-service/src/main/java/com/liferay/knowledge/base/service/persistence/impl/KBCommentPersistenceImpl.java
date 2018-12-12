@@ -182,6 +182,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	public List<KBComment> findByUuid(String uuid, int start, int end,
 		OrderByComparator<KBComment> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -205,7 +207,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KBComment kbComment : list) {
-					if (!Objects.equals(uuid, kbComment.getUuid())) {
+					if (!uuid.equals(kbComment.getUuid())) {
 						list = null;
 
 						break;
@@ -229,10 +231,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -413,6 +412,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	public KBComment[] findByUuid_PrevAndNext(long kbCommentId, String uuid,
 		OrderByComparator<KBComment> orderByComparator)
 		throws NoSuchCommentException {
+		uuid = Objects.toString(uuid, "");
+
 		KBComment kbComment = findByPrimaryKey(kbCommentId);
 
 		Session session = null;
@@ -458,10 +459,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -581,6 +579,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -594,10 +594,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -711,6 +708,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	@Override
 	public KBComment fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -736,10 +735,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -823,6 +819,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -836,10 +834,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -981,6 +976,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	public List<KBComment> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<KBComment> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1008,7 +1005,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KBComment kbComment : list) {
-					if (!Objects.equals(uuid, kbComment.getUuid()) ||
+					if (!uuid.equals(kbComment.getUuid()) ||
 							(companyId != kbComment.getCompanyId())) {
 						list = null;
 
@@ -1033,10 +1030,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1235,6 +1229,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	public KBComment[] findByUuid_C_PrevAndNext(long kbCommentId, String uuid,
 		long companyId, OrderByComparator<KBComment> orderByComparator)
 		throws NoSuchCommentException {
+		uuid = Objects.toString(uuid, "");
+
 		KBComment kbComment = findByPrimaryKey(kbCommentId);
 
 		Session session = null;
@@ -1280,10 +1276,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1409,6 +1402,8 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1422,10 +1417,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -5077,6 +5069,9 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	public KBCommentPersistenceImpl() {
 		setModelClass(KBComment.class);
 
+		setModelImplClass(KBCommentImpl.class);
+		setEntityCacheEnabled(KBCommentModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -5686,54 +5681,6 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	/**
 	 * Returns the kb comment with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kb comment
-	 * @return the kb comment, or <code>null</code> if a kb comment with the primary key could not be found
-	 */
-	@Override
-	public KBComment fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KBCommentModelImpl.ENTITY_CACHE_ENABLED,
-				KBCommentImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KBComment kbComment = (KBComment)serializable;
-
-		if (kbComment == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kbComment = (KBComment)session.get(KBCommentImpl.class,
-						primaryKey);
-
-				if (kbComment != null) {
-					cacheResult(kbComment);
-				}
-				else {
-					entityCache.putResult(KBCommentModelImpl.ENTITY_CACHE_ENABLED,
-						KBCommentImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KBCommentModelImpl.ENTITY_CACHE_ENABLED,
-					KBCommentImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kbComment;
-	}
-
-	/**
-	 * Returns the kb comment with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kbCommentId the primary key of the kb comment
 	 * @return the kb comment, or <code>null</code> if a kb comment with the primary key could not be found
 	 */
@@ -6030,6 +5977,11 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

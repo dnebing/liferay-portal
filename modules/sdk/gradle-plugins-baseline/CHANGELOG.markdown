@@ -102,8 +102,102 @@ when checking against older versions.
 the newer version do not match.
 - [LPS-83067]: Update the [Liferay Ant BND] dependency to version 2.0.54.
 
+## 1.3.3 - 2018-09-24
+
+### Changed
+- [LPS-85677]: Display the file location for the jars in the log when semantic
+versioning is incorrect.
+- [LPS-85677]: Update the [Liferay Ant BND] dependency to version 2.0.55.
+- [LPS-85677]: Update the [Liferay Gradle Util] dependency to version 1.0.31.
+
+## 1.3.4 - 2018-09-24
+
+### Changed
+- [LPS-85678]: Check the content of the `.lfrbuild-packageinfo` file to ignore
+specified baseline warnings.
+- [LPS-85678]: Update the [Liferay Ant BND] dependency to version 2.0.56.
+
+## 1.3.5 - 2018-10-05
+
+### Changed
+- [LPS-80388]: Update the [Liferay Ant BND] dependency to version 2.0.57.
+
+## 1.3.6 - 2018-10-16
+
+### Changed
+- [LPS-85678]: Check the content of the `.lfrbuild-packageinfo` file to ignore
+specified baseline warnings:
+	- `EXCESSIVE-VERSION-INCREASE`
+	- `PACKAGE ADDED-MISSING-PACKAGEINFO`
+	- `PACKAGE-REMOVED`
+	- `PACKAGE-REMOVED-UNNECESSARY-PACKAGEINFO`
+	- `VERSION-INCREASE-REQUIRED`
+	- `VERSION-INCREASE-SUGGESTED`
+- [LPS-85678]: Update the [Liferay Ant BND] dependency to version 2.0.58.
+
+## 1.3.7 - 2018-10-16
+
+### Changed
+- [LPS-85678]: Update the `baseline` task to ignore the specified baseline
+warnings recursively:
+	- `EXCESSIVE-VERSION-INCREASE-RECURSIVE`
+	- `PACKAGE ADDED-MISSING-PACKAGEINFO-RECURSIVE`
+	- `PACKAGE-REMOVED-RECURSIVE`
+	- `PACKAGE-REMOVED-UNNECESSARY-PACKAGEINFO-RECURSIVE`
+	- `VERSION-INCREASE-REQUIRED-RECURSIVE`
+	- `VERSION-INCREASE-SUGGESTED-RECURSIVE`
+- [LPS-85678]: Update the [Liferay Ant BND] dependency to version 2.0.59.
+
+## 1.3.8 - 2018-10-22
+
+### Added
+- [LPS-86583]: Skip the `baseline` task if the project was never published.
+
+## 1.3.9 - 2018-10-24
+
+### Added
+- [LPS-86583]: Improve performance of the configuration phase for the `baseline`
+task.
+
+## 2.0.0 - 2018-10-29
+
+### Changed
+- [LPS-86583]: Add the property `baselineConfiguration` which contains the
+configuration with exactly one dependency to the previously released version of
+the project for baselining.
+
+## 2.0.1 - 2018-11-16
+
+### Changed
+- [LPS-87466]: Update the [Liferay Gradle Util] dependency to version 1.0.32.
+
+## 2.0.2 - 2018-11-19
+
+### Changed
+- [LPS-87466]: Update the [Liferay Gradle Util] dependency to version 1.0.33.
+
+## 2.0.3 - 2018-11-22
+
+### Changed
+- [LPS-87776]: Update the [Liferay Ant BND] dependency to version 3.0.1.
+
+### Fixed
+- [LPS-87776]: Allow the `baseline` task to update the `Bundle-Version` header
+when all the `packageinfo` files are correct.
+
+## 2.0.4 - 2018-11-26
+
+### Changed
+- [LPS-87776]: Update the [Liferay Ant BND] dependency to version 3.0.2.
+
+## 2.0.5 - 2018-11-27
+
+### Changed
+- [LPS-87839]: Update the [Liferay Ant BND] dependency to version 3.0.3.
+
 [Bnd Builder Gradle Plugin]: https://github.com/bndtools/bnd/tree/master/biz.aQute.bnd.gradle
 [Liferay Ant BND]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/ant-bnd
+[Liferay Gradle Util]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-util
 [LPS-69470]: https://issues.liferay.com/browse/LPS-69470
 [LPS-69899]: https://issues.liferay.com/browse/LPS-69899
 [LPS-70379]: https://issues.liferay.com/browse/LPS-70379
@@ -115,4 +209,11 @@ the newer version do not match.
 [LPS-76224]: https://issues.liferay.com/browse/LPS-76224
 [LPS-77350]: https://issues.liferay.com/browse/LPS-77350
 [LPS-77441]: https://issues.liferay.com/browse/LPS-77441
+[LPS-80388]: https://issues.liferay.com/browse/LPS-80388
 [LPS-83067]: https://issues.liferay.com/browse/LPS-83067
+[LPS-85677]: https://issues.liferay.com/browse/LPS-85677
+[LPS-85678]: https://issues.liferay.com/browse/LPS-85678
+[LPS-86583]: https://issues.liferay.com/browse/LPS-86583
+[LPS-87466]: https://issues.liferay.com/browse/LPS-87466
+[LPS-87776]: https://issues.liferay.com/browse/LPS-87776
+[LPS-87839]: https://issues.liferay.com/browse/LPS-87839

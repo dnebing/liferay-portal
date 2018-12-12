@@ -14,6 +14,8 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.List;
 
 import org.dom4j.Attribute;
@@ -36,7 +38,8 @@ public class ThenPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new ThenPoshiElement(parentPoshiElement, poshiScript);
@@ -46,7 +49,27 @@ public class ThenPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public int getPoshiScriptLineNumber() {
+		Class<?> thenPoshiElementClass = ThenPoshiElement.class;
+		Class<?> thisClass = getClass();
+
+		if (thenPoshiElementClass != thisClass) {
+			return super.getPoshiScriptLineNumber();
+		}
+
+		PoshiElement parentPoshiElement = (PoshiElement)getParent();
+
+		if (parentPoshiElement == null) {
+			return 1;
+		}
+
+		return parentPoshiElement.getPoshiScriptLineNumber();
+	}
+
+	@Override
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		String blockContent = getBlockContent(poshiScript);
 
 		for (String poshiScriptSnippet : getPoshiScriptSnippets(blockContent)) {
@@ -66,7 +89,8 @@ public class ThenPoshiElement extends PoshiElement {
 	}
 
 	protected ThenPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}
@@ -82,7 +106,8 @@ public class ThenPoshiElement extends PoshiElement {
 	}
 
 	protected ThenPoshiElement(
-		String name, PoshiElement parentPoshiElement, String poshiScript) {
+			String name, PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(name, parentPoshiElement, poshiScript);
 	}
@@ -90,6 +115,10 @@ public class ThenPoshiElement extends PoshiElement {
 	@Override
 	protected String getBlockName() {
 		return "then";
+	}
+
+	protected int getDefaultPoshiScriptLineNumber() {
+		return super.getPoshiScriptLineNumber();
 	}
 
 	private boolean _isElementType(

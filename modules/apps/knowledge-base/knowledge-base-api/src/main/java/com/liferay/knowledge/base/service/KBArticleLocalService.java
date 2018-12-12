@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.PersistedResourcedModelLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
@@ -95,6 +96,14 @@ public interface KBArticleLocalService extends BaseLocalService,
 		throws PortalException;
 
 	public void addKBArticleResources(KBArticle kbArticle,
+		ModelPermissions modelPermissions) throws PortalException;
+
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link
+	#addKBArticleResources(KBArticle, ModelPermissions)}
+	*/
+	@Deprecated
+	public void addKBArticleResources(KBArticle kbArticle,
 		String[] groupPermissions, String[] guestPermissions)
 		throws PortalException;
 
@@ -102,6 +111,11 @@ public interface KBArticleLocalService extends BaseLocalService,
 		boolean addGroupPermissions, boolean addGuestPermissions)
 		throws PortalException;
 
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link
+	#addKBArticleResources(KBArticle, ModelPermissions)}
+	*/
+	@Deprecated
 	public void addKBArticleResources(long kbArticleId,
 		String[] groupPermissions, String[] guestPermissions)
 		throws PortalException;
@@ -165,6 +179,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 	public void deleteTempAttachment(long groupId, long userId,
 		String fileName, String tempFolderName) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -173,6 +188,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -187,6 +203,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -203,6 +220,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -212,6 +230,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -221,6 +240,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 

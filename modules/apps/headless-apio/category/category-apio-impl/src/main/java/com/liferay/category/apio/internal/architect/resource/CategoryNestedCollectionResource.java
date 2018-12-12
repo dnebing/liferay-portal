@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.vocabulary.apio.architect.identifier.VocabularyIdentifier;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,9 +51,8 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Javier Gamarra
  * @author Eduardo Pérez
- * @review
  */
-@Component(immediate = true)
+@Component(immediate = true, service = NestedCollectionResource.class)
 public class CategoryNestedCollectionResource
 	implements NestedCollectionResource
 		<AssetCategory, Long, CategoryIdentifier, Long, VocabularyIdentifier> {
@@ -114,6 +114,10 @@ public class CategoryNestedCollectionResource
 			"description", AssetCategory::getDescription
 		).addLocalizedStringByLocale(
 			"name", AssetCategory::getTitle
+		).addStringList(
+			"availableLanguages",
+			category -> Arrays.asList(
+				LocaleUtil.toW3cLanguageIds(category.getAvailableLanguageIds()))
 		).build();
 	}
 

@@ -175,14 +175,14 @@ public abstract class BaseBuild implements Build {
 			return 0;
 		}
 
-		long totalDelayTime = 0;
-
 		List<Build> allDownstreamBuilds = JenkinsResultsParserUtil.flatten(
 			getDownstreamBuilds(null));
 
 		if (allDownstreamBuilds.isEmpty()) {
 			return 0;
 		}
+
+		long totalDelayTime = 0;
 
 		for (Build downstreamBuild : allDownstreamBuilds) {
 			totalDelayTime += downstreamBuild.getDelayTime();
@@ -1675,15 +1675,17 @@ public abstract class BaseBuild implements Build {
 		return "";
 	}
 
-	protected JSONArray getBuildsJSONArray() throws IOException {
+	protected JSONArray getBuildsJSONArray(int page) throws IOException {
 		JSONObject jsonObject = JenkinsResultsParserUtil.toJSONObject(
 			JenkinsResultsParserUtil.getLocalURL(
 				JenkinsResultsParserUtil.combine(
-					getJobURL(), "/api/json?tree=builds[actions[parameters",
-					"[name,type,value]],building,duration,number,result,url]")),
+					getJobURL(), "/api/json?tree=allBuilds[actions[parameters",
+					"[name,type,value]],building,duration,number,result,url]{",
+					String.valueOf(page * 100), ",",
+					String.valueOf((page + 1) * 100), "}")),
 			false);
 
-		return jsonObject.getJSONArray("builds");
+		return jsonObject.getJSONArray("allBuilds");
 	}
 
 	protected Element getBuildTimeElement() {
@@ -1693,13 +1695,13 @@ public abstract class BaseBuild implements Build {
 	}
 
 	protected int getDownstreamBuildCountByResult(String result) {
-		int count = 0;
-
 		List<Build> downstreamBuilds = getDownstreamBuilds(null);
 
 		if (result == null) {
 			return downstreamBuilds.size();
 		}
+
+		int count = 0;
 
 		for (Build downstreamBuild : downstreamBuilds) {
 			String downstreamBuildResult = downstreamBuild.getResult();
@@ -1933,10 +1935,11 @@ public abstract class BaseBuild implements Build {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
 			if (jsonObject.opt("value") instanceof String) {
-				String name = jsonObject.getString("name");
 				String value = jsonObject.getString("value");
 
 				if (!value.isEmpty()) {
+					String name = jsonObject.getString("name");
+
 					parameters.put(name, value);
 				}
 			}
@@ -2011,18 +2014,29 @@ public abstract class BaseBuild implements Build {
 	}
 
 	protected JSONObject getRunningBuildJSONObject() throws IOException {
-		JSONArray buildsJSONArray = getBuildsJSONArray();
+		int page = 0;
 
-		for (int i = 0; i < buildsJSONArray.length(); i++) {
-			JSONObject buildJSONObject = buildsJSONArray.getJSONObject(i);
+		while (true) {
+			JSONArray buildsJSONArray = getBuildsJSONArray(page);
 
-			Map<String, String> parameters = getParameters();
-
-			if (parameters.equals(getParameters(buildJSONObject)) &&
-				!badBuildNumbers.contains(buildJSONObject.getInt("number"))) {
-
-				return buildJSONObject;
+			if (buildsJSONArray.length() == 0) {
+				break;
 			}
+
+			for (int i = 0; i < buildsJSONArray.length(); i++) {
+				JSONObject buildJSONObject = buildsJSONArray.getJSONObject(i);
+
+				Map<String, String> parameters = getParameters();
+
+				if (parameters.equals(getParameters(buildJSONObject)) &&
+					!badBuildNumbers.contains(
+						buildJSONObject.getInt("number"))) {
+
+					return buildJSONObject;
+				}
+			}
+
+			page++;
 		}
 
 		return null;
@@ -2041,13 +2055,13 @@ public abstract class BaseBuild implements Build {
 	}
 
 	protected Map<String, String> getTempMap(String tempMapName) {
-		JSONObject tempMapJSONObject = null;
-
 		String tempMapURL = getTempMapURL(tempMapName);
 
 		if (tempMapURL == null) {
 			return Collections.emptyMap();
 		}
+
+		JSONObject tempMapJSONObject = null;
 
 		try {
 			tempMapJSONObject = JenkinsResultsParserUtil.toJSONObject(
@@ -2103,15 +2117,12 @@ public abstract class BaseBuild implements Build {
 			return 0;
 		}
 
-		int failCount = testReportJSONObject.getInt("failCount");
-		int passCount = testReportJSONObject.getInt("passCount");
-
 		if (status.equals("FAILURE")) {
-			return failCount;
+			return testReportJSONObject.getInt("failCount");
 		}
 
 		if (status.equals("SUCCESS")) {
-			return passCount;
+			return testReportJSONObject.getInt("passCount");
 		}
 
 		throw new IllegalArgumentException("Invalid status: " + status);
@@ -2153,17 +2164,21 @@ public abstract class BaseBuild implements Build {
 			return;
 		}
 
-		JSONObject actionJSONObject = actionsJSONArray.getJSONObject(0);
+		for (int i = 0; i < actionsJSONArray.length(); i++) {
+			JSONObject actionJSONObject = actionsJSONArray.getJSONObject(i);
 
-		if (actionJSONObject.has("parameters")) {
+			if (!actionJSONObject.has("parameters")) {
+				continue;
+			}
+
 			JSONArray parametersJSONArray = actionJSONObject.getJSONArray(
 				"parameters");
 
 			_parameters = new HashMap<>(parametersJSONArray.length());
 
-			for (int i = 0; i < parametersJSONArray.length(); i++) {
+			for (int j = 0; j < parametersJSONArray.length(); j++) {
 				JSONObject parameterJSONObject =
-					parametersJSONArray.getJSONObject(i);
+					parametersJSONArray.getJSONObject(j);
 
 				Object value = parameterJSONObject.opt("value");
 
@@ -2545,12 +2560,11 @@ public abstract class BaseBuild implements Build {
 	private static final String _CONSOLE_TEXT_CACHE_PREFIX = "console-text-";
 
 	private static final FailureMessageGenerator[] _FAILURE_MESSAGE_GENERATORS =
-		{
-			new GenericFailureMessageGenerator()
-		};
+		{new GenericFailureMessageGenerator()};
 
-	private static final String[] _HIGH_PRIORITY_CONTENT_FLAGS =
-		{"compileJSP", "SourceFormatter.format", "Unable to compile JSPs"};
+	private static final String[] _HIGH_PRIORITY_CONTENT_FLAGS = {
+		"compileJSP", "SourceFormatter.format", "Unable to compile JSPs"
+	};
 
 	private static final String _JENKINS_REPORT_TIME_ZONE_NAME;
 

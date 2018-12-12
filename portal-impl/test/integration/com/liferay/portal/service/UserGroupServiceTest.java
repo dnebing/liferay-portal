@@ -14,12 +14,16 @@
 
 package com.liferay.portal.service;
 
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.model.UserGroup;
+import com.liferay.portal.kernel.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserGroupServiceUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserGroupTestUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
 
@@ -77,6 +81,71 @@ public class UserGroupServiceTest {
 
 			previousUserGroupId = userGroupId;
 		}
+	}
+
+	@Test
+	public void testGetUserGroupsLikeName() throws Exception {
+		List<UserGroup> allUserGroups = new ArrayList<>();
+
+		allUserGroups.addAll(
+			UserGroupLocalServiceUtil.getUserGroups(
+				TestPropsValues.getCompanyId()));
+
+		List<UserGroup> likeNameUserGroups = new ArrayList<>();
+
+		String name = RandomTestUtil.randomString(50);
+
+		for (int i = 0; i < 10; i++) {
+			UserGroup userGroup = addUserGroup();
+
+			userGroup.setName(name + i);
+
+			userGroup = UserGroupLocalServiceUtil.updateUserGroup(userGroup);
+
+			allUserGroups.add(userGroup);
+			likeNameUserGroups.add(userGroup);
+		}
+
+		allUserGroups.add(addUserGroup());
+		allUserGroups.add(addUserGroup());
+		allUserGroups.add(addUserGroup());
+
+		assertExpectedUserGroups(likeNameUserGroups, name + "%");
+		assertExpectedUserGroups(
+			likeNameUserGroups, StringUtil.toLowerCase(name) + "%");
+		assertExpectedUserGroups(
+			likeNameUserGroups, StringUtil.toUpperCase(name) + "%");
+		assertExpectedUserGroups(allUserGroups, null);
+		assertExpectedUserGroups(allUserGroups, "");
+	}
+
+	protected UserGroup addUserGroup() throws Exception {
+		UserGroup userGroup = UserGroupTestUtil.addUserGroup();
+
+		_userGroups.add(userGroup);
+
+		return userGroup;
+	}
+
+	protected void assertExpectedUserGroups(
+			List<UserGroup> expectedUserGroups, String nameSearch)
+		throws Exception {
+
+		List<UserGroup> actualUserGroups = UserGroupServiceUtil.getUserGroups(
+			TestPropsValues.getCompanyId(), nameSearch, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS);
+
+		Assert.assertEquals(
+			actualUserGroups.toString(), expectedUserGroups.size(),
+			actualUserGroups.size());
+		Assert.assertTrue(
+			actualUserGroups.toString(),
+			actualUserGroups.containsAll(expectedUserGroups));
+
+		Assert.assertEquals(
+			expectedUserGroups.size(),
+			UserGroupServiceUtil.getUserGroupsCount(
+				TestPropsValues.getCompanyId(), nameSearch));
 	}
 
 	@DeleteAfterTestRun

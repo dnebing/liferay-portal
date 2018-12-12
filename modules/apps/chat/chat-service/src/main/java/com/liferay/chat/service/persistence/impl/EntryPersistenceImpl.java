@@ -3878,6 +3878,8 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	public List<Entry> findByF_T_C(long fromUserId, long toUserId,
 		String content, int start, int end,
 		OrderByComparator<Entry> orderByComparator, boolean retrieveFromCache) {
+		content = Objects.toString(content, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3907,7 +3909,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 				for (Entry entry : list) {
 					if ((fromUserId != entry.getFromUserId()) ||
 							(toUserId != entry.getToUserId()) ||
-							!Objects.equals(content, entry.getContent())) {
+							!content.equals(entry.getContent())) {
 						list = null;
 
 						break;
@@ -3935,10 +3937,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 
 			boolean bindContent = false;
 
-			if (content == null) {
-				query.append(_FINDER_COLUMN_F_T_C_CONTENT_1);
-			}
-			else if (content.equals("")) {
+			if (content.isEmpty()) {
 				query.append(_FINDER_COLUMN_F_T_C_CONTENT_3);
 			}
 			else {
@@ -4148,6 +4147,8 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	public Entry[] findByF_T_C_PrevAndNext(long entryId, long fromUserId,
 		long toUserId, String content,
 		OrderByComparator<Entry> orderByComparator) throws NoSuchEntryException {
+		content = Objects.toString(content, "");
+
 		Entry entry = findByPrimaryKey(entryId);
 
 		Session session = null;
@@ -4197,10 +4198,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 
 		boolean bindContent = false;
 
-		if (content == null) {
-			query.append(_FINDER_COLUMN_F_T_C_CONTENT_1);
-		}
-		else if (content.equals("")) {
+		if (content.isEmpty()) {
 			query.append(_FINDER_COLUMN_F_T_C_CONTENT_3);
 		}
 		else {
@@ -4328,6 +4326,8 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	 */
 	@Override
 	public int countByF_T_C(long fromUserId, long toUserId, String content) {
+		content = Objects.toString(content, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_F_T_C;
 
 		Object[] finderArgs = new Object[] { fromUserId, toUserId, content };
@@ -4345,10 +4345,7 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 
 			boolean bindContent = false;
 
-			if (content == null) {
-				query.append(_FINDER_COLUMN_F_T_C_CONTENT_1);
-			}
-			else if (content.equals("")) {
+			if (content.isEmpty()) {
 				query.append(_FINDER_COLUMN_F_T_C_CONTENT_3);
 			}
 			else {
@@ -4401,6 +4398,9 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 
 	public EntryPersistenceImpl() {
 		setModelClass(Entry.class);
+
+		setModelImplClass(EntryImpl.class);
+		setEntityCacheEnabled(EntryModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -4898,53 +4898,6 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 	/**
 	 * Returns the entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the entry
-	 * @return the entry, or <code>null</code> if a entry with the primary key could not be found
-	 */
-	@Override
-	public Entry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
-				EntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Entry entry = (Entry)serializable;
-
-		if (entry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				entry = (Entry)session.get(EntryImpl.class, primaryKey);
-
-				if (entry != null) {
-					cacheResult(entry);
-				}
-				else {
-					entityCache.putResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
-						EntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(EntryModelImpl.ENTITY_CACHE_ENABLED,
-					EntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return entry;
-	}
-
-	/**
-	 * Returns the entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param entryId the primary key of the entry
 	 * @return the entry, or <code>null</code> if a entry with the primary key could not be found
 	 */
@@ -5235,6 +5188,11 @@ public class EntryPersistenceImpl extends BasePersistenceImpl<Entry>
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

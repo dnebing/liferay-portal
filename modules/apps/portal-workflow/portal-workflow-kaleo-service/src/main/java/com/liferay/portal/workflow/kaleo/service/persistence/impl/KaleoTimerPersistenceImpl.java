@@ -185,6 +185,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		long kaleoClassPK, int start, int end,
 		OrderByComparator<KaleoTimer> orderByComparator,
 		boolean retrieveFromCache) {
+		kaleoClassName = Objects.toString(kaleoClassName, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -212,8 +214,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTimer kaleoTimer : list) {
-					if (!Objects.equals(kaleoClassName,
-								kaleoTimer.getKaleoClassName()) ||
+					if (!kaleoClassName.equals(kaleoTimer.getKaleoClassName()) ||
 							(kaleoClassPK != kaleoTimer.getKaleoClassPK())) {
 						list = null;
 
@@ -238,10 +239,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			boolean bindKaleoClassName = false;
 
-			if (kaleoClassName == null) {
-				query.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_1);
-			}
-			else if (kaleoClassName.equals("")) {
+			if (kaleoClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
 			}
 			else {
@@ -441,6 +439,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		String kaleoClassName, long kaleoClassPK,
 		OrderByComparator<KaleoTimer> orderByComparator)
 		throws NoSuchTimerException {
+		kaleoClassName = Objects.toString(kaleoClassName, "");
+
 		KaleoTimer kaleoTimer = findByPrimaryKey(kaleoTimerId);
 
 		Session session = null;
@@ -486,10 +486,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 		boolean bindKaleoClassName = false;
 
-		if (kaleoClassName == null) {
-			query.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_1);
-		}
-		else if (kaleoClassName.equals("")) {
+		if (kaleoClassName.isEmpty()) {
 			query.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
 		}
 		else {
@@ -615,6 +612,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 	 */
 	@Override
 	public int countByKCN_KCPK(String kaleoClassName, long kaleoClassPK) {
+		kaleoClassName = Objects.toString(kaleoClassName, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_KCN_KCPK;
 
 		Object[] finderArgs = new Object[] { kaleoClassName, kaleoClassPK };
@@ -628,10 +627,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			boolean bindKaleoClassName = false;
 
-			if (kaleoClassName == null) {
-				query.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_1);
-			}
-			else if (kaleoClassName.equals("")) {
+			if (kaleoClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_KCN_KCPK_KALEOCLASSNAME_3);
 			}
 			else {
@@ -792,6 +788,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		long kaleoClassPK, boolean blocking, int start, int end,
 		OrderByComparator<KaleoTimer> orderByComparator,
 		boolean retrieveFromCache) {
+		kaleoClassName = Objects.toString(kaleoClassName, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -819,8 +817,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTimer kaleoTimer : list) {
-					if (!Objects.equals(kaleoClassName,
-								kaleoTimer.getKaleoClassName()) ||
+					if (!kaleoClassName.equals(kaleoTimer.getKaleoClassName()) ||
 							(kaleoClassPK != kaleoTimer.getKaleoClassPK()) ||
 							(blocking != kaleoTimer.isBlocking())) {
 						list = null;
@@ -846,10 +843,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			boolean bindKaleoClassName = false;
 
-			if (kaleoClassName == null) {
-				query.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_1);
-			}
-			else if (kaleoClassName.equals("")) {
+			if (kaleoClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
 			}
 			else {
@@ -1069,6 +1063,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		String kaleoClassName, long kaleoClassPK, boolean blocking,
 		OrderByComparator<KaleoTimer> orderByComparator)
 		throws NoSuchTimerException {
+		kaleoClassName = Objects.toString(kaleoClassName, "");
+
 		KaleoTimer kaleoTimer = findByPrimaryKey(kaleoTimerId);
 
 		Session session = null;
@@ -1117,10 +1113,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 		boolean bindKaleoClassName = false;
 
-		if (kaleoClassName == null) {
-			query.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_1);
-		}
-		else if (kaleoClassName.equals("")) {
+		if (kaleoClassName.isEmpty()) {
 			query.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
 		}
 		else {
@@ -1255,6 +1248,8 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 	@Override
 	public int countByKCN_KCPK_Blocking(String kaleoClassName,
 		long kaleoClassPK, boolean blocking) {
+		kaleoClassName = Objects.toString(kaleoClassName, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_KCN_KCPK_BLOCKING;
 
 		Object[] finderArgs = new Object[] {
@@ -1270,10 +1265,7 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 			boolean bindKaleoClassName = false;
 
-			if (kaleoClassName == null) {
-				query.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_1);
-			}
-			else if (kaleoClassName.equals("")) {
+			if (kaleoClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_KCN_KCPK_BLOCKING_KALEOCLASSNAME_3);
 			}
 			else {
@@ -1333,6 +1325,9 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 
 	public KaleoTimerPersistenceImpl() {
 		setModelClass(KaleoTimer.class);
+
+		setModelImplClass(KaleoTimerImpl.class);
+		setEntityCacheEnabled(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1703,54 +1698,6 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 	/**
 	 * Returns the kaleo timer with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kaleo timer
-	 * @return the kaleo timer, or <code>null</code> if a kaleo timer with the primary key could not be found
-	 */
-	@Override
-	public KaleoTimer fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
-				KaleoTimerImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KaleoTimer kaleoTimer = (KaleoTimer)serializable;
-
-		if (kaleoTimer == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoTimer = (KaleoTimer)session.get(KaleoTimerImpl.class,
-						primaryKey);
-
-				if (kaleoTimer != null) {
-					cacheResult(kaleoTimer);
-				}
-				else {
-					entityCache.putResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoTimerImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KaleoTimerModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoTimerImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kaleoTimer;
-	}
-
-	/**
-	 * Returns the kaleo timer with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kaleoTimerId the primary key of the kaleo timer
 	 * @return the kaleo timer, or <code>null</code> if a kaleo timer with the primary key could not be found
 	 */
@@ -2042,6 +1989,11 @@ public class KaleoTimerPersistenceImpl extends BasePersistenceImpl<KaleoTimer>
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

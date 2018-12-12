@@ -14,9 +14,12 @@
 
 package com.liferay.poshi.runner;
 
+import com.liferay.poshi.runner.logger.PoshiLogger;
+import com.liferay.poshi.runner.logger.SummaryLogger;
 import com.liferay.poshi.runner.selenium.LiferaySeleniumHelper;
 import com.liferay.poshi.runner.selenium.SeleniumUtil;
 import com.liferay.poshi.runner.util.PropsValues;
+import com.liferay.poshi.runner.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,10 +67,29 @@ public class PoshiRunner {
 			PoshiRunnerContext.POSHI_SUPPORT_FILE_INCLUDES,
 			_getTestClassFileIncludes(testNames));
 
-		PoshiRunnerContext.readFiles(
-			poshiTestFileIncludes,
+		List<String> baseDirNames = new ArrayList<>();
+
+		if (Validator.isNotNull(PropsValues.TEST_INCLUDE_DIR_NAMES)) {
+			for (String testIncludeDirName :
+					PropsValues.TEST_INCLUDE_DIR_NAMES) {
+
+				baseDirNames.add(
+					PoshiRunnerGetterUtil.getCanonicalPath(testIncludeDirName));
+			}
+		}
+
+		baseDirNames.add(
 			PoshiRunnerGetterUtil.getCanonicalPath(
 				PropsValues.TEST_BASE_DIR_NAME));
+
+		PoshiRunnerContext.readFiles(
+			poshiTestFileIncludes,
+			baseDirNames.toArray(new String[baseDirNames.size()]));
+
+		if (Validator.isNotNull(PropsValues.TEST_SUBREPO_DIRS)) {
+			PoshiRunnerContext.readFiles(
+				poshiTestFileIncludes, PropsValues.TEST_SUBREPO_DIRS);
+		}
 
 		for (String testName : testNames) {
 			PoshiRunnerValidation.validate(testName);
@@ -113,6 +135,10 @@ public class PoshiRunner {
 			PoshiRunnerGetterUtil.
 				getNamespacedClassNameFromNamespacedClassCommandName(
 					_testNamespacedClassCommandName);
+
+		_poshiLogger = new PoshiLogger(namespacedClassCommandName);
+
+		_poshiRunnerExecutor = new PoshiRunnerExecutor(_poshiLogger);
 	}
 
 	@Before
@@ -129,6 +155,8 @@ public class PoshiRunner {
 		PoshiRunnerVariablesUtil.clear();
 
 		try {
+			SummaryLogger.startRunning();
+
 			SeleniumUtil.startSelenium();
 
 			_runSetUp();
@@ -155,6 +183,8 @@ public class PoshiRunner {
 	public void tearDown() throws Exception {
 		LiferaySeleniumHelper.writePoshiWarnings();
 
+		SummaryLogger.createSummaryReport();
+
 		try {
 			if (!PropsValues.TEST_SKIP_TEAR_DOWN) {
 				_runTearDown();
@@ -166,6 +196,10 @@ public class PoshiRunner {
 			PoshiRunnerStackTraceUtil.emptyStackTrace();
 		}
 		finally {
+			SummaryLogger.stopRunning();
+
+			_poshiLogger.createPoshiReport();
+
 			SeleniumUtil.stopSelenium();
 		}
 	}
@@ -210,6 +244,9 @@ public class PoshiRunner {
 	}
 
 	private void _runCommand() throws Exception {
+		_poshiLogger.logNamespacedClassCommandName(
+			_testNamespacedClassCommandName);
+
 		_runNamespacedClassCommandName(_testNamespacedClassCommandName);
 	}
 
@@ -233,23 +270,37 @@ public class PoshiRunner {
 			PoshiRunnerStackTraceUtil.startStackTrace(
 				namespacedClassCommandName, "test-case");
 
+			_poshiLogger.updateStatus(commandElement, "pending");
+
 			_poshiRunnerExecutor.runTestCaseCommandElement(
 				commandElement, namespacedClassCommandName);
+
+			_poshiLogger.updateStatus(commandElement, "pass");
 
 			PoshiRunnerStackTraceUtil.emptyStackTrace();
 		}
 	}
 
 	private void _runSetUp() throws Exception {
+		_poshiLogger.logNamespacedClassCommandName(
+			_testNamespacedClassName + "#set-up");
+
+		SummaryLogger.startMajorSteps();
+
 		_runNamespacedClassCommandName(_testNamespacedClassName + "#set-up");
 	}
 
 	private void _runTearDown() throws Exception {
+		_poshiLogger.logNamespacedClassCommandName(
+			_testNamespacedClassName + "#tear-down");
+
+		SummaryLogger.startMajorSteps();
+
 		_runNamespacedClassCommandName(_testNamespacedClassName + "#tear-down");
 	}
 
-	private final PoshiRunnerExecutor _poshiRunnerExecutor =
-		new PoshiRunnerExecutor();
+	private final PoshiLogger _poshiLogger;
+	private final PoshiRunnerExecutor _poshiRunnerExecutor;
 	private final String _testNamespacedClassCommandName;
 	private final String _testNamespacedClassName;
 

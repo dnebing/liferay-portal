@@ -71,7 +71,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 				%>
 
 				<div class="alert alert-success">
-					<liferay-ui:message arguments="<%= amImageConfigurationEntry.getName() %>" key="x-saved-successfully" translateArguments="<%= false %>" />
+					<liferay-ui:message arguments="<%= HtmlUtil.escape(amImageConfigurationEntry.getName()) %>" key="x-saved-successfully" translateArguments="<%= false %>" />
 				</div>
 			</c:when>
 		</c:choose>
@@ -126,7 +126,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 					</liferay-portlet:renderURL>
 
 					<liferay-ui:search-container-column-text
-						cssClass="table-cell-content"
+						cssClass="table-cell-expand table-cell-minw-200 table-title"
 						href="<%= rowURL %>"
 						name="name"
 						orderable="<%= false %>"
@@ -134,13 +134,14 @@ PortletURL portletURL = renderResponse.createRenderURL();
 					/>
 
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 						name="state"
 						orderable="<%= false %>"
 						value='<%= LanguageUtil.get(request, amImageConfigurationEntry.isEnabled() ? "enabled" : "disabled") %>'
 					/>
 
 					<liferay-ui:search-container-column-text
-						cssClass="table-cell-content"
+						cssClass="table-cell-expand table-cell-minw-200"
 						name="adapted-images"
 					>
 
@@ -159,10 +160,10 @@ PortletURL portletURL = renderResponse.createRenderURL();
 							<portlet:param name="entryUuid" value="<%= uuid %>" />
 						</portlet:resourceURL>
 
-						<aui:script require="adaptive-media-web/adaptive_media/js/AdaptiveMediaProgress.es">
+						<aui:script require="adaptive-media-web@3.0.0/adaptive_media/js/AdaptiveMediaProgress.es as AdaptiveMediaProgress">
 							var component = Liferay.component(
 								'<portlet:namespace />AdaptRemaining<%= uuid %>',
-								new adaptiveMediaWebAdaptive_mediaJsAdaptiveMediaProgressEs.default(
+								new AdaptiveMediaProgress.default(
 									{
 										adaptedImages: <%= Math.min(adaptedImages, totalImages) %>,
 										disabled: <%= !amImageConfigurationEntry.isEnabled() %>,
@@ -195,6 +196,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 					%>
 
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-ws-nowrap"
 						name="max-width"
 						orderable="<%= false %>"
 						value='<%= (Validator.isNull(maxWidth) || maxWidth.equals("0")) ? LanguageUtil.get(request, "auto") : maxWidth + "px" %>'
@@ -205,6 +207,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 					%>
 
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-ws-nowrap"
 						name="max-height"
 						orderable="<%= false %>"
 						value='<%= (Validator.isNull(maxHeight) || maxHeight.equals("0")) ? LanguageUtil.get(request, "auto") : maxHeight + "px" %>'

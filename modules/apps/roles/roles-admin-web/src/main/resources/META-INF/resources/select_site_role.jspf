@@ -48,10 +48,6 @@ PortletURL portletURL = SelectRoleManagementToolbarDisplayContext.getPortletURL(
 SearchContainer roleSearchContainer = SelectRoleManagementToolbarDisplayContext.getRoleSearchContainer(filterManageableRoles);
 %>
 
-<clay:navigation-bar
-	navigationItems='<%= roleDisplayContext.getSelectRoleNavigationItems("site-roles") %>'
-/>
-
 <clay:management-toolbar
 	clearResultsURL="<%= SelectRoleManagementToolbarDisplayContext.getClearResultsURL() %>"
 	itemsTotal="<%= (step == 1) ? groups.size() : roleSearchContainer.getTotal() %>"
@@ -172,6 +168,7 @@ SearchContainer roleSearchContainer = SelectRoleManagementToolbarDisplayContext.
 					modelVar="role"
 				>
 					<liferay-ui:search-container-column-text
+						cssClass="table-cell-expand table-cell-minw-200"
 						name="title"
 						value="<%= HtmlUtil.escape(role.getTitle(locale)) %>"
 					/>

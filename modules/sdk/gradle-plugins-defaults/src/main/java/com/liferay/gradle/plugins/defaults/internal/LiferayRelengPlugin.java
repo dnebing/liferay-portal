@@ -34,6 +34,7 @@ import com.liferay.gradle.plugins.defaults.tasks.MergeFilesTask;
 import com.liferay.gradle.plugins.defaults.tasks.ReplaceRegexTask;
 import com.liferay.gradle.plugins.defaults.tasks.WriteArtifactPublishCommandsTask;
 import com.liferay.gradle.plugins.defaults.tasks.WritePropertiesTask;
+import com.liferay.gradle.plugins.js.transpiler.JSTranspilerBasePlugin;
 import com.liferay.gradle.plugins.js.transpiler.JSTranspilerPlugin;
 import com.liferay.gradle.util.Validator;
 
@@ -430,14 +431,14 @@ public class LiferayRelengPlugin implements Plugin<Project> {
 									writePropertiesTask.getProject();
 
 								if ((JavaPlugin.JAR_TASK_NAME.equals(key) &&
-										GradleUtil.hasPlugin(
-											project, JavaPlugin.class)) ||
+									 GradleUtil.hasPlugin(
+										 project, JavaPlugin.class)) ||
 									(WarPlugin.WAR_TASK_NAME.equals(key) &&
-										(GradleUtil.hasPlugin(
-											project, LiferayAntPlugin.class) ||
-										GradleUtil.hasPlugin(
-											project,
-											LiferayThemePlugin.class)))) {
+									 (GradleUtil.hasPlugin(
+										 project, LiferayAntPlugin.class) ||
+									  GradleUtil.hasPlugin(
+										  project,
+										  LiferayThemePlugin.class)))) {
 
 									key = null;
 								}
@@ -909,6 +910,8 @@ public class LiferayRelengPlugin implements Plugin<Project> {
 			String name = configuration.getName();
 
 			if (name.equals(
+					JSTranspilerBasePlugin.JS_COMPILE_CONFIGURATION_NAME) ||
+				name.equals(
 					JSTranspilerPlugin.SOY_COMPILE_CONFIGURATION_NAME) ||
 				name.startsWith("test")) {
 

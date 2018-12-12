@@ -111,45 +111,39 @@
 	</listener>
 	<servlet>
 		<servlet-name>Main Servlet</servlet-name>
-		<servlet-class>com.liferay.portal.servlet.MainServlet</servlet-class>
-		<init-param>
-			<param-name>config</param-name>
-			<param-value>/WEB-INF/struts-config.xml,/WEB-INF/struts-config-ext.xml</param-value>
-		</init-param>
-		<init-param>
-			<param-name>debug</param-name>
-			<param-value>0</param-value>
-		</init-param>
-		<init-param>
-			<param-name>detail</param-name>
-			<param-value>0</param-value>
-		</init-param>
+		<servlet-class>com.liferay.portal.internal.servlet.MainServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Atom Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.AtomServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Axis Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.AxisServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Combo Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.ComboServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Display Chart</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.DisplayChartServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Dynamic Resource Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.webserver.DynamicResourceServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Friendly URL Servlet - Private Group</servlet-name>
@@ -159,6 +153,7 @@
 			<param-value>(servlet.init.private=true)(servlet.init.user=false)(servlet.type=friendly-url)</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Friendly URL Servlet - Private User</servlet-name>
@@ -168,6 +163,7 @@
 			<param-value>(servlet.init.private=true)(servlet.init.user=true)(servlet.type=friendly-url)</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Friendly URL Servlet - Public</servlet-name>
@@ -177,31 +173,37 @@
 			<param-value>(servlet.init.private=false)(servlet.type=friendly-url)</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Google Gadget Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.GoogleGadgetServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>I18n Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.I18nServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>JSON Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.JSONServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>JSON Web Service Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.jsonwebservice.JSONWebServiceServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Language Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.LanguageServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Module Framework Servlet</servlet-name>
@@ -213,51 +215,61 @@
 		<servlet-name>Netvibes Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.NetvibesServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Poller Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.poller.PollerServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Portal Delegator Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.kernel.servlet.PortalDelegatorServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Remoting Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.spring.servlet.RemotingServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Robots Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.RobotsServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Sharepoint Document Workspace Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.sharepoint.SharepointDocumentWorkspaceServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Sharepoint Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.sharepoint.SharepointServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Sharepoint Web Services Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.sharepoint.SharepointWebServicesServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Sitemap Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.SitemapServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Tunnel Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.TunnelServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Web Server Servlet</servlet-name>
@@ -267,26 +279,31 @@
 			<param-value>true</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>WebDAV Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.webdav.WebDAVServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Widget Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.WidgetServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>XML-RPC Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.xmlrpc.XmlRpcServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet>
 		<servlet-name>Clean Up Servlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.CleanUpServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Main Servlet</servlet-name>
@@ -330,6 +347,10 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ar-SA/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/ar_SA/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
@@ -338,11 +359,23 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/bg-BG/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/bg_BG/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/ca/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ca-AD/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ca-ES/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -358,11 +391,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/cs-CZ/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/cs_CZ/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/da/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/da-DK/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -374,6 +415,10 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/de-DE/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/de_DE/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
@@ -382,11 +427,27 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/el-GR/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/el_GR/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/en/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/en-AU/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/en-GB/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/en-US/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -406,11 +467,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/es-ES/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/es_ES/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/et/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/et-EE/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -422,11 +491,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/eu-ES/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/eu_ES/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/fa/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/fa-IR/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -438,11 +515,23 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/fi-FI/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/fi_FI/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/fr/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/fr-CA/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/fr-FR/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -458,11 +547,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/gl-ES/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/gl_ES/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/hi/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/hi-IN/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -474,11 +571,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/hr-HR/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/hr_HR/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/hu/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/hu-HU/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -490,11 +595,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/in-ID/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/in_ID/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/it/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/it-IT/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -506,11 +619,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/iw-IL/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/iw_IL/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/ja/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ja-JP/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -522,11 +643,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ko-KR/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/ko_KR/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/lo/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/lo-LA/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -538,6 +667,10 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/lt-LT/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/lt_LT/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
@@ -546,11 +679,23 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/nb-NO/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/nb_NO/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/nl/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/nl-BE/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/nl-NL/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -566,11 +711,23 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/pl-PL/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/pl_PL/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/pt/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/pt-BR/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/pt-PT/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -586,11 +743,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ro-RO/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/ro_RO/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/ru/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/ru-RU/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -602,6 +767,10 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/sk-SK/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/sk_SK/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
@@ -610,11 +779,23 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/sl-SI/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/sl_SI/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/sr/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/sr-RS/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/sr-RS_latin/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -630,11 +811,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/sv-SE/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/sv_SE/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/th/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/th-TH/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -646,11 +835,19 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/tr-TR/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/tr_TR/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/uk/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/uk-UA/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -662,11 +859,23 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/vi-VN/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/vi_VN/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
 		<url-pattern>/zh/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/zh-CN/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>I18n Servlet</servlet-name>
+		<url-pattern>/zh-TW/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>I18n Servlet</servlet-name>
@@ -859,125 +1068,145 @@
 			<taglib-uri>http://liferay.com/tld/util</taglib-uri>
 			<taglib-location>/WEB-INF/tld/liferay-util.tld</taglib-location>
 		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-bean</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-bean.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-bean-el</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-bean-el.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-html</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-html.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-html-el</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-html-el.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-logic</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-logic.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-logic-el</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-logic-el.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://struts.apache.org/tags-nested</taglib-uri>
-			<taglib-location>/WEB-INF/tld/struts-nested.tld</taglib-location>
-		</taglib>
 	</jsp-config>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>/c/portal/protected</web-resource-name>
 			<url-pattern>/c/portal/protected</url-pattern>
 			<url-pattern>/ar/c/portal/protected</url-pattern>
+			<url-pattern>/ar-SA/c/portal/protected</url-pattern>
 			<url-pattern>/ar_SA/c/portal/protected</url-pattern>
 			<url-pattern>/bg/c/portal/protected</url-pattern>
+			<url-pattern>/bg-BG/c/portal/protected</url-pattern>
 			<url-pattern>/bg_BG/c/portal/protected</url-pattern>
 			<url-pattern>/ca/c/portal/protected</url-pattern>
+			<url-pattern>/ca-AD/c/portal/protected</url-pattern>
+			<url-pattern>/ca-ES/c/portal/protected</url-pattern>
 			<url-pattern>/ca_AD/c/portal/protected</url-pattern>
 			<url-pattern>/ca_ES/c/portal/protected</url-pattern>
 			<url-pattern>/cs/c/portal/protected</url-pattern>
+			<url-pattern>/cs-CZ/c/portal/protected</url-pattern>
 			<url-pattern>/cs_CZ/c/portal/protected</url-pattern>
 			<url-pattern>/da/c/portal/protected</url-pattern>
+			<url-pattern>/da-DK/c/portal/protected</url-pattern>
 			<url-pattern>/da_DK/c/portal/protected</url-pattern>
 			<url-pattern>/de/c/portal/protected</url-pattern>
+			<url-pattern>/de-DE/c/portal/protected</url-pattern>
 			<url-pattern>/de_DE/c/portal/protected</url-pattern>
 			<url-pattern>/el/c/portal/protected</url-pattern>
+			<url-pattern>/el-GR/c/portal/protected</url-pattern>
 			<url-pattern>/el_GR/c/portal/protected</url-pattern>
 			<url-pattern>/en/c/portal/protected</url-pattern>
+			<url-pattern>/en-AU/c/portal/protected</url-pattern>
+			<url-pattern>/en-GB/c/portal/protected</url-pattern>
+			<url-pattern>/en-US/c/portal/protected</url-pattern>
 			<url-pattern>/en_AU/c/portal/protected</url-pattern>
 			<url-pattern>/en_GB/c/portal/protected</url-pattern>
 			<url-pattern>/en_US/c/portal/protected</url-pattern>
 			<url-pattern>/es/c/portal/protected</url-pattern>
+			<url-pattern>/es-ES/c/portal/protected</url-pattern>
 			<url-pattern>/es_ES/c/portal/protected</url-pattern>
 			<url-pattern>/et/c/portal/protected</url-pattern>
+			<url-pattern>/et-EE/c/portal/protected</url-pattern>
 			<url-pattern>/et_EE/c/portal/protected</url-pattern>
 			<url-pattern>/eu/c/portal/protected</url-pattern>
+			<url-pattern>/eu-ES/c/portal/protected</url-pattern>
 			<url-pattern>/eu_ES/c/portal/protected</url-pattern>
 			<url-pattern>/fa/c/portal/protected</url-pattern>
+			<url-pattern>/fa-IR/c/portal/protected</url-pattern>
 			<url-pattern>/fa_IR/c/portal/protected</url-pattern>
 			<url-pattern>/fi/c/portal/protected</url-pattern>
+			<url-pattern>/fi-FI/c/portal/protected</url-pattern>
 			<url-pattern>/fi_FI/c/portal/protected</url-pattern>
 			<url-pattern>/fr/c/portal/protected</url-pattern>
+			<url-pattern>/fr-CA/c/portal/protected</url-pattern>
+			<url-pattern>/fr-FR/c/portal/protected</url-pattern>
 			<url-pattern>/fr_CA/c/portal/protected</url-pattern>
 			<url-pattern>/fr_FR/c/portal/protected</url-pattern>
 			<url-pattern>/gl/c/portal/protected</url-pattern>
+			<url-pattern>/gl-ES/c/portal/protected</url-pattern>
 			<url-pattern>/gl_ES/c/portal/protected</url-pattern>
 			<url-pattern>/hi/c/portal/protected</url-pattern>
+			<url-pattern>/hi-IN/c/portal/protected</url-pattern>
 			<url-pattern>/hi_IN/c/portal/protected</url-pattern>
 			<url-pattern>/hr/c/portal/protected</url-pattern>
+			<url-pattern>/hr-HR/c/portal/protected</url-pattern>
 			<url-pattern>/hr_HR/c/portal/protected</url-pattern>
 			<url-pattern>/hu/c/portal/protected</url-pattern>
+			<url-pattern>/hu-HU/c/portal/protected</url-pattern>
 			<url-pattern>/hu_HU/c/portal/protected</url-pattern>
 			<url-pattern>/in/c/portal/protected</url-pattern>
+			<url-pattern>/in-ID/c/portal/protected</url-pattern>
 			<url-pattern>/in_ID/c/portal/protected</url-pattern>
 			<url-pattern>/it/c/portal/protected</url-pattern>
+			<url-pattern>/it-IT/c/portal/protected</url-pattern>
 			<url-pattern>/it_IT/c/portal/protected</url-pattern>
 			<url-pattern>/iw/c/portal/protected</url-pattern>
+			<url-pattern>/iw-IL/c/portal/protected</url-pattern>
 			<url-pattern>/iw_IL/c/portal/protected</url-pattern>
 			<url-pattern>/ja/c/portal/protected</url-pattern>
+			<url-pattern>/ja-JP/c/portal/protected</url-pattern>
 			<url-pattern>/ja_JP/c/portal/protected</url-pattern>
 			<url-pattern>/ko/c/portal/protected</url-pattern>
+			<url-pattern>/ko-KR/c/portal/protected</url-pattern>
 			<url-pattern>/ko_KR/c/portal/protected</url-pattern>
 			<url-pattern>/lo/c/portal/protected</url-pattern>
+			<url-pattern>/lo-LA/c/portal/protected</url-pattern>
 			<url-pattern>/lo_LA/c/portal/protected</url-pattern>
 			<url-pattern>/lt/c/portal/protected</url-pattern>
+			<url-pattern>/lt-LT/c/portal/protected</url-pattern>
 			<url-pattern>/lt_LT/c/portal/protected</url-pattern>
 			<url-pattern>/nb/c/portal/protected</url-pattern>
+			<url-pattern>/nb-NO/c/portal/protected</url-pattern>
 			<url-pattern>/nb_NO/c/portal/protected</url-pattern>
 			<url-pattern>/nl/c/portal/protected</url-pattern>
+			<url-pattern>/nl-BE/c/portal/protected</url-pattern>
+			<url-pattern>/nl-NL/c/portal/protected</url-pattern>
 			<url-pattern>/nl_BE/c/portal/protected</url-pattern>
 			<url-pattern>/nl_NL/c/portal/protected</url-pattern>
 			<url-pattern>/pl/c/portal/protected</url-pattern>
+			<url-pattern>/pl-PL/c/portal/protected</url-pattern>
 			<url-pattern>/pl_PL/c/portal/protected</url-pattern>
 			<url-pattern>/pt/c/portal/protected</url-pattern>
+			<url-pattern>/pt-BR/c/portal/protected</url-pattern>
+			<url-pattern>/pt-PT/c/portal/protected</url-pattern>
 			<url-pattern>/pt_BR/c/portal/protected</url-pattern>
 			<url-pattern>/pt_PT/c/portal/protected</url-pattern>
 			<url-pattern>/ro/c/portal/protected</url-pattern>
+			<url-pattern>/ro-RO/c/portal/protected</url-pattern>
 			<url-pattern>/ro_RO/c/portal/protected</url-pattern>
 			<url-pattern>/ru/c/portal/protected</url-pattern>
+			<url-pattern>/ru-RU/c/portal/protected</url-pattern>
 			<url-pattern>/ru_RU/c/portal/protected</url-pattern>
 			<url-pattern>/sk/c/portal/protected</url-pattern>
+			<url-pattern>/sk-SK/c/portal/protected</url-pattern>
 			<url-pattern>/sk_SK/c/portal/protected</url-pattern>
 			<url-pattern>/sl/c/portal/protected</url-pattern>
+			<url-pattern>/sl-SI/c/portal/protected</url-pattern>
 			<url-pattern>/sl_SI/c/portal/protected</url-pattern>
 			<url-pattern>/sr/c/portal/protected</url-pattern>
+			<url-pattern>/sr-RS/c/portal/protected</url-pattern>
+			<url-pattern>/sr-RS_latin/c/portal/protected</url-pattern>
 			<url-pattern>/sr_RS/c/portal/protected</url-pattern>
 			<url-pattern>/sr_RS_latin/c/portal/protected</url-pattern>
 			<url-pattern>/sv/c/portal/protected</url-pattern>
+			<url-pattern>/sv-SE/c/portal/protected</url-pattern>
 			<url-pattern>/sv_SE/c/portal/protected</url-pattern>
 			<url-pattern>/th/c/portal/protected</url-pattern>
+			<url-pattern>/th-TH/c/portal/protected</url-pattern>
 			<url-pattern>/th_TH/c/portal/protected</url-pattern>
 			<url-pattern>/tr/c/portal/protected</url-pattern>
+			<url-pattern>/tr-TR/c/portal/protected</url-pattern>
 			<url-pattern>/tr_TR/c/portal/protected</url-pattern>
 			<url-pattern>/uk/c/portal/protected</url-pattern>
+			<url-pattern>/uk-UA/c/portal/protected</url-pattern>
 			<url-pattern>/uk_UA/c/portal/protected</url-pattern>
 			<url-pattern>/vi/c/portal/protected</url-pattern>
+			<url-pattern>/vi-VN/c/portal/protected</url-pattern>
 			<url-pattern>/vi_VN/c/portal/protected</url-pattern>
 			<url-pattern>/zh/c/portal/protected</url-pattern>
+			<url-pattern>/zh-CN/c/portal/protected</url-pattern>
+			<url-pattern>/zh-TW/c/portal/protected</url-pattern>
 			<url-pattern>/zh_CN/c/portal/protected</url-pattern>
 			<url-pattern>/zh_TW/c/portal/protected</url-pattern>
 		</web-resource-collection>

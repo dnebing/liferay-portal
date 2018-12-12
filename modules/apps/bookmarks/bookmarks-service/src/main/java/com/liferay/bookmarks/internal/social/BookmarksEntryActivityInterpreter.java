@@ -73,35 +73,31 @@ public class BookmarksEntryActivityInterpreter
 			if (Validator.isNull(groupName)) {
 				return "activity-bookmarks-entry-add-entry";
 			}
-			else {
-				return "activity-bookmarks-entry-add-entry-in";
-			}
+
+			return "activity-bookmarks-entry-add-entry-in";
 		}
 		else if (activityType == BookmarksActivityKeys.UPDATE_ENTRY) {
 			if (Validator.isNull(groupName)) {
 				return "activity-bookmarks-entry-update-entry";
 			}
-			else {
-				return "activity-bookmarks-entry-update-entry-in";
-			}
+
+			return "activity-bookmarks-entry-update-entry-in";
 		}
 		else if (activityType == SocialActivityConstants.TYPE_MOVE_TO_TRASH) {
 			if (Validator.isNull(groupName)) {
 				return "activity-bookmarks-entry-move-to-trash";
 			}
-			else {
-				return "activity-bookmarks-entry-move-to-trash-in";
-			}
+
+			return "activity-bookmarks-entry-move-to-trash-in";
 		}
 		else if (activityType ==
-					 SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
+					SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
 
 			if (Validator.isNull(groupName)) {
 				return "activity-bookmarks-entry-restore-from-trash";
 			}
-			else {
-				return "activity-bookmarks-entry-restore-from-trash-in";
-			}
+
+			return "activity-bookmarks-entry-restore-from-trash-in";
 		}
 
 		return null;
@@ -117,8 +113,9 @@ public class BookmarksEntryActivityInterpreter
 			permissionChecker, activity.getClassPK(), actionId);
 	}
 
-	private static final String[] _CLASS_NAMES =
-		{BookmarksEntry.class.getName()};
+	private static final String[] _CLASS_NAMES = {
+		BookmarksEntry.class.getName()
+	};
 
 	@Reference(
 		target = "(model.class.name=com.liferay.bookmarks.model.BookmarksEntry)"

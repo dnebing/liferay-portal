@@ -187,8 +187,6 @@ public class RolesAdminPortlet extends MVCPortlet {
 			actionRequest, "title");
 		Map<Locale, String> descriptionMap =
 			LocalizationUtil.getLocalizationMap(actionRequest, "description");
-		int type = ParamUtil.getInteger(
-			actionRequest, "type", RoleConstants.TYPE_REGULAR);
 		String subtype = ParamUtil.getString(actionRequest, "subtype");
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			Role.class.getName(), actionRequest);
@@ -196,6 +194,9 @@ public class RolesAdminPortlet extends MVCPortlet {
 		if (roleId <= 0) {
 
 			// Add role
+
+			int type = ParamUtil.getInteger(
+				actionRequest, "type", RoleConstants.TYPE_REGULAR);
 
 			Role role = _roleService.addRole(
 				null, 0, name, titleMap, descriptionMap, type, subtype,
@@ -220,10 +221,11 @@ public class RolesAdminPortlet extends MVCPortlet {
 			// Update role
 
 			if (name.equals(RoleConstants.SITE_ADMINISTRATOR)) {
-				Role role = _roleLocalService.getRole(roleId);
 				ThemeDisplay themeDisplay =
 					(ThemeDisplay)actionRequest.getAttribute(
 						WebKeys.THEME_DISPLAY);
+
+				Role role = _roleLocalService.getRole(roleId);
 				boolean manageSubgroups = ParamUtil.getBoolean(
 					actionRequest, "manageSubgroups");
 
@@ -357,6 +359,7 @@ public class RolesAdminPortlet extends MVCPortlet {
 				resourceActionsMap.entrySet()) {
 
 			String selResource = entry.getKey();
+
 			List<String> actions = entry.getValue();
 
 			actions = ListUtil.sort(
@@ -445,7 +448,7 @@ public class RolesAdminPortlet extends MVCPortlet {
 			include("/view.jsp", renderRequest, renderResponse);
 		}
 		else if (SessionErrors.contains(
-					 renderRequest, DuplicateRoleException.class.getName()) ||
+					renderRequest, DuplicateRoleException.class.getName()) ||
 				 SessionErrors.contains(
 					 renderRequest, RequiredRoleException.class.getName()) ||
 				 SessionErrors.contains(
@@ -454,7 +457,7 @@ public class RolesAdminPortlet extends MVCPortlet {
 			include("/edit_role.jsp", renderRequest, renderResponse);
 		}
 		else if (SessionErrors.contains(
-					 renderRequest, NoSuchRoleException.class.getName()) ||
+					renderRequest, NoSuchRoleException.class.getName()) ||
 				 SessionErrors.contains(
 					 renderRequest, PrincipalException.getNestedClasses()) ||
 				 SessionErrors.contains(
@@ -610,7 +613,7 @@ public class RolesAdminPortlet extends MVCPortlet {
 			actionId = ActionKeys.VIEW_CONTROL_PANEL;
 		}
 		else if (panelCategoryHelper.containsPortlet(
-					 portletId, PanelCategoryKeys.SITE_ADMINISTRATION)) {
+					portletId, PanelCategoryKeys.SITE_ADMINISTRATION)) {
 
 			selResource = Group.class.getName();
 			actionId = ActionKeys.VIEW_SITE_ADMINISTRATION;

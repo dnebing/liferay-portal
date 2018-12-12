@@ -36,10 +36,10 @@ import com.liferay.portal.kernel.security.auth.HttpPrincipal;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portlet.exportimport.service.http.StagingServiceHttp;
 
 import java.io.File;
@@ -94,7 +94,7 @@ public class LayoutRemoteStagingBackgroundTaskExecutor
 
 		try {
 			currentThread.setContextClassLoader(
-				ClassLoaderUtil.getPortalClassLoader());
+				PortalClassLoaderUtil.getClassLoader());
 
 			ExportImportThreadLocal.setLayoutStagingInProcess(true);
 
@@ -215,7 +215,6 @@ public class LayoutRemoteStagingBackgroundTaskExecutor
 
 			for (Map.Entry<Long, Boolean> entry : entrySet) {
 				long plid = GetterUtil.getLong(String.valueOf(entry.getKey()));
-				boolean includeChildren = entry.getValue();
 
 				Layout layout = null;
 
@@ -253,6 +252,8 @@ public class LayoutRemoteStagingBackgroundTaskExecutor
 						layouts.add(parentLayout);
 					}
 				}
+
+				boolean includeChildren = entry.getValue();
 
 				if (includeChildren) {
 					for (Layout childLayout : layout.getAllChildren()) {

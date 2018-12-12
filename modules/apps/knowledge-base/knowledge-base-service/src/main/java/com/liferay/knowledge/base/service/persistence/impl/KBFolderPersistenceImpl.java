@@ -180,6 +180,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	@Override
 	public List<KBFolder> findByUuid(String uuid, int start, int end,
 		OrderByComparator<KBFolder> orderByComparator, boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -203,7 +205,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KBFolder kbFolder : list) {
-					if (!Objects.equals(uuid, kbFolder.getUuid())) {
+					if (!uuid.equals(kbFolder.getUuid())) {
 						list = null;
 
 						break;
@@ -227,10 +229,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -411,6 +410,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	public KBFolder[] findByUuid_PrevAndNext(long kbFolderId, String uuid,
 		OrderByComparator<KBFolder> orderByComparator)
 		throws NoSuchFolderException {
+		uuid = Objects.toString(uuid, "");
+
 		KBFolder kbFolder = findByPrimaryKey(kbFolderId);
 
 		Session session = null;
@@ -456,10 +457,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -579,6 +577,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -592,10 +592,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -709,6 +706,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	@Override
 	public KBFolder fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -734,10 +733,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -821,6 +817,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -834,10 +832,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -978,6 +973,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	public List<KBFolder> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<KBFolder> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1005,7 +1002,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KBFolder kbFolder : list) {
-					if (!Objects.equals(uuid, kbFolder.getUuid()) ||
+					if (!uuid.equals(kbFolder.getUuid()) ||
 							(companyId != kbFolder.getCompanyId())) {
 						list = null;
 
@@ -1030,10 +1027,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1232,6 +1226,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	public KBFolder[] findByUuid_C_PrevAndNext(long kbFolderId, String uuid,
 		long companyId, OrderByComparator<KBFolder> orderByComparator)
 		throws NoSuchFolderException {
+		uuid = Objects.toString(uuid, "");
+
 		KBFolder kbFolder = findByPrimaryKey(kbFolderId);
 
 		Session session = null;
@@ -1277,10 +1273,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1406,6 +1399,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1419,10 +1414,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2473,6 +2465,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	@Override
 	public KBFolder fetchByG_P_N(long groupId, long parentKBFolderId,
 		String name, boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		Object[] finderArgs = new Object[] { groupId, parentKBFolderId, name };
 
 		Object result = null;
@@ -2503,10 +2497,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -2603,6 +2594,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	 */
 	@Override
 	public int countByG_P_N(long groupId, long parentKBFolderId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_P_N;
 
 		Object[] finderArgs = new Object[] { groupId, parentKBFolderId, name };
@@ -2620,10 +2613,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -2757,6 +2747,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	@Override
 	public KBFolder fetchByG_P_UT(long groupId, long parentKBFolderId,
 		String urlTitle, boolean retrieveFromCache) {
+		urlTitle = Objects.toString(urlTitle, "");
+
 		Object[] finderArgs = new Object[] { groupId, parentKBFolderId, urlTitle };
 
 		Object result = null;
@@ -2787,10 +2779,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUrlTitle = false;
 
-			if (urlTitle == null) {
-				query.append(_FINDER_COLUMN_G_P_UT_URLTITLE_1);
-			}
-			else if (urlTitle.equals("")) {
+			if (urlTitle.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_P_UT_URLTITLE_3);
 			}
 			else {
@@ -2888,6 +2877,8 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	@Override
 	public int countByG_P_UT(long groupId, long parentKBFolderId,
 		String urlTitle) {
+		urlTitle = Objects.toString(urlTitle, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_P_UT;
 
 		Object[] finderArgs = new Object[] { groupId, parentKBFolderId, urlTitle };
@@ -2905,10 +2896,7 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 			boolean bindUrlTitle = false;
 
-			if (urlTitle == null) {
-				query.append(_FINDER_COLUMN_G_P_UT_URLTITLE_1);
-			}
-			else if (urlTitle.equals("")) {
+			if (urlTitle.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_P_UT_URLTITLE_3);
 			}
 			else {
@@ -2961,6 +2949,9 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 
 	public KBFolderPersistenceImpl() {
 		setModelClass(KBFolder.class);
+
+		setModelImplClass(KBFolderImpl.class);
+		setEntityCacheEnabled(KBFolderModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -3497,53 +3488,6 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	/**
 	 * Returns the kb folder with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kb folder
-	 * @return the kb folder, or <code>null</code> if a kb folder with the primary key could not be found
-	 */
-	@Override
-	public KBFolder fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KBFolderModelImpl.ENTITY_CACHE_ENABLED,
-				KBFolderImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KBFolder kbFolder = (KBFolder)serializable;
-
-		if (kbFolder == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kbFolder = (KBFolder)session.get(KBFolderImpl.class, primaryKey);
-
-				if (kbFolder != null) {
-					cacheResult(kbFolder);
-				}
-				else {
-					entityCache.putResult(KBFolderModelImpl.ENTITY_CACHE_ENABLED,
-						KBFolderImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KBFolderModelImpl.ENTITY_CACHE_ENABLED,
-					KBFolderImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kbFolder;
-	}
-
-	/**
-	 * Returns the kb folder with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kbFolderId the primary key of the kb folder
 	 * @return the kb folder, or <code>null</code> if a kb folder with the primary key could not be found
 	 */
@@ -3839,6 +3783,11 @@ public class KBFolderPersistenceImpl extends BasePersistenceImpl<KBFolder>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

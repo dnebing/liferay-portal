@@ -66,7 +66,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alexander Chow
  */
-@Component
+@Component(service = Method.class)
 public class PingbackMethodImpl implements Method {
 
 	public static final int ACCESS_DENIED = 49;
@@ -167,9 +167,8 @@ public class PingbackMethodImpl implements Method {
 		long classPK = entry.getEntryId();
 
 		String body = StringBundler.concat(
-			"[...] ", getExcerpt(), " [...] [url=", _sourceURI, "]",
-			LanguageUtil.get(LocaleUtil.getSiteDefault(), "read-more"),
-			"[/url]");
+			"[...] ", getExcerpt(), " [...] <a href=", _sourceURI, ">",
+			LanguageUtil.get(LocaleUtil.getSiteDefault(), "read-more"), "</a>");
 
 		ServiceContext serviceContext = buildServiceContext(
 			companyId, groupId, entry.getUrlTitle());
@@ -192,14 +191,14 @@ public class PingbackMethodImpl implements Method {
 
 		serviceContext.setAttribute("pingbackUserName", pingbackUserName);
 
-		StringBundler sb = new StringBundler(5);
-
 		String portletId = PortletProviderUtil.getPortletId(
 			BlogsEntry.class.getName(), PortletProvider.Action.VIEW);
 
 		if (Validator.isNull(portletId)) {
 			return serviceContext;
 		}
+
+		StringBundler sb = new StringBundler(5);
 
 		String layoutFullURL = _portal.getLayoutFullURL(groupId, portletId);
 
@@ -237,8 +236,6 @@ public class PingbackMethodImpl implements Method {
 
 		long plid = _portal.getPlidFromFriendlyURL(companyId, friendlyURL);
 
-		long groupId = _portal.getScopeGroupId(plid);
-
 		Map<String, String[]> params = new HashMap<>();
 
 		FriendlyURLMapperThreadLocal.setPRPIdentifiers(
@@ -273,6 +270,7 @@ public class PingbackMethodImpl implements Method {
 			entry = _blogsEntryLocalService.getEntry(entryId);
 		}
 		else {
+			long groupId = _portal.getScopeGroupId(plid);
 			String urlTitle = getParam(params, "urlTitle");
 
 			entry = _blogsEntryLocalService.getEntry(groupId, urlTitle);
@@ -334,9 +332,8 @@ public class PingbackMethodImpl implements Method {
 		if (ArrayUtil.isNotEmpty(paramArray)) {
 			return paramArray[0];
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	@Reference(unbind = "-")
@@ -359,11 +356,11 @@ public class PingbackMethodImpl implements Method {
 	}
 
 	protected Response validateSource() throws Exception {
-		Source source = null;
-
 		if (_isSourceURILocalNetwork()) {
 			return XmlRpcUtil.createFault(ACCESS_DENIED, "Access Denied");
 		}
+
+		Source source = null;
 
 		try {
 			String html = _http.URLtoString(_sourceURI);

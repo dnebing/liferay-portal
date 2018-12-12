@@ -14,6 +14,10 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
+import java.io.File;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,10 +29,55 @@ import org.dom4j.Node;
 /**
  * @author Kenji Heigel
  */
-public abstract class DefinitionPoshiElement extends PoshiElement {
+public class DefinitionPoshiElement extends PoshiElement {
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public PoshiElement clone(Element element) {
+		return clone(element, null);
+	}
+
+	public PoshiElement clone(Element element, File file) {
+		if (isElementType(getElementName(), element)) {
+			return new DefinitionPoshiElement(element, file);
+		}
+
+		return null;
+	}
+
+	@Override
+	public PoshiElement clone(
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
+
+		return clone(poshiScript, null);
+	}
+
+	public PoshiElement clone(String poshiScript, File file)
+		throws PoshiScriptParserException {
+
+		if (isElementType(poshiScript)) {
+			return new DefinitionPoshiElement(poshiScript, file);
+		}
+
+		return null;
+	}
+
+	public String getFileExtension() {
+		String filePath = getFilePath();
+
+		int index = filePath.lastIndexOf(".");
+
+		return filePath.substring(index + 1);
+	}
+
+	public String getFilePath() {
+		return _filePath;
+	}
+
+	@Override
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		String blockName = getBlockName(poshiScript);
 
 		Matcher poshiScriptAnnotationMatcher =
@@ -38,7 +87,7 @@ public abstract class DefinitionPoshiElement extends PoshiElement {
 			String annotation = poshiScriptAnnotationMatcher.group();
 
 			String name = getNameFromAssignment(annotation);
-			String value = getQuotedContent(annotation);
+			String value = getDoubleQuotedContent(annotation);
 
 			addAttribute(name, value);
 		}
@@ -72,8 +121,8 @@ public abstract class DefinitionPoshiElement extends PoshiElement {
 	protected DefinitionPoshiElement() {
 	}
 
-	protected DefinitionPoshiElement(Element element) {
-		super(_ELEMENT_NAME, element);
+	protected DefinitionPoshiElement(Element element, File file) {
+		super(_ELEMENT_NAME, element, file);
 	}
 
 	protected DefinitionPoshiElement(
@@ -83,9 +132,16 @@ public abstract class DefinitionPoshiElement extends PoshiElement {
 	}
 
 	protected DefinitionPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
+	}
+
+	protected DefinitionPoshiElement(String poshiScript, File file)
+		throws PoshiScriptParserException {
+
+		super(_ELEMENT_NAME, null, poshiScript, file);
 	}
 
 	@Override
@@ -97,25 +153,27 @@ public abstract class DefinitionPoshiElement extends PoshiElement {
 		return _ELEMENT_NAME;
 	}
 
-	protected String getFileType() {
-		return null;
-	}
-
 	@Override
 	protected String getPad() {
 		return "";
 	}
 
 	protected String getPoshiScriptKeyword() {
-		if (getFileType().equals("testcase")) {
+		String fileExtension = getFileExtension();
+
+		if (fileExtension.equals("testcase")) {
 			return "test";
 		}
 
-		return getFileType();
+		return fileExtension;
 	}
 
 	protected boolean isElementType(String poshiScript) {
 		return isValidPoshiScriptBlock(_blockNamePattern, poshiScript);
+	}
+
+	protected void setFilePath(File file) {
+		_filePath = file.getAbsolutePath();
 	}
 
 	private static final String _ELEMENT_NAME = "definition";
@@ -125,5 +183,7 @@ public abstract class DefinitionPoshiElement extends PoshiElement {
 	private static final Pattern _blockNamePattern = Pattern.compile(
 		"^" + BLOCK_NAME_ANNOTATION_REGEX + _POSHI_SCRIPT_KEYWORD,
 		Pattern.DOTALL);
+
+	private String _filePath;
 
 }

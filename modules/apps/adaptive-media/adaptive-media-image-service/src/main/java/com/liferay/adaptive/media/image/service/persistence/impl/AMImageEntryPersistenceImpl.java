@@ -175,6 +175,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	public List<AMImageEntry> findByUuid(String uuid, int start, int end,
 		OrderByComparator<AMImageEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -198,7 +200,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			if ((list != null) && !list.isEmpty()) {
 				for (AMImageEntry amImageEntry : list) {
-					if (!Objects.equals(uuid, amImageEntry.getUuid())) {
+					if (!uuid.equals(amImageEntry.getUuid())) {
 						list = null;
 
 						break;
@@ -222,10 +224,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -406,6 +405,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	public AMImageEntry[] findByUuid_PrevAndNext(long amImageEntryId,
 		String uuid, OrderByComparator<AMImageEntry> orderByComparator)
 		throws NoSuchAMImageEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		AMImageEntry amImageEntry = findByPrimaryKey(amImageEntryId);
 
 		Session session = null;
@@ -451,10 +452,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -574,6 +572,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -587,10 +587,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -704,6 +701,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	@Override
 	public AMImageEntry fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -729,10 +728,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -816,6 +812,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -829,10 +827,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -973,6 +968,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	public List<AMImageEntry> findByUuid_C(String uuid, long companyId,
 		int start, int end, OrderByComparator<AMImageEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1000,7 +997,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			if ((list != null) && !list.isEmpty()) {
 				for (AMImageEntry amImageEntry : list) {
-					if (!Objects.equals(uuid, amImageEntry.getUuid()) ||
+					if (!uuid.equals(amImageEntry.getUuid()) ||
 							(companyId != amImageEntry.getCompanyId())) {
 						list = null;
 
@@ -1025,10 +1022,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1228,6 +1222,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 		String uuid, long companyId,
 		OrderByComparator<AMImageEntry> orderByComparator)
 		throws NoSuchAMImageEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		AMImageEntry amImageEntry = findByPrimaryKey(amImageEntryId);
 
 		Session session = null;
@@ -1273,10 +1269,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1402,6 +1395,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1415,10 +1410,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2565,6 +2557,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 		String configurationUuid, int start, int end,
 		OrderByComparator<AMImageEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2592,7 +2586,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			if ((list != null) && !list.isEmpty()) {
 				for (AMImageEntry amImageEntry : list) {
-					if (!Objects.equals(configurationUuid,
+					if (!configurationUuid.equals(
 								amImageEntry.getConfigurationUuid())) {
 						list = null;
 
@@ -2617,10 +2611,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindConfigurationUuid = false;
 
-			if (configurationUuid == null) {
-				query.append(_FINDER_COLUMN_CONFIGURATIONUUID_CONFIGURATIONUUID_1);
-			}
-			else if (configurationUuid.equals("")) {
+			if (configurationUuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_CONFIGURATIONUUID_CONFIGURATIONUUID_3);
 			}
 			else {
@@ -2808,6 +2799,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 		long amImageEntryId, String configurationUuid,
 		OrderByComparator<AMImageEntry> orderByComparator)
 		throws NoSuchAMImageEntryException {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		AMImageEntry amImageEntry = findByPrimaryKey(amImageEntryId);
 
 		Session session = null;
@@ -2853,10 +2846,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 		boolean bindConfigurationUuid = false;
 
-		if (configurationUuid == null) {
-			query.append(_FINDER_COLUMN_CONFIGURATIONUUID_CONFIGURATIONUUID_1);
-		}
-		else if (configurationUuid.equals("")) {
+		if (configurationUuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_CONFIGURATIONUUID_CONFIGURATIONUUID_3);
 		}
 		else {
@@ -2976,6 +2966,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	 */
 	@Override
 	public int countByConfigurationUuid(String configurationUuid) {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_CONFIGURATIONUUID;
 
 		Object[] finderArgs = new Object[] { configurationUuid };
@@ -2989,10 +2981,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindConfigurationUuid = false;
 
-			if (configurationUuid == null) {
-				query.append(_FINDER_COLUMN_CONFIGURATIONUUID_CONFIGURATIONUUID_1);
-			}
-			else if (configurationUuid.equals("")) {
+			if (configurationUuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_CONFIGURATIONUUID_CONFIGURATIONUUID_3);
 			}
 			else {
@@ -3644,6 +3633,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 		String configurationUuid, int start, int end,
 		OrderByComparator<AMImageEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3672,7 +3663,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 			if ((list != null) && !list.isEmpty()) {
 				for (AMImageEntry amImageEntry : list) {
 					if ((companyId != amImageEntry.getCompanyId()) ||
-							!Objects.equals(configurationUuid,
+							!configurationUuid.equals(
 								amImageEntry.getConfigurationUuid())) {
 						list = null;
 
@@ -3699,10 +3690,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindConfigurationUuid = false;
 
-			if (configurationUuid == null) {
-				query.append(_FINDER_COLUMN_C_C_CONFIGURATIONUUID_1);
-			}
-			else if (configurationUuid.equals("")) {
+			if (configurationUuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_C_CONFIGURATIONUUID_3);
 			}
 			else {
@@ -3904,6 +3892,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 		long companyId, String configurationUuid,
 		OrderByComparator<AMImageEntry> orderByComparator)
 		throws NoSuchAMImageEntryException {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		AMImageEntry amImageEntry = findByPrimaryKey(amImageEntryId);
 
 		Session session = null;
@@ -3951,10 +3941,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 		boolean bindConfigurationUuid = false;
 
-		if (configurationUuid == null) {
-			query.append(_FINDER_COLUMN_C_C_CONFIGURATIONUUID_1);
-		}
-		else if (configurationUuid.equals("")) {
+		if (configurationUuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_C_CONFIGURATIONUUID_3);
 		}
 		else {
@@ -4078,6 +4065,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	 */
 	@Override
 	public int countByC_C(long companyId, String configurationUuid) {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_C;
 
 		Object[] finderArgs = new Object[] { companyId, configurationUuid };
@@ -4093,10 +4082,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindConfigurationUuid = false;
 
-			if (configurationUuid == null) {
-				query.append(_FINDER_COLUMN_C_C_CONFIGURATIONUUID_1);
-			}
-			else if (configurationUuid.equals("")) {
+			if (configurationUuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_C_CONFIGURATIONUUID_3);
 			}
 			else {
@@ -4213,6 +4199,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	@Override
 	public AMImageEntry fetchByC_F(String configurationUuid,
 		long fileVersionId, boolean retrieveFromCache) {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		Object[] finderArgs = new Object[] { configurationUuid, fileVersionId };
 
 		Object result = null;
@@ -4239,10 +4227,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindConfigurationUuid = false;
 
-			if (configurationUuid == null) {
-				query.append(_FINDER_COLUMN_C_F_CONFIGURATIONUUID_1);
-			}
-			else if (configurationUuid.equals("")) {
+			if (configurationUuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_F_CONFIGURATIONUUID_3);
 			}
 			else {
@@ -4326,6 +4311,8 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	 */
 	@Override
 	public int countByC_F(String configurationUuid, long fileVersionId) {
+		configurationUuid = Objects.toString(configurationUuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_F;
 
 		Object[] finderArgs = new Object[] { configurationUuid, fileVersionId };
@@ -4339,10 +4326,7 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 			boolean bindConfigurationUuid = false;
 
-			if (configurationUuid == null) {
-				query.append(_FINDER_COLUMN_C_F_CONFIGURATIONUUID_1);
-			}
-			else if (configurationUuid.equals("")) {
+			if (configurationUuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_F_CONFIGURATIONUUID_3);
 			}
 			else {
@@ -4394,6 +4378,9 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 
 	public AMImageEntryPersistenceImpl() {
 		setModelClass(AMImageEntry.class);
+
+		setModelImplClass(AMImageEntryImpl.class);
+		setEntityCacheEnabled(AMImageEntryModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -4972,54 +4959,6 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	/**
 	 * Returns the am image entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the am image entry
-	 * @return the am image entry, or <code>null</code> if a am image entry with the primary key could not be found
-	 */
-	@Override
-	public AMImageEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(AMImageEntryModelImpl.ENTITY_CACHE_ENABLED,
-				AMImageEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		AMImageEntry amImageEntry = (AMImageEntry)serializable;
-
-		if (amImageEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				amImageEntry = (AMImageEntry)session.get(AMImageEntryImpl.class,
-						primaryKey);
-
-				if (amImageEntry != null) {
-					cacheResult(amImageEntry);
-				}
-				else {
-					entityCache.putResult(AMImageEntryModelImpl.ENTITY_CACHE_ENABLED,
-						AMImageEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(AMImageEntryModelImpl.ENTITY_CACHE_ENABLED,
-					AMImageEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return amImageEntry;
-	}
-
-	/**
-	 * Returns the am image entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param amImageEntryId the primary key of the am image entry
 	 * @return the am image entry, or <code>null</code> if a am image entry with the primary key could not be found
 	 */
@@ -5316,6 +5255,11 @@ public class AMImageEntryPersistenceImpl extends BasePersistenceImpl<AMImageEntr
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

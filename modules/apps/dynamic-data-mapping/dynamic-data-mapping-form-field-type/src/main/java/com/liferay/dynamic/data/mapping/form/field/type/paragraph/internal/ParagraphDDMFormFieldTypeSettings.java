@@ -56,7 +56,12 @@ import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 							value = {"label", "text", "tip", "required"}
 						)
 					}
-				),
+				)
+			}
+		),
+		@DDMFormLayoutPage(
+			title = "%properties",
+			value = {
 				@DDMFormLayoutRow(
 					{
 						@DDMFormLayoutColumn(
@@ -78,6 +83,7 @@ public interface ParagraphDDMFormFieldTypeSettings
 	extends DefaultDDMFormFieldTypeSettings {
 
 	@DDMFormField(predefinedValue = "")
+	@Override
 	public String dataType();
 
 	@DDMFormField(
@@ -91,9 +97,11 @@ public interface ParagraphDDMFormFieldTypeSettings
 		dataType = "string", label = "%body-text",
 		properties = "placeholder=%enter-body-text", type = "editor"
 	)
-	public String text();
+	public LocalizedValue text();
 
-	@DDMFormField(dataType = "string", type = "validation")
+	@DDMFormField(
+		dataType = "string", type = "validation", visibilityExpression = "FALSE"
+	)
 	@Override
 	public DDMFormFieldValidation validation();
 

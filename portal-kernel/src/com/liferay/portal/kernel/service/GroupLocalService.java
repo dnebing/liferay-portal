@@ -30,7 +30,6 @@ import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
-import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -260,6 +259,7 @@ public interface GroupLocalService extends BaseLocalService,
 
 	public void disableStaging(long groupId) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -268,6 +268,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -282,6 +283,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -298,6 +300,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -307,6 +310,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -316,6 +320,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 
@@ -355,8 +360,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @return the group with the group key and associated company, or
 	<code>null</code> if a matching group could not be found
 	*/
-	@Skip
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	@Transactional(enabled = false)
 	public Group fetchGroup(long companyId, String groupKey);
 
 	/**
@@ -397,12 +401,91 @@ public interface GroupLocalService extends BaseLocalService,
 	* Returns all the active or inactive groups associated with the company.
 	*
 	* @param companyId the primary key of the company
-	* @param active whether to return only active groups, or only inactive
+	* @param active whether to return only active groups or only inactive
 	groups
-	* @return the active or inactive groups associated with the company
+	* @return the active or inactive groups
 	*/
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Group> getActiveGroups(long companyId, boolean active);
+
+	/**
+	* Returns the active or inactive groups associated with the company and,
+	* optionally, the main site.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end -
+	* start</code> instances. <code>start</code> and <code>end</code> are not
+	* primary keys, they are indexes in the result set. Thus, <code>0</code>
+	* refers to the first result in the set. Setting both <code>start</code>
+	* and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	* result set.
+	* </p>
+	*
+	* @param companyId the primary key of the company
+	* @param site whether the group is associated with a main site
+	* @param active whether to return only active groups or only inactive
+	groups
+	* @param start the lower bound of the range of groups to return
+	* @param end the upper bound of the range of groups to return (not
+	inclusive)
+	* @param obc the comparator to order the groups (optionally
+	<code>null</code>)
+	* @return the active or inactive groups
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Group> getActiveGroups(long companyId, boolean site,
+		boolean active, int start, int end, OrderByComparator<Group> obc);
+
+	/**
+	* Returns the active or inactive groups associated with the company.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end -
+	* start</code> instances. <code>start</code> and <code>end</code> are not
+	* primary keys, they are indexes in the result set. Thus, <code>0</code>
+	* refers to the first result in the set. Setting both <code>start</code>
+	* and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	* result set.
+	* </p>
+	*
+	* @param companyId the primary key of the company
+	* @param active whether to return only active groups or only inactive
+	groups
+	* @param start the lower bound of the range of groups to return
+	* @param end the upper bound of the range of groups to return (not
+	inclusive)
+	* @param obc the comparator to order the groups (optionally
+	<code>null</code>)
+	* @return the active or inactive groups
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Group> getActiveGroups(long companyId, boolean active,
+		int start, int end, OrderByComparator<Group> obc);
+
+	/**
+	* Returns the number of active or inactive groups associated with the
+	* company.
+	*
+	* @param companyId the primary key of the company
+	* @param active whether to count only active groups or only inactive
+	groups
+	* @return the number of active or inactive groups
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getActiveGroupsCount(long companyId, boolean active);
+
+	/**
+	* Returns the number of active or inactive groups associated with the
+	* company.
+	*
+	* @param companyId the primary key of the company
+	* @param active whether to count only active groups or only inactive
+	groups
+	* @param site whether the group is to be associated with a main site
+	* @return the number of active or inactive groups
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getActiveGroupsCount(long companyId, boolean active, boolean site);
 
 	/**
 	* Returns the company group.
@@ -475,8 +558,7 @@ public interface GroupLocalService extends BaseLocalService,
 	* @return the group with the group key
 	* @throws PortalException if a portal exception occurred
 	*/
-	@Skip
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	@Transactional(enabled = false)
 	public Group getGroup(long companyId, String groupKey)
 		throws PortalException;
 
@@ -546,6 +628,10 @@ public interface GroupLocalService extends BaseLocalService,
 		boolean site, int start, int end);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Group> getGroups(long companyId, long parentGroupId,
+		String name, boolean site, int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Group> getGroups(long companyId, String treePath, boolean site);
 
 	/**
@@ -606,6 +692,10 @@ public interface GroupLocalService extends BaseLocalService,
 	*/
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getGroupsCount(long companyId, long parentGroupId, boolean site);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getGroupsCount(long companyId, long parentGroupId, String name,
+		boolean site);
 
 	/**
 	* Returns the number of groups that are direct children of the parent group
@@ -1135,8 +1225,7 @@ public interface GroupLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public boolean hasUserGroups(long userId);
 
-	@Skip
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	@Transactional(enabled = false)
 	public boolean isLiveGroupActive(Group group);
 
 	/**

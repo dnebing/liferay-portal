@@ -283,9 +283,8 @@ public class WorkflowDefinitionDisplayContext {
 		else if (workflowDefinitionLinks.size() == 2) {
 			return "workflow-in-use-remove-assignements-to-x-and-x-x";
 		}
-		else {
-			return "workflow-in-use-remove-assignements-to-x-x-and-x-more-x";
-		}
+
+		return "workflow-in-use-remove-assignements-to-x-x-and-x-more-x";
 	}
 
 	public Date getModifiedDate(WorkflowDefinition workflowDefinition) {
@@ -330,8 +329,8 @@ public class WorkflowDefinitionDisplayContext {
 		workflowDefinitionSearch.setTotal(workflowDefinitions.size());
 
 		if (workflowDefinitions.size() >
-				(workflowDefinitionSearch.
-					getEnd() - workflowDefinitionSearch.getStart())) {
+				(workflowDefinitionSearch.getEnd() -
+					workflowDefinitionSearch.getStart())) {
 
 			workflowDefinitions = ListUtil.subList(
 				workflowDefinitions, workflowDefinitionSearch.getStart(),

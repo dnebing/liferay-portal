@@ -38,11 +38,16 @@ import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.servlet.ServletContextClassLoaderPool;
+import com.liferay.portal.kernel.util.AggregateClassLoader;
 import com.liferay.portal.kernel.util.InstanceFactory;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StackTraceUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Michael C. Han
@@ -224,11 +229,11 @@ public class BackgroundTaskMessageListener extends BaseMessageListener {
 			backgroundTaskExecutor = backgroundTaskExecutor.clone();
 		}
 		else {
-			ClassLoader classLoader = ClassLoaderUtil.getPortalClassLoader();
+			ClassLoader classLoader = PortalClassLoaderUtil.getClassLoader();
 
 			if (Validator.isNotNull(servletContextNames)) {
-				classLoader = ClassLoaderUtil.getAggregatePluginsClassLoader(
-					StringUtil.split(servletContextNames), false);
+				classLoader = _getAggregatePluginsClassLoader(
+					servletContextNames);
 			}
 
 			try {
@@ -254,13 +259,12 @@ public class BackgroundTaskMessageListener extends BaseMessageListener {
 			return null;
 		}
 
-		ClassLoader classLoader = ClassLoaderUtil.getPortalClassLoader();
+		ClassLoader classLoader = PortalClassLoaderUtil.getClassLoader();
 
 		String servletContextNames = backgroundTask.getServletContextNames();
 
 		if (Validator.isNotNull(servletContextNames)) {
-			classLoader = ClassLoaderUtil.getAggregatePluginsClassLoader(
-				StringUtil.split(servletContextNames), false);
+			classLoader = _getAggregatePluginsClassLoader(servletContextNames);
 		}
 
 		return classLoader;
@@ -286,6 +290,34 @@ public class BackgroundTaskMessageListener extends BaseMessageListener {
 			backgroundTaskExecutor, _backgroundTaskThreadLocalManager);
 
 		return backgroundTaskExecutor;
+	}
+
+	private ClassLoader _getAggregatePluginsClassLoader(
+		String servletContextNamesString) {
+
+		String[] servletContextNames = StringUtil.split(
+			servletContextNamesString);
+
+		List<ClassLoader> classLoaders = new ArrayList<>(
+			servletContextNames.length);
+
+		for (String servletContextName : servletContextNames) {
+			ClassLoader classLoader =
+				ServletContextClassLoaderPool.getClassLoader(
+					servletContextName);
+
+			if (classLoader == null) {
+				_log.error(
+					"Unable to find class loader for servlet context " +
+						servletContextName);
+			}
+			else {
+				classLoaders.add(classLoader);
+			}
+		}
+
+		return AggregateClassLoader.getAggregateClassLoader(
+			classLoaders.toArray(new ClassLoader[classLoaders.size()]));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -26,6 +26,9 @@
 	</tear-down>
 
 	<command name="ViewBlogsPortletAsGuestPG" priority="5">
+		<property name="app.server.types" value="jboss,resin,tcserver,tomcat,weblogic,websphere,wildfly" />
+		<property name="database.types" value="db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase" />
+		<property name="environment.acceptance" value="true" />
 		<property name="portal.acceptance" value="true" />
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -63,6 +66,8 @@
 
 	<command name="ViewNoDisplayPortletConfigurationPermission" priority="4">
 		<property name="custom.properties" value="virtual.hosts.default.site.name=Guest" />
+		<property name="test.assert.javascript.errors" value="false" />
+		<property name="test.assert.warning.exceptions" value="true" />
 
 		<var method="PropsUtil#get('portal.url')" name="portalURL" />
 
@@ -88,10 +93,6 @@
 		<execute macro="Alert#viewErrorMessage">
 			<var name="errorMessage" value="You do not have the required permissions." />
 		</execute>
-
-		<!-- Ignore following step until LPS-73530 is fixed -->
-
-		<!-- <execute function="AssertConsoleTextNotPresent" value1="must have com.liferay.portal.kernel.model.Portlet,com_liferay_users_admin_web_portlet_UsersAdminPortlet,CONFIGURATION permission for null" /> -->
 
 		<execute macro="Navigator#openSpecificURL">
 			<var name="url" value="${url2}" />

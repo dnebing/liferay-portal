@@ -72,6 +72,7 @@ public class SharingEntryWrapper implements SharingEntry,
 		attributes.put("classPK", getClassPK());
 		attributes.put("shareable", isShareable());
 		attributes.put("actionIds", getActionIds());
+		attributes.put("expirationDate", getExpirationDate());
 
 		return attributes;
 	}
@@ -149,6 +150,12 @@ public class SharingEntryWrapper implements SharingEntry,
 		if (actionIds != null) {
 			setActionIds(actionIds);
 		}
+
+		Date expirationDate = (Date)attributes.get("expirationDate");
+
+		if (expirationDate != null) {
+			setExpirationDate(expirationDate);
+		}
 	}
 
 	@Override
@@ -224,6 +231,16 @@ public class SharingEntryWrapper implements SharingEntry,
 	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return _sharingEntry.getExpandoBridge();
+	}
+
+	/**
+	* Returns the expiration date of this sharing entry.
+	*
+	* @return the expiration date of this sharing entry
+	*/
+	@Override
+	public Date getExpirationDate() {
+		return _sharingEntry.getExpirationDate();
 	}
 
 	/**
@@ -336,6 +353,20 @@ public class SharingEntryWrapper implements SharingEntry,
 		return _sharingEntry.hashCode();
 	}
 
+	/**
+	* Returns {@code true} if the sharing entry has the sharing entry action.
+	*
+	* @param sharingEntryAction the sharing entry action
+	* @return {@code true} if the sharing entry has the sharing entry action;
+	{@code false} otherwise
+	* @review
+	*/
+	@Override
+	public boolean hasSharingPermission(
+		com.liferay.sharing.security.permission.SharingEntryAction sharingEntryAction) {
+		return _sharingEntry.hasSharingPermission(sharingEntryAction);
+	}
+
 	@Override
 	public boolean isCachedModel() {
 		return _sharingEntry.isCachedModel();
@@ -440,6 +471,16 @@ public class SharingEntryWrapper implements SharingEntry,
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
 		_sharingEntry.setExpandoBridgeAttributes(serviceContext);
+	}
+
+	/**
+	* Sets the expiration date of this sharing entry.
+	*
+	* @param expirationDate the expiration date of this sharing entry
+	*/
+	@Override
+	public void setExpirationDate(Date expirationDate) {
+		_sharingEntry.setExpirationDate(expirationDate);
 	}
 
 	/**

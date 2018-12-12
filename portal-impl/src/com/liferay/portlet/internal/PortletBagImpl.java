@@ -93,12 +93,17 @@ public class PortletBagImpl implements PortletBag {
 	public Object clone() {
 		return new PortletBagImpl(
 			getPortletName(), getServletContext(), getPortletInstance(),
-			getResourceBundleBaseName(), getFriendlyURLMapperTracker(),
-			_serviceRegistrations);
+			getResourceBundleBaseName(), getFriendlyURLMapperTracker(), null);
 	}
 
 	@Override
 	public void destroy() {
+		if (_serviceRegistrations == null) {
+			return;
+		}
+
+		_friendlyURLMapperTracker.close();
+
 		for (ServiceRegistration<?> serviceRegistration :
 				_serviceRegistrations) {
 
@@ -115,8 +120,8 @@ public class PortletBagImpl implements PortletBag {
 				if (_assetRendererFactoryInstances == null) {
 					_assetRendererFactoryInstances =
 						ServiceTrackerCollections.openList(
-							(Class<AssetRendererFactory<?>>)(Class<?>)
-								AssetRendererFactory.class,
+							(Class<AssetRendererFactory<?>>)
+								(Class<?>)AssetRendererFactory.class,
 							_filter, _properties);
 				}
 			}
@@ -132,8 +137,8 @@ public class PortletBagImpl implements PortletBag {
 				if (_atomCollectionAdapterInstances == null) {
 					_atomCollectionAdapterInstances =
 						ServiceTrackerCollections.openList(
-							(Class<AtomCollectionAdapter<?>>)(Class<?>)
-								AtomCollectionAdapter.class,
+							(Class<AtomCollectionAdapter<?>>)
+								(Class<?>)AtomCollectionAdapter.class,
 							_filter, _properties);
 				}
 			}
@@ -424,8 +429,8 @@ public class PortletBagImpl implements PortletBag {
 				if (_stagedModelDataHandlerInstances == null) {
 					_stagedModelDataHandlerInstances =
 						ServiceTrackerCollections.openList(
-							(Class<StagedModelDataHandler<?>>)(Class<?>)
-								StagedModelDataHandler.class,
+							(Class<StagedModelDataHandler<?>>)
+								(Class<?>)StagedModelDataHandler.class,
 							_filter, _properties);
 				}
 			}
@@ -533,8 +538,8 @@ public class PortletBagImpl implements PortletBag {
 				if (_workflowHandlerInstances == null) {
 					_workflowHandlerInstances =
 						ServiceTrackerCollections.openList(
-							(Class<WorkflowHandler<?>>)(Class<?>)
-								WorkflowHandler.class,
+							(Class<WorkflowHandler<?>>)
+								(Class<?>)WorkflowHandler.class,
 							_filter, _properties);
 				}
 			}

@@ -107,9 +107,6 @@ public class SplitThreadMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		long messageId = ParamUtil.getLong(actionRequest, "messageId");
 
 		String splitThreadSubject = ParamUtil.getString(
@@ -120,8 +117,6 @@ public class SplitThreadMVCActionCommand extends BaseMVCActionCommand {
 
 		MBMessage message = _mbMessageLocalService.getMessage(messageId);
 
-		long oldParentMessageId = message.getParentMessageId();
-
 		MBThread newThread = _mbThreadService.splitThread(
 			messageId, splitThreadSubject, serviceContext);
 
@@ -129,6 +124,10 @@ public class SplitThreadMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest, "addExplanationPost");
 
 		if (addExplanationPost) {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+			long oldParentMessageId = message.getParentMessageId();
 			String subject = ParamUtil.getString(actionRequest, "subject");
 			String body = ParamUtil.getString(actionRequest, "body");
 

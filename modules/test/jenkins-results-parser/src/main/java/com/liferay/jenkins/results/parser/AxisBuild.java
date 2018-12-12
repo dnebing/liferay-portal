@@ -14,6 +14,7 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.liferay.jenkins.results.parser.failure.message.generator.CIFailureMessageGenerator;
 import com.liferay.jenkins.results.parser.failure.message.generator.CompileFailureMessageGenerator;
 import com.liferay.jenkins.results.parser.failure.message.generator.FailureMessageGenerator;
 import com.liferay.jenkins.results.parser.failure.message.generator.GenericFailureMessageGenerator;
@@ -278,11 +279,7 @@ public class AxisBuild extends BaseBuild {
 			List<Element> upstreamJobFailureElements = new ArrayList<>();
 
 			for (TestResult testResult : getTestResults(null)) {
-				String testStatus = testResult.getStatus();
-
-				if (testStatus.equals("FIXED") || testStatus.equals("PASSED") ||
-					testStatus.equals("SKIPPED")) {
-
+				if (!testResult.isFailing()) {
 					continue;
 				}
 
@@ -528,6 +525,7 @@ public class AxisBuild extends BaseBuild {
 		{
 			new ModulesCompilationFailureMessageGenerator(),
 
+			new CIFailureMessageGenerator(),
 			new CompileFailureMessageGenerator(),
 			new IntegrationTestTimeoutFailureMessageGenerator(),
 			new LocalGitMirrorFailureMessageGenerator(),

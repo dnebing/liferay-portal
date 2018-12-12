@@ -131,8 +131,10 @@ public class DDLDisplayContext {
 				add(
 					dropdownItem -> {
 						dropdownItem.putData("action", "deleteRecordSets");
-						dropdownItem.setIcon("trash");
-						dropdownItem.setLabel("delete");
+						dropdownItem.setIcon("times-circle");
+						dropdownItem.setLabel(
+							LanguageUtil.get(
+								_ddlRequestHelper.getRequest(), "delete"));
 						dropdownItem.setQuickAction(true);
 					});
 			}
@@ -249,7 +251,7 @@ public class DDLDisplayContext {
 					_ddlWebConfiguration.defaultDisplayView());
 			}
 			else if (ArrayUtil.contains(
-						 getDisplayViews(), _ddlRecordDisplayStyle)) {
+						getDisplayViews(), _ddlRecordDisplayStyle)) {
 
 				portalPreferences.setValue(
 					DDLPortletKeys.DYNAMIC_DATA_LISTS, "display-style",

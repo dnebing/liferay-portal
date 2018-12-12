@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.service.permission.PasswordPolicyPermissionUtil;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserPermissionUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.comparator.OrganizationIdComparator;
 import com.liferay.portal.service.base.OrganizationServiceBaseImpl;
 import com.liferay.users.admin.kernel.util.UsersAdminUtil;
@@ -386,6 +387,26 @@ public class OrganizationServiceImpl extends OrganizationServiceBaseImpl {
 			companyId, parentOrganizationId, start, end);
 	}
 
+	@Override
+	public List<Organization> getOrganizations(
+		long companyId, long parentOrganizationId, String name, int start,
+		int end) {
+
+		if (Validator.isNull(name)) {
+			return getOrganizations(
+				companyId, parentOrganizationId, start, end);
+		}
+
+		if (parentOrganizationId ==
+				OrganizationConstants.ANY_PARENT_ORGANIZATION_ID) {
+
+			return organizationPersistence.filterFindByC_LikeN(companyId, name);
+		}
+
+		return organizationPersistence.filterFindByC_P_LikeN(
+			companyId, parentOrganizationId, name, start, end);
+	}
+
 	/**
 	 * Returns the number of organizations belonging to the parent organization.
 	 *
@@ -406,6 +427,26 @@ public class OrganizationServiceImpl extends OrganizationServiceBaseImpl {
 
 		return organizationPersistence.filterCountByC_P(
 			companyId, parentOrganizationId);
+	}
+
+	@Override
+	public int getOrganizationsCount(
+			long companyId, long parentOrganizationId, String name)
+		throws PortalException {
+
+		if (Validator.isNull(name)) {
+			return getOrganizationsCount(companyId, parentOrganizationId);
+		}
+
+		if (parentOrganizationId ==
+				OrganizationConstants.ANY_PARENT_ORGANIZATION_ID) {
+
+			return organizationPersistence.filterCountByC_LikeN(
+				companyId, name);
+		}
+
+		return organizationPersistence.filterCountByC_P_LikeN(
+			companyId, parentOrganizationId, name);
 	}
 
 	/**

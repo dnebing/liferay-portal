@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.elasticsearch6.internal.search.engine.adapter;
 
+import com.liferay.portal.kernel.search.Query;
+import com.liferay.portal.kernel.search.query.QueryTranslator;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.cluster.ClusterRequest;
 import com.liferay.portal.search.engine.adapter.cluster.ClusterRequestExecutor;
@@ -27,6 +29,11 @@ import com.liferay.portal.search.engine.adapter.index.IndexResponse;
 import com.liferay.portal.search.engine.adapter.search.SearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchRequestExecutor;
 import com.liferay.portal.search.engine.adapter.search.SearchResponse;
+import com.liferay.portal.search.engine.adapter.snapshot.SnapshotRequest;
+import com.liferay.portal.search.engine.adapter.snapshot.SnapshotRequestExecutor;
+import com.liferay.portal.search.engine.adapter.snapshot.SnapshotResponse;
+
+import org.elasticsearch.index.query.QueryBuilder;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,7 +41,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Dylan Rebelak
  */
-@Component(immediate = true, service = SearchEngineAdapter.class)
+@Component(
+	immediate = true, property = "search.engine.impl=Elasticsearch",
+	service = SearchEngineAdapter.class
+)
 public class ElasticsearchSearchEngineAdapterImpl
 	implements SearchEngineAdapter {
 
@@ -64,6 +74,20 @@ public class ElasticsearchSearchEngineAdapterImpl
 		return searchRequest.accept(searchRequestExecutor);
 	}
 
+	@Override
+	public <W extends SnapshotResponse> W execute(
+		SnapshotRequest<W> snapshotRequest) {
+
+		return snapshotRequest.accept(snapshotRequestExecutor);
+	}
+
+	@Override
+	public String getQueryString(Query query) {
+		QueryBuilder queryBuilder = queryTranslator.translate(query, null);
+
+		return queryBuilder.toString();
+	}
+
 	@Reference(target = "(search.engine.impl=Elasticsearch)")
 	protected ClusterRequestExecutor clusterRequestExecutor;
 
@@ -74,6 +98,12 @@ public class ElasticsearchSearchEngineAdapterImpl
 	protected IndexRequestExecutor indexRequestExecutor;
 
 	@Reference(target = "(search.engine.impl=Elasticsearch)")
+	protected QueryTranslator<QueryBuilder> queryTranslator;
+
+	@Reference(target = "(search.engine.impl=Elasticsearch)")
 	protected SearchRequestExecutor searchRequestExecutor;
+
+	@Reference(target = "(search.engine.impl=Elasticsearch)")
+	protected SnapshotRequestExecutor snapshotRequestExecutor;
 
 }

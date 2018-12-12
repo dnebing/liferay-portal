@@ -91,6 +91,13 @@ public class LayoutPageTemplateEntryServiceWrapper
 		return _layoutPageTemplateEntryService.fetchLayoutPageTemplateEntry(layoutPageTemplateEntryId);
 	}
 
+	@Override
+	public com.liferay.layout.page.template.model.LayoutPageTemplateEntry fetchLayoutPageTemplateEntryByUuidAndGroupId(
+		String uuid, long groupId) {
+		return _layoutPageTemplateEntryService.fetchLayoutPageTemplateEntryByUuidAndGroupId(uuid,
+			groupId);
+	}
+
 	/**
 	* @deprecated As of Judson (7.1.x), with no direct replacement
 	*/
@@ -149,6 +156,13 @@ public class LayoutPageTemplateEntryServiceWrapper
 		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.layout.page.template.model.LayoutPageTemplateEntry> orderByComparator) {
 		return _layoutPageTemplateEntryService.getLayoutPageTemplateEntries(groupId,
 			type, start, end, orderByComparator);
+	}
+
+	@Override
+	public java.util.List<com.liferay.layout.page.template.model.LayoutPageTemplateEntry> getLayoutPageTemplateEntries(
+		long groupId, long classNameId, int type, boolean defaultTemplate) {
+		return _layoutPageTemplateEntryService.getLayoutPageTemplateEntries(groupId,
+			classNameId, type, defaultTemplate);
 	}
 
 	@Override

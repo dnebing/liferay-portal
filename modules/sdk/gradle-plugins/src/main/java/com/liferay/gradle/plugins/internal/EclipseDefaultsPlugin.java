@@ -52,7 +52,7 @@ public class EclipseDefaultsPlugin extends BaseDefaultsPlugin<EclipsePlugin> {
 
 		_configureEclipseClasspathFile(project);
 		_configureEclipseProject(project);
-		_configureTaskEclipse(eclipsePlugin);
+		_configureTaskEclipse(project);
 	}
 
 	@Override
@@ -109,6 +109,8 @@ public class EclipseDefaultsPlugin extends BaseDefaultsPlugin<EclipsePlugin> {
 
 		EclipseProject eclipseProject = eclipseModel.getProject();
 
+		eclipseProject.setName(project.getName());
+
 		List<String> natures = eclipseProject.getNatures();
 
 		natures.add("com.liferay.ide.core.liferayNature");
@@ -153,13 +155,18 @@ public class EclipseDefaultsPlugin extends BaseDefaultsPlugin<EclipsePlugin> {
 		xmlFileContentMerger.withXml(action);
 	}
 
-	private void _configureTaskEclipse(EclipsePlugin eclipsePlugin) {
-		Task task = eclipsePlugin.getLifecycleTask();
+	private void _configureTaskEclipse(Project project) {
+		Task task = GradleUtil.getTask(project, _ECLIPSE_TASK_NAME);
 
-		task.dependsOn(eclipsePlugin.getCleanTask());
+		task.dependsOn(_CLEAN_ECLIPSE_TASK_NAME);
 	}
 
-	private static final String[] _FILTERED_DIR_NAMES =
-		{".git", ".gradle", "build", "node_modules", "tmp"};
+	private static final String _CLEAN_ECLIPSE_TASK_NAME = "cleanEclipse";
+
+	private static final String _ECLIPSE_TASK_NAME = "eclipse";
+
+	private static final String[] _FILTERED_DIR_NAMES = {
+		".git", ".gradle", "build", "node_modules", "tmp"
+	};
 
 }

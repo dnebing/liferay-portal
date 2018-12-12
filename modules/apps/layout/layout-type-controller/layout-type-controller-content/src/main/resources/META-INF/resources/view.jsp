@@ -24,8 +24,57 @@ FragmentsEditorDisplayContext fragmentsEditorDisplayContext = new FragmentsEdito
 	editorName="alloyeditor"
 />
 
+<liferay-util:html-top>
+	<link href="<%= PortalUtil.getStaticResourceURL(request, PortalUtil.getPathModule() + "/layout-admin-web/css/fragments_editor/FragmentsEditorEditMode.css") %>" rel="stylesheet">
+</liferay-util:html-top>
+
 <soy:component-renderer
-	context="<%= fragmentsEditorDisplayContext.getEditorContext() %>"
-	module="layout-admin-web/js/fragments_editor/FragmentsEditor.es"
-	templateNamespace="com.liferay.layout.admin.web.FragmentsEditor.render"
+	componentId='<%= renderResponse.getNamespace() + "fragments" %>'
+	context="<%= fragmentsEditorDisplayContext.getFragmentEntryLinkListContext() %>"
+	module="layout-admin-web/js/fragments_editor/components/fragment_entry_link/FragmentEntryLinkList.es"
+	templateNamespace="com.liferay.layout.admin.web.FragmentEntryLinkList.render"
 />
+
+<%
+JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
+%>
+
+<aui:script require="layout-admin-web/js/fragments_editor/components/edit_mode/DisabledAreaMask.es as DisabledAreaMaskModule, layout-admin-web/js/fragments_editor/reducers/changes.es as ChangesReducerModule, layout-admin-web/js/fragments_editor/reducers/fragments.es as FragmentsReducerModule, layout-admin-web/js/fragments_editor/reducers/placeholders.es as PlaceholdersReducerModule, layout-admin-web/js/fragments_editor/reducers/translations.es as TranslationsReducerModule, layout-admin-web/js/fragments_editor/reducers/sidebar.es as SidebarReducerModule, layout-admin-web/js/fragments_editor/store/store.es as StoreModule, layout-admin-web/js/fragments_editor/reducers/dialogs.es as DialogsReducerModule, layout-admin-web/js/fragments_editor/reducers/sections.es as SectionsReducerModule">
+	StoreModule.createStore(
+		<%= jsonSerializer.serializeDeep(fragmentsEditorDisplayContext.getEditorContext()) %>,
+		[
+			ChangesReducerModule.saveChangesReducer,
+			DialogsReducerModule.hideMappingDialogReducer,
+			DialogsReducerModule.hideMappingTypeDialogReducer,
+			DialogsReducerModule.openAssetTypeDialogReducer,
+			DialogsReducerModule.openMappingFieldsDialogReducer,
+			DialogsReducerModule.selectMappeableTypeReducer,
+			FragmentsReducerModule.addFragmentEntryLinkReducer,
+			FragmentsReducerModule.moveFragmentEntryLinkReducer,
+			FragmentsReducerModule.removeFragmentEntryLinkReducer,
+			FragmentsReducerModule.updateEditableValueReducer,
+			PlaceholdersReducerModule.updateDragTargetReducer,
+			PlaceholdersReducerModule.updateHighlightMappingReducer,
+			SidebarReducerModule.hideFragmentsEditorSidebarReducer,
+			SidebarReducerModule.toggleFragmentsEditorSidebarReducer,
+			SectionsReducerModule.addSectionReducer,
+			TranslationsReducerModule.languageIdReducer,
+			TranslationsReducerModule.translationStatusReducer
+		],
+		[
+			'<portlet:namespace />fragments',
+			'<portlet:namespace />sidebar',
+			'<portlet:namespace />toolbar'
+		]
+	);
+
+	const disabledAreaMask = new DisabledAreaMaskModule.DisabledAreaMask();
+
+	function handleDestroyPortlet () {
+		disabledAreaMask.dispose();
+
+		Liferay.detach('destroyPortlet', handleDestroyPortlet);
+	}
+
+	Liferay.on('destroyPortlet', handleDestroyPortlet);
+</aui:script>

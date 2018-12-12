@@ -44,6 +44,15 @@
 			<var name="key_itemName" value="${configurationCategory}" />
 		</execute>
 
+		<var method="PropsUtil#get('browser.type')" name="browserType" />
+
+		<if>
+			<equals arg1="${browserType}" arg2="chrome" />
+			<then>
+				<execute function="Pause" locator1="5000" />
+			</then>
+		</if>
+
 		<execute function="Click" locator1="SystemSettings#SCOPED_CONFIGURATION_NAME">
 			<var name="key_configurationName" value="${configurationName}" />
 			<var name="key_configurationScope" value="${configurationScope}" />
@@ -51,6 +60,12 @@
 
 		<execute function="AssertElementPresent" locator1="Header#H2_TITLE">
 			<var name="key_title" value="${configurationName}" />
+		</execute>
+	</command>
+
+	<command name="openSystemSettingsAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/control_panel/manage?p_p_id=com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet" />
 		</execute>
 	</command>
 

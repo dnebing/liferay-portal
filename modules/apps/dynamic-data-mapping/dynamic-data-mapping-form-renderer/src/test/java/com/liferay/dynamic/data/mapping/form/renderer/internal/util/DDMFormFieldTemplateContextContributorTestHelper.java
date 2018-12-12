@@ -24,6 +24,8 @@ import com.liferay.dynamic.data.mapping.form.field.type.select.internal.SelectDD
 import com.liferay.dynamic.data.mapping.form.field.type.text.internal.TextDDMFormFieldTemplateContextContributor;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.util.PortalImpl;
 
 import org.powermock.api.mockito.PowerMockito;
 
@@ -58,7 +60,8 @@ public class DDMFormFieldTemplateContextContributorTestHelper
 	}
 
 	public GridDDMFormFieldTemplateContextContributor
-		createGridDDMFormFieldTemplateContextContributor() throws Exception {
+			createGridDDMFormFieldTemplateContextContributor()
+		throws Exception {
 
 		GridDDMFormFieldTemplateContextContributor
 			gridDDMFormFieldTemplateContextContributor =
@@ -74,7 +77,8 @@ public class DDMFormFieldTemplateContextContributorTestHelper
 	}
 
 	public NumericDDMFormFieldTemplateContextContributor
-		createNumericDDMFormFieldTemplateContextContributor() throws Exception {
+			createNumericDDMFormFieldTemplateContextContributor()
+		throws Exception {
 
 		NumericDDMFormFieldTemplateContextContributor
 			numericDDMFormFieldTemplateContextContributor =
@@ -84,7 +88,8 @@ public class DDMFormFieldTemplateContextContributorTestHelper
 	}
 
 	public RadioDDMFormFieldTemplateContextContributor
-		createRadioDDMFormFieldTemplateContextContributor() throws Exception {
+			createRadioDDMFormFieldTemplateContextContributor()
+		throws Exception {
 
 		RadioDDMFormFieldTemplateContextContributor
 			radioDDMFormFieldTemplateContextContributor =
@@ -100,7 +105,8 @@ public class DDMFormFieldTemplateContextContributorTestHelper
 	}
 
 	public SelectDDMFormFieldTemplateContextContributor
-		createSelectDDMFormFieldTemplateContextContributor() throws Exception {
+			createSelectDDMFormFieldTemplateContextContributor()
+		throws Exception {
 
 		SelectDDMFormFieldTemplateContextContributor
 			selectDDMFormFieldTemplateContextContributor =
@@ -120,11 +126,18 @@ public class DDMFormFieldTemplateContextContributorTestHelper
 			selectDDMFormFieldTemplateContextContributor, _jsonFactory
 		);
 
+		field(
+			SelectDDMFormFieldTemplateContextContributor.class, "portal"
+		).set(
+			selectDDMFormFieldTemplateContextContributor, _portal
+		);
+
 		return selectDDMFormFieldTemplateContextContributor;
 	}
 
 	public TextDDMFormFieldTemplateContextContributor
-		createTextDDMFormFieldTemplateContextContributor() throws Exception {
+			createTextDDMFormFieldTemplateContextContributor()
+		throws Exception {
 
 		TextDDMFormFieldTemplateContextContributor
 			textDDMFormFieldTemplateContextContributor =
@@ -142,5 +155,6 @@ public class DDMFormFieldTemplateContextContributorTestHelper
 	}
 
 	private final JSONFactory _jsonFactory = new JSONFactoryImpl();
+	private final Portal _portal = new PortalImpl();
 
 }

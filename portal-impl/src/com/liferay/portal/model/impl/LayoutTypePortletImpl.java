@@ -513,9 +513,8 @@ public class LayoutTypePortletImpl
 		if (stateMax.length > 0) {
 			return stateMax[0];
 		}
-		else {
-			return StringPool.BLANK;
-		}
+
+		return StringPool.BLANK;
 	}
 
 	@Override
@@ -597,9 +596,8 @@ public class LayoutTypePortletImpl
 
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
 	@Override
@@ -657,9 +655,8 @@ public class LayoutTypePortletImpl
 		if (stateMax.length > 0) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -667,9 +664,8 @@ public class LayoutTypePortletImpl
 		if (StringUtil.contains(getStateMax(), portletId)) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -679,9 +675,8 @@ public class LayoutTypePortletImpl
 		if (stateMin.length > 0) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -689,9 +684,8 @@ public class LayoutTypePortletImpl
 		if (StringUtil.contains(getStateMin(), portletId)) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -701,9 +695,8 @@ public class LayoutTypePortletImpl
 
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
 	@Override
@@ -1188,8 +1181,6 @@ public class LayoutTypePortletImpl
 			return;
 		}
 
-		LayoutTemplate oldLayoutTemplate = getLayoutTemplate();
-
 		String themeId = getThemeId();
 
 		LayoutTemplate newLayoutTemplate =
@@ -1208,8 +1199,11 @@ public class LayoutTypePortletImpl
 		setTypeSettingsProperty(
 			LayoutTypePortletConstants.LAYOUT_TEMPLATE_ID, newLayoutTemplateId);
 
-		List<String> oldColumns = oldLayoutTemplate.getColumns();
 		List<String> newColumns = newLayoutTemplate.getColumns();
+
+		LayoutTemplate oldLayoutTemplate = getLayoutTemplate();
+
+		List<String> oldColumns = oldLayoutTemplate.getColumns();
 
 		reorganizePortlets(newColumns, oldColumns);
 	}
@@ -1599,8 +1593,6 @@ public class LayoutTypePortletImpl
 	protected String[] getStaticPortletIds(String position) {
 		Layout layout = getLayout();
 
-		String selector1 = StringPool.BLANK;
-
 		Group group = _getGroup();
 
 		if (group == null) {
@@ -1608,6 +1600,8 @@ public class LayoutTypePortletImpl
 
 			return new String[0];
 		}
+
+		String selector1 = StringPool.BLANK;
 
 		if (group.isUser()) {
 			selector1 = LayoutTypePortletConstants.STATIC_PORTLET_USER_SELECTOR;
@@ -1864,9 +1858,6 @@ public class LayoutTypePortletImpl
 		String[] staticPortletIdsStart = getStaticPortletIds(
 			PropsKeys.LAYOUT_STATIC_PORTLETS_START + columnId);
 
-		String[] staticPortletIdsEnd = getStaticPortletIds(
-			PropsKeys.LAYOUT_STATIC_PORTLETS_END + columnId);
-
 		for (String staticPortletId : staticPortletIdsStart) {
 			String decodedStaticPortletName = PortletIdCodec.decodePortletName(
 				staticPortletId);
@@ -1877,6 +1868,9 @@ public class LayoutTypePortletImpl
 				return true;
 			}
 		}
+
+		String[] staticPortletIdsEnd = getStaticPortletIds(
+			PropsKeys.LAYOUT_STATIC_PORTLETS_END + columnId);
 
 		for (String staticPortletId : staticPortletIdsEnd) {
 			String decodedStaticPortletName = PortletIdCodec.decodePortletName(
@@ -2024,6 +2018,7 @@ public class LayoutTypePortletImpl
 
 			if (!key.startsWith(portletNamespace)) {
 				newTypeSettingsProperties.setProperty(key, entry.getValue());
+
 				continue;
 			}
 		}

@@ -165,20 +165,6 @@ public class RoleDisplayContext {
 		};
 	}
 
-	public List<NavigationItem> getSelectRoleNavigationItems(String label) {
-		return new NavigationItemList() {
-			{
-				add(
-					navigationItem -> {
-						navigationItem.setActive(true);
-						navigationItem.setHref(StringPool.BLANK);
-						navigationItem.setLabel(
-							LanguageUtil.get(_request, label));
-					});
-			}
-		};
-	}
-
 	public List<NavigationItem> getViewRoleNavigationItems(
 			LiferayPortletResponse liferayPortletResponse,
 			PortletURL portletURL)
@@ -360,8 +346,9 @@ public class RoleDisplayContext {
 		return tabsURLs;
 	}
 
-	private static final String[] _ASSIGNEE_TYPE_NAMES =
-		{"users", "sites", "organizations", "user-groups"};
+	private static final String[] _ASSIGNEE_TYPE_NAMES = {
+		"users", "sites", "organizations", "user-groups"
+	};
 
 	private final RenderResponse _renderResponse;
 	private final HttpServletRequest _request;

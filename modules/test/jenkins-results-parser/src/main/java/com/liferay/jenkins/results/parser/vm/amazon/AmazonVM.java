@@ -19,13 +19,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-import com.amazonaws.services.ec2.model.DeleteVolumeRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.EbsInstanceBlockDevice;
+import com.amazonaws.services.ec2.model.EbsInstanceBlockDeviceSpecification;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceBlockDeviceMapping;
+import com.amazonaws.services.ec2.model.InstanceBlockDeviceMappingSpecification;
 import com.amazonaws.services.ec2.model.InstanceState;
+import com.amazonaws.services.ec2.model.ModifyInstanceAttributeRequest;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
@@ -41,6 +42,7 @@ import java.util.List;
  */
 public abstract class AmazonVM extends VM {
 
+	@Override
 	public void create() {
 		RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
 
@@ -79,8 +81,12 @@ public abstract class AmazonVM extends VM {
 		}
 
 		_waitForInstanceState("running");
+
+		_amazonEC2.modifyInstanceAttribute(
+			_getModifyInstanceAttributeRequest());
 	}
 
+	@Override
 	public void delete() {
 		TerminateInstancesRequest terminateInstancesRequest =
 			new TerminateInstancesRequest();
@@ -90,12 +96,6 @@ public abstract class AmazonVM extends VM {
 		_amazonEC2.terminateInstances(terminateInstancesRequest);
 
 		_waitForInstanceState("terminated");
-
-		DeleteVolumeRequest deleteVolumeRequest = new DeleteVolumeRequest();
-
-		deleteVolumeRequest.withVolumeId(_volumeId);
-
-		_amazonEC2.deleteVolume(deleteVolumeRequest);
 	}
 
 	public String getInstanceId() {
@@ -124,8 +124,6 @@ public abstract class AmazonVM extends VM {
 		amazonEC2ClientBuilder.withRegion(Regions.US_WEST_1);
 
 		_amazonEC2 = amazonEC2ClientBuilder.build();
-
-		_volumeId = _getVolumeId();
 	}
 
 	protected AmazonVM(
@@ -149,6 +147,30 @@ public abstract class AmazonVM extends VM {
 		_amazonEC2 = amazonEC2ClientBuilder.build();
 	}
 
+	private String _getDeviceName() {
+		Instance instance = _getInstance();
+
+		List<InstanceBlockDeviceMapping> instanceBlockDeviceMappings =
+			instance.getBlockDeviceMappings();
+
+		InstanceBlockDeviceMapping instanceBlockDeviceMapping =
+			instanceBlockDeviceMappings.get(0);
+
+		return instanceBlockDeviceMapping.getDeviceName();
+	}
+
+	private EbsInstanceBlockDeviceSpecification
+		_getEbsInstanceBlockDeviceSpecification() {
+
+		EbsInstanceBlockDeviceSpecification
+			ebsInstanceBlockDeviceSpecification =
+				new EbsInstanceBlockDeviceSpecification();
+
+		ebsInstanceBlockDeviceSpecification.withDeleteOnTermination(true);
+
+		return ebsInstanceBlockDeviceSpecification;
+	}
+
 	private Instance _getInstance() {
 		DescribeInstancesRequest describeInstancesRequest =
 			new DescribeInstancesRequest();
@@ -168,6 +190,21 @@ public abstract class AmazonVM extends VM {
 		return instances.get(0);
 	}
 
+	private InstanceBlockDeviceMappingSpecification
+		_getInstanceBlockDeviceMappingSpecification() {
+
+		InstanceBlockDeviceMappingSpecification
+			instanceBlockDeviceMappingSpecification =
+				new InstanceBlockDeviceMappingSpecification();
+
+		instanceBlockDeviceMappingSpecification.withDeviceName(
+			_getDeviceName());
+		instanceBlockDeviceMappingSpecification.withEbs(
+			_getEbsInstanceBlockDeviceSpecification());
+
+		return instanceBlockDeviceMappingSpecification;
+	}
+
 	private String _getInstanceState() {
 		Instance instance = _getInstance();
 
@@ -176,19 +213,17 @@ public abstract class AmazonVM extends VM {
 		return instanceState.getName();
 	}
 
-	private String _getVolumeId() {
-		Instance instance = _getInstance();
+	private ModifyInstanceAttributeRequest
+		_getModifyInstanceAttributeRequest() {
 
-		List<InstanceBlockDeviceMapping> instanceBlockDeviceMappings =
-			instance.getBlockDeviceMappings();
+		ModifyInstanceAttributeRequest modifyInstanceAttributeRequest =
+			new ModifyInstanceAttributeRequest();
 
-		InstanceBlockDeviceMapping instanceBlockDeviceMapping =
-			instanceBlockDeviceMappings.get(0);
+		modifyInstanceAttributeRequest.withBlockDeviceMappings(
+			_getInstanceBlockDeviceMappingSpecification());
+		modifyInstanceAttributeRequest.withInstanceId(_instanceId);
 
-		EbsInstanceBlockDevice ebsInstanceBlockDevice =
-			instanceBlockDeviceMapping.getEbs();
-
-		return ebsInstanceBlockDevice.getVolumeId();
+		return modifyInstanceAttributeRequest;
 	}
 
 	private void _waitForInstanceState(String targetState) {
@@ -218,6 +253,5 @@ public abstract class AmazonVM extends VM {
 	private String _instanceId;
 	private String _instanceType;
 	private String _keyName;
-	private String _volumeId;
 
 }

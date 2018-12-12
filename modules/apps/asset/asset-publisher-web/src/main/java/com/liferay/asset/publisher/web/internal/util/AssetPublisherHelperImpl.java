@@ -537,11 +537,11 @@ public class AssetPublisherHelperImpl implements AssetPublisherHelper {
 
 		viewFullContentURL.setParameter("type", assetRendererFactory.getType());
 
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)liferayPortletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
 		if (Validator.isNotNull(assetRenderer.getUrlTitle())) {
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)liferayPortletRequest.getAttribute(
+					WebKeys.THEME_DISPLAY);
+
 			if (assetRenderer.getGroupId() != themeDisplay.getScopeGroupId()) {
 				viewFullContentURL.setParameter(
 					"groupId", String.valueOf(assetRenderer.getGroupId()));
@@ -607,9 +607,8 @@ public class AssetPublisherHelperImpl implements AssetPublisherHelper {
 		if (ArrayUtil.isNotEmpty(classNameIds)) {
 			return classNameIds;
 		}
-		else {
-			return availableClassNameIds;
-		}
+
+		return availableClassNameIds;
 	}
 
 	@Override

@@ -46,7 +46,7 @@
 
 						{if $required}
 							<svg aria-hidden="true"
-								 class="lexicon-icon lexicon-icon-asterisk reference-mark">
+								class="lexicon-icon lexicon-icon-asterisk reference-mark">
 							<use xlink:href="{$pathThemeImages}/lexicon/icons.svg#asterisk"/>
 						</svg>
 						{/if}
@@ -115,8 +115,7 @@
 {template .hidden_input}
 	{@param name: string}
 
-	<input id="{$name}"
-		name="{$name}"
+	<input name="{$name}"
 		type="hidden"
 		value="false"
 	/>

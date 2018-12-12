@@ -29,6 +29,8 @@ import com.liferay.poshi.runner.util.PropsValues;
 import com.liferay.poshi.runner.util.StringUtil;
 import com.liferay.poshi.runner.util.Validator;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import java.lang.reflect.Method;
@@ -39,11 +41,14 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,10 +97,6 @@ public class PoshiRunnerContext {
 		return _filePaths.get(namespace + "." + fileName);
 	}
 
-	public static List<String> getFilePathKeys() {
-		return new ArrayList<>(_filePaths.keySet());
-	}
-
 	public static List<String> getFilePaths() {
 		return new ArrayList<>(_filePaths.values());
 	}
@@ -112,6 +113,10 @@ public class PoshiRunnerContext {
 
 		return _commandSummaries.get(
 			"function#" + namespace + "." + classCommandName);
+	}
+
+	public static Set<String> getFunctionFileNames() {
+		return _functionFileNames;
 	}
 
 	public static int getFunctionLocatorCount(
@@ -280,6 +285,7 @@ public class PoshiRunnerContext {
 		PoshiRunnerValidation.validate();
 
 		_writeTestCaseMethodNamesProperties();
+		_writeTestCSVReportFile();
 		_writeTestGeneratedProperties();
 	}
 
@@ -451,7 +457,7 @@ public class PoshiRunnerContext {
 
 			sb.append("(");
 			sb.append(propertyQuery);
-			sb.append(") AND ");
+			sb.append(") AND (ignored != true) AND ");
 			sb.append("(test.run.environment == \"");
 			sb.append(PropsValues.TEST_RUN_ENVIRONMENT);
 			sb.append("\" OR test.run.environment == null)");
@@ -675,10 +681,6 @@ public class PoshiRunnerContext {
 
 			Element rootElement = getTestCaseRootElement(className, namespace);
 
-			if (Objects.equals(rootElement.attributeValue("ignore"), "true")) {
-				continue;
-			}
-
 			if (rootElement.attributeValue("extends") != null) {
 				String extendsTestCaseClassName = rootElement.attributeValue(
 					"extends");
@@ -693,16 +695,30 @@ public class PoshiRunnerContext {
 					String extendsCommandName =
 						extendsCommandElement.attributeValue("name");
 
+					String extendsNamespacedClassCommandName =
+						StringUtil.combine(
+							namespace, ".", extendsTestCaseClassName, "#",
+							extendsCommandName);
+
+					Properties properties =
+						_namespacedClassCommandNamePropertiesMap.get(
+							extendsNamespacedClassCommandName);
+
 					if (_isIgnorableCommandNames(
 							rootElement, extendsCommandElement,
 							extendsCommandName)) {
 
-						continue;
+						properties.setProperty("ignored", "true");
 					}
 
+					String namespacedClassCommandName = StringUtil.combine(
+						namespace, ".", className, "#", extendsCommandName);
+
+					_namespacedClassCommandNamePropertiesMap.put(
+						namespacedClassCommandName, properties);
+
 					_commandElements.put(
-						"test-case#" + testCaseNamespacedClassName + "#" +
-							extendsCommandName,
+						"test-case#" + namespacedClassCommandName,
 						extendsCommandElement);
 				}
 			}
@@ -715,7 +731,17 @@ public class PoshiRunnerContext {
 				if (_isIgnorableCommandNames(
 						rootElement, commandElement, commandName)) {
 
-					continue;
+					String namespacedClassCommandName = StringUtil.combine(
+						namespace, ".", className, "#", commandName);
+
+					Properties properties =
+						_namespacedClassCommandNamePropertiesMap.get(
+							namespacedClassCommandName);
+
+					properties.setProperty("ignored", "true");
+
+					_namespacedClassCommandNamePropertiesMap.put(
+						namespacedClassCommandName, properties);
 				}
 
 				String namespacedClassCommandName =
@@ -734,12 +760,12 @@ public class PoshiRunnerContext {
 	private static boolean _isIgnorableCommandNames(
 		Element rootElement, Element commandElement, String commandName) {
 
-		if (commandElement.attributeValue("ignore") != null) {
-			String ignore = commandElement.attributeValue("ignore");
+		if (Objects.equals(commandElement.attributeValue("ignore"), "true")) {
+			return true;
+		}
 
-			if (ignore.equals("true")) {
-				return true;
-			}
+		if (Objects.equals(commandElement.attributeValue("ignore"), "false")) {
+			return false;
 		}
 
 		List<String> ignorableCommandNames = new ArrayList<>();
@@ -753,6 +779,10 @@ public class PoshiRunnerContext {
 		}
 
 		if (ignorableCommandNames.contains(commandName)) {
+			return true;
+		}
+
+		if (Objects.equals(rootElement.attributeValue("ignore"), "true")) {
 			return true;
 		}
 
@@ -1128,7 +1158,8 @@ public class PoshiRunnerContext {
 				sb.append("' \n");
 				sb.append(filePath);
 				sb.append(": ");
-				sb.append(locatorKeyElement.attributeValue("line-number"));
+				sb.append(
+					PoshiRunnerGetterUtil.getLineNumber(locatorKeyElement));
 
 				_duplicateLocatorMessages.add(sb.toString());
 			}
@@ -1211,7 +1242,8 @@ public class PoshiRunnerContext {
 					sb.append("'\n");
 					sb.append(filePath);
 					sb.append(": ");
-					sb.append(commandElement.attributeValue("line-number"));
+					sb.append(
+						PoshiRunnerGetterUtil.getLineNumber(commandElement));
 					sb.append("\n");
 
 					String duplicateElementFilePath = getFilePathFromFileName(
@@ -1228,7 +1260,8 @@ public class PoshiRunnerContext {
 					Element duplicateElement = _commandElements.get(
 						classType + "#" + namespace + "." + classCommandName);
 
-					sb.append(duplicateElement.attributeValue("line-number"));
+					sb.append(
+						PoshiRunnerGetterUtil.getLineNumber(duplicateElement));
 
 					_duplicateLocatorMessages.add(sb.toString());
 
@@ -1387,19 +1420,12 @@ public class PoshiRunnerContext {
 
 			_storeRootElement(rootElement, filePath, namespace);
 
-			if (OSDetector.isWindows()) {
-				if (filePath.startsWith("/")) {
-					filePath = filePath.substring(1);
-				}
-
-				filePath = filePath.replace("/", "\\");
-			}
-
 			if (rootElement.attributeValue("override") == null) {
-				_filePaths.put(
-					namespace + "." +
-						PoshiRunnerGetterUtil.getFileNameFromFilePath(filePath),
-					filePath);
+				_filePaths.put(namespace + "." + fileName, filePath);
+
+				if (fileName.endsWith(".function")) {
+					_functionFileNames.add(fileName.replace(".function", ""));
+				}
 			}
 		}
 	}
@@ -1416,6 +1442,91 @@ public class PoshiRunnerContext {
 		}
 
 		FileUtil.write("test.case.method.names.properties", sb.toString());
+	}
+
+	private static void _writeTestCSVReportFile() throws Exception {
+		if (PropsValues.TEST_CSV_REPORT_PROPERTY_NAMES == null) {
+			return;
+		}
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+
+		File reportCSVFile = new File(
+			StringUtil.combine(
+				"Report_", simpleDateFormat.format(new Date()), ".csv"));
+
+		try (FileWriter reportCSVFileWriter = new FileWriter(reportCSVFile)) {
+			List<String> reportLineItems = new ArrayList<>();
+
+			reportLineItems.add("Namespace");
+			reportLineItems.add("Class Name");
+			reportLineItems.add("Command Name");
+
+			for (String propertyName :
+					PropsValues.TEST_CSV_REPORT_PROPERTY_NAMES) {
+
+				reportLineItems.add(propertyName);
+			}
+
+			reportCSVFileWriter.write(StringUtils.join(reportLineItems, ","));
+
+			reportLineItems.clear();
+
+			for (String testCaseNamespacedClassCommandName :
+					_testCaseNamespacedClassCommandNames) {
+
+				Matcher matcher = _namespaceClassCommandNamePattern.matcher(
+					testCaseNamespacedClassCommandName);
+
+				if (!matcher.find()) {
+					throw new RuntimeException(
+						"Invalid namespaced class command name " +
+							testCaseNamespacedClassCommandName);
+				}
+
+				reportLineItems.add(matcher.group("namespace"));
+				reportLineItems.add(matcher.group("className"));
+				reportLineItems.add(matcher.group("commandName"));
+
+				Properties properties =
+					_namespacedClassCommandNamePropertiesMap.get(
+						testCaseNamespacedClassCommandName);
+
+				for (String propertyName :
+						PropsValues.TEST_CSV_REPORT_PROPERTY_NAMES) {
+
+					if (properties.containsKey(propertyName)) {
+						String propertyValue = properties.getProperty(
+							propertyName);
+
+						if (propertyValue.contains(",")) {
+							reportLineItems.add(
+								StringUtils.join(
+									ArrayUtils.toArray(
+										"\"", propertyValue, "\"")));
+						}
+						else {
+							reportLineItems.add(propertyValue);
+						}
+					}
+					else {
+						reportLineItems.add("");
+					}
+				}
+
+				reportCSVFileWriter.write(
+					"\n" + StringUtils.join(reportLineItems, ","));
+
+				reportLineItems.clear();
+			}
+		}
+		catch (IOException ioe) {
+			if (reportCSVFile.exists()) {
+				reportCSVFile.deleteOnExit();
+			}
+
+			throw new RuntimeException(ioe);
+		}
 	}
 
 	private static void _writeTestGeneratedProperties() throws Exception {
@@ -1463,8 +1574,13 @@ public class PoshiRunnerContext {
 	private static final Set<String> _duplicateLocatorMessages =
 		new HashSet<>();
 	private static final Map<String, String> _filePaths = new HashMap<>();
+	private static final Set<String> _functionFileNames = new HashSet<>();
 	private static final Map<String, Integer> _functionLocatorCounts =
 		new HashMap<>();
+	private static final Pattern _namespaceClassCommandNamePattern =
+		Pattern.compile(
+			"(?<namespace>[^\\.]+)\\.(?<className>[^\\#]+)\\#" +
+				"(?<commandName>.+)");
 	private static final Map<String, Properties>
 		_namespacedClassCommandNamePropertiesMap = new HashMap<>();
 	private static final List<String> _namespaces = new ArrayList<>();
@@ -1504,6 +1620,7 @@ public class PoshiRunnerContext {
 				StringUtil.split(testCaseAvailablePropertyNames));
 		}
 
+		_testCaseAvailablePropertyNames.add("ignored");
 		_testCaseAvailablePropertyNames.add("known-issues");
 		_testCaseAvailablePropertyNames.add("priority");
 		_testCaseAvailablePropertyNames.add("test.run.environment");

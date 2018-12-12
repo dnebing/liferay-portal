@@ -178,6 +178,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	public List<DDMContent> findByUuid(String uuid, int start, int end,
 		OrderByComparator<DDMContent> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -201,7 +203,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMContent ddmContent : list) {
-					if (!Objects.equals(uuid, ddmContent.getUuid())) {
+					if (!uuid.equals(ddmContent.getUuid())) {
 						list = null;
 
 						break;
@@ -225,10 +227,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -409,6 +408,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	public DDMContent[] findByUuid_PrevAndNext(long contentId, String uuid,
 		OrderByComparator<DDMContent> orderByComparator)
 		throws NoSuchContentException {
+		uuid = Objects.toString(uuid, "");
+
 		DDMContent ddmContent = findByPrimaryKey(contentId);
 
 		Session session = null;
@@ -454,10 +455,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -577,6 +575,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -590,10 +590,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -707,6 +704,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	@Override
 	public DDMContent fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -732,10 +731,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -819,6 +815,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -832,10 +830,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -976,6 +971,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	public List<DDMContent> findByUuid_C(String uuid, long companyId,
 		int start, int end, OrderByComparator<DDMContent> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1003,7 +1000,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (DDMContent ddmContent : list) {
-					if (!Objects.equals(uuid, ddmContent.getUuid()) ||
+					if (!uuid.equals(ddmContent.getUuid()) ||
 							(companyId != ddmContent.getCompanyId())) {
 						list = null;
 
@@ -1028,10 +1025,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1230,6 +1224,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	public DDMContent[] findByUuid_C_PrevAndNext(long contentId, String uuid,
 		long companyId, OrderByComparator<DDMContent> orderByComparator)
 		throws NoSuchContentException {
+		uuid = Objects.toString(uuid, "");
+
 		DDMContent ddmContent = findByPrimaryKey(contentId);
 
 		Session session = null;
@@ -1275,10 +1271,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1404,6 +1397,8 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1417,10 +1412,7 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2478,6 +2470,9 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	public DDMContentPersistenceImpl() {
 		setModelClass(DDMContent.class);
 
+		setModelImplClass(DDMContentImpl.class);
+		setEntityCacheEnabled(DDMContentModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -2956,54 +2951,6 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	/**
 	 * Returns the ddm content with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the ddm content
-	 * @return the ddm content, or <code>null</code> if a ddm content with the primary key could not be found
-	 */
-	@Override
-	public DDMContent fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
-				DDMContentImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DDMContent ddmContent = (DDMContent)serializable;
-
-		if (ddmContent == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmContent = (DDMContent)session.get(DDMContentImpl.class,
-						primaryKey);
-
-				if (ddmContent != null) {
-					cacheResult(ddmContent);
-				}
-				else {
-					entityCache.putResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
-						DDMContentImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DDMContentModelImpl.ENTITY_CACHE_ENABLED,
-					DDMContentImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return ddmContent;
-	}
-
-	/**
-	 * Returns the ddm content with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param contentId the primary key of the ddm content
 	 * @return the ddm content, or <code>null</code> if a ddm content with the primary key could not be found
 	 */
@@ -3300,6 +3247,11 @@ public class DDMContentPersistenceImpl extends BasePersistenceImpl<DDMContent>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

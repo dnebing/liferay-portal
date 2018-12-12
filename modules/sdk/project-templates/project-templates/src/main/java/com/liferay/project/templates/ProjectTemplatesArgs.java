@@ -23,6 +23,7 @@ import java.util.List;
 
 /**
  * @author Andrea Di Giorgi
+ * @author Gregory Amerson
  */
 public class ProjectTemplatesArgs {
 
@@ -71,6 +72,14 @@ public class ProjectTemplatesArgs {
 		return _name;
 	}
 
+	public String getOriginalModuleName() {
+		return _originalModuleName;
+	}
+
+	public String getOriginalModuleVersion() {
+		return _originalModuleVersion;
+	}
+
 	public String getPackageName() {
 		return _packageName;
 	}
@@ -81,6 +90,10 @@ public class ProjectTemplatesArgs {
 
 	public String getTemplate() {
 		return _template;
+	}
+
+	public String getTemplateVersion() {
+		return _templateVersion;
 	}
 
 	public boolean isDependencyManagementEnabled() {
@@ -157,6 +170,14 @@ public class ProjectTemplatesArgs {
 		_name = name;
 	}
 
+	public void setOriginalModuleName(String originalModuleName) {
+		_originalModuleName = originalModuleName;
+	}
+
+	public void setOriginalModuleVersion(String originalModuleVersion) {
+		_originalModuleVersion = originalModuleVersion;
+	}
+
 	public void setPackageName(String packageName) {
 		_packageName = packageName;
 	}
@@ -167,6 +188,10 @@ public class ProjectTemplatesArgs {
 
 	public void setTemplate(String template) {
 		_template = template;
+	}
+
+	public void setTemplateVersion(String templateVersion) {
+		_templateVersion = templateVersion;
 	}
 
 	protected boolean isHelp() {
@@ -272,6 +297,18 @@ public class ProjectTemplatesArgs {
 	private String _name;
 
 	@Parameter(
+		description = "Provide the name of the original module which you want to override.",
+		names = "--original-module-name"
+	)
+	private String _originalModuleName;
+
+	@Parameter(
+		description = "The original module version.",
+		names = "--original-module-version"
+	)
+	private String _originalModuleVersion;
+
+	@Parameter(
 		description = "The main package name to use in the project.",
 		names = "--package-name"
 	)
@@ -288,5 +325,8 @@ public class ProjectTemplatesArgs {
 		names = "--template"
 	)
 	private String _template = "mvc-portlet";
+
+	@Parameter(hidden = true, names = "--template-version")
+	private String _templateVersion;
 
 }

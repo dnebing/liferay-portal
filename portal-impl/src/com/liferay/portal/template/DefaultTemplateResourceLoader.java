@@ -29,8 +29,6 @@ import com.liferay.portal.kernel.template.TemplateResourceLoader;
 import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.registry.collections.ServiceTrackerCollections;
-import com.liferay.registry.collections.ServiceTrackerList;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -45,8 +43,25 @@ import java.util.Set;
  */
 public class DefaultTemplateResourceLoader implements TemplateResourceLoader {
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #DefaultTemplateResourceLoader(
+	 * 				String, Set, long, MultiVMPool, SingleVMPool)}
+	 */
+	@Deprecated
 	public DefaultTemplateResourceLoader(
 		String name, long modificationCheckInterval, MultiVMPool multiVMPool,
+		SingleVMPool singleVMPool) {
+
+		throw new UnsupportedOperationException(
+			"This constructor is deprecated and replaced by " +
+				"#DefaultTemplateResourceLoader(String, Set, long, " +
+					"MultiVMPool, SingleVMPool)");
+	}
+
+	public DefaultTemplateResourceLoader(
+		String name, Set<TemplateResourceParser> templateResourceParsers,
+		long modificationCheckInterval, MultiVMPool multiVMPool,
 		SingleVMPool singleVMPool) {
 
 		if (Validator.isNull(name)) {
@@ -56,9 +71,7 @@ public class DefaultTemplateResourceLoader implements TemplateResourceLoader {
 
 		_name = name;
 
-		_templateResourceParsers = ServiceTrackerCollections.openList(
-			TemplateResourceParser.class, "(lang.type=" + _name + ")");
-
+		_templateResourceParsers = templateResourceParsers;
 		_modificationCheckInterval = modificationCheckInterval;
 
 		_multiVMPool = multiVMPool;
@@ -118,8 +131,6 @@ public class DefaultTemplateResourceLoader implements TemplateResourceLoader {
 			_multiVMPortalCache.getPortalCacheName());
 		_singleVMPool.removePortalCache(
 			_singleVMPortalCache.getPortalCacheName());
-
-		_templateResourceParsers.close();
 	}
 
 	@Override
@@ -342,8 +353,7 @@ public class DefaultTemplateResourceLoader implements TemplateResourceLoader {
 	private final String _name;
 	private final SingleVMPool _singleVMPool;
 	private final PortalCache<String, TemplateResource> _singleVMPortalCache;
-	private final ServiceTrackerList<TemplateResourceParser>
-		_templateResourceParsers;
+	private final Set<TemplateResourceParser> _templateResourceParsers;
 
 	private static class NullHolderTemplateResource
 		implements TemplateResource {

@@ -9,18 +9,8 @@
 </thead>
 <tbody>
 <tr>
-	<td>CALENDAR_PERMISSIONS_IFRAME</td>
-	<td>//iframe[contains(@class,'dialog-iframe-node')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>PERMISSIONS_TITLE</td>
 	<td>//h3[contains(.,'Permissions')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>HEADER_TITLE</td>
-	<td>//h3[@class='header-title']/span</td>
 	<td></td>
 </tr>
 </tbody>

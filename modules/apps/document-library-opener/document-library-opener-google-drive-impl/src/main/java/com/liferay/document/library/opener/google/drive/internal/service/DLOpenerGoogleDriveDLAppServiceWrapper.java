@@ -15,11 +15,15 @@
 package com.liferay.document.library.opener.google.drive.internal.service;
 
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLAppServiceWrapper;
+import com.liferay.document.library.kernel.util.DLValidator;
 import com.liferay.document.library.opener.constants.DLOpenerFileEntryReferenceConstants;
 import com.liferay.document.library.opener.google.drive.DLOpenerGoogleDriveFileReference;
 import com.liferay.document.library.opener.google.drive.DLOpenerGoogleDriveManager;
+import com.liferay.document.library.opener.google.drive.constants.DLOpenerGoogleDriveMimeTypes;
+import com.liferay.document.library.opener.google.drive.upload.UniqueFileEntryTitleProvider;
 import com.liferay.document.library.opener.model.DLOpenerFileEntryReference;
 import com.liferay.document.library.opener.service.DLOpenerFileEntryReferenceLocalService;
 import com.liferay.petra.string.StringPool;
@@ -38,6 +42,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
+ * Provides a service wrapper responsible for uploading, updating, or deleting
+ * the Google Drive file linked to a Documents and Media file entry.
+ *
  * @author Adolfo Pérez
  */
 @Component(immediate = true, service = ServiceWrapper.class)
@@ -58,7 +65,9 @@ public class DLOpenerGoogleDriveDLAppServiceWrapper
 
 		FileEntry fileEntry = getFileEntry(fileEntryId);
 
-		if (_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry)) {
+		if (_dlOpenerGoogleDriveManager.isConfigured() &&
+			_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry)) {
+
 			DLOpenerFileEntryReference dlOpenerFileEntryReference =
 				_dlOpenerFileEntryReferenceLocalService.
 					getDLOpenerFileEntryReference(fileEntry);
@@ -77,23 +86,36 @@ public class DLOpenerGoogleDriveDLAppServiceWrapper
 
 	@Override
 	public void checkInFileEntry(
-			long fileEntryId, boolean majorVersion, String changeLog,
-			ServiceContext serviceContext)
+			long fileEntryId, DLVersionNumberIncrease dlVersionNumberIncrease,
+			String changeLog, ServiceContext serviceContext)
 		throws PortalException {
 
 		FileEntry fileEntry = getFileEntry(fileEntryId);
 
-		if (!_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry)) {
+		if (!_dlOpenerGoogleDriveManager.isConfigured() ||
+			!_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry)) {
+
 			super.checkInFileEntry(
-				fileEntryId, majorVersion, changeLog, serviceContext);
+				fileEntryId, dlVersionNumberIncrease, changeLog,
+				serviceContext);
 
 			return;
 		}
 
 		_updateFileEntryFromGoogleDrive(fileEntry, serviceContext);
 
+		DLOpenerFileEntryReference dlOpenerFileEntryReference =
+			_dlOpenerFileEntryReferenceLocalService.
+				fetchDLOpenerFileEntryReference(fileEntry);
+
+		if (dlOpenerFileEntryReference.getType() ==
+				DLOpenerFileEntryReferenceConstants.TYPE_NEW) {
+
+			dlVersionNumberIncrease = DLVersionNumberIncrease.NONE;
+		}
+
 		super.checkInFileEntry(
-			fileEntryId, majorVersion, changeLog, serviceContext);
+			fileEntryId, dlVersionNumberIncrease, changeLog, serviceContext);
 
 		_dlOpenerGoogleDriveManager.delete(
 			serviceContext.getUserId(), fileEntry);
@@ -106,7 +128,9 @@ public class DLOpenerGoogleDriveDLAppServiceWrapper
 
 		FileEntry fileEntry = getFileEntry(fileEntryId);
 
-		if (!_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry)) {
+		if (!_dlOpenerGoogleDriveManager.isConfigured() ||
+			!_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry)) {
+
 			super.checkInFileEntry(fileEntryId, lockUuid, serviceContext);
 
 			return;
@@ -134,12 +158,25 @@ public class DLOpenerGoogleDriveDLAppServiceWrapper
 
 		File file = dlOpenerGoogleDriveFileReference.getContentFile();
 
+		String title = fileEntry.getTitle();
+
+		if (!title.equals(dlOpenerGoogleDriveFileReference.getTitle())) {
+			title = _uniqueFileEntryTitleProvider.provide(
+				fileEntry.getGroupId(), fileEntry.getFolderId(),
+				_dlValidator.fixName(
+					dlOpenerGoogleDriveFileReference.getTitle()));
+		}
+
 		try {
+			String sourceFileName = title;
+
+			sourceFileName += DLOpenerGoogleDriveMimeTypes.getMimeTypeExtension(
+				fileEntry.getMimeType());
+
 			updateFileEntry(
-				fileEntry.getFileEntryId(), fileEntry.getFileName(),
-				fileEntry.getMimeType(),
-				dlOpenerGoogleDriveFileReference.getTitle(),
-				fileEntry.getDescription(), StringPool.BLANK, false, file,
+				fileEntry.getFileEntryId(), sourceFileName,
+				fileEntry.getMimeType(), title, fileEntry.getDescription(),
+				StringPool.BLANK, DLVersionNumberIncrease.NONE, file,
 				serviceContext);
 		}
 		finally {
@@ -164,5 +201,11 @@ public class DLOpenerGoogleDriveDLAppServiceWrapper
 
 	@Reference
 	private DLOpenerGoogleDriveManager _dlOpenerGoogleDriveManager;
+
+	@Reference
+	private DLValidator _dlValidator;
+
+	@Reference
+	private UniqueFileEntryTitleProvider _uniqueFileEntryTitleProvider;
 
 }

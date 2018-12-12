@@ -53,23 +53,19 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts.Globals;
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.config.ModuleConfig;
-import org.apache.struts.util.MessageResources;
 
 /**
  * @author Brian Wing Shun Chan
  * @see    com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand
  */
-public class PortletAction extends Action {
+public class PortletAction implements Action {
 
 	public static String getForwardKey(HttpServletRequest request) {
 		String portletId = (String)request.getAttribute(WebKeys.PORTLET_ID);
@@ -90,8 +86,8 @@ public class PortletAction extends Action {
 
 	@Override
 	public ActionForward execute(
-			ActionMapping actionMapping, ActionForm actionForm,
-			HttpServletRequest request, HttpServletResponse response)
+			ActionMapping actionMapping, HttpServletRequest request,
+			HttpServletResponse response)
 		throws Exception {
 
 		PortletConfig portletConfig = (PortletConfig)request.getAttribute(
@@ -107,23 +103,22 @@ public class PortletAction extends Action {
 			WebKeys.PORTLET_STRUTS_EXECUTE);
 
 		if ((strutsExecute != null) && strutsExecute.booleanValue()) {
-			return strutsExecute(actionMapping, actionForm, request, response);
+			return strutsExecute(actionMapping, request, response);
 		}
 		else if (portletRequest instanceof RenderRequest) {
 			return render(
-				actionMapping, actionForm, portletConfig,
-				(RenderRequest)portletRequest, (RenderResponse)portletResponse);
+				actionMapping, portletConfig, (RenderRequest)portletRequest,
+				(RenderResponse)portletResponse);
 		}
 		else {
 			if (portletRequest instanceof EventRequest) {
 				processEvent(
-					actionMapping, actionForm, portletConfig,
-					(EventRequest)portletRequest,
+					actionMapping, portletConfig, (EventRequest)portletRequest,
 					(EventResponse)portletResponse);
 			}
 			else {
 				serveResource(
-					actionMapping, actionForm, portletConfig,
+					actionMapping, portletConfig,
 					(ResourceRequest)portletRequest,
 					(ResourceResponse)portletResponse);
 			}
@@ -133,23 +128,20 @@ public class PortletAction extends Action {
 	}
 
 	public void processAction(
-			ActionMapping actionMapping, ActionForm actionForm,
-			PortletConfig portletConfig, ActionRequest actionRequest,
-			ActionResponse actionResponse)
+			ActionMapping actionMapping, PortletConfig portletConfig,
+			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 	}
 
 	public void processEvent(
-			ActionMapping actionMapping, ActionForm actionForm,
-			PortletConfig portletConfig, EventRequest eventRequest,
-			EventResponse eventResponse)
+			ActionMapping actionMapping, PortletConfig portletConfig,
+			EventRequest eventRequest, EventResponse eventResponse)
 		throws Exception {
 	}
 
 	public ActionForward render(
-			ActionMapping actionMapping, ActionForm actionForm,
-			PortletConfig portletConfig, RenderRequest renderRequest,
-			RenderResponse renderResponse)
+			ActionMapping actionMapping, PortletConfig portletConfig,
+			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws Exception {
 
 		if (_log.isDebugEnabled()) {
@@ -160,9 +152,8 @@ public class PortletAction extends Action {
 	}
 
 	public void serveResource(
-			ActionMapping actionMapping, ActionForm actionForm,
-			PortletConfig portletConfig, ResourceRequest resourceRequest,
-			ResourceResponse resourceResponse)
+			ActionMapping actionMapping, PortletConfig portletConfig,
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
 		String resourceID = resourceRequest.getResourceID();
@@ -184,11 +175,11 @@ public class PortletAction extends Action {
 	}
 
 	public ActionForward strutsExecute(
-			ActionMapping actionMapping, ActionForm actionForm,
-			HttpServletRequest request, HttpServletResponse response)
+			ActionMapping actionMapping, HttpServletRequest request,
+			HttpServletResponse response)
 		throws Exception {
 
-		return super.execute(actionMapping, actionForm, request, response);
+		return null;
 	}
 
 	protected void addSuccessMessage(
@@ -224,29 +215,12 @@ public class PortletAction extends Action {
 		if (forward == null) {
 			return defaultValue;
 		}
-		else {
-			return forward;
-		}
+
+		return forward;
 	}
 
 	protected ModuleConfig getModuleConfig(PortletRequest portletRequest) {
 		return (ModuleConfig)portletRequest.getAttribute(Globals.MODULE_KEY);
-	}
-
-	protected MessageResources getResources() {
-		ServletContext servletContext = getServlet().getServletContext();
-
-		return (MessageResources)servletContext.getAttribute(
-			Globals.MESSAGES_KEY);
-	}
-
-	@Override
-	protected MessageResources getResources(HttpServletRequest request) {
-		return getResources();
-	}
-
-	protected MessageResources getResources(PortletRequest portletRequest) {
-		return getResources();
 	}
 
 	protected PortletPreferences getStrictPortletSetup(
@@ -334,9 +308,8 @@ public class PortletAction extends Action {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected void sendRedirect(

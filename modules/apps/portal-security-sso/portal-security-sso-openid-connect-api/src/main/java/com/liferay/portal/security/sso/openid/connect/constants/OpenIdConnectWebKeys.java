@@ -14,10 +14,16 @@
 
 package com.liferay.portal.security.sso.openid.connect.constants;
 
+import aQute.bnd.annotation.ProviderType;
+
 /**
  * @author Thuong Dinh
  */
+@ProviderType
 public class OpenIdConnectWebKeys {
+
+	public static final String OPEN_ID_CONNECT_ACTION_URL =
+		"OPEN_ID_CONNECT_ACTION_URL";
 
 	public static final String OPEN_ID_CONNECT_PROVIDER_NAME =
 		"OPEN_ID_CONNECT_PROVIDER_NAME";
@@ -27,6 +33,9 @@ public class OpenIdConnectWebKeys {
 
 	public static final String OPEN_ID_CONNECT_REQUEST_ACTION_NAME =
 		"/login/openid_connect_request";
+
+	public static final String OPEN_ID_CONNECT_RESPONSE_ACTION_NAME =
+		"/login/openid_connect_response";
 
 	public static final String OPEN_ID_CONNECT_SESSION =
 		"OPEN_ID_CONNECT_SESSION";

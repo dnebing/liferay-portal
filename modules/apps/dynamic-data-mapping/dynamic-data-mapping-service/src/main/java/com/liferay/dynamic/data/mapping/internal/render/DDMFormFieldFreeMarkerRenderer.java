@@ -255,12 +255,10 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 
 		Set<Locale> availableLocales = ddmForm.getAvailableLocales();
 
-		Locale defaultLocale = ddmForm.getDefaultLocale();
-
 		Locale structureLocale = locale;
 
 		if (!availableLocales.contains(locale)) {
-			structureLocale = defaultLocale;
+			structureLocale = ddmForm.getDefaultLocale();
 		}
 
 		fieldContext = new HashMap<>();
@@ -318,18 +316,18 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 			fieldsDisplayValues, name);
 
 		if (fieldDisplayable) {
-			Map<String, Object> parentFieldStructure =
-				(Map<String, Object>)freeMarkerContext.get(
-					"parentFieldStructure");
-
-			String parentFieldName = (String)parentFieldStructure.get("name");
-
 			offset = getFieldOffset(
 				fieldsDisplayValues, name, ddmFieldsCounter.get(name));
 
 			if (offset == fieldsDisplayValues.length) {
 				return StringPool.BLANK;
 			}
+
+			Map<String, Object> parentFieldStructure =
+				(Map<String, Object>)freeMarkerContext.get(
+					"parentFieldStructure");
+
+			String parentFieldName = (String)parentFieldStructure.get("name");
 
 			fieldRepetition = countFieldRepetition(
 				fieldsDisplayValues, parentFieldName, offset);

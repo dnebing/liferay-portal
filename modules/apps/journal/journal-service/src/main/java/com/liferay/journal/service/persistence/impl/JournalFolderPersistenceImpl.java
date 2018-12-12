@@ -186,6 +186,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	public List<JournalFolder> findByUuid(String uuid, int start, int end,
 		OrderByComparator<JournalFolder> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -209,7 +211,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalFolder journalFolder : list) {
-					if (!Objects.equals(uuid, journalFolder.getUuid())) {
+					if (!uuid.equals(journalFolder.getUuid())) {
 						list = null;
 
 						break;
@@ -233,10 +235,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -417,6 +416,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	public JournalFolder[] findByUuid_PrevAndNext(long folderId, String uuid,
 		OrderByComparator<JournalFolder> orderByComparator)
 		throws NoSuchFolderException {
+		uuid = Objects.toString(uuid, "");
+
 		JournalFolder journalFolder = findByPrimaryKey(folderId);
 
 		Session session = null;
@@ -462,10 +463,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -585,6 +583,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -598,10 +598,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -715,6 +712,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	@Override
 	public JournalFolder fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -740,10 +739,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -827,6 +823,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -840,10 +838,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -988,6 +983,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	public List<JournalFolder> findByUuid_C(String uuid, long companyId,
 		int start, int end, OrderByComparator<JournalFolder> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1015,7 +1012,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			if ((list != null) && !list.isEmpty()) {
 				for (JournalFolder journalFolder : list) {
-					if (!Objects.equals(uuid, journalFolder.getUuid()) ||
+					if (!uuid.equals(journalFolder.getUuid()) ||
 							(companyId != journalFolder.getCompanyId())) {
 						list = null;
 
@@ -1040,10 +1037,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1242,6 +1236,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	public JournalFolder[] findByUuid_C_PrevAndNext(long folderId, String uuid,
 		long companyId, OrderByComparator<JournalFolder> orderByComparator)
 		throws NoSuchFolderException {
+		uuid = Objects.toString(uuid, "");
+
 		JournalFolder journalFolder = findByPrimaryKey(folderId);
 
 		Session session = null;
@@ -1287,10 +1283,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1416,6 +1409,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1429,10 +1424,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -3848,6 +3840,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	@Override
 	public JournalFolder fetchByG_N(long groupId, String name,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		Object[] finderArgs = new Object[] { groupId, name };
 
 		Object result = null;
@@ -3875,10 +3869,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -3971,6 +3962,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	 */
 	@Override
 	public int countByG_N(long groupId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_N;
 
 		Object[] finderArgs = new Object[] { groupId, name };
@@ -3986,10 +3979,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -4649,6 +4639,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	@Override
 	public JournalFolder fetchByG_P_N(long groupId, long parentFolderId,
 		String name, boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		Object[] finderArgs = new Object[] { groupId, parentFolderId, name };
 
 		Object result = null;
@@ -4679,10 +4671,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -4768,6 +4757,8 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	 */
 	@Override
 	public int countByG_P_N(long groupId, long parentFolderId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_P_N;
 
 		Object[] finderArgs = new Object[] { groupId, parentFolderId, name };
@@ -4785,10 +4776,7 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -7251,6 +7239,9 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	public JournalFolderPersistenceImpl() {
 		setModelClass(JournalFolder.class);
 
+		setModelImplClass(JournalFolderImpl.class);
+		setEntityCacheEnabled(JournalFolderModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -7870,54 +7861,6 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	/**
 	 * Returns the journal folder with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the journal folder
-	 * @return the journal folder, or <code>null</code> if a journal folder with the primary key could not be found
-	 */
-	@Override
-	public JournalFolder fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
-				JournalFolderImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		JournalFolder journalFolder = (JournalFolder)serializable;
-
-		if (journalFolder == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				journalFolder = (JournalFolder)session.get(JournalFolderImpl.class,
-						primaryKey);
-
-				if (journalFolder != null) {
-					cacheResult(journalFolder);
-				}
-				else {
-					entityCache.putResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
-						JournalFolderImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(JournalFolderModelImpl.ENTITY_CACHE_ENABLED,
-					JournalFolderImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return journalFolder;
-	}
-
-	/**
-	 * Returns the journal folder with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param folderId the primary key of the journal folder
 	 * @return the journal folder, or <code>null</code> if a journal folder with the primary key could not be found
 	 */
@@ -8214,6 +8157,11 @@ public class JournalFolderPersistenceImpl extends BasePersistenceImpl<JournalFol
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

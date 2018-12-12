@@ -33,6 +33,10 @@
 		display: none;
 	}
 
+	.hide-data-labels .toggle-switch-handle::after {
+		content: normal !important;
+	}
+
 	.label-holder {
 		font-weight: 700;
 		padding: 15px 0 5px;
@@ -247,6 +251,38 @@
 	.lfr-asset-summary img.avatar {
 		max-width: 210px;
 	}
+
+	.opening-hours-entry {
+		margin-bottom: 50px;
+
+		.opening-hours-header {
+			align-items: flex-end;
+			margin-bottom: 10px;
+
+			span:first-child {
+				margin-right: 15px;
+			}
+		}
+
+		td {
+			border-width: 0;
+			padding: 0.3rem 0;
+
+			&:first-child {
+				padding-left: 0;
+			}
+		}
+
+		@media (min-width: $screen-desktop) {
+			table {
+				table-layout: fixed;
+			}
+
+			td:first-child {
+				width: 17%;
+			}
+		}
+	}
 }
 
 .lfr-floating-container {
@@ -257,29 +293,15 @@
 	}
 }
 
-// Users Admin Search Container
-
-.lfr-search-container-organizations {
-	.lfr-roles-column, .lfr-type-column {
-		width: 26%;
-	}
+.contact-information-empty-results-message-wrapper div:first-child {
+	border-style: none;
 }
 
-.lfr-inherited-site-roles {
-	.lfr-site-column, .lfr-user-group-column {
-		width: 27%;
-	}
+.addresses-table-wrapper table td:first-child {
+	padding-right: 0;
+	vertical-align: top;
 }
 
-.portlet-users-admin {
-	.lfr-job-title-column, .lfr-name-column, .lfr-organization-column, .lfr-organizations-column, .lfr-roles-column, .lfr-screen-name-column, .lfr-site-column, .lfr-user-group-column, .lfr-user-groups-column {
-		max-width: 150px;
-		min-width: 150px;
-	}
-}
-
-.portlet-users-admin-edit-user {
-	.lfr-name-column, .lfr-title-column {
-		width: 45%;
-	}
+.contact-information-edit-form {
+	background-color: white;
 }

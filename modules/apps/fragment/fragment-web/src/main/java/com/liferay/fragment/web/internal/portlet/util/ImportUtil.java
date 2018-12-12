@@ -14,6 +14,7 @@
 
 package com.liferay.fragment.web.internal.portlet.util;
 
+import com.liferay.fragment.constants.FragmentEntryTypeConstants;
 import com.liferay.fragment.constants.FragmentExportImportConstants;
 import com.liferay.fragment.exception.DuplicateFragmentCollectionKeyException;
 import com.liferay.fragment.exception.DuplicateFragmentEntryKeyException;
@@ -73,9 +74,6 @@ public class ImportUtil {
 			boolean overwrite)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		_invalidFragmentEntriesNames = new ArrayList<>();
 
 		ZipFile zipFile = new ZipFile(file);
@@ -122,6 +120,10 @@ public class ImportUtil {
 
 		if (MapUtil.isNotEmpty(orphanFragmentEntries)) {
 			if (fragmentCollectionId <= 0) {
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)actionRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
+
 				FragmentCollection fragmentCollection =
 					_fragmentCollectionLocalService.fetchFragmentCollection(
 						themeDisplay.getScopeGroupId(),
@@ -165,14 +167,14 @@ public class ImportUtil {
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			actionRequest);
-
 		FragmentCollection fragmentCollection =
 			_fragmentCollectionLocalService.fetchFragmentCollection(
 				themeDisplay.getScopeGroupId(), fragmentCollectionKey);
 
 		if (fragmentCollection == null) {
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				actionRequest);
+
 			fragmentCollection =
 				_fragmentCollectionService.addFragmentCollection(
 					themeDisplay.getScopeGroupId(), fragmentCollectionKey, name,
@@ -195,14 +197,11 @@ public class ImportUtil {
 	private void _addFragmentEntry(
 			ActionRequest actionRequest, long fragmentCollectionId,
 			String fragmentEntryKey, String name, String css, String html,
-			String js, boolean overwrite)
+			String js, String typeLabel, boolean overwrite)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
-
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			actionRequest);
 
 		FragmentEntry fragmentEntry =
 			_fragmentEntryLocalService.fetchFragmentEntry(
@@ -227,10 +226,17 @@ public class ImportUtil {
 			_invalidFragmentEntriesNames.add(name);
 		}
 
+		int type = FragmentEntryTypeConstants.getTypeFromLabel(
+			StringUtil.toLowerCase(StringUtil.trim(typeLabel)));
+
 		if (fragmentEntry == null) {
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				actionRequest);
+
 			_fragmentEntryService.addFragmentEntry(
 				themeDisplay.getScopeGroupId(), fragmentCollectionId,
-				fragmentEntryKey, name, css, html, js, status, serviceContext);
+				fragmentEntryKey, name, css, html, js, type, status,
+				serviceContext);
 		}
 		else {
 			_fragmentEntryService.updateFragmentEntry(
@@ -364,6 +370,7 @@ public class ImportUtil {
 			String css = StringPool.BLANK;
 			String html = StringPool.BLANK;
 			String js = StringPool.BLANK;
+			String typeLabel = StringPool.BLANK;
 
 			String fragmentJSON = _getContent(zipFile, entry.getValue());
 
@@ -379,11 +386,12 @@ public class ImportUtil {
 					jsonObject.getString("htmlPath"));
 				js = _getFragmentEntryContent(
 					zipFile, entry.getValue(), jsonObject.getString("jsPath"));
+				typeLabel = jsonObject.getString("type");
 			}
 
 			_addFragmentEntry(
 				actionRequest, fragmentCollectionId, entry.getKey(), name, css,
-				html, js, overwrite);
+				html, js, typeLabel, overwrite);
 		}
 	}
 

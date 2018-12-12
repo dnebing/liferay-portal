@@ -70,9 +70,8 @@ public class WikiPageAssetRenderer
 
 			return page.getPageId();
 		}
-		else {
-			return page.getResourcePrimKey();
-		}
+
+		return page.getResourcePrimKey();
 	}
 
 	/**
@@ -131,9 +130,8 @@ public class WikiPageAssetRenderer
 		if (_wikiGroupServiceOverriddenConfiguration.pageCommentsEnabled()) {
 			return "edit_page_discussion";
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	/**
@@ -157,9 +155,8 @@ public class WikiPageAssetRenderer
 
 			return "/wiki/asset/" + template + ".jsp";
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	@Override
@@ -276,16 +273,16 @@ public class WikiPageAssetRenderer
 			LiferayPortletResponse liferayPortletResponse)
 		throws Exception {
 
-		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
-			liferayPortletRequest, WikiPortletKeys.WIKI,
-			PortletRequest.RENDER_PHASE);
-
 		WikiPage previousVersionPage =
 			WikiPageLocalServiceUtil.getPreviousVersionPage(_page);
 
 		if (previousVersionPage.getVersion() == _page.getVersion()) {
 			return null;
 		}
+
+		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
+			liferayPortletRequest, WikiPortletKeys.WIKI,
+			PortletRequest.RENDER_PHASE);
 
 		portletURL.setParameter(
 			"mvcRenderCommandName", "/wiki/compare_versions");

@@ -35,11 +35,32 @@ public class FragmentEntryServiceWrapper implements FragmentEntryService,
 
 	@Override
 	public com.liferay.fragment.model.FragmentEntry addFragmentEntry(
+		long groupId, long fragmentCollectionId, String name, int type,
+		int status,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _fragmentEntryService.addFragmentEntry(groupId,
+			fragmentCollectionId, name, type, status, serviceContext);
+	}
+
+	@Override
+	public com.liferay.fragment.model.FragmentEntry addFragmentEntry(
 		long groupId, long fragmentCollectionId, String name, int status,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _fragmentEntryService.addFragmentEntry(groupId,
 			fragmentCollectionId, name, status, serviceContext);
+	}
+
+	@Override
+	public com.liferay.fragment.model.FragmentEntry addFragmentEntry(
+		long groupId, long fragmentCollectionId, String fragmentEntryKey,
+		String name, int type, int status,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _fragmentEntryService.addFragmentEntry(groupId,
+			fragmentCollectionId, fragmentEntryKey, name, type, status,
+			serviceContext);
 	}
 
 	@Override
@@ -55,11 +76,33 @@ public class FragmentEntryServiceWrapper implements FragmentEntryService,
 	@Override
 	public com.liferay.fragment.model.FragmentEntry addFragmentEntry(
 		long groupId, long fragmentCollectionId, String name, String css,
+		String html, String js, int type, int status,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _fragmentEntryService.addFragmentEntry(groupId,
+			fragmentCollectionId, name, css, html, js, type, status,
+			serviceContext);
+	}
+
+	@Override
+	public com.liferay.fragment.model.FragmentEntry addFragmentEntry(
+		long groupId, long fragmentCollectionId, String name, String css,
 		String html, String js, int status,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _fragmentEntryService.addFragmentEntry(groupId,
 			fragmentCollectionId, name, css, html, js, status, serviceContext);
+	}
+
+	@Override
+	public com.liferay.fragment.model.FragmentEntry addFragmentEntry(
+		long groupId, long fragmentCollectionId, String fragmentEntryKey,
+		String name, String css, String html, String js, int type, int status,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _fragmentEntryService.addFragmentEntry(groupId,
+			fragmentCollectionId, fragmentEntryKey, name, css, html, js, type,
+			status, serviceContext);
 	}
 
 	@Override
@@ -122,6 +165,13 @@ public class FragmentEntryServiceWrapper implements FragmentEntryService,
 	}
 
 	@Override
+	public int getFragmentCollectionsCountByType(long groupId,
+		long fragmentCollectionId, int type) {
+		return _fragmentEntryService.getFragmentCollectionsCountByType(groupId,
+			fragmentCollectionId, type);
+	}
+
+	@Override
 	public java.util.List<com.liferay.fragment.model.FragmentEntry> getFragmentEntries(
 		long fragmentCollectionId) {
 		return _fragmentEntryService.getFragmentEntries(fragmentCollectionId);
@@ -176,6 +226,14 @@ public class FragmentEntryServiceWrapper implements FragmentEntryService,
 			fragmentCollectionId, name, start, end, orderByComparator);
 	}
 
+	@Override
+	public java.util.List<com.liferay.fragment.model.FragmentEntry> getFragmentEntriesByType(
+		long groupId, long fragmentCollectionId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.fragment.model.FragmentEntry> orderByComparator) {
+		return _fragmentEntryService.getFragmentEntriesByType(groupId,
+			fragmentCollectionId, type, start, end, orderByComparator);
+	}
+
 	/**
 	* Returns the OSGi service identifier.
 	*
@@ -190,6 +248,14 @@ public class FragmentEntryServiceWrapper implements FragmentEntryService,
 	public String[] getTempFileNames(long groupId, String folderName)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _fragmentEntryService.getTempFileNames(groupId, folderName);
+	}
+
+	@Override
+	public com.liferay.fragment.model.FragmentEntry moveFragmentEntry(
+		long fragmentEntryId, long fragmentCollectionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _fragmentEntryService.moveFragmentEntry(fragmentEntryId,
+			fragmentCollectionId);
 	}
 
 	@Override

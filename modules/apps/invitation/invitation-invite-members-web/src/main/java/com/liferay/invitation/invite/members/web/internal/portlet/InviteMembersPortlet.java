@@ -200,11 +200,6 @@ public class InviteMembersPortlet extends MVCPortlet {
 
 	protected void doSendInvite(ActionRequest actionRequest) throws Exception {
 		long groupId = ParamUtil.getLong(actionRequest, "groupId");
-		long[] receiverUserIds = getLongArray(actionRequest, "receiverUserIds");
-		String[] receiverEmailAddresses = getStringArray(
-			actionRequest, "receiverEmailAddresses");
-		long invitedRoleId = ParamUtil.getLong(actionRequest, "invitedRoleId");
-		long invitedTeamId = ParamUtil.getLong(actionRequest, "invitedTeamId");
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -214,6 +209,12 @@ public class InviteMembersPortlet extends MVCPortlet {
 
 			return;
 		}
+
+		long invitedTeamId = ParamUtil.getLong(actionRequest, "invitedTeamId");
+		long[] receiverUserIds = getLongArray(actionRequest, "receiverUserIds");
+		long invitedRoleId = ParamUtil.getLong(actionRequest, "invitedRoleId");
+		String[] receiverEmailAddresses = getStringArray(
+			actionRequest, "receiverEmailAddresses");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			actionRequest);
@@ -268,7 +269,7 @@ public class InviteMembersPortlet extends MVCPortlet {
 	}
 
 	@Reference(
-		target = "(&(release.bundle.symbolic.name=com.liferay.invitation.invite.members.service)(release.schema.version=1.0.1))",
+		target = "(&(release.bundle.symbolic.name=com.liferay.invitation.invite.members.service)(&(release.schema.version>=2.0.0)(!(release.schema.version>=2.1.0))))",
 		unbind = "-"
 	)
 	protected void setRelease(Release release) {

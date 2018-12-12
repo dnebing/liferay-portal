@@ -58,7 +58,7 @@ import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
  */
 @Component(
 	configurationPid = "com.liferay.portal.remote.cxf.common.configuration.CXFEndpointPublisherConfiguration",
-	configurationPolicy = ConfigurationPolicy.REQUIRE
+	configurationPolicy = ConfigurationPolicy.REQUIRE, service = {}
 )
 public class CXFEndpointPublisher {
 
@@ -203,8 +203,9 @@ public class CXFEndpointPublisher {
 				String[] authVerifierPropertiesArray = null;
 
 				if (authVerifierPropertiesObject instanceof String) {
-					authVerifierPropertiesArray =
-						new String[] {(String)authVerifierPropertiesObject};
+					authVerifierPropertiesArray = new String[] {
+						(String)authVerifierPropertiesObject
+					};
 				}
 				else {
 					authVerifierPropertiesArray =

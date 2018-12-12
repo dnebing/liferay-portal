@@ -42,7 +42,7 @@ public class ExternalMethod {
 		catch (Exception e) {
 			Throwable throwable = e.getCause();
 
-			if (throwable != null) {
+			if ((throwable != null) && (throwable.getMessage() != null)) {
 				throw new Exception(throwable.getMessage(), e);
 			}
 			else {

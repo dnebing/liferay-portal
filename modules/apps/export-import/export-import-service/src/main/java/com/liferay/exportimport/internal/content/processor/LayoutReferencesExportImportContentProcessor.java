@@ -256,11 +256,14 @@ public class LayoutReferencesExportImportContentProcessor
 
 			if (pos != -1) {
 				url = url.substring(0, pos);
+
 				endPos = beginPos + offset + pos;
 			}
 
 			if (url.endsWith(StringPool.SLASH)) {
 				url = url.substring(0, url.length() - 1);
+
+				endPos--;
 			}
 
 			StringBundler urlSB = new StringBundler(6);
@@ -355,7 +358,7 @@ public class LayoutReferencesExportImportContentProcessor
 						layoutSet = group.getPublicLayoutSet();
 					}
 					else if (urlSBString.contains(
-								 _DATA_HANDLER_PRIVATE_LAYOUT_SET_SECURE_URL) ||
+								_DATA_HANDLER_PRIVATE_LAYOUT_SET_SECURE_URL) ||
 							 urlSBString.contains(
 								 _DATA_HANDLER_PRIVATE_LAYOUT_SET_URL)) {
 
@@ -647,13 +650,20 @@ public class LayoutReferencesExportImportContentProcessor
 						portletDataContext.getCompanyId(), groupUuid);
 			}
 
-			if (groupFriendlyUrlGroup == null) {
+			if ((groupFriendlyUrlGroup == null) ||
+				groupUuid.contains(_TEMPLATE_NAME_PREFIX)) {
+
 				content = StringUtil.replaceFirst(
 					content, _DATA_HANDLER_GROUP_FRIENDLY_URL,
 					group.getFriendlyURL(), groupFriendlyUrlPos);
 				content = StringUtil.replaceFirst(
 					content, StringPool.AT + groupUuid + StringPool.AT,
 					StringPool.BLANK, groupFriendlyUrlPos);
+
+				if (groupUuid.contains(_TEMPLATE_NAME_PREFIX)) {
+					content = _replaceTemplateLinkToLayout(
+						content, portletDataContext.isPrivateLayout());
+				}
 
 				continue;
 			}
@@ -839,7 +849,7 @@ public class LayoutReferencesExportImportContentProcessor
 					layoutSet = group.getPublicLayoutSet();
 				}
 				else if (urlSBString.contains(
-							 _DATA_HANDLER_PRIVATE_LAYOUT_SET_SECURE_URL) ||
+							_DATA_HANDLER_PRIVATE_LAYOUT_SET_SECURE_URL) ||
 						 urlSBString.contains(
 							 _DATA_HANDLER_PRIVATE_LAYOUT_SET_URL)) {
 
@@ -934,9 +944,25 @@ public class LayoutReferencesExportImportContentProcessor
 
 			return true;
 		}
-		else {
-			return false;
+
+		return false;
+	}
+
+	private String _replaceTemplateLinkToLayout(
+		String content, boolean privateLayout) {
+
+		if (privateLayout) {
+			content = StringUtil.replace(
+				content, _DATA_HANDLER_PRIVATE_GROUP_SERVLET_MAPPING,
+				PropsValues.LAYOUT_FRIENDLY_URL_PRIVATE_GROUP_SERVLET_MAPPING);
 		}
+		else {
+			content = StringUtil.replace(
+				content, _DATA_HANDLER_PRIVATE_GROUP_SERVLET_MAPPING,
+				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING);
+		}
+
+		return content;
 	}
 
 	private static final String _DATA_HANDLER_COMPANY_SECURE_URL =
@@ -993,9 +1019,10 @@ public class LayoutReferencesExportImportContentProcessor
 				StringPool.SLASH;
 
 	private static final String _PUBLIC_GROUP_SERVLET_MAPPING =
-		PropsUtil.get(
-			PropsKeys.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING) +
-				StringPool.SLASH;
+		PropsUtil.get(PropsKeys.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING) +
+			StringPool.SLASH;
+
+	private static final String _TEMPLATE_NAME_PREFIX = "template";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		LayoutReferencesExportImportContentProcessor.class);

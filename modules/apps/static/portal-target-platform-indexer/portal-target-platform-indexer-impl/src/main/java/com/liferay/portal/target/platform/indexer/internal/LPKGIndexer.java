@@ -14,30 +14,26 @@
 
 package com.liferay.portal.target.platform.indexer.internal;
 
+import aQute.bnd.osgi.repository.SimpleIndexer;
+
 import com.liferay.portal.target.platform.indexer.Indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.osgi.service.indexer.ResourceIndexer;
-import org.osgi.service.indexer.impl.RepoIndex;
 
 /**
  * @author Raymond Augé
@@ -47,13 +43,6 @@ public class LPKGIndexer implements Indexer {
 	public LPKGIndexer(File lpkgFile, Set<String> excludedJarFileNames) {
 		_lpkgFile = lpkgFile;
 		_excludedJarFileNames = excludedJarFileNames;
-
-		_config.put("compressed", "false");
-		_config.put(
-			"license.url", "https://www.liferay.com/downloads/ce-license");
-		_config.put("pretty", "true");
-		_config.put("repository.name", _getRepositoryName(lpkgFile));
-		_config.put("stylesheet", "http://www.osgi.org/www/obr2html.xsl");
 	}
 
 	@Override
@@ -65,8 +54,6 @@ public class LPKGIndexer implements Indexer {
 		Path tempPath = Files.createTempDirectory(null);
 
 		File tempDir = tempPath.toFile();
-
-		_config.put("root.url", tempDir.getPath());
 
 		try (ZipFile zipFile = new ZipFile(_lpkgFile)) {
 			Set<File> files = new LinkedHashSet<>();
@@ -105,9 +92,15 @@ public class LPKGIndexer implements Indexer {
 				return;
 			}
 
-			ResourceIndexer resourceIndexer = new RepoIndex();
+			SimpleIndexer simpleIndexer = new SimpleIndexer();
 
-			resourceIndexer.index(files, outputStream, _config);
+			simpleIndexer.base(tempDir.toURI());
+			simpleIndexer.compress(false);
+			simpleIndexer.files(files);
+			simpleIndexer.increment(1);
+			simpleIndexer.name(_getRepositoryName(_lpkgFile));
+
+			simpleIndexer.index(outputStream);
 		}
 		finally {
 			PathUtil.deltree(tempPath);
@@ -129,13 +122,15 @@ public class LPKGIndexer implements Indexer {
 	private boolean _readCachedIndex(OutputStream outputStream)
 		throws IOException {
 
-		try (FileSystem fileSystem = FileSystems.newFileSystem(
-				_lpkgFile.toPath(), null)) {
+		try (ZipFile zipFile = new ZipFile(_lpkgFile)) {
+			ZipEntry zipEntry = zipFile.getEntry("index.xml");
 
-			Path indexPath = fileSystem.getPath("index.xml");
+			if (zipEntry != null) {
+				try (InputStream inputStream = zipFile.getInputStream(
+						zipEntry)) {
 
-			if (Files.exists(indexPath)) {
-				Files.copy(indexPath, outputStream);
+					_transfer(inputStream, outputStream);
+				}
 
 				return true;
 			}
@@ -154,10 +149,24 @@ public class LPKGIndexer implements Indexer {
 		return name.toLowerCase();
 	}
 
+	/**
+	 * @see com.liferay.portal.kernel.util.StreamUtil#transfer
+	 */
+	private void _transfer(InputStream inputStream, OutputStream outputStream)
+		throws IOException {
+
+		int value = -1;
+
+		byte[] bytes = new byte[8192];
+
+		while ((value = inputStream.read(bytes)) != -1) {
+			outputStream.write(bytes, 0, value);
+		}
+	}
+
 	private static final Pattern _pattern = Pattern.compile(
 		"(.*?)(-\\d+\\.\\d+\\.\\d+)(\\.jar)");
 
-	private final Map<String, String> _config = new HashMap<>();
 	private final Set<String> _excludedJarFileNames;
 	private final File _lpkgFile;
 

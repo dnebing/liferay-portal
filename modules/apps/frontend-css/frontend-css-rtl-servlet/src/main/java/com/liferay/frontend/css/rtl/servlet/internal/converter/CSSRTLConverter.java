@@ -85,7 +85,7 @@ public class CSSRTLConverter {
 				_reverseValue(cssExpressionMemberFunction.getExpression());
 			}
 			else if (icssExpressionMember instanceof
-						 CSSExpressionMemberTermSimple) {
+						CSSExpressionMemberTermSimple) {
 
 				CSSExpressionMemberTermSimple cssExpressionMemberTermSimple =
 					(CSSExpressionMemberTermSimple)icssExpressionMember;
@@ -94,7 +94,7 @@ public class CSSRTLConverter {
 					_reverse(cssExpressionMemberTermSimple.getValue()));
 			}
 			else if (icssExpressionMember instanceof
-						 CSSExpressionMemberTermURI) {
+						CSSExpressionMemberTermURI) {
 
 				CSSExpressionMemberTermURI cssExpressionMemberTermURI =
 					(CSSExpressionMemberTermURI)icssExpressionMember;
@@ -313,16 +313,16 @@ public class CSSRTLConverter {
 	private void _resizeYui3BackgroundPosition(
 		CSSStyleRule cssStyleRule, CSSDeclaration cssDeclaration) {
 
-		String selector = cssStyleRule.getSelectorsAsCSSString(
-			_cssWriterSettings, 0);
-
 		String property = cssDeclaration.getProperty();
-
-		Matcher matcher = _yui3ResizeHandleInnerPattern.matcher(selector);
 
 		if (!property.equals("background-position")) {
 			return;
 		}
+
+		String selector = cssStyleRule.getSelectorsAsCSSString(
+			_cssWriterSettings, 0);
+
+		Matcher matcher = _yui3ResizeHandleInnerPattern.matcher(selector);
 
 		if (!matcher.find()) {
 			return;

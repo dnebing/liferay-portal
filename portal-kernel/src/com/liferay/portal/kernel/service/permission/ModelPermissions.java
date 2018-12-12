@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -32,6 +33,10 @@ import java.util.Set;
 public class ModelPermissions implements Cloneable, Serializable {
 
 	public ModelPermissions() {
+	}
+
+	public ModelPermissions(String resourceName) {
+		setResourceName(resourceName);
 	}
 
 	public void addRolePermissions(String roleName, String actionId) {
@@ -69,8 +74,8 @@ public class ModelPermissions implements Cloneable, Serializable {
 	@Override
 	public Object clone() {
 		return new ModelPermissions(
-			new HashMap<String, Set<String>>(_roleNamesMap),
-			new HashMap<String, Set<String>>(_actionIdsMap));
+			new HashMap<>(_roleNamesMap), new HashMap<>(_actionIdsMap),
+			_resourceName);
 	}
 
 	public String[] getActionIds(String roleName) {
@@ -87,6 +92,10 @@ public class ModelPermissions implements Cloneable, Serializable {
 		Set<String> actionIds = _actionIdsMap.get(roleName);
 
 		return ListUtil.fromCollection(actionIds);
+	}
+
+	public String getResourceName() {
+		return _resourceName;
 	}
 
 	public Collection<String> getRoleNames() {
@@ -107,15 +116,35 @@ public class ModelPermissions implements Cloneable, Serializable {
 		return _actionIdsMap.isEmpty();
 	}
 
+	public void setResourceName(String resourceName) {
+		if (resourceName == null) {
+			resourceName = _RESOURCE_NAME_ALL_RESOURCES;
+		}
+
+		_resourceName = resourceName;
+	}
+
 	protected ModelPermissions(
 		Map<String, Set<String>> roleNamesMap,
 		Map<String, Set<String>> actionIdsMap) {
 
-		_roleNamesMap.putAll(roleNamesMap);
-		_actionIdsMap.putAll(actionIdsMap);
+		this(roleNamesMap, actionIdsMap, _RESOURCE_NAME_ALL_RESOURCES);
 	}
 
+	protected ModelPermissions(
+		Map<String, Set<String>> roleNamesMap,
+		Map<String, Set<String>> actionIdsMap, String resourceName) {
+
+		_roleNamesMap.putAll(roleNamesMap);
+		_actionIdsMap.putAll(actionIdsMap);
+		_resourceName = Objects.requireNonNull(resourceName);
+	}
+
+	private static final String _RESOURCE_NAME_ALL_RESOURCES =
+		ModelPermissions.class.getName() + "#ALL_RESOURCES";
+
 	private final Map<String, Set<String>> _actionIdsMap = new HashMap<>();
+	private String _resourceName = _RESOURCE_NAME_ALL_RESOURCES;
 	private final Map<String, Set<String>> _roleNamesMap = new HashMap<>();
 
 }

@@ -20,9 +20,9 @@ import static com.liferay.apio.architect.test.util.representor.MockRepresentorCr
 import static com.liferay.apio.architect.test.util.representor.MockRepresentorCreator.createThirdEmbeddedModelRepresentor;
 
 import com.liferay.apio.architect.identifier.Identifier;
-import com.liferay.apio.architect.impl.operation.DeleteOperation;
-import com.liferay.apio.architect.impl.request.RequestInfo;
-import com.liferay.apio.architect.impl.single.model.SingleModelImpl;
+import com.liferay.apio.architect.internal.operation.DeleteOperation;
+import com.liferay.apio.architect.internal.request.RequestInfo;
+import com.liferay.apio.architect.internal.single.model.SingleModelImpl;
 import com.liferay.apio.architect.operation.Operation;
 import com.liferay.apio.architect.representor.Representor;
 import com.liferay.apio.architect.single.model.SingleModel;
@@ -51,6 +51,30 @@ import java.util.function.Function;
  * @author Alejandro Hernández
  */
 public class MockWriterUtil {
+
+	/**
+	 * Returns a mock identifier name from the identifier class.
+	 *
+	 * @param  identifierClass the identifier class
+	 * @return the mock identifier name
+	 */
+	public static String getIdentifierName(
+		Class<? extends Identifier<?>> identifierClass) {
+
+		if (identifierClass.equals(FirstEmbeddedId.class)) {
+			return "first";
+		}
+
+		if (identifierClass.equals(SecondEmbeddedId.class)) {
+			return "second";
+		}
+
+		if (identifierClass.equals(ThirdEmbeddedId.class)) {
+			return "third";
+		}
+
+		return null;
+	}
 
 	/**
 	 * Returns a model class's {@link Representor}.

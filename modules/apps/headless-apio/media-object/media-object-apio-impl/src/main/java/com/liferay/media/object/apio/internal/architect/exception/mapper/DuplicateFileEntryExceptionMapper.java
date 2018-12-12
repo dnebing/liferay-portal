@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Alejandro Hernández
  */
-@Component(immediate = true)
+@Component(immediate = true, service = ExceptionMapper.class)
 public class DuplicateFileEntryExceptionMapper
 	implements ExceptionMapper<DuplicateFileEntryException> {
 
@@ -36,7 +36,7 @@ public class DuplicateFileEntryExceptionMapper
 	public APIError map(DuplicateFileEntryException dfee) {
 		return new APIError(
 			dfee, "Duplicate entry", "bad-request",
-			Response.Status.BAD_REQUEST.getStatusCode());
+			Response.Status.CONFLICT.getStatusCode());
 	}
 
 }

@@ -246,7 +246,6 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 		new KeyValuePair(
 			"-//Liferay//DTD Plugin Package 4.3.0//EN",
 			"liferay-plugin-package_4_3_0.dtd"),
-
 		new KeyValuePair(
 			"-//Liferay//DTD Plugin Package 5.0.0//EN",
 			"liferay-plugin-package_5_0_0.dtd"),
@@ -307,7 +306,6 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 		new KeyValuePair(
 			"-//Liferay//DTD Portlet Application 4.1.0//EN",
 			"liferay-portlet-app_4_1_0.dtd"),
-
 		new KeyValuePair(
 			"-//Liferay//DTD Portlet Application 4.2.0//EN",
 			"liferay-portlet-app_4_2_0.dtd"),
@@ -414,6 +412,9 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 			"-//Liferay//DTD Service Builder 7.1.0//EN",
 			"liferay-service-builder_7_1_0.dtd"),
 		new KeyValuePair(
+			"-//Liferay//DTD Service Builder 7.2.0//EN",
+			"liferay-service-builder_7_2_0.dtd"),
+		new KeyValuePair(
 			"-//Liferay//DTD Social 6.1.0//EN", "liferay-social_6_1_0.dtd"),
 		new KeyValuePair(
 			"-//Liferay//DTD Social 6.2.0//EN", "liferay-social_6_2_0.dtd"),
@@ -510,6 +511,9 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 		new KeyValuePair(
 			"http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd",
 			"portlet-app_2_0.xsd"),
+		new KeyValuePair(
+			"http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd",
+			"portlet-app_3_0.xsd"),
 		new KeyValuePair(
 			"http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd",
 			"web-app_2_4.xsd"),

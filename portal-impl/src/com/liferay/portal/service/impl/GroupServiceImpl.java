@@ -53,6 +53,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.comparator.GroupIdComparator;
 import com.liferay.portal.service.base.GroupServiceBaseImpl;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.ratings.kernel.transformer.RatingsDataTransformerUtil;
@@ -387,6 +388,17 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 				companyId, parentGroupId, site, start, end));
 	}
 
+	@Override
+	public List<Group> getGroups(
+			long companyId, long parentGroupId, String name, boolean site,
+			int start, int end)
+		throws PortalException {
+
+		return filterGroups(
+			groupLocalService.getGroups(
+				companyId, parentGroupId, name, site, start, end));
+	}
+
 	/**
 	 * Returns the number of groups that are direct children of the parent
 	 * group.
@@ -400,15 +412,32 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 	public int getGroupsCount(long companyId, long parentGroupId, boolean site)
 		throws PortalException {
 
-		if (parentGroupId == 0) {
-			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
-		}
-		else {
+		if (parentGroupId > 0) {
 			GroupPermissionUtil.check(
 				getPermissionChecker(), parentGroupId, ActionKeys.VIEW);
 		}
+		else {
+			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
+		}
 
 		return groupLocalService.getGroupsCount(companyId, parentGroupId, site);
+	}
+
+	@Override
+	public int getGroupsCount(
+			long companyId, long parentGroupId, String name, boolean site)
+		throws PortalException {
+
+		if (parentGroupId > 0) {
+			GroupPermissionUtil.check(
+				getPermissionChecker(), parentGroupId, ActionKeys.VIEW);
+		}
+		else {
+			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
+		}
+
+		return groupLocalService.getGroupsCount(
+			companyId, parentGroupId, name, site);
 	}
 
 	/**
@@ -425,16 +454,33 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 			long companyId, String className, long parentGroupId)
 		throws PortalException {
 
-		if (parentGroupId == 0) {
-			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
-		}
-		else {
+		if (parentGroupId > 0) {
 			GroupPermissionUtil.check(
 				getPermissionChecker(), parentGroupId, ActionKeys.VIEW);
+		}
+		else {
+			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
 		}
 
 		return groupLocalService.getGroupsCount(
 			companyId, className, parentGroupId);
+	}
+
+	@Override
+	public List<Group> getGtGroups(
+			long gtGroupId, long companyId, long parentGroupId, boolean site,
+			int size)
+		throws PortalException {
+
+		PermissionChecker permissionChecker = getPermissionChecker();
+
+		if (!permissionChecker.isCompanyAdmin(companyId)) {
+			throw new PrincipalException.MustBeCompanyAdmin(permissionChecker);
+		}
+
+		return groupPersistence.findByG_C_P_S(
+			gtGroupId, companyId, parentGroupId, site, 0, size,
+			new GroupIdComparator(true));
 	}
 
 	/**
@@ -1030,12 +1076,11 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 			return group;
 		}
-		else {
-			return groupLocalService.updateGroup(
-				groupId, parentGroupId, nameMap, descriptionMap, type,
-				manualMembership, membershipRestriction, friendlyURL,
-				inheritContent, active, serviceContext);
-		}
+
+		return groupLocalService.updateGroup(
+			groupId, parentGroupId, nameMap, descriptionMap, type,
+			manualMembership, membershipRestriction, friendlyURL,
+			inheritContent, active, serviceContext);
 	}
 
 	/**
@@ -1117,9 +1162,8 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 			return group;
 		}
-		else {
-			return groupLocalService.updateGroup(groupId, typeSettings);
-		}
+
+		return groupLocalService.updateGroup(groupId, typeSettings);
 	}
 
 	@Override

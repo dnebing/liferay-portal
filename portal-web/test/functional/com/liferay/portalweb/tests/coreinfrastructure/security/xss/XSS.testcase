@@ -313,8 +313,10 @@
 		<execute function="AssertHTMLSourceTextPresent" value1="${escapedScript}" />
 	</command>
 
-	<command ignore="true" name="ViewMobileDeviceRules" priority="3">
+	<command name="ViewMobileDeviceRules" priority="3">
 		<description message="This is a use case for LPS-42750." />
+
+		<!-- LRQA-42888 -->
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Configuration" />
@@ -426,7 +428,7 @@
 		<execute function="AssertHTMLSourceTextPresent" value1="${escapedScript}" />
 	</command>
 
-	<command name="ViewRoles" priority="4">
+	<command ignore="true" name="ViewRoles" priority="4">
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Users" />
 			<var name="panel" value="Control Panel" />

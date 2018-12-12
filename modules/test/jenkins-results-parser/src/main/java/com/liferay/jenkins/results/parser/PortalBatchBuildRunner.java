@@ -14,15 +14,29 @@
 
 package com.liferay.jenkins.results.parser;
 
+import java.io.File;
+
 /**
  * @author Michael Hashimoto
  */
-public class PortalBatchBuildRunner
-	extends BatchBuildRunner<PortalBatchBuildData> {
+public abstract class PortalBatchBuildRunner
+	<T extends PortalBatchBuildData, S extends PortalWorkspace>
+		extends BatchBuildRunner<T, S> {
 
-	protected PortalBatchBuildRunner(
-		PortalBatchBuildData portalBatchBuildData) {
+	@Override
+	public void run() {
+		updateBuildDescription();
 
+		setUpWorkspace();
+
+		runTestBatch();
+
+		publishArtifacts();
+
+		updateBuildDescription();
+	}
+
+	protected PortalBatchBuildRunner(T portalBatchBuildData) {
 		super(portalBatchBuildData);
 	}
 
@@ -30,13 +44,34 @@ public class PortalBatchBuildRunner
 	protected void initWorkspace() {
 		PortalBatchBuildData portalBatchBuildData = getBuildData();
 
-		workspace = WorkspaceFactory.newBatchWorkspace(
+		Workspace batchWorkspace = WorkspaceFactory.newBatchWorkspace(
 			portalBatchBuildData.getPortalGitHubURL(),
-			portalBatchBuildData.getPortalUpstreamBranchName(), getBatchName());
+			portalBatchBuildData.getPortalUpstreamBranchName(),
+			portalBatchBuildData.getBatchName(),
+			portalBatchBuildData.getPortalBranchSHA());
 
-		if (!(workspace instanceof BatchPortalWorkspace)) {
+		if (!(batchWorkspace instanceof PortalWorkspace)) {
 			throw new RuntimeException("Invalid workspace");
 		}
+
+		setWorkspace((S)batchWorkspace);
+	}
+
+	protected void publishArtifacts() {
+		PortalBatchBuildData portalBatchBuildData = getBuildData();
+
+		File artifactDir = portalBatchBuildData.getArtifactDir();
+
+		if (artifactDir.exists()) {
+			publishToUserContentDir(artifactDir);
+		}
+	}
+
+	protected void runTestBatch() {
+		TestBatch testBatch = TestBatchFactory.newTestBatch(
+			getBuildData(), getWorkspace());
+
+		testBatch.run();
 	}
 
 }

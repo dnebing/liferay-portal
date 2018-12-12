@@ -123,11 +123,11 @@ public class PortletCategoryUtil {
 		for (PortletCategory curPortletCategory :
 				portletCategory.getCategories()) {
 
-			Set<String> portletIds = new HashSet<>();
-
 			if (curPortletCategory.isHidden()) {
 				continue;
 			}
+
+			Set<String> portletIds = new HashSet<>();
 
 			for (String portletId : curPortletCategory.getPortletIds()) {
 				Portlet portlet = PortletLocalServiceUtil.getPortletById(
@@ -150,8 +150,8 @@ public class PortletCategoryUtil {
 								 portlet.getRootPortletId())) {
 					}
 					else if (!PortletPermissionUtil.contains(
-								 permissionChecker, layout, portlet,
-								 ActionKeys.ADD_TO_PAGE)) {
+								permissionChecker, layout, portlet,
+								ActionKeys.ADD_TO_PAGE)) {
 					}
 					else if (!portlet.isInstanceable() &&
 							 layoutTypePortlet.hasPortletId(

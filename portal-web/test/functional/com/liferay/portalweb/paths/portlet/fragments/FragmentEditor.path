@@ -1,0 +1,49 @@
+<html>
+<head>
+<title>FragmentEditor</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">FragmentEditor</td></tr>
+</thead>
+<tbody>
+<tr>
+	<td>AUTOCOMPLETE_FIELD</td>
+	<td>//ul[contains(@class,'ace-autocomplete-results')]//li[contains(.,'${autocompleteField}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>HTML_EDITOR</td>
+	<td>//div[contains(@class,'fragment-editor')]/div[contains(@class,'source-editor')][1]//textarea</td>
+	<td></td>
+</tr>
+<tr>
+	<td>HTML_EDITOR_CONTENT</td>
+	<td>//div[contains(@class,'fragment-editor')]/div[contains(@class,'source-editor')][1]//div[contains(@class,'ace_content')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CSS_EDITOR</td>
+	<td>//div[contains(@class,'fragment-editor')]/div[contains(@class,'source-editor')][2]//textarea</td>
+	<td></td>
+</tr>
+<tr>
+	<td>JAVASCRIPT_EDITOR</td>
+	<td>//div[contains(@class,'fragment-editor')]/div[contains(@class,'source-editor')][3]//textarea</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LFR-EDITABLE</td>
+	<td>//lfr-editable[contains(@type,'${key_type}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PREVIEW_IFRAME</td>
+	<td>//iframe[@class='fragment-preview__content']</td>
+	<td></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

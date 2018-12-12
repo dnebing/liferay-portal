@@ -467,8 +467,9 @@ public class JSPTagAttributesCheck extends TagAttributesCheck {
 	}
 
 	private List<String> _getTLDFileNames() throws IOException {
-		String[] excludes =
-			{"**/dependencies/**", "**/util-taglib/**", "**/portal-web/**"};
+		String[] excludes = {
+			"**/dependencies/**", "**/util-taglib/**", "**/portal-web/**"
+		};
 
 		List<String> tldFileNames = SourceFormatterUtil.filterFileNames(
 			_allFileNames, excludes, new String[] {"**/*.tld"},
@@ -544,13 +545,14 @@ public class JSPTagAttributesCheck extends TagAttributesCheck {
 		"liferay-util:include", "liferay-util:param"
 	};
 
+	private static final Pattern _extendedClassPattern = Pattern.compile(
+		"\\sextends\\s+(\\w+)\\W");
+	private static final Pattern _jspTaglibPattern = Pattern.compile(
+		"\t*<[-\\w]+:[-\\w]+ .");
+
 	private List<String> _allFileNames;
 	private final Map<String, Map<String, String>> _classSetMethodsMap =
 		new HashMap<>();
-	private final Pattern _extendedClassPattern = Pattern.compile(
-		"\\sextends\\s+(\\w+)\\W");
-	private final Pattern _jspTaglibPattern = Pattern.compile(
-		"\t*<[-\\w]+:[-\\w]+ .");
 	private Set<String> _primitiveTagAttributeDataTypes;
 	private Map<String, Map<String, String>> _tagSetMethodsMap;
 

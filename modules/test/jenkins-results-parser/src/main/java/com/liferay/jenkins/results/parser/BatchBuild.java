@@ -221,8 +221,6 @@ public class BatchBuild extends BaseBuild {
 			return Collections.emptyList();
 		}
 
-		List<TestResult> testResults = new ArrayList<>();
-
 		JSONObject testReportJSONObject = getTestReportJSONObject();
 
 		JSONArray childReportsJSONArray = testReportJSONObject.optJSONArray(
@@ -231,6 +229,8 @@ public class BatchBuild extends BaseBuild {
 		if (childReportsJSONArray == null) {
 			return Collections.emptyList();
 		}
+
+		List<TestResult> testResults = new ArrayList<>();
 
 		for (int i = 0; i < childReportsJSONArray.length(); i++) {
 			JSONObject childReportJSONObject =
@@ -266,8 +266,6 @@ public class BatchBuild extends BaseBuild {
 
 			axisBuildURLMatcher.find();
 
-			String axisVariable = axisBuildURLMatcher.group("axisVariable");
-
 			JSONObject resultJSONObject = childReportJSONObject.optJSONObject(
 				"result");
 
@@ -280,6 +278,8 @@ public class BatchBuild extends BaseBuild {
 			if (suitesJSONArray == null) {
 				continue;
 			}
+
+			String axisVariable = axisBuildURLMatcher.group("axisVariable");
 
 			AxisBuild axisBuild = getAxisBuild(axisVariable);
 
@@ -310,12 +310,11 @@ public class BatchBuild extends BaseBuild {
 	public void update() {
 		super.update();
 
-		String status = getStatus();
-
 		if (badBuildNumbers.size() >= MAX_REINVOCATIONS) {
 			return;
 		}
 
+		String status = getStatus();
 		String result = getResult();
 
 		if ((status.equals("completed") && result.equals("SUCCESS")) ||
@@ -475,12 +474,7 @@ public class BatchBuild extends BaseBuild {
 
 			if (isCompareToUpstream()) {
 				for (TestResult testResult : getTestResults(null)) {
-					String testStatus = testResult.getStatus();
-
-					if (testStatus.equals("FIXED") ||
-						testStatus.equals("PASSED") ||
-						testStatus.equals("SKIPPED")) {
-
+					if (!testResult.isFailing()) {
 						continue;
 					}
 
@@ -550,10 +544,11 @@ public class BatchBuild extends BaseBuild {
 		JSONObject testReportJSONObject = getTestReportJSONObject();
 
 		int failCount = testReportJSONObject.getInt("failCount");
-		int skipCount = testReportJSONObject.getInt("skipCount");
-		int totalCount = testReportJSONObject.getInt("totalCount");
 
 		if (status.equals("SUCCESS")) {
+			int totalCount = testReportJSONObject.getInt("totalCount");
+			int skipCount = testReportJSONObject.getInt("skipCount");
+
 			return totalCount - skipCount - failCount;
 		}
 

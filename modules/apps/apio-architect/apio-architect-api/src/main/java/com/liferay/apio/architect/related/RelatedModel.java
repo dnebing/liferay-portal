@@ -53,6 +53,13 @@ public interface RelatedModel<T, S> {
 	public Function<T, S> getIdentifierFunction();
 
 	/**
+	 * Returns the identifier's name.
+	 *
+	 * @return the identifier's name
+	 */
+	public String getIdentifierName();
+
+	/**
 	 * Returns the relation's key.
 	 *
 	 * @return the relation's key

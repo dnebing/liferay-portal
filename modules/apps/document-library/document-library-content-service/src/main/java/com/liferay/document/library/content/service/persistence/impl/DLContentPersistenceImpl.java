@@ -740,6 +740,8 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 		String path, int start, int end,
 		OrderByComparator<DLContent> orderByComparator,
 		boolean retrieveFromCache) {
+		path = Objects.toString(path, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -769,7 +771,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 				for (DLContent dlContent : list) {
 					if ((companyId != dlContent.getCompanyId()) ||
 							(repositoryId != dlContent.getRepositoryId()) ||
-							!Objects.equals(path, dlContent.getPath())) {
+							!path.equals(dlContent.getPath())) {
 						list = null;
 
 						break;
@@ -797,10 +799,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindPath = false;
 
-			if (path == null) {
-				query.append(_FINDER_COLUMN_C_R_P_PATH_1);
-			}
-			else if (path.equals("")) {
+			if (path.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_P_PATH_3);
 			}
 			else {
@@ -1011,6 +1010,8 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 		long repositoryId, String path,
 		OrderByComparator<DLContent> orderByComparator)
 		throws NoSuchContentException {
+		path = Objects.toString(path, "");
+
 		DLContent dlContent = findByPrimaryKey(contentId);
 
 		Session session = null;
@@ -1060,10 +1061,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 		boolean bindPath = false;
 
-		if (path == null) {
-			query.append(_FINDER_COLUMN_C_R_P_PATH_1);
-		}
-		else if (path.equals("")) {
+		if (path.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_R_P_PATH_3);
 		}
 		else {
@@ -1191,6 +1189,8 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 	 */
 	@Override
 	public int countByC_R_P(long companyId, long repositoryId, String path) {
+		path = Objects.toString(path, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_R_P;
 
 		Object[] finderArgs = new Object[] { companyId, repositoryId, path };
@@ -1208,10 +1208,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindPath = false;
 
-			if (path == null) {
-				query.append(_FINDER_COLUMN_C_R_P_PATH_1);
-			}
-			else if (path.equals("")) {
+			if (path.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_P_PATH_3);
 			}
 			else {
@@ -1360,6 +1357,8 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 		String path, int start, int end,
 		OrderByComparator<DLContent> orderByComparator,
 		boolean retrieveFromCache) {
+		path = Objects.toString(path, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1410,10 +1409,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindPath = false;
 
-			if (path == null) {
-				query.append(_FINDER_COLUMN_C_R_LIKEP_PATH_1);
-			}
-			else if (path.equals("")) {
+			if (path.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_LIKEP_PATH_3);
 			}
 			else {
@@ -1624,6 +1620,8 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 		long companyId, long repositoryId, String path,
 		OrderByComparator<DLContent> orderByComparator)
 		throws NoSuchContentException {
+		path = Objects.toString(path, "");
+
 		DLContent dlContent = findByPrimaryKey(contentId);
 
 		Session session = null;
@@ -1673,10 +1671,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 		boolean bindPath = false;
 
-		if (path == null) {
-			query.append(_FINDER_COLUMN_C_R_LIKEP_PATH_1);
-		}
-		else if (path.equals("")) {
+		if (path.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_R_LIKEP_PATH_3);
 		}
 		else {
@@ -1804,6 +1799,8 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 	 */
 	@Override
 	public int countByC_R_LikeP(long companyId, long repositoryId, String path) {
+		path = Objects.toString(path, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_R_LIKEP;
 
 		Object[] finderArgs = new Object[] { companyId, repositoryId, path };
@@ -1821,10 +1818,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindPath = false;
 
-			if (path == null) {
-				query.append(_FINDER_COLUMN_C_R_LIKEP_PATH_1);
-			}
-			else if (path.equals("")) {
+			if (path.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_LIKEP_PATH_3);
 			}
 			else {
@@ -1966,6 +1960,9 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 	@Override
 	public DLContent fetchByC_R_P_V(long companyId, long repositoryId,
 		String path, String version, boolean retrieveFromCache) {
+		path = Objects.toString(path, "");
+		version = Objects.toString(version, "");
+
 		Object[] finderArgs = new Object[] {
 				companyId, repositoryId, path, version
 			};
@@ -1999,10 +1996,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindPath = false;
 
-			if (path == null) {
-				query.append(_FINDER_COLUMN_C_R_P_V_PATH_1);
-			}
-			else if (path.equals("")) {
+			if (path.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_P_V_PATH_3);
 			}
 			else {
@@ -2013,10 +2007,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_C_R_P_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_P_V_VERSION_3);
 			}
 			else {
@@ -2111,6 +2102,9 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 	@Override
 	public int countByC_R_P_V(long companyId, long repositoryId, String path,
 		String version) {
+		path = Objects.toString(path, "");
+		version = Objects.toString(version, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_R_P_V;
 
 		Object[] finderArgs = new Object[] {
@@ -2130,10 +2124,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindPath = false;
 
-			if (path == null) {
-				query.append(_FINDER_COLUMN_C_R_P_V_PATH_1);
-			}
-			else if (path.equals("")) {
+			if (path.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_P_V_PATH_3);
 			}
 			else {
@@ -2144,10 +2135,7 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_C_R_P_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_R_P_V_VERSION_3);
 			}
 			else {
@@ -2207,6 +2195,9 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 
 	public DLContentPersistenceImpl() {
 		setModelClass(DLContent.class);
+
+		setModelImplClass(DLContentImpl.class);
+		setEntityCacheEnabled(DLContentModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -2630,54 +2621,6 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 	/**
 	 * Returns the document library content with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the document library content
-	 * @return the document library content, or <code>null</code> if a document library content with the primary key could not be found
-	 */
-	@Override
-	public DLContent fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DLContentModelImpl.ENTITY_CACHE_ENABLED,
-				DLContentImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DLContent dlContent = (DLContent)serializable;
-
-		if (dlContent == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dlContent = (DLContent)session.get(DLContentImpl.class,
-						primaryKey);
-
-				if (dlContent != null) {
-					cacheResult(dlContent);
-				}
-				else {
-					entityCache.putResult(DLContentModelImpl.ENTITY_CACHE_ENABLED,
-						DLContentImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DLContentModelImpl.ENTITY_CACHE_ENABLED,
-					DLContentImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return dlContent;
-	}
-
-	/**
-	 * Returns the document library content with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param contentId the primary key of the document library content
 	 * @return the document library content, or <code>null</code> if a document library content with the primary key could not be found
 	 */
@@ -2974,6 +2917,11 @@ public class DLContentPersistenceImpl extends BasePersistenceImpl<DLContent>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

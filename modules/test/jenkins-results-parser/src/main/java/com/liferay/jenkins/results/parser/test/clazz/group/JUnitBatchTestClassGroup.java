@@ -24,8 +24,6 @@ import com.liferay.jenkins.results.parser.PortalTestClassJob;
 import java.io.File;
 import java.io.IOException;
 
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,9 +31,11 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,39 +58,76 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 		return axisCount;
 	}
 
+	public Map<File, JunitBatchTestClass> getJunitTestClasses() {
+		return JunitBatchTestClass.getJunitTestClasses();
+	}
+
+	public void writeTestCSVReportFile() throws Exception {
+		CSVReport csvReport = new CSVReport(
+			new CSVReport.Row(
+				"Class Name", "Method Name", "Ignored", "File Path"));
+
+		Map<File, JunitBatchTestClass> junitTestClasses = getJunitTestClasses();
+
+		for (JUnitBatchTestClassGroup.JunitBatchTestClass junitBatchTestClass :
+				junitTestClasses.values()) {
+
+			TestClass.TestClassFile testClassFile =
+				junitBatchTestClass.getTestClassFile();
+
+			String testClassFileRelativePath = testClassFile.getRelativePath(
+				junitBatchTestClass.getWorkingDirectory());
+
+			String className = testClassFile.getName();
+
+			className = className.replace(".class", "");
+
+			List<TestClassGroup.TestClass.TestClassMethod> testClassMethods =
+				junitBatchTestClass.getTestClassMethods();
+
+			for (TestClassGroup.TestClass.TestClassMethod testClassMethod :
+					testClassMethods) {
+
+				CSVReport.Row csvReportRow = new CSVReport.Row();
+
+				csvReportRow.add(className);
+				csvReportRow.add(testClassMethod.getName());
+
+				if (testClassMethod.isIgnored()) {
+					csvReportRow.add("TRUE");
+				}
+				else {
+					csvReportRow.add("");
+				}
+
+				csvReportRow.add(testClassFileRelativePath);
+
+				csvReport.addRow(csvReportRow);
+			}
+		}
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+
+		File csvReportFile = new File(
+			JenkinsResultsParserUtil.combine(
+				"Report_junit_", simpleDateFormat.format(new Date()), ".csv"));
+
+		try {
+			JenkinsResultsParserUtil.write(csvReportFile, csvReport.toString());
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+	}
+
 	public static class JunitBatchTestClass extends BaseTestClass {
 
-		protected static JunitBatchTestClass getInstance(
-			File file, GitWorkingDirectory gitWorkingDirectory, File srcFile) {
-
-			if (_junitTestClasses.containsKey(file)) {
-				return _junitTestClasses.get(file);
-			}
-
-			JunitBatchTestClass junitTestClass = new JunitBatchTestClass(
-				file, gitWorkingDirectory, srcFile);
-
-			_junitTestClasses.put(file, junitTestClass);
-
-			return junitTestClass;
+		public File getWorkingDirectory() {
+			return _gitWorkingDirectory.getWorkingDirectory();
 		}
 
 		protected static JunitBatchTestClass getInstance(
 			String fullClassName, GitWorkingDirectory gitWorkingDirectory) {
-
-			String filePath = fullClassName.substring(
-				0, fullClassName.lastIndexOf("."));
-
-			filePath = filePath.replace(".", "/");
-
-			String simpleClassName = fullClassName.substring(
-				fullClassName.lastIndexOf(".") + 1);
-
-			File file = new File(filePath, simpleClassName + ".class");
-
-			if (_junitTestClasses.containsKey(file)) {
-				return _junitTestClasses.get(file);
-			}
 
 			File javaFile = gitWorkingDirectory.getJavaFileFromFullClassName(
 				fullClassName);
@@ -102,13 +139,45 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 				return null;
 			}
 
-			return getInstance(file, gitWorkingDirectory, javaFile);
+			String packagePath = fullClassName.replace(".", "/");
+
+			packagePath = packagePath + ".class";
+
+			TestClassGroup.TestClass.TestClassFile testClassFile =
+				new TestClass.TestClassFile(packagePath);
+
+			if (_junitTestClasses.containsKey(testClassFile)) {
+				return _junitTestClasses.get(testClassFile);
+			}
+
+			return getInstance(testClassFile, gitWorkingDirectory, javaFile);
+		}
+
+		protected static JunitBatchTestClass getInstance(
+			TestClassFile testClassFile,
+			GitWorkingDirectory gitWorkingDirectory, File javaFile) {
+
+			if (_junitTestClasses.containsKey(testClassFile)) {
+				return _junitTestClasses.get(testClassFile);
+			}
+
+			JunitBatchTestClass junitTestClass = new JunitBatchTestClass(
+				testClassFile, gitWorkingDirectory, javaFile);
+
+			_junitTestClasses.put(testClassFile, junitTestClass);
+
+			return junitTestClass;
+		}
+
+		protected static Map<File, JunitBatchTestClass> getJunitTestClasses() {
+			return _junitTestClasses;
 		}
 
 		protected JunitBatchTestClass(
-			File file, GitWorkingDirectory gitWorkingDirectory, File srcFile) {
+			TestClassFile testClassFile,
+			GitWorkingDirectory gitWorkingDirectory, File srcFile) {
 
-			super(file);
+			super(testClassFile);
 
 			String srcFileName = srcFile.getName();
 
@@ -127,7 +196,7 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 			try {
 				_srcFileContent = JenkinsResultsParserUtil.read(_srcFile);
 
-				_initTestMethods();
+				_initTestClassMethods();
 			}
 			catch (IOException ioe) {
 				throw new RuntimeException(ioe);
@@ -231,16 +300,36 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 			return _packageName;
 		}
 
-		private void _initTestMethods() throws IOException {
+		private void _initTestClassMethods() throws IOException {
+			Matcher classHeaderMatcher = _classHeaderPattern.matcher(
+				_srcFileContent);
+
+			boolean classIgnored = false;
+
+			if (classHeaderMatcher.find()) {
+				String annotations = classHeaderMatcher.group("annotations");
+
+				if ((annotations != null) && annotations.contains("@Ignore")) {
+					classIgnored = true;
+				}
+			}
+
 			Matcher methodHeaderMatcher = _methodHeaderPattern.matcher(
 				_srcFileContent);
 
 			while (methodHeaderMatcher.find()) {
 				String annotations = methodHeaderMatcher.group("annotations");
-				String methodName = methodHeaderMatcher.group("methodName");
+
+				boolean methodIgnored = false;
+
+				if (classIgnored || annotations.contains("@Ignore")) {
+					methodIgnored = true;
+				}
 
 				if (annotations.contains("@Test")) {
-					addTestMethod(methodName);
+					String methodName = methodHeaderMatcher.group("methodName");
+
+					addTestClassMethod(methodIgnored, methodName);
 				}
 			}
 
@@ -257,13 +346,17 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 				return;
 			}
 
-			for (BaseTestMethod testMethod :
-					parentJunitBatchTestClass.getTestMethods()) {
+			for (TestClassGroup.TestClass.TestClassMethod testClassMethod :
+					parentJunitBatchTestClass.getTestClassMethods()) {
 
-				addTestMethod(testMethod);
+				addTestClassMethod(testClassMethod);
 			}
 		}
 
+		private static Pattern _classHeaderPattern = Pattern.compile(
+			JenkinsResultsParserUtil.combine(
+				"(?<annotations>(@[\\s\\S]+?))?public\\s+class\\s+",
+				"(?<className>[^\\(\\s]+)"));
 		private static final Map<File, JunitBatchTestClass> _junitTestClasses =
 			new HashMap<>();
 		private static Pattern _methodHeaderPattern = Pattern.compile(
@@ -359,6 +452,7 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 		return relevantTestClassNameRelativeGlobs;
 	}
 
+	@Override
 	protected void setAxisTestClassGroups() {
 		int axisCount = getAxisCount();
 
@@ -380,13 +474,13 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 			int id = 0;
 
-			for (List<BaseTestClass> axisTestClasses :
+			for (List<TestClassGroup.TestClass> axisTestClasses :
 					Lists.partition(testClasses, axisSize)) {
 
 				AxisTestClassGroup axisTestClassGroup = new AxisTestClassGroup(
 					this, id);
 
-				for (BaseTestClass axisTestClass : axisTestClasses) {
+				for (TestClassGroup.TestClass axisTestClass : axisTestClasses) {
 					axisTestClassGroup.addTestClass(axisTestClass);
 				}
 
@@ -410,13 +504,17 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 				axisTestClassGroup.addTestClass(
 					JunitBatchTestClass.getInstance(
-						new File(filePath), portalGitWorkingDirectory,
-						autoBalanceTestFile));
+						new TestClass.TestClassFile(filePath),
+						portalGitWorkingDirectory, autoBalanceTestFile));
 			}
 		}
 	}
 
 	protected void setTestClasses() {
+		if (testClassNamesIncludesPathMatchers.isEmpty()) {
+			return;
+		}
+
 		File workingDirectory = portalGitWorkingDirectory.getWorkingDirectory();
 
 		try {
@@ -429,7 +527,10 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 							Path filePath, BasicFileAttributes attrs)
 						throws IOException {
 
-						if (_pathExcluded(filePath)) {
+						if (JenkinsResultsParserUtil.isFileExcluded(
+								testClassNamesExcludesPathMatchers,
+								filePath.toFile())) {
+
 							return FileVisitResult.SKIP_SUBTREE;
 						}
 
@@ -441,8 +542,10 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 							Path filePath, BasicFileAttributes attrs)
 						throws IOException {
 
-						if (_pathIncluded(filePath) &&
-							!_pathExcluded(filePath)) {
+						if (JenkinsResultsParserUtil.isFileIncluded(
+								testClassNamesExcludesPathMatchers,
+								testClassNamesIncludesPathMatchers,
+								filePath.toFile())) {
 
 							testClasses.add(_getPackagePathClassFile(filePath));
 						}
@@ -458,39 +561,16 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 						if (matcher.find()) {
 							String packagePath = matcher.group("packagePath");
 
-							packagePath = packagePath.replace(
-								".java", ".class");
-
 							return JunitBatchTestClass.getInstance(
-								new File(packagePath),
+								new TestClass.TestClassFile(
+									packagePath.replace(".java", ".class")),
 								portalGitWorkingDirectory, path.toFile());
 						}
 
 						return JunitBatchTestClass.getInstance(
-							new File(filePath.replace(".java", ".class")),
+							new TestClass.TestClassFile(
+								filePath.replace(".java", ".class")),
 							portalGitWorkingDirectory, path.toFile());
-					}
-
-					private boolean _pathExcluded(Path path) {
-						return _pathMatches(
-							path, testClassNamesExcludesPathMatchers);
-					}
-
-					private boolean _pathIncluded(Path path) {
-						return _pathMatches(
-							path, testClassNamesIncludesPathMatchers);
-					}
-
-					private boolean _pathMatches(
-						Path path, List<PathMatcher> pathMatchers) {
-
-						for (PathMatcher pathMatcher : pathMatchers) {
-							if (pathMatcher.matches(path)) {
-								return true;
-							}
-						}
-
-						return false;
 					}
 
 				});
@@ -534,28 +614,6 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 			jobProperties, "test.class.names.includes");
 	}
 
-	private List<PathMatcher> _getTestClassNamesPathMatchers(
-		List<String> testClassNamesRelativeGlobs) {
-
-		List<PathMatcher> pathMatchers = new ArrayList<>();
-
-		File workingDirectory = portalGitWorkingDirectory.getWorkingDirectory();
-
-		String workingDirectoryPath = workingDirectory.getAbsolutePath();
-
-		for (String testClassNamesRelativeGlob : testClassNamesRelativeGlobs) {
-			FileSystem fileSystem = FileSystems.getDefault();
-
-			pathMatchers.add(
-				fileSystem.getPathMatcher(
-					JenkinsResultsParserUtil.combine(
-						"glob:", workingDirectoryPath, "/",
-						testClassNamesRelativeGlob)));
-		}
-
-		return pathMatchers;
-	}
-
 	private void _setAutoBalanceTestFiles() {
 		String propertyName = "test.class.names.auto.balance";
 
@@ -579,7 +637,10 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 		List<File> modifiedJavaFilesList =
 			portalGitWorkingDirectory.getModifiedFilesList(
-				".java", _includeUnstagedTestClassFiles);
+				_includeUnstagedTestClassFiles, null,
+				JenkinsResultsParserUtil.toPathMatchers(
+					JenkinsResultsParserUtil.combine(
+						"**", File.separator, "*.java")));
 
 		if (!_autoBalanceTestFiles.isEmpty() &&
 			!modifiedJavaFilesList.isEmpty()) {
@@ -593,21 +654,10 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 	}
 
 	private void _setTestClassNamesExcludesRelativeGlobs() {
-		String testClassNamesExcludesPropertyValue =
-			_getTestClassNamesExcludesPropertyValue();
-
-		if ((testClassNamesExcludesPropertyValue == null) ||
-			testClassNamesExcludesPropertyValue.isEmpty()) {
-
-			return;
-		}
-
-		List<String> testClassNamesExcludesRelativeGlobs = Arrays.asList(
-			testClassNamesExcludesPropertyValue.split(","));
-
 		testClassNamesExcludesPathMatchers.addAll(
-			_getTestClassNamesPathMatchers(
-				testClassNamesExcludesRelativeGlobs));
+			getPathMatchers(
+				_getTestClassNamesExcludesPropertyValue(),
+				portalGitWorkingDirectory.getWorkingDirectory()));
 	}
 
 	private void _setTestClassNamesIncludesRelativeGlobs() {
@@ -624,7 +674,8 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 		Collections.addAll(
 			testClassNamesIncludesRelativeGlobs,
-			testClassNamesIncludesPropertyValue.split(","));
+			JenkinsResultsParserUtil.getGlobsFromProperty(
+				testClassNamesIncludesPropertyValue));
 
 		if (testReleaseBundle) {
 			testClassNamesIncludesRelativeGlobs =
@@ -645,20 +696,26 @@ public class JUnitBatchTestClassGroup extends BatchTestClassGroup {
 
 			Collections.addAll(
 				testClassNamesIncludesRelativeGlobs,
-				testBatchClassNamesIncludesRequiredPropertyValue.split(","));
+				JenkinsResultsParserUtil.getGlobsFromProperty(
+					testBatchClassNamesIncludesRequiredPropertyValue));
 		}
 
+		File workingDirectory = portalGitWorkingDirectory.getWorkingDirectory();
+
 		testClassNamesIncludesPathMatchers.addAll(
-			_getTestClassNamesPathMatchers(
-				testClassNamesIncludesRelativeGlobs));
+			JenkinsResultsParserUtil.toPathMatchers(
+				workingDirectory.getAbsolutePath() + File.separator,
+				testClassNamesIncludesRelativeGlobs.toArray(
+					new String[testClassNamesIncludesRelativeGlobs.size()])));
 	}
 
 	private static final boolean _DEFAULT_INCLUDE_AUTO_BALANCE_TESTS = false;
 
+	private static final Pattern _packagePathPattern = Pattern.compile(
+		".*/(?<packagePath>com/.*)");
+
 	private final List<File> _autoBalanceTestFiles = new ArrayList<>();
 	private boolean _includeAutoBalanceTests;
 	private final boolean _includeUnstagedTestClassFiles;
-	private final Pattern _packagePathPattern = Pattern.compile(
-		".*/(?<packagePath>com/.*)");
 
 }

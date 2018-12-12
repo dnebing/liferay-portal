@@ -1,0 +1,55 @@
+{namespace com.liferay.layout.admin.web.SidebarLayoutsSection}
+
+/**
+ * SidebarLayoutsSection
+ */
+{template .render}
+	{@param? _layouts: list<[
+		columns: list<string>
+	]>}
+
+	<div class="sidebar-layouts-section sidebar-section">
+		{if $_layouts}
+			{foreach $layout in $_layouts}
+				{call .layoutPreview}
+					{param columns: $layout.columns /}
+					{param layoutIndex: index($layout) /}
+				{/call}
+			{/foreach}
+		{/if}
+	</div>
+{/template}
+
+/**
+ * Layout preview
+ */
+{template .layoutPreview}
+	{@param layoutIndex: number}
+	{@param columns: list<string>}
+
+	{let $layoutsSectionClasses kind="text"}
+		btn
+		{sp}btn-unstyled
+		{sp}container
+		{sp}layouts-drag-section
+		{sp}sidebar-layouts-section__layout-preview
+	{/let}
+
+	{let $layoutsSectionRowClasses kind="text"}
+		row
+		{sp}sidebar-layouts-section__layout-preview__row
+	{/let}
+
+	<button class="{$layoutsSectionClasses}" data-layout-index="{$layoutIndex}">
+		<div class="{$layoutsSectionRowClasses}" role="image">
+			{foreach $column in $columns}
+				{let $sectionColumnClasses kind="text"}
+					col-{$column}
+					{sp}sidebar-layouts-section__layout-preview__column
+				{/let}
+
+				<div class="{$sectionColumnClasses}"></div>
+			{/foreach}
+		</div>
+	</button>
+{/template}

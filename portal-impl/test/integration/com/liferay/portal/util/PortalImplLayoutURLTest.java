@@ -90,9 +90,15 @@ public class PortalImplLayoutURLTest extends BasePortalImplURLTestCase {
 		String virtualHostnameFriendlyURL = PortalUtil.getLayoutURL(
 			layout, themeDisplay, true);
 
-		Assert.assertEquals(
-			StringPool.BLANK,
-			HttpUtil.getParameter(virtualHostnameFriendlyURL, "doAsUserId"));
+		if (!virtualHostnameFriendlyURL.startsWith(StringPool.SLASH) &&
+			!virtualHostnameFriendlyURL.startsWith(
+				PortalUtil.getPortalURL(layout, themeDisplay))) {
+
+			Assert.assertEquals(
+				StringPool.BLANK,
+				HttpUtil.getParameter(
+					virtualHostnameFriendlyURL, "doAsUserId"));
+		}
 
 		virtualHostnameFriendlyURL = PortalUtil.getLayoutURL(
 			layout, themeDisplay, false);
@@ -112,9 +118,15 @@ public class PortalImplLayoutURLTest extends BasePortalImplURLTestCase {
 		String virtualHostnameFriendlyURL = PortalUtil.getLayoutURL(
 			publicLayout, themeDisplay, true);
 
-		Assert.assertEquals(
-			"impersonated",
-			HttpUtil.getParameter(virtualHostnameFriendlyURL, "doAsUserId"));
+		if (virtualHostnameFriendlyURL.startsWith(StringPool.SLASH) ||
+			virtualHostnameFriendlyURL.startsWith(
+				PortalUtil.getPortalURL(themeDisplay))) {
+
+			Assert.assertEquals(
+				"impersonated",
+				HttpUtil.getParameter(
+					virtualHostnameFriendlyURL, "doAsUserId"));
+		}
 	}
 
 	@Test

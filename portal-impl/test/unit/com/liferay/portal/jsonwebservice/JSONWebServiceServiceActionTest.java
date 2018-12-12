@@ -20,10 +20,8 @@ import com.liferay.portal.kernel.servlet.HttpMethods;
 import com.liferay.portal.kernel.upload.FileItem;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.upload.UploadServletRequestImpl;
 import com.liferay.portal.util.PortalImpl;
-import com.liferay.portal.util.PropsImpl;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -31,19 +29,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.DynaActionForm;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -52,9 +42,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * @author Igor Spasic
  * @author Raymond Augé
  */
-@PowerMockIgnore("javax.xml.datatype.*")
-@PrepareForTest(PortalUtil.class)
-@RunWith(PowerMockRunner.class)
 public class JSONWebServiceServiceActionTest
 	extends BaseJSONWebServiceTestCase {
 
@@ -69,8 +56,6 @@ public class JSONWebServiceServiceActionTest
 		PortalUtil portalUtil = new PortalUtil();
 
 		portalUtil.setPortal(new PortalImpl());
-
-		PropsUtil.setProps(new PropsImpl());
 
 		_jsonWebServiceServiceAction = new JSONWebServiceServiceAction();
 	}
@@ -87,14 +72,6 @@ public class JSONWebServiceServiceActionTest
 
 		jsonWebServiceActionsManagerUtil.setJSONWebServiceActionsManager(
 			new JSONWebServiceActionsManagerImpl());
-
-		spy(PortalUtil.class);
-
-		when(
-			PortalUtil.getPortalLibDir()
-		).thenReturn(
-			""
-		);
 	}
 
 	@Test
@@ -116,8 +93,7 @@ public class JSONWebServiceServiceActionTest
 			new MockHttpServletResponse();
 
 		json = _jsonWebServiceServiceAction.getJSON(
-			new ActionMapping(), new DynaActionForm(), mockHttpServletRequest,
-			mockHttpServletResponse);
+			null, mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals("{}", json);
 	}
@@ -144,8 +120,7 @@ public class JSONWebServiceServiceActionTest
 			new MockHttpServletResponse();
 
 		json = _jsonWebServiceServiceAction.getJSON(
-			new ActionMapping(), new DynaActionForm(), mockHttpServletRequest,
-			mockHttpServletResponse);
+			null, mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals("\"Welcome 173 to Jupiter\"", json);
 	}
@@ -249,8 +224,7 @@ public class JSONWebServiceServiceActionTest
 			new MockHttpServletResponse();
 
 		json = _jsonWebServiceServiceAction.getJSON(
-			new ActionMapping(), new DynaActionForm(), mockHttpServletRequest,
-			mockHttpServletResponse);
+			null, mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals("\"Welcome 173 to Jupiter\"", json);
 	}
@@ -277,8 +251,7 @@ public class JSONWebServiceServiceActionTest
 			new MockHttpServletResponse();
 
 		String json = _jsonWebServiceServiceAction.getJSON(
-			new ActionMapping(), new DynaActionForm(), mockHttpServletRequest,
-			mockHttpServletResponse);
+			null, mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals("\"Welcome 173 to Jupiter\"", json);
 	}
@@ -302,8 +275,7 @@ public class JSONWebServiceServiceActionTest
 			new MockHttpServletResponse();
 
 		String json = _jsonWebServiceServiceAction.getJSON(
-			new ActionMapping(), new DynaActionForm(), mockHttpServletRequest,
-			mockHttpServletResponse);
+			null, mockHttpServletRequest, mockHttpServletResponse);
 
 		Assert.assertEquals("\"Welcome 173 to Jupiter\"", json);
 	}

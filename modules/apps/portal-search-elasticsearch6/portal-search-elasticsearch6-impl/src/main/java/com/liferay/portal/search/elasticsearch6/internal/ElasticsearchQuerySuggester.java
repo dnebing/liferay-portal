@@ -365,10 +365,11 @@ public class ElasticsearchQuerySuggester implements QuerySuggester {
 			new SuggesterResult.Entry.Option(
 				text.string(), suggestionEntryOption.getScore());
 
-		Text highlighted = suggestionEntryOption.getHighlighted();
-
 		if (suggestionEntryOption.getHighlighted() != null) {
-			suggesterResultEntryOption.setHighlightedText(highlighted.string());
+			Text highlightedText = suggestionEntryOption.getHighlighted();
+
+			suggesterResultEntryOption.setHighlightedText(
+				highlightedText.string());
 		}
 
 		if (suggestionEntryOption instanceof TermSuggestion.Entry.Option) {

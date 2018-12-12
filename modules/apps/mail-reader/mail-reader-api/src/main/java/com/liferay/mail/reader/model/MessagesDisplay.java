@@ -37,9 +37,8 @@ public class MessagesDisplay {
 		if (messageNumber > _messageCount) {
 			return _messageCount;
 		}
-		else {
-			return messageNumber;
-		}
+
+		return messageNumber;
 	}
 
 	public int getMessageCount() {
@@ -51,7 +50,7 @@ public class MessagesDisplay {
 	}
 
 	public int getPageCount() {
-		return (int)(Math.ceil(_messageCount / (double)_messagesPerPage));
+		return (int)Math.ceil(_messageCount / (double)_messagesPerPage);
 	}
 
 	public int getPageNumber() {

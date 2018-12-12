@@ -1,3 +1,6 @@
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
 dependencies {
 	compile group: "com.amazonaws", name: "aws-java-sdk-core", version: "1.11.220"
 	compile group: "com.amazonaws", name: "aws-java-sdk-ec2", version: "1.11.220"
@@ -9,4 +12,8 @@ dependencies {
 	compile group: "junit", name: "junit", version: "4.12"
 	compile group: "org.apache.ant", name: "ant", version: "1.9.4"
 	compile group: "org.json", name: "json", version: "20140107"
+}
+
+test {
+	systemProperty "repository.dir", System.getProperty("repository.dir")
 }

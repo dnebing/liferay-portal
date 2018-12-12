@@ -19,6 +19,10 @@
 		preview: string,
 		render: string
 	]}
+	{@param? autocompleteTags: list<[
+		content: string,
+		name: string
+	]>}
 	{@param? _css: string}
 	{@param? _handleCSSChanged: any}
 	{@param? _handleHTMLChanged: any}
@@ -45,7 +49,7 @@
 					<div class="btn-group btn-group-nowrap mt-1 pull-right">
 						{if $status == $allowedStatus.draft}
 							{let $draftButtonAttributes kind="attributes"}
-								class="btn btn-default"
+								class="btn btn-default btn-sm"
 								type="button"
 								value="{$allowedStatus.draft}"
 								data-onclick="{$_handleSaveButtonClick}"
@@ -66,7 +70,7 @@
 
 						<div class="btn-group-item">
 							{let $publishButtonAttributes kind="attributes"}
-								class="btn btn-primary"
+								class="btn btn-primary btn-sm"
 								type="button"
 								value="{$allowedStatus.approved}"
 								data-onclick="{$_handleSaveButtonClick}"
@@ -89,6 +93,7 @@
 
 		<div class="fragment-editor">
 			{call com.liferay.fragment.web.SourceEditor.render}
+				{param autocompleteTags: $autocompleteTags /}
 				{param events: ['contentChanged': $_handleHTMLChanged] /}
 				{param initialContent: $initialHTML /}
 				{param spritemap: $spritemap /}

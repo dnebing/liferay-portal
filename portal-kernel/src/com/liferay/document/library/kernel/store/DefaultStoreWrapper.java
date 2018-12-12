@@ -22,7 +22,9 @@ import java.io.InputStream;
 /**
  * @author Brian Wing Shun Chan
  * @author Edward Han
+ * @deprecated As of Judson (7.1.x), with no direct replacement
  */
+@Deprecated
 public class DefaultStoreWrapper implements StoreWrapper {
 
 	@Override
@@ -72,6 +74,16 @@ public class DefaultStoreWrapper implements StoreWrapper {
 		@Override
 		public void checkRoot(long companyId) {
 			_store.checkRoot(companyId);
+		}
+
+		@Override
+		public void copyFileToStore(
+				long companyId, long repositoryId, String fileName,
+				String versionLabel, Store targetStore)
+			throws PortalException {
+
+			_store.copyFileToStore(
+				companyId, repositoryId, fileName, versionLabel, targetStore);
 		}
 
 		@Override
@@ -206,6 +218,16 @@ public class DefaultStoreWrapper implements StoreWrapper {
 		@Override
 		public void move(String srcDir, String destDir) {
 			_store.move(srcDir, destDir);
+		}
+
+		@Override
+		public void moveFileToStore(
+				long companyId, long repositoryId, String fileName,
+				String versionLabel, Store targetStore)
+			throws PortalException {
+
+			_store.moveFileToStore(
+				companyId, repositoryId, fileName, versionLabel, targetStore);
 		}
 
 		@Override

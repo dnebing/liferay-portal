@@ -22,10 +22,13 @@ import com.liferay.document.library.opener.service.DLOpenerFileEntryReferenceLoc
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,9 +83,12 @@ public class DLOpenerGoogleDriveDLDisplayContextFactory
 		return new DLOpenerGoogleDriveDLViewFileVersionDisplayContext(
 			parentDLViewFileVersionDisplayContext, request, response,
 			fileVersion,
-			_resourceBundleLoader.loadResourceBundle(themeDisplay.getLocale()),
+			ResourceBundleUtil.getBundle(
+				themeDisplay.getLocale(),
+				DLOpenerGoogleDriveDLDisplayContextFactory.class),
+			_fileEntryModelResourcePermission,
 			_dlOpenerFileEntryReferenceLocalService,
-			_dlOpenerGoogleDriveManager);
+			_dlOpenerGoogleDriveManager, _portal);
 	}
 
 	@Reference
@@ -93,8 +99,12 @@ public class DLOpenerGoogleDriveDLDisplayContextFactory
 	private DLOpenerGoogleDriveManager _dlOpenerGoogleDriveManager;
 
 	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.document.library.opener.google.drive.web)"
+		target = "(model.class.name=com.liferay.portal.kernel.repository.model.FileEntry)"
 	)
-	private ResourceBundleLoader _resourceBundleLoader;
+	private ModelResourcePermission<FileEntry>
+		_fileEntryModelResourcePermission;
+
+	@Reference
+	private Portal _portal;
 
 }

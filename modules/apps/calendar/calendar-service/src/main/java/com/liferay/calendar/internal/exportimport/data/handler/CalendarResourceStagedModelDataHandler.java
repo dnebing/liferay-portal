@@ -60,8 +60,9 @@ import org.osgi.service.component.annotations.Reference;
 public class CalendarResourceStagedModelDataHandler
 	extends BaseStagedModelDataHandler<CalendarResource> {
 
-	public static final String[] CLASS_NAMES =
-		{CalendarResource.class.getName()};
+	public static final String[] CLASS_NAMES = {
+		CalendarResource.class.getName()
+	};
 
 	@Override
 	public void deleteStagedModel(CalendarResource calendarResource)
@@ -293,7 +294,7 @@ public class CalendarResourceStagedModelDataHandler
 			classPK = portletDataContext.getScopeGroupId();
 		}
 		else if (calendarResource.getClassNameId() ==
-					 _portal.getClassNameId(User.class)) {
+					_portal.getClassNameId(User.class)) {
 
 			classPK = userId;
 		}

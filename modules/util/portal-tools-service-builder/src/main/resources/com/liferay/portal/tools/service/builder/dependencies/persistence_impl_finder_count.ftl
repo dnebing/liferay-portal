@@ -23,6 +23,12 @@ public int countBy${entityFinder.name}(
 </#list>
 
 ) {
+	<#list entityColumns as entityColumn>
+		<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
+			${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
+		</#if>
+	</#list>
+
 	FinderPath finderPath =
 		<#if !entityFinder.hasCustomComparator()>
 			FINDER_PATH_COUNT_BY_${entityFinder.name?upper_case};
@@ -44,7 +50,7 @@ public int countBy${entityFinder.name}(
 		</#list>
 	};
 
-	Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+	Long count = (Long)${finderCache}.getResult(finderPath, finderArgs, this);
 
 	if (count == null) {
 		<#include "persistence_impl_count_by_query.ftl">
@@ -64,10 +70,10 @@ public int countBy${entityFinder.name}(
 
 			count = (Long)q.uniqueResult();
 
-			finderCache.putResult(finderPath, finderArgs, count);
+			${finderCache}.putResult(finderPath, finderArgs, count);
 		}
 		catch (Exception e) {
-			finderCache.removeResult(finderPath, finderArgs);
+			${finderCache}.removeResult(finderPath, finderArgs);
 
 			throw processException(e);
 		}
@@ -114,19 +120,27 @@ public int countBy${entityFinder.name}(
 					${entityColumn.names} = new ${entityColumn.type}[0];
 				}
 				else if (${entityColumn.names}.length > 1) {
+					<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
+						for (int i = 0; i < ${entityColumn.names}.length; i++) {
+							${entityColumn.names}[i] = Objects.toString(${entityColumn.names}[i], "");
+						}
+					</#if>
+
 					${entityColumn.names} =
-						<#if stringUtil.equals(entityColumn.type, "String")>
+						<#if stringUtil.equals(entityColumn.type, "String") && !entityColumn.isConvertNull()>
 							ArrayUtil.distinct(${entityColumn.names}, NULL_SAFE_STRING_COMPARATOR);
 						<#else>
 							ArrayUtil.unique(${entityColumn.names});
 						</#if>
 
-					<#if stringUtil.equals(entityColumn.type, "String")>
+					<#if stringUtil.equals(entityColumn.type, "String") && !entityColumn.isConvertNull()>
 						Arrays.sort(${entityColumn.names}, NULL_SAFE_STRING_COMPARATOR);
 					<#else>
 						Arrays.sort(${entityColumn.names});
 					</#if>
 				}
+			<#elseif stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
+				${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
 			</#if>
 		</#list>
 
@@ -146,7 +160,7 @@ public int countBy${entityFinder.name}(
 			</#list>
 		};
 
-		Long count = (Long)finderCache.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, this);
+		Long count = (Long)${finderCache}.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, this);
 
 		if (count == null) {
 			<#include "persistence_impl_count_by_arrayable_query.ftl">
@@ -168,10 +182,10 @@ public int countBy${entityFinder.name}(
 
 				count = (Long)q.uniqueResult();
 
-				finderCache.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, count);
+				${finderCache}.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs);
+				${finderCache}.removeResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs);
 
 				throw processException(e);
 			}
@@ -219,14 +233,20 @@ public int countBy${entityFinder.name}(
 					${entityColumn.names} = new ${entityColumn.type}[0];
 				}
 				else if (${entityColumn.names}.length > 1) {
+					<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
+						for (int i = 0; i < ${entityColumn.names}.length; i++) {
+							${entityColumn.names}[i] = Objects.toString(${entityColumn.names}[i], "");
+						}
+					</#if>
+
 					${entityColumn.names} =
-						<#if stringUtil.equals(entityColumn.type, "String")>
+						<#if stringUtil.equals(entityColumn.type, "String") && !entityColumn.isConvertNull()>
 							ArrayUtil.distinct(${entityColumn.names}, NULL_SAFE_STRING_COMPARATOR);
 						<#else>
 							ArrayUtil.unique(${entityColumn.names});
 						</#if>
 
-					<#if stringUtil.equals(entityColumn.type, "String")>
+					<#if stringUtil.equals(entityColumn.type, "String") && !entityColumn.isConvertNull()>
 						Arrays.sort(${entityColumn.names}, NULL_SAFE_STRING_COMPARATOR);
 					<#else>
 						Arrays.sort(${entityColumn.names});
@@ -249,7 +269,7 @@ public int countBy${entityFinder.name}(
 			</#list>
 		};
 
-		Long count = (Long)finderCache.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, this);
+		Long count = (Long)${finderCache}.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, this);
 
 		if (count == null) {
 			try {
@@ -304,10 +324,10 @@ public int countBy${entityFinder.name}(
 						</#list>));
 					}
 
-					finderCache.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, count);
+					${finderCache}.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs, count);
 			}
 			catch (Exception e) {
-				finderCache.removeResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs);
+				${finderCache}.removeResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_${entityFinder.name?upper_case}, finderArgs);
 
 				throw processException(e);
 			}
@@ -404,6 +424,12 @@ public int countBy${entityFinder.name}(
 
 			);
 		}
+
+		<#list entityColumns as entityColumn>
+			<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
+				${entityColumn.name} = Objects.toString(${entityColumn.name}, "");
+			</#if>
+		</#list>
 
 		<#if entity.isPermissionedModel()>
 			<#include "persistence_impl_count_by_query.ftl">
@@ -536,14 +562,20 @@ public int countBy${entityFinder.name}(
 						${entityColumn.names} = new ${entityColumn.type}[0];
 					}
 					else if (${entityColumn.names}.length > 1) {
+						<#if stringUtil.equals(entityColumn.type, "String") && entityColumn.isConvertNull()>
+							for (int i = 0; i < ${entityColumn.names}.length; i++) {
+								${entityColumn.names}[i] = Objects.toString(${entityColumn.names}[i], "");
+							}
+						</#if>
+
 						${entityColumn.names} =
-							<#if stringUtil.equals(entityColumn.type, "String")>
+							<#if stringUtil.equals(entityColumn.type, "String") && !entityColumn.isConvertNull()>
 								ArrayUtil.distinct(${entityColumn.names}, NULL_SAFE_STRING_COMPARATOR);
 							<#else>
 								ArrayUtil.unique(${entityColumn.names});
 							</#if>
 
-						<#if stringUtil.equals(entityColumn.type, "String")>
+						<#if stringUtil.equals(entityColumn.type, "String") && !entityColumn.isConvertNull()>
 							Arrays.sort(${entityColumn.names}, NULL_SAFE_STRING_COMPARATOR);
 						<#else>
 							Arrays.sort(${entityColumn.names});

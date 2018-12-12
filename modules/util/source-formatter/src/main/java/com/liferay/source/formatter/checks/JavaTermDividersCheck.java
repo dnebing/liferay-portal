@@ -78,6 +78,7 @@ public class JavaTermDividersCheck extends BaseJavaTermCheck {
 		String classContent, JavaTerm previousJavaTerm, JavaTerm javaTerm) {
 
 		String javaTermContent = javaTerm.getContent();
+
 		String previousJavaTermContent = previousJavaTerm.getContent();
 
 		String afterPreviousJavaTerm = StringUtil.trim(
@@ -162,7 +163,7 @@ public class JavaTermDividersCheck extends BaseJavaTermCheck {
 			classContent, "\n\n" + javaTermContent, "\n" + javaTermContent);
 	}
 
-	private final Pattern _missingEmptyLinePattern = Pattern.compile(
+	private static final Pattern _missingEmptyLinePattern = Pattern.compile(
 		"([^{\n]\n)(\t*\\}\n?)$");
 
 }

@@ -14,18 +14,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>SWITCH_TO_SIMPLE_PUBLICATION</td>
-	<td>//a[contains(.,'Switch to Simple Publication')]/span</td>
-	<td></td>
-</tr>
-<tr>
 	<td>ADD_EVENT_BUTTON</td>
 	<td>//button[contains(@id,'addButton')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CUSTOM_BUTTON</td>
-	<td>//a[@title='Custom']</td>
 	<td></td>
 </tr>
 <tr>
@@ -39,11 +29,6 @@
 	<td></td>
 </tr>
 <!--DATE-->
-<tr>
-	<td>DATE_NOW_RADIO</td>
-	<td>//input[contains(@id,'publishingEventNow')]//following-sibling::span</td>
-	<td></td>
-</tr>
 <tr>
 	<td>DATE_SCHEDULE_RADIO</td>
 	<td>//span[contains(@class,'custom-control-label-text') and contains(.,'Schedule')]</td>
@@ -76,7 +61,7 @@
 </tr>
 <tr>
 	<td>DATE_SCHEDULE_REPEAT_RADIO</td>
-	<td>//input[contains(@id,'recurrenceType${key_frequency}')]</td>
+	<td>//option[contains(@id,'recurrenceType${key_frequency}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -86,8 +71,13 @@
 </tr>
 <!--PAGES-->
 <tr>
-	<td>PAGES_CHANGE_LINK</td>
-	<td>//div/a[contains(@id,'pagesLink')]</td>
+	<td>PAGES_TO_PUBLISH_CHECKBOX_CHECKED</td>
+	<td>//div[@class='pages-selector']//div[normalize-space()='${key_entryName}' and contains(@class,'checked')]//span[contains(@class,'icon-check')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGES_TO_PUBLISH_CHECKBOX_UNCHECKED</td>
+	<td>//div[@class='pages-selector']//div[normalize-space()='${key_entryName}' and not(contains(@class,'checked'))]//span[contains(@class,'icon-check')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -102,28 +92,19 @@
 	<td></td>
 </tr>
 <tr>
-	<td>CONTENT_CHOOSE_CONTENT_DELETION_HEADER</td>
-	<td>//div[contains(@id,'deletionsTitle')]/a</td>
+	<td>SIMPLE_PUBLICATION_DELETION</td>
+	<td>//span[contains(@class,'deletions') and contains(.,'${key_itemName}')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>CONTENT_CHOOSE_CONTENT_DELETION_HEADER_NOT_EXPANDED</td>
-	<td>//div[contains(@id,'deletionsTitle')]/a[@aria-expanded='false']</td>
+	<td></td>
+	<td></td>
 	<td></td>
 </tr>
+<!--DELETIONS-->
 <tr>
-	<td>CONTENT_CHOOSE_CONTENT_CONTENT_CHANGE_LINK</td>
-	<td>//a[@data-portlettitle='${key_uncheckContent}']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTENT_CHOOSE_CONTENT_SUBCONTENT_CHECKBOX</td>
-	<td>//input[contains(@data-name,'Referenced Content')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTENT_CHOOSE_CONTENT_SUB_SUBCONTENT_CHECKBOX</td>
-	<td>//div[contains(@class,'widget-content-expanded') and contains(.,'${key_contentName}')]//div[contains(@class,'modal-body')]//ul/li[@class='handler-control' and contains(.,'${key_subContent}')]//input[contains(@data-name,'${key_subSubContent}')]</td>
+	<td>DELETIONS_REPLICATE_INDIVIDUAL_DELETIONS_CHECKBOX</td>
+	<td>//input[contains(@id,'StagingProcessesPortlet_DELETIONS')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -140,17 +121,6 @@
 <tr>
 	<td>SCHEDULED_TABLE_END_DATE</td>
 	<td>//tr[contains(.,'${key_scheduleTitleName}')]/td[4]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--PUBLISH_TEMPLATES-->
-<tr>
-	<td>PUBLISH_TEMPLATES_NAME_FIELD</td>
-	<td>//div[contains(@class,'form-group')]//input[contains(@id,'name')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -187,11 +157,6 @@
 <tr>
 	<td>CONTENT_ALL</td>
 	<td>//span[contains(.,'All')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>CONTENT_LAST_PUBLISH_DATE</td>
-	<td>//span[contains(.,'From Last Publish Date')]</td>
 	<td></td>
 </tr>
 <tr>

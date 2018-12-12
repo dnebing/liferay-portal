@@ -16,8 +16,8 @@ package com.liferay.portal.kernel.dao.db;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -172,9 +172,8 @@ public class IndexMetadata extends Index implements Comparable<IndexMetadata> {
 			if (isUnique()) {
 				return Boolean.FALSE;
 			}
-			else {
-				return Boolean.TRUE;
-			}
+
+			return Boolean.TRUE;
 		}
 
 		Boolean redundant = indexMetadata.redundantTo(this);

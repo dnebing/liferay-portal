@@ -114,13 +114,9 @@
 				<execute function="AssertTextNotPresent" locator1="SiteTeamsAssignMembers#USER_GROUPS_TABLE_NAME" value1="${userGroupName}" />
 			</then>
 			<else>
-				<execute macro="LexiconEntry#changeDisplayStyle">
-					<var name="displayStyle" value="cards" />
+				<execute macro="LexiconEntry#selectEntry">
+					<var name="rowEntry" value="${userGroupName}" />
 				</execute>
-
-				<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${userGroupName}" />
-
-				<execute function="Check" locator1="Card#SPECIFIC_CHECKBOX" />
 
 				<execute function="SelectFrameTop" />
 
@@ -158,7 +154,7 @@
 			<var name="menuItem" value="Delete" />
 		</execute>
 
-		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<execute function="AssertConfirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
@@ -209,7 +205,7 @@
 
 		<execute function="ClickNoError" locator1="Icon#TIMES" />
 
-		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<execute function="AssertConfirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
@@ -265,7 +261,7 @@
 			<then>
 				<execute macro="PortletEntry#selectAll" />
 				<execute function="ClickNoError" locator1="Icon#DELETE" />
-				<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+				<execute function="AssertConfirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 				<execute macro="Alert#viewSuccessMessage" />
 			</then>

@@ -193,6 +193,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	@Override
 	public List<MBThread> findByUuid(String uuid, int start, int end,
 		OrderByComparator<MBThread> orderByComparator, boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -216,7 +218,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MBThread mbThread : list) {
-					if (!Objects.equals(uuid, mbThread.getUuid())) {
+					if (!uuid.equals(mbThread.getUuid())) {
 						list = null;
 
 						break;
@@ -240,10 +242,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -424,6 +423,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	public MBThread[] findByUuid_PrevAndNext(long threadId, String uuid,
 		OrderByComparator<MBThread> orderByComparator)
 		throws NoSuchThreadException {
+		uuid = Objects.toString(uuid, "");
+
 		MBThread mbThread = findByPrimaryKey(threadId);
 
 		Session session = null;
@@ -469,10 +470,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -592,6 +590,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -605,10 +605,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -722,6 +719,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	@Override
 	public MBThread fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -747,10 +746,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -834,6 +830,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -847,10 +845,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -993,6 +988,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	public List<MBThread> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<MBThread> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1020,7 +1017,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MBThread mbThread : list) {
-					if (!Objects.equals(uuid, mbThread.getUuid()) ||
+					if (!uuid.equals(mbThread.getUuid()) ||
 							(companyId != mbThread.getCompanyId())) {
 						list = null;
 
@@ -1045,10 +1042,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1247,6 +1241,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	public MBThread[] findByUuid_C_PrevAndNext(long threadId, String uuid,
 		long companyId, OrderByComparator<MBThread> orderByComparator)
 		throws NoSuchThreadException {
+		uuid = Objects.toString(uuid, "");
+
 		MBThread mbThread = findByPrimaryKey(threadId);
 
 		Session session = null;
@@ -1292,10 +1288,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1421,6 +1414,8 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1434,10 +1429,7 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -12918,6 +12910,9 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	public MBThreadPersistenceImpl() {
 		setModelClass(MBThread.class);
 
+		setModelImplClass(MBThreadImpl.class);
+		setEntityCacheEnabled(MBThreadModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -13603,53 +13598,6 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	/**
 	 * Returns the message boards thread with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the message boards thread
-	 * @return the message boards thread, or <code>null</code> if a message boards thread with the primary key could not be found
-	 */
-	@Override
-	public MBThread fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(MBThreadModelImpl.ENTITY_CACHE_ENABLED,
-				MBThreadImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		MBThread mbThread = (MBThread)serializable;
-
-		if (mbThread == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				mbThread = (MBThread)session.get(MBThreadImpl.class, primaryKey);
-
-				if (mbThread != null) {
-					cacheResult(mbThread);
-				}
-				else {
-					entityCache.putResult(MBThreadModelImpl.ENTITY_CACHE_ENABLED,
-						MBThreadImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(MBThreadModelImpl.ENTITY_CACHE_ENABLED,
-					MBThreadImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return mbThread;
-	}
-
-	/**
-	 * Returns the message boards thread with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param threadId the primary key of the message boards thread
 	 * @return the message boards thread, or <code>null</code> if a message boards thread with the primary key could not be found
 	 */
@@ -13945,6 +13893,11 @@ public class MBThreadPersistenceImpl extends BasePersistenceImpl<MBThread>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

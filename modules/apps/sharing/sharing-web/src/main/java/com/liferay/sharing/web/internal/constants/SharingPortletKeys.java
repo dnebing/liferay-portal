@@ -15,11 +15,14 @@
 package com.liferay.sharing.web.internal.constants;
 
 /**
- * @author Sergio González
+ * @author Shuyang Zhou
  */
 public class SharingPortletKeys {
 
-	public static final String SHARING =
-		"com_liferay_sharing_web_portlet_SharingPortlet";
+	public static final String MANAGE_COLLABORATORS =
+		"com_liferay_sharing_web_portlet_ManageCollaboratorsPortlet";
+
+	public static final String SHARED_WITH_ME =
+		"com_liferay_sharing_web_portlet_SharedWithMePortlet";
 
 }

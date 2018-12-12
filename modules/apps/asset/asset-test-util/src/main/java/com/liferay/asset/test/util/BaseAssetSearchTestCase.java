@@ -145,8 +145,9 @@ public abstract class BaseAssetSearchTestCase {
 
 		_travelCategoryId = travelCategory.getCategoryId();
 
-		_assetCategoryIds1 =
-			new long[] {_healthCategoryId, _sportCategoryId, _travelCategoryId};
+		_assetCategoryIds1 = new long[] {
+			_healthCategoryId, _sportCategoryId, _travelCategoryId
+		};
 
 		_assetCategoryIds2 = new long[] {
 			_fashionCategoryId, _foodCategoryId, _healthCategoryId,
@@ -180,8 +181,9 @@ public abstract class BaseAssetSearchTestCase {
 				serviceContext);
 		}
 
-		_assetTagsNames1 =
-			new String[] {"liferay", "architecture", "modularity", "osgi"};
+		_assetTagsNames1 = new String[] {
+			"liferay", "architecture", "modularity", "osgi"
+		};
 		_assetTagsNames2 = new String[] {"liferay", "architecture", "services"};
 	}
 
@@ -211,8 +213,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testAllAssetCategories3() throws Exception {
-		long[] allCategoryIds =
-			{_healthCategoryId, _sportCategoryId, _foodCategoryId};
+		long[] allCategoryIds = {
+			_healthCategoryId, _sportCategoryId, _foodCategoryId
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -363,8 +366,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testAnyAssetCategories3() throws Exception {
-		long[] anyCategoryIds =
-			{_healthCategoryId, _sportCategoryId, _foodCategoryId};
+		long[] anyCategoryIds = {
+			_healthCategoryId, _sportCategoryId, _foodCategoryId
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -436,8 +440,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testAssetCategoryAllAndAny() throws Exception {
-		long[] allCategoryIds =
-			{_healthCategoryId, _sportCategoryId, _travelCategoryId};
+		long[] allCategoryIds = {
+			_healthCategoryId, _sportCategoryId, _travelCategoryId
+		};
 		long[] anyCategoryIds = {_healthCategoryId};
 
 		AssetEntryQuery assetEntryQuery =
@@ -451,8 +456,9 @@ public abstract class BaseAssetSearchTestCase {
 	@Test
 	public void testAssetCategoryNotAllAndAll() throws Exception {
 		long[] notAllCategoryIds = {_fashionCategoryId, _foodCategoryId};
-		long[] allCategoryIds =
-			{_healthCategoryId, _sportCategoryId, _travelCategoryId};
+		long[] allCategoryIds = {
+			_healthCategoryId, _sportCategoryId, _travelCategoryId
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -504,8 +510,9 @@ public abstract class BaseAssetSearchTestCase {
 	@Test
 	public void testAssetCategoryNotAnyAndAny() throws Exception {
 		long[] notAnyCategoryIds = {_fashionCategoryId, _foodCategoryId};
-		long[] anyCategoryIds =
-			{_healthCategoryId, _sportCategoryId, _travelCategoryId};
+		long[] anyCategoryIds = {
+			_healthCategoryId, _sportCategoryId, _travelCategoryId
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -712,8 +719,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testNotAllAssetCategories4() throws Exception {
-		long[] notAllCategoryIds =
-			{_fashionCategoryId, _foodCategoryId, _travelCategoryId};
+		long[] notAllCategoryIds = {
+			_fashionCategoryId, _foodCategoryId, _travelCategoryId
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -761,8 +769,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testNotAllAssetTags4() throws Exception {
-		String[] notAllTagNames =
-			{"liferay", "architecture", "services", "osgi"};
+		String[] notAllTagNames = {
+			"liferay", "architecture", "services", "osgi"
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -813,8 +822,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testNotAllAssetTagsMultipleGroups4() throws Exception {
-		String[] notAllTagNames =
-			{"liferay", "architecture", "services", "osgi"};
+		String[] notAllTagNames = {
+			"liferay", "architecture", "services", "osgi"
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -851,8 +861,9 @@ public abstract class BaseAssetSearchTestCase {
 
 	@Test
 	public void testNotAnyAssetCategories3() throws Exception {
-		long[] notAnyCategoryIds =
-			{_fashionCategoryId, _foodCategoryId, _travelCategoryId};
+		long[] notAnyCategoryIds = {
+			_fashionCategoryId, _foodCategoryId, _travelCategoryId
+		};
 
 		AssetEntryQuery assetEntryQuery =
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
@@ -928,8 +939,9 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] titles =
-			{"open", "liferay", "social", "osgi", "content", "life"};
+		String[] titles = {
+			"open", "liferay", "social", "osgi", "content", "life"
+		};
 
 		testOrderByCreateDate(assetEntryQuery, "asc", titles, titles);
 	}
@@ -940,11 +952,13 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] titles =
-			{"open", "liferay", "social", "osgi", "content", "life"};
+		String[] titles = {
+			"open", "liferay", "social", "osgi", "content", "life"
+		};
 
-		String[] orderedTitles =
-			{"life", "content", "osgi", "social", "liferay", "open"};
+		String[] orderedTitles = {
+			"life", "content", "osgi", "social", "liferay", "open"
+		};
 
 		testOrderByCreateDate(assetEntryQuery, "desc", titles, orderedTitles);
 	}
@@ -977,11 +991,13 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] defaultTitles =
-			{"open", "liferay", "content", "social", "osgi", "life"};
+		String[] defaultTitles = {
+			"open", "liferay", "content", "social", "osgi", "life"
+		};
 
-		String[] frenchTitles =
-			{"ouvert", "liferay", "content", "social", "osgi", "vie"};
+		String[] frenchTitles = {
+			"ouvert", "liferay", "content", "social", "osgi", "vie"
+		};
 
 		List<Map<Locale, String>> titleMaps = new ArrayList<>();
 
@@ -994,11 +1010,13 @@ public abstract class BaseAssetSearchTestCase {
 			titleMaps.add(titleMap);
 		}
 
-		String[] defaultOrderedTitles =
-			{"content", "life", "liferay", "open", "osgi", "social"};
+		String[] defaultOrderedTitles = {
+			"content", "life", "liferay", "open", "osgi", "social"
+		};
 
-		String[] frenchOrderedTitles =
-			{"content", "liferay", "osgi", "ouvert", "social", "vie"};
+		String[] frenchOrderedTitles = {
+			"content", "liferay", "osgi", "ouvert", "social", "vie"
+		};
 
 		List<Map<Locale, String>> orderedTitleMaps = new ArrayList<>();
 
@@ -1029,11 +1047,13 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] defaultTitles =
-			{"open", "liferay", "content", "social", "osgi", "life"};
+		String[] defaultTitles = {
+			"open", "liferay", "content", "social", "osgi", "life"
+		};
 
-		String[] frenchTitles =
-			{"ouvert", "liferay", "content", "social", "osgi", "vie"};
+		String[] frenchTitles = {
+			"ouvert", "liferay", "content", "social", "osgi", "vie"
+		};
 
 		List<Map<Locale, String>> titleMaps = new ArrayList<>();
 
@@ -1046,11 +1066,13 @@ public abstract class BaseAssetSearchTestCase {
 			titleMaps.add(titleMap);
 		}
 
-		String[] defaultOrderedTitles =
-			{"social", "osgi", "open", "liferay", "life", "content"};
+		String[] defaultOrderedTitles = {
+			"social", "osgi", "open", "liferay", "life", "content"
+		};
 
-		String[] frenchOrderedTitles =
-			{"vie", "social", "ouvert", "osgi", "liferay", "content"};
+		String[] frenchOrderedTitles = {
+			"vie", "social", "ouvert", "osgi", "liferay", "content"
+		};
 
 		List<Map<Locale, String>> orderedTitleMaps = new ArrayList<>();
 

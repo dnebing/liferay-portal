@@ -173,6 +173,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	public List<SyncDLObject> findByTreePath(String treePath, int start,
 		int end, OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		treePath = Objects.toString(treePath, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -214,10 +216,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindTreePath = false;
 
-			if (treePath == null) {
-				query.append(_FINDER_COLUMN_TREEPATH_TREEPATH_1);
-			}
-			else if (treePath.equals("")) {
+			if (treePath.isEmpty()) {
 				query.append(_FINDER_COLUMN_TREEPATH_TREEPATH_3);
 			}
 			else {
@@ -401,6 +400,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	public SyncDLObject[] findByTreePath_PrevAndNext(long syncDLObjectId,
 		String treePath, OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		treePath = Objects.toString(treePath, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -446,10 +447,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindTreePath = false;
 
-		if (treePath == null) {
-			query.append(_FINDER_COLUMN_TREEPATH_TREEPATH_1);
-		}
-		else if (treePath.equals("")) {
+		if (treePath.isEmpty()) {
 			query.append(_FINDER_COLUMN_TREEPATH_TREEPATH_3);
 		}
 		else {
@@ -569,6 +567,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByTreePath(String treePath) {
+		treePath = Objects.toString(treePath, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_TREEPATH;
 
 		Object[] finderArgs = new Object[] { treePath };
@@ -582,10 +582,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindTreePath = false;
 
-			if (treePath == null) {
-				query.append(_FINDER_COLUMN_TREEPATH_TREEPATH_1);
-			}
-			else if (treePath.equals("")) {
+			if (treePath.isEmpty()) {
 				query.append(_FINDER_COLUMN_TREEPATH_TREEPATH_3);
 			}
 			else {
@@ -1786,6 +1783,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	public List<SyncDLObject> findByR_NotE(long repositoryId, String event,
 		int start, int end, OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		event = Objects.toString(event, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1806,7 +1805,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 			if ((list != null) && !list.isEmpty()) {
 				for (SyncDLObject syncDLObject : list) {
 					if ((repositoryId != syncDLObject.getRepositoryId()) ||
-							Objects.equals(event, syncDLObject.getEvent())) {
+							event.equals(syncDLObject.getEvent())) {
 						list = null;
 
 						break;
@@ -1832,10 +1831,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindEvent = false;
 
-			if (event == null) {
-				query.append(_FINDER_COLUMN_R_NOTE_EVENT_1);
-			}
-			else if (event.equals("")) {
+			if (event.isEmpty()) {
 				query.append(_FINDER_COLUMN_R_NOTE_EVENT_3);
 			}
 			else {
@@ -2033,6 +2029,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		long repositoryId, String event,
 		OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		event = Objects.toString(event, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -2080,10 +2078,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindEvent = false;
 
-		if (event == null) {
-			query.append(_FINDER_COLUMN_R_NOTE_EVENT_1);
-		}
-		else if (event.equals("")) {
+		if (event.isEmpty()) {
 			query.append(_FINDER_COLUMN_R_NOTE_EVENT_3);
 		}
 		else {
@@ -2207,6 +2202,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByR_NotE(long repositoryId, String event) {
+		event = Objects.toString(event, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_R_NOTE;
 
 		Object[] finderArgs = new Object[] { repositoryId, event };
@@ -2222,10 +2219,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindEvent = false;
 
-			if (event == null) {
-				query.append(_FINDER_COLUMN_R_NOTE_EVENT_1);
-			}
-			else if (event.equals("")) {
+			if (event.isEmpty()) {
 				query.append(_FINDER_COLUMN_R_NOTE_EVENT_3);
 			}
 			else {
@@ -2364,6 +2358,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	public List<SyncDLObject> findByR_T(long repositoryId, String type,
 		int start, int end, OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		type = Objects.toString(type, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2392,7 +2388,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 			if ((list != null) && !list.isEmpty()) {
 				for (SyncDLObject syncDLObject : list) {
 					if ((repositoryId != syncDLObject.getRepositoryId()) ||
-							!Objects.equals(type, syncDLObject.getType())) {
+							!type.equals(syncDLObject.getType())) {
 						list = null;
 
 						break;
@@ -2418,10 +2414,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_R_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_R_T_TYPE_3);
 			}
 			else {
@@ -2619,6 +2612,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		long repositoryId, String type,
 		OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		type = Objects.toString(type, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -2666,10 +2661,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindType = false;
 
-		if (type == null) {
-			query.append(_FINDER_COLUMN_R_T_TYPE_1);
-		}
-		else if (type.equals("")) {
+		if (type.isEmpty()) {
 			query.append(_FINDER_COLUMN_R_T_TYPE_3);
 		}
 		else {
@@ -2793,6 +2785,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByR_T(long repositoryId, String type) {
+		type = Objects.toString(type, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_T;
 
 		Object[] finderArgs = new Object[] { repositoryId, type };
@@ -2808,10 +2802,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_R_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_R_T_TYPE_3);
 			}
 			else {
@@ -2943,6 +2934,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	public List<SyncDLObject> findByT_NotE(String treePath, String event,
 		int start, int end, OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		treePath = Objects.toString(treePath, "");
+		event = Objects.toString(event, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2961,7 +2955,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 					if (!StringUtil.wildcardMatches(
 								syncDLObject.getTreePath(), treePath, '_', '%',
 								'\\', true) ||
-							Objects.equals(event, syncDLObject.getEvent())) {
+							event.equals(syncDLObject.getEvent())) {
 						list = null;
 
 						break;
@@ -2985,10 +2979,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindTreePath = false;
 
-			if (treePath == null) {
-				query.append(_FINDER_COLUMN_T_NOTE_TREEPATH_1);
-			}
-			else if (treePath.equals("")) {
+			if (treePath.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_NOTE_TREEPATH_3);
 			}
 			else {
@@ -2999,10 +2990,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindEvent = false;
 
-			if (event == null) {
-				query.append(_FINDER_COLUMN_T_NOTE_EVENT_1);
-			}
-			else if (event.equals("")) {
+			if (event.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_NOTE_EVENT_3);
 			}
 			else {
@@ -3202,6 +3190,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		String treePath, String event,
 		OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		treePath = Objects.toString(treePath, "");
+		event = Objects.toString(event, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -3247,10 +3238,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindTreePath = false;
 
-		if (treePath == null) {
-			query.append(_FINDER_COLUMN_T_NOTE_TREEPATH_1);
-		}
-		else if (treePath.equals("")) {
+		if (treePath.isEmpty()) {
 			query.append(_FINDER_COLUMN_T_NOTE_TREEPATH_3);
 		}
 		else {
@@ -3261,10 +3249,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindEvent = false;
 
-		if (event == null) {
-			query.append(_FINDER_COLUMN_T_NOTE_EVENT_1);
-		}
-		else if (event.equals("")) {
+		if (event.isEmpty()) {
 			query.append(_FINDER_COLUMN_T_NOTE_EVENT_3);
 		}
 		else {
@@ -3390,6 +3375,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByT_NotE(String treePath, String event) {
+		treePath = Objects.toString(treePath, "");
+		event = Objects.toString(event, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_T_NOTE;
 
 		Object[] finderArgs = new Object[] { treePath, event };
@@ -3403,10 +3391,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindTreePath = false;
 
-			if (treePath == null) {
-				query.append(_FINDER_COLUMN_T_NOTE_TREEPATH_1);
-			}
-			else if (treePath.equals("")) {
+			if (treePath.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_NOTE_TREEPATH_3);
 			}
 			else {
@@ -3417,10 +3402,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindEvent = false;
 
-			if (event == null) {
-				query.append(_FINDER_COLUMN_T_NOTE_EVENT_1);
-			}
-			else if (event.equals("")) {
+			if (event.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_NOTE_EVENT_3);
 			}
 			else {
@@ -3564,6 +3546,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	public List<SyncDLObject> findByV_T(String version, String type, int start,
 		int end, OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		version = Objects.toString(version, "");
+		type = Objects.toString(type, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3591,8 +3576,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SyncDLObject syncDLObject : list) {
-					if (!Objects.equals(version, syncDLObject.getVersion()) ||
-							!Objects.equals(type, syncDLObject.getType())) {
+					if (!version.equals(syncDLObject.getVersion()) ||
+							!type.equals(syncDLObject.getType())) {
 						list = null;
 
 						break;
@@ -3616,10 +3601,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_V_T_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_V_T_VERSION_3);
 			}
 			else {
@@ -3630,10 +3612,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_V_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_V_T_TYPE_3);
 			}
 			else {
@@ -3833,6 +3812,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		String version, String type,
 		OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		version = Objects.toString(version, "");
+		type = Objects.toString(type, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -3878,10 +3860,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindVersion = false;
 
-		if (version == null) {
-			query.append(_FINDER_COLUMN_V_T_VERSION_1);
-		}
-		else if (version.equals("")) {
+		if (version.isEmpty()) {
 			query.append(_FINDER_COLUMN_V_T_VERSION_3);
 		}
 		else {
@@ -3892,10 +3871,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindType = false;
 
-		if (type == null) {
-			query.append(_FINDER_COLUMN_V_T_TYPE_1);
-		}
-		else if (type.equals("")) {
+		if (type.isEmpty()) {
 			query.append(_FINDER_COLUMN_V_T_TYPE_3);
 		}
 		else {
@@ -4021,6 +3997,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByV_T(String version, String type) {
+		version = Objects.toString(version, "");
+		type = Objects.toString(type, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_V_T;
 
 		Object[] finderArgs = new Object[] { version, type };
@@ -4034,10 +4013,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_V_T_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_V_T_VERSION_3);
 			}
 			else {
@@ -4048,10 +4024,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_V_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_V_T_TYPE_3);
 			}
 			else {
@@ -4172,6 +4145,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	@Override
 	public SyncDLObject fetchByT_T(String type, long typePK,
 		boolean retrieveFromCache) {
+		type = Objects.toString(type, "");
+
 		Object[] finderArgs = new Object[] { type, typePK };
 
 		Object result = null;
@@ -4197,10 +4172,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_T_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_T_TYPE_3);
 			}
 			else {
@@ -4284,6 +4256,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByT_T(String type, long typePK) {
+		type = Objects.toString(type, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_T_T;
 
 		Object[] finderArgs = new Object[] { type, typePK };
@@ -4297,10 +4271,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_T_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_T_TYPE_3);
 			}
 			else {
@@ -4448,6 +4419,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		long repositoryId, String event, int start, int end,
 		OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		event = Objects.toString(event, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -4469,7 +4442,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 				for (SyncDLObject syncDLObject : list) {
 					if ((modifiedTime >= syncDLObject.getModifiedTime()) ||
 							(repositoryId != syncDLObject.getRepositoryId()) ||
-							Objects.equals(event, syncDLObject.getEvent())) {
+							event.equals(syncDLObject.getEvent())) {
 						list = null;
 
 						break;
@@ -4497,10 +4470,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindEvent = false;
 
-			if (event == null) {
-				query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_1);
-			}
-			else if (event.equals("")) {
+			if (event.isEmpty()) {
 				query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_3);
 			}
 			else {
@@ -4715,6 +4685,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		long modifiedTime, long repositoryId, String event,
 		OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		event = Objects.toString(event, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -4765,10 +4737,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindEvent = false;
 
-		if (event == null) {
-			query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_1);
-		}
-		else if (event.equals("")) {
+		if (event.isEmpty()) {
 			query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_3);
 		}
 		else {
@@ -4959,9 +4928,13 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 			events = new String[0];
 		}
 		else if (events.length > 1) {
-			events = ArrayUtil.distinct(events, NULL_SAFE_STRING_COMPARATOR);
+			for (int i = 0; i < events.length; i++) {
+				events[i] = Objects.toString(events[i], "");
+			}
 
-			Arrays.sort(events, NULL_SAFE_STRING_COMPARATOR);
+			events = ArrayUtil.unique(events);
+
+			Arrays.sort(events);
 		}
 
 		if (events.length == 1) {
@@ -5021,10 +4994,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 				for (int i = 0; i < events.length; i++) {
 					String event = events[i];
 
-					if (event == null) {
-						query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_1);
-					}
-					else if (event.equals("")) {
+					if (event.isEmpty()) {
 						query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_3);
 					}
 					else {
@@ -5131,6 +5101,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	@Override
 	public int countByM_R_NotE(long modifiedTime, long repositoryId,
 		String event) {
+		event = Objects.toString(event, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_M_R_NOTE;
 
 		Object[] finderArgs = new Object[] { modifiedTime, repositoryId, event };
@@ -5148,10 +5120,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindEvent = false;
 
-			if (event == null) {
-				query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_1);
-			}
-			else if (event.equals("")) {
+			if (event.isEmpty()) {
 				query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_3);
 			}
 			else {
@@ -5211,9 +5180,13 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 			events = new String[0];
 		}
 		else if (events.length > 1) {
-			events = ArrayUtil.distinct(events, NULL_SAFE_STRING_COMPARATOR);
+			for (int i = 0; i < events.length; i++) {
+				events[i] = Objects.toString(events[i], "");
+			}
 
-			Arrays.sort(events, NULL_SAFE_STRING_COMPARATOR);
+			events = ArrayUtil.unique(events);
+
+			Arrays.sort(events);
 		}
 
 		Object[] finderArgs = new Object[] {
@@ -5238,10 +5211,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 				for (int i = 0; i < events.length; i++) {
 					String event = events[i];
 
-					if (event == null) {
-						query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_1);
-					}
-					else if (event.equals("")) {
+					if (event.isEmpty()) {
 						query.append(_FINDER_COLUMN_M_R_NOTE_EVENT_3);
 					}
 					else {
@@ -5419,6 +5389,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		long parentFolderId, String type, int start, int end,
 		OrderByComparator<SyncDLObject> orderByComparator,
 		boolean retrieveFromCache) {
+		type = Objects.toString(type, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -5448,7 +5420,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 				for (SyncDLObject syncDLObject : list) {
 					if ((repositoryId != syncDLObject.getRepositoryId()) ||
 							(parentFolderId != syncDLObject.getParentFolderId()) ||
-							!Objects.equals(type, syncDLObject.getType())) {
+							!type.equals(syncDLObject.getType())) {
 						list = null;
 
 						break;
@@ -5476,10 +5448,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_R_P_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_R_P_T_TYPE_3);
 			}
 			else {
@@ -5694,6 +5663,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 		long repositoryId, long parentFolderId, String type,
 		OrderByComparator<SyncDLObject> orderByComparator)
 		throws NoSuchDLObjectException {
+		type = Objects.toString(type, "");
+
 		SyncDLObject syncDLObject = findByPrimaryKey(syncDLObjectId);
 
 		Session session = null;
@@ -5744,10 +5715,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 		boolean bindType = false;
 
-		if (type == null) {
-			query.append(_FINDER_COLUMN_R_P_T_TYPE_1);
-		}
-		else if (type.equals("")) {
+		if (type.isEmpty()) {
 			query.append(_FINDER_COLUMN_R_P_T_TYPE_3);
 		}
 		else {
@@ -5937,9 +5905,13 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 			types = new String[0];
 		}
 		else if (types.length > 1) {
-			types = ArrayUtil.distinct(types, NULL_SAFE_STRING_COMPARATOR);
+			for (int i = 0; i < types.length; i++) {
+				types[i] = Objects.toString(types[i], "");
+			}
 
-			Arrays.sort(types, NULL_SAFE_STRING_COMPARATOR);
+			types = ArrayUtil.unique(types);
+
+			Arrays.sort(types);
 		}
 
 		if (types.length == 1) {
@@ -5999,10 +5971,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 				for (int i = 0; i < types.length; i++) {
 					String type = types[i];
 
-					if (type == null) {
-						query.append(_FINDER_COLUMN_R_P_T_TYPE_1);
-					}
-					else if (type.equals("")) {
+					if (type.isEmpty()) {
 						query.append(_FINDER_COLUMN_R_P_T_TYPE_3);
 					}
 					else {
@@ -6108,6 +6077,8 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	 */
 	@Override
 	public int countByR_P_T(long repositoryId, long parentFolderId, String type) {
+		type = Objects.toString(type, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_R_P_T;
 
 		Object[] finderArgs = new Object[] { repositoryId, parentFolderId, type };
@@ -6125,10 +6096,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 			boolean bindType = false;
 
-			if (type == null) {
-				query.append(_FINDER_COLUMN_R_P_T_TYPE_1);
-			}
-			else if (type.equals("")) {
+			if (type.isEmpty()) {
 				query.append(_FINDER_COLUMN_R_P_T_TYPE_3);
 			}
 			else {
@@ -6188,9 +6156,13 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 			types = new String[0];
 		}
 		else if (types.length > 1) {
-			types = ArrayUtil.distinct(types, NULL_SAFE_STRING_COMPARATOR);
+			for (int i = 0; i < types.length; i++) {
+				types[i] = Objects.toString(types[i], "");
+			}
 
-			Arrays.sort(types, NULL_SAFE_STRING_COMPARATOR);
+			types = ArrayUtil.unique(types);
+
+			Arrays.sort(types);
 		}
 
 		Object[] finderArgs = new Object[] {
@@ -6215,10 +6187,7 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 				for (int i = 0; i < types.length; i++) {
 					String type = types[i];
 
-					if (type == null) {
-						query.append(_FINDER_COLUMN_R_P_T_TYPE_1);
-					}
-					else if (type.equals("")) {
+					if (type.isEmpty()) {
 						query.append(_FINDER_COLUMN_R_P_T_TYPE_3);
 					}
 					else {
@@ -6284,6 +6253,9 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 
 	public SyncDLObjectPersistenceImpl() {
 		setModelClass(SyncDLObject.class);
+
+		setModelImplClass(SyncDLObjectImpl.class);
+		setEntityCacheEnabled(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -6758,54 +6730,6 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	/**
 	 * Returns the sync dl object with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the sync dl object
-	 * @return the sync dl object, or <code>null</code> if a sync dl object with the primary key could not be found
-	 */
-	@Override
-	public SyncDLObject fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED,
-				SyncDLObjectImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SyncDLObject syncDLObject = (SyncDLObject)serializable;
-
-		if (syncDLObject == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				syncDLObject = (SyncDLObject)session.get(SyncDLObjectImpl.class,
-						primaryKey);
-
-				if (syncDLObject != null) {
-					cacheResult(syncDLObject);
-				}
-				else {
-					entityCache.putResult(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED,
-						SyncDLObjectImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(SyncDLObjectModelImpl.ENTITY_CACHE_ENABLED,
-					SyncDLObjectImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return syncDLObject;
-	}
-
-	/**
-	 * Returns the sync dl object with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param syncDLObjectId the primary key of the sync dl object
 	 * @return the sync dl object, or <code>null</code> if a sync dl object with the primary key could not be found
 	 */
@@ -7102,6 +7026,11 @@ public class SyncDLObjectPersistenceImpl extends BasePersistenceImpl<SyncDLObjec
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

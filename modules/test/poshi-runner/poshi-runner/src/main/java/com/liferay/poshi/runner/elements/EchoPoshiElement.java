@@ -14,6 +14,8 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,7 +39,8 @@ public class EchoPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(poshiScript)) {
 			return new EchoPoshiElement(parentPoshiElement, poshiScript);
@@ -47,8 +50,10 @@ public class EchoPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
-		String content = getQuotedContent(poshiScript);
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
+		String content = getDoubleQuotedContent(poshiScript);
 
 		addAttribute("message", content);
 	}
@@ -72,7 +77,8 @@ public class EchoPoshiElement extends PoshiElement {
 	}
 
 	protected EchoPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}
@@ -88,7 +94,8 @@ public class EchoPoshiElement extends PoshiElement {
 	}
 
 	protected EchoPoshiElement(
-		String name, PoshiElement parentPoshiElement, String poshiScript) {
+			String name, PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(name, parentPoshiElement, poshiScript);
 	}

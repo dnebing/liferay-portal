@@ -55,25 +55,28 @@ public class MethodNamingCheck extends BaseCheck {
 			"_" + StringUtil.toLowerCase(matcher.group(1)) + matcher.group(2);
 		String noUnderscoreName = methodName.substring(1);
 
-		DetailAST parentAST = detailAST.getParent();
+		DetailAST parentDetailAST = detailAST.getParent();
 
-		List<DetailAST> methodDefASTList = DetailASTUtil.getAllChildTokens(
-			parentAST, false, TokenTypes.METHOD_DEF);
+		List<DetailAST> methodDefinitionDetailASTList =
+			DetailASTUtil.getAllChildTokens(
+				parentDetailAST, false, TokenTypes.METHOD_DEF);
 
-		for (DetailAST methodDefAST : methodDefASTList) {
-			String curMethodName = _getMethodName(methodDefAST);
+		for (DetailAST methodDefinitionDetailAST :
+				methodDefinitionDetailASTList) {
+
+			String curMethodName = _getMethodName(methodDefinitionDetailAST);
 
 			if (curMethodName.equals(noUnderscoreName) ||
 				(curMethodName.equals(noDoName) &&
 				 Objects.equals(
 					 DetailASTUtil.getSignature(detailAST),
-					 DetailASTUtil.getSignature(methodDefAST)))) {
+					 DetailASTUtil.getSignature(methodDefinitionDetailAST)))) {
 
 				return;
 			}
 		}
 
-		log(detailAST.getLineNo(), _MSG_RENAME_METHOD, methodName, noDoName);
+		log(detailAST, _MSG_RENAME_METHOD, methodName, noDoName);
 	}
 
 	private void _checkNonMethodName(DetailAST detailAST, String methodName) {
@@ -100,22 +103,20 @@ public class MethodNamingCheck extends BaseCheck {
 			sb.append(s.substring(i - 1));
 		}
 
-		log(
-			detailAST.getLineNo(), _MSG_RENAME_METHOD, methodName,
-			sb.toString());
+		log(detailAST, _MSG_RENAME_METHOD, methodName, sb.toString());
 	}
 
 	private String _getMethodName(DetailAST detailAST) {
-		DetailAST nameAST = detailAST.findFirstToken(TokenTypes.IDENT);
+		DetailAST nameDetailAST = detailAST.findFirstToken(TokenTypes.IDENT);
 
-		return nameAST.getText();
+		return nameDetailAST.getText();
 	}
 
 	private static final String _MSG_RENAME_METHOD = "method.rename";
 
-	private final Pattern _doMethodNamePattern = Pattern.compile(
+	private static final Pattern _doMethodNamePattern = Pattern.compile(
 		"^_do([A-Z])(.*)$");
-	private final Pattern _nonMethodNamePattern = Pattern.compile(
+	private static final Pattern _nonMethodNamePattern = Pattern.compile(
 		"(^non|.*Non)([A-Z])(.*)");
 
 }

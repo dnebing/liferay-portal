@@ -187,9 +187,6 @@ public class AssetPublisherConfigurationAction
 
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
-		String portletResource = ParamUtil.getString(
-			actionRequest, "portletResource");
-
 		PortletPreferences preferences = actionRequest.getPreferences();
 
 		if (cmd.equals(Constants.TRANSLATE)) {
@@ -213,6 +210,8 @@ public class AssetPublisherConfigurationAction
 					validateEmail(actionRequest, "emailAssetEntryAdded");
 					validateEmailFrom(actionRequest);
 				}
+
+				updateSelectionStyle(actionRequest);
 
 				updateDisplaySettings(actionRequest);
 
@@ -244,7 +243,18 @@ public class AssetPublisherConfigurationAction
 				addScope(actionRequest, preferences);
 			}
 			else if (cmd.equals("add-selection")) {
-				assetPublisherWebUtil.addSelection(actionRequest, preferences);
+				long[] assetEntryIds = ParamUtil.getLongValues(
+					actionRequest, "assetEntryIds");
+				int assetEntryOrder = ParamUtil.getInteger(
+					actionRequest, "assetEntryOrder");
+				String assetEntryType = ParamUtil.getString(
+					actionRequest, "assetEntryType");
+
+				for (long assetEntryId : assetEntryIds) {
+					assetPublisherWebUtil.addSelection(
+						preferences, assetEntryId, assetEntryOrder,
+						assetEntryType);
+				}
 			}
 			else if (cmd.equals("move-selection-down")) {
 				moveSelectionDown(actionRequest, preferences);
@@ -267,6 +277,9 @@ public class AssetPublisherConfigurationAction
 
 			if (SessionErrors.isEmpty(actionRequest)) {
 				preferences.store();
+
+				String portletResource = ParamUtil.getString(
+					actionRequest, "portletResource");
 
 				SessionMessages.add(
 					actionRequest,
@@ -411,10 +424,9 @@ public class AssetPublisherConfigurationAction
 		if (defaultAssetClassTypeId > -1) {
 			return new String[] {String.valueOf(defaultAssetClassTypeId)};
 		}
-		else {
-			return StringUtil.split(
-				getParameter(actionRequest, "classTypeIds" + assetClassName));
-		}
+
+		return StringUtil.split(
+			getParameter(actionRequest, "classTypeIds" + assetClassName));
 	}
 
 	protected AssetQueryRule getQueryRule(
@@ -687,10 +699,10 @@ public class AssetPublisherConfigurationAction
 			LayoutRevision layoutRevision =
 				layoutRevisionLocalService.getLayoutRevision(layoutRevisionId);
 
-			PortletPreferencesImpl portletPreferences =
-				(PortletPreferencesImpl)actionRequest.getPreferences();
-
 			if (layoutRevision != null) {
+				PortletPreferencesImpl portletPreferences =
+					(PortletPreferencesImpl)actionRequest.getPreferences();
+
 				portletPreferences.setPlid(
 					layoutRevision.getLayoutRevisionId());
 			}
@@ -777,6 +789,14 @@ public class AssetPublisherConfigurationAction
 			i++;
 
 			values = preferences.getValues("queryValues" + i, new String[0]);
+		}
+	}
+
+	protected void updateSelectionStyle(ActionRequest actionRequest) {
+		String selectionStyle = getParameter(actionRequest, "selectionStyle");
+
+		if (Validator.isNull(selectionStyle)) {
+			setPreference(actionRequest, "selectionStyle", "dynamic");
 		}
 	}
 

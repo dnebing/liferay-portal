@@ -48,7 +48,7 @@ public class PwdAuthenticator {
 			return true;
 		}
 		else if (GetterUtil.getBoolean(
-					 PropsUtil.get(PropsKeys.AUTH_MAC_ALLOW))) {
+					PropsUtil.get(PropsKeys.AUTH_MAC_ALLOW))) {
 
 			try {
 				MessageDigest digester = MessageDigest.getInstance(
@@ -74,9 +74,8 @@ public class PwdAuthenticator {
 				if (clearTextPassword.equals(encryptedPassword)) {
 					return true;
 				}
-				else {
-					return false;
-				}
+
+				return false;
 			}
 			catch (NoSuchAlgorithmException nsae) {
 				throw new SystemException(nsae);

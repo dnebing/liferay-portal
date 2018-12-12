@@ -71,8 +71,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.ccpp.Profile;
 
@@ -495,9 +493,8 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		if (publicParameterMap == null) {
 			return Collections.emptyMap();
 		}
-		else {
-			return Collections.unmodifiableMap(publicParameterMap);
-		}
+
+		return Collections.unmodifiableMap(publicParameterMap);
 	}
 
 	@Override
@@ -525,9 +522,8 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		if (session == null) {
 			return StringPool.BLANK;
 		}
-		else {
-			return session.getId();
-		}
+
+		return session.getId();
 	}
 
 	@Override
@@ -603,14 +599,6 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 
 		Map<String, String[]> publicRenderParametersMap =
 			PublicRenderParametersPool.get(request, plid);
-
-		if (invokerPortlet != null) {
-			if (invokerPortlet.isStrutsPortlet() ||
-				invokerPortlet.isStrutsBridgePortlet()) {
-
-				_strutsPortlet = true;
-			}
-		}
 
 		String portletNamespace = PortalUtil.getPortletNamespace(_portletName);
 
@@ -719,7 +707,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 					entry.getKey(), entry.getValue(), portletNamespace,
 					_portletSpecMajorVersion);
 
-				if (requestParameter.isNameInvalid(_strutsPortlet)) {
+				if (requestParameter.isNameInvalid()) {
 					continue;
 				}
 
@@ -884,11 +872,14 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			for (PublicRenderParameter publicRenderParameter :
 					publicRenderParameters) {
 
-				allRenderParameters.put(
-					publicRenderParameter.getIdentifier(),
-					publicRenderParametersMap.get(
-						PortletQNameUtil.getPublicRenderParameterName(
-							publicRenderParameter.getQName())));
+				String[] values = publicRenderParametersMap.get(
+					PortletQNameUtil.getPublicRenderParameterName(
+						publicRenderParameter.getQName()));
+
+				if (values != null) {
+					allRenderParameters.put(
+						publicRenderParameter.getIdentifier(), values);
+				}
 			}
 
 			Map<String, String[]> privateRenderParameters =
@@ -975,7 +966,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 					}
 				}
 				else if (!privateRenderParameterNames.contains(
-							 requestParameter.getName())) {
+							requestParameter.getName())) {
 
 					requestParameter.setValues(null);
 				}
@@ -992,6 +983,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			allRenderParameters, publicRenderParameterNames, portletNamespace);
 	}
 
+	@Override
 	public void invalidateSession() {
 		_invalidSession = true;
 	}
@@ -1001,10 +993,8 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 		if ((portletMode == null) || Validator.isNull(portletMode.toString())) {
 			return true;
 		}
-		else {
-			return _portlet.hasPortletMode(
-				getResponseContentType(), portletMode);
-		}
+
+		return _portlet.hasPortletMode(getResponseContentType(), portletMode);
 	}
 
 	@Override
@@ -1042,10 +1032,9 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 				return RoleLocalServiceUtil.hasUserRole(
 					_remoteUserId, companyId, roleLink, true);
 			}
-			else {
-				return RoleLocalServiceUtil.hasUserRole(
-					_remoteUserId, companyId, role, true);
-			}
+
+			return RoleLocalServiceUtil.hasUserRole(
+				_remoteUserId, companyId, role, true);
 		}
 		catch (Exception e) {
 			_log.error("Unable to check if a user is in role " + role, e);
@@ -1239,9 +1228,6 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletRequestImpl.class);
 
-	private static final Pattern _strutsPortletIgnoredParamtersPattern =
-		Pattern.compile(PropsValues.STRUTS_PORTLET_IGNORED_PARAMETERS_REGEXP);
-
 	private boolean _invalidSession;
 	private Locale _locale;
 	private HttpServletRequest _originalRequest;
@@ -1260,7 +1246,6 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 	private RenderParameters _renderParameters;
 	private HttpServletRequest _request;
 	private PortletSessionImpl _session;
-	private boolean _strutsPortlet;
 	private boolean _triggeredByActionURL;
 	private Principal _userPrincipal;
 	private WindowState _windowState;
@@ -1322,7 +1307,7 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 			return _values;
 		}
 
-		public boolean isNameInvalid(boolean strutsPortlet) {
+		public boolean isNameInvalid() {
 			String name = getName();
 
 			if (Validator.isNull(name) ||
@@ -1333,15 +1318,6 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 				PortalUtil.isReservedParameter(name)) {
 
 				return true;
-			}
-
-			if (strutsPortlet) {
-				Matcher matcher = _strutsPortletIgnoredParamtersPattern.matcher(
-					name);
-
-				if (matcher.matches()) {
-					return true;
-				}
 			}
 
 			return false;
@@ -1360,10 +1336,11 @@ public abstract class PortletRequestImpl implements LiferayPortletRequest {
 				int pos = name.indexOf(
 					PortletQName.PRIVATE_RENDER_PARAMETER_NAMESPACE);
 
-				int privateRenderParameterNamespaceLength =
-					PortletQName.PRIVATE_RENDER_PARAMETER_NAMESPACE.length();
-
 				if (pos >= 0) {
+					int privateRenderParameterNamespaceLength =
+						PortletQName.PRIVATE_RENDER_PARAMETER_NAMESPACE.
+							length();
+
 					String privateRenderParameterName = name.substring(0, pos);
 
 					privateRenderParameterName =

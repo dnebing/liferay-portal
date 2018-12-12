@@ -325,20 +325,20 @@ public abstract class BaseSourceCheck implements SourceCheck {
 	}
 
 	protected int getLevel(String s) {
-		return SourceUtil.getLevel(s);
+		return ToolsUtil.getLevel(s);
 	}
 
 	protected int getLevel(
 		String s, String increaseLevelString, String decreaseLevelString) {
 
-		return SourceUtil.getLevel(s, increaseLevelString, decreaseLevelString);
+		return ToolsUtil.getLevel(s, increaseLevelString, decreaseLevelString);
 	}
 
 	protected int getLevel(
 		String s, String[] increaseLevelStrings,
 		String[] decreaseLevelStrings) {
 
-		return SourceUtil.getLevel(
+		return ToolsUtil.getLevel(
 			s, increaseLevelStrings, decreaseLevelStrings);
 	}
 
@@ -346,25 +346,12 @@ public abstract class BaseSourceCheck implements SourceCheck {
 		String s, String[] increaseLevelStrings, String[] decreaseLevelStrings,
 		int startLevel) {
 
-		return SourceUtil.getLevel(
+		return ToolsUtil.getLevel(
 			s, increaseLevelStrings, decreaseLevelStrings, startLevel);
 	}
 
 	protected String getLine(String content, int lineNumber) {
-		int nextLineStartPos = getLineStartPos(content, lineNumber);
-
-		if (nextLineStartPos == -1) {
-			return null;
-		}
-
-		int nextLineEndPos = content.indexOf(
-			CharPool.NEW_LINE, nextLineStartPos);
-
-		if (nextLineEndPos == -1) {
-			return content.substring(nextLineStartPos);
-		}
-
-		return content.substring(nextLineStartPos, nextLineEndPos);
+		return SourceUtil.getLine(content, lineNumber);
 	}
 
 	protected int getLineNumber(String content, int pos) {
@@ -372,17 +359,7 @@ public abstract class BaseSourceCheck implements SourceCheck {
 	}
 
 	protected int getLineStartPos(String content, int lineNumber) {
-		int x = 0;
-
-		for (int i = 1; i < lineNumber; i++) {
-			x = content.indexOf(CharPool.NEW_LINE, x + 1);
-
-			if (x == -1) {
-				return x;
-			}
-		}
-
-		return x + 1;
+		return SourceUtil.getLineStartPos(content, lineNumber);
 	}
 
 	protected int getMaxLineLength() {

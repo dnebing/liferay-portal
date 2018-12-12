@@ -14,6 +14,7 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
 import com.liferay.poshi.runner.util.StringUtil;
 
 import org.dom4j.Comment;
@@ -35,7 +36,9 @@ public class InlinePoshiComment extends PoshiComment {
 	}
 
 	@Override
-	public PoshiComment clone(String poshiScript) {
+	public PoshiComment clone(String poshiScript)
+		throws PoshiScriptParserException {
+
 		if (isPoshiScriptComment(poshiScript)) {
 			return new InlinePoshiComment(poshiScript);
 		}
@@ -55,7 +58,9 @@ public class InlinePoshiComment extends PoshiComment {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		if (isPoshiScriptComment(poshiScript)) {
 			String text = poshiScript.substring(2);
 
@@ -80,7 +85,9 @@ public class InlinePoshiComment extends PoshiComment {
 		super(comment);
 	}
 
-	protected InlinePoshiComment(String poshiScript) {
+	protected InlinePoshiComment(String poshiScript)
+		throws PoshiScriptParserException {
+
 		super(poshiScript);
 	}
 

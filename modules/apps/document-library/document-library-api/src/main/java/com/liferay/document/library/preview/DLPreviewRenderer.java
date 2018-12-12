@@ -14,6 +14,8 @@
 
 package com.liferay.document.library.preview;
 
+import com.liferay.portal.kernel.exception.PortalException;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -21,11 +23,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Renders file previews in conjunction with {@link DLPreviewRendererProvider}.
+ *
  * @author Alejandro Tardín
  */
 public interface DLPreviewRenderer {
 
+	/**
+	 * Renders content to the response.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @see   DLPreviewRendererProvider#getPreviewDLPreviewRendererOptional(
+	 *        FileVersion)
+	 * @see   DLPreviewRendererProvider#getThumbnailDLPreviewRendererOptional(
+	 *        FileVersion)
+	 */
 	public void render(HttpServletRequest request, HttpServletResponse response)
-		throws IOException, ServletException;
+		throws IOException, PortalException, ServletException;
 
 }

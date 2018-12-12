@@ -1,0 +1,74 @@
+.manage-collaborators-dialog {
+	background-color: #FFF;
+
+	.autofit-col > div.form-group {
+		margin: 0;
+	}
+
+	.autofit-col.no-padding {
+		padding: 0;
+	}
+
+	.modal-body.inline-scroller .empty-collaborators {
+		height: 125px;
+		text-align: center;
+
+		.message-content {
+			margin: 0 auto;
+			max-width: 340px;
+		}
+	}
+
+	@media (min-height: 400px) {
+		.modal-body.inline-scroller .empty-collaborators {
+			height: 320px;
+		}
+	}
+
+	h4 {
+		margin-bottom: 0;
+	}
+
+	input[type="date"] {
+		font-size: .875rem;
+		height: 2rem;
+		padding-top: .5em;
+		width: 165px;
+	}
+
+	.list-group-item {
+		border: 0;
+		padding: .5rem 20px;
+
+		.expiration-icon.hidden {
+			visibility: hidden;
+		}
+
+		&.active .expiration-icon.hidden {
+			visibility: visible;
+		}
+	}
+
+	.modal-body.inline-scroller {
+		padding: 0;
+	}
+
+	.modal-footer {
+		bottom: 0;
+		position: absolute;
+		rigth: 0;
+		width: 100%;
+	}
+
+	select.form-control:not([multiple]):not([size]) {
+		background-color: transparent;
+		font-size: .875rem;
+		height: 2rem;
+		padding-top: .25em;
+	}
+
+	ul.list-group {
+		margin-bottom: 0;
+		margin-top: 1em;
+	}
+}

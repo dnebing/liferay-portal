@@ -26,7 +26,7 @@ import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.url.URLContainer;
 import com.liferay.portal.kernel.util.BasePortalLifecycle;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PortalLifecycle;
 import com.liferay.portal.kernel.util.PortalLifecycleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -217,8 +217,8 @@ public class HotDeployImpl implements HotDeploy {
 		}
 
 		if (hasDependencies) {
-			if (_log.isInfoEnabled()) {
-				_log.info("Deploying " + servletContextName + " from queue");
+			if (_log.isDebugEnabled()) {
+				_log.debug("Deploying " + servletContextName + " from queue");
 			}
 
 			for (int i = 0; i < _hotDeployListeners.size(); i++) {
@@ -246,7 +246,7 @@ public class HotDeployImpl implements HotDeploy {
 			ClassLoader contextClassLoader = getContextClassLoader();
 
 			try {
-				setContextClassLoader(ClassLoaderUtil.getPortalClassLoader());
+				setContextClassLoader(PortalClassLoaderUtil.getClassLoader());
 
 				List<HotDeployEvent> dependentEvents = new ArrayList<>(
 					_dependentHotDeployEvents);
@@ -302,7 +302,9 @@ public class HotDeployImpl implements HotDeploy {
 	}
 
 	protected ClassLoader getContextClassLoader() {
-		return ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		return currentThread.getContextClassLoader();
 	}
 
 	protected String getRequiredServletContextNames(
@@ -326,7 +328,9 @@ public class HotDeployImpl implements HotDeploy {
 	}
 
 	protected void setContextClassLoader(ClassLoader contextClassLoader) {
-		ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+		Thread currentThread = Thread.currentThread();
+
+		currentThread.setContextClassLoader(contextClassLoader);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(HotDeployImpl.class);

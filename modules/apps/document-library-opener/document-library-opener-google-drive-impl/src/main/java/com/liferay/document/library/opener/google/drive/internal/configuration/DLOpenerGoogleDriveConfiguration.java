@@ -29,10 +29,30 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface DLOpenerGoogleDriveConfiguration {
 
-	@Meta.AD(description = "client-id-description", name = "client-id")
+	/**
+	 * Returns the client ID of the Google application to use when operating on
+	 * Google Drive files. If <code>null</code> or empty, the Google Drive
+	 * integration disables itself.
+	 *
+	 * @return the client ID
+	 */
+	@Meta.AD(
+		description = "client-id-description", name = "client-id",
+		required = false
+	)
 	public String clientId();
 
-	@Meta.AD(description = "client-secret-description", name = "client-secret")
+	/**
+	 * Returns the client secret of the Google application to use when operating
+	 * on Google Drive files. If <code>null</code> or empty, the Google Drive
+	 * integration disables itself.
+	 *
+	 * @return the client secret
+	 */
+	@Meta.AD(
+		description = "client-secret-description", name = "client-secret",
+		required = false
+	)
 	public String clientSecret();
 
 }

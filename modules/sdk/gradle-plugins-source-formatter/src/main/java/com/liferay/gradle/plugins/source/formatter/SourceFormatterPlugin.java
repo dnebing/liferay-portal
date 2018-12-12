@@ -17,10 +17,16 @@ package com.liferay.gradle.plugins.source.formatter;
 import com.liferay.gradle.util.GradleUtil;
 import com.liferay.gradle.util.Validator;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.UncheckedIOException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.execution.TaskExecutionGraph;
@@ -154,6 +160,27 @@ public class SourceFormatterPlugin implements Plugin<Project> {
 			formatSourceTask.setFormatLocalChanges(
 				Boolean.parseBoolean(formatLocalChanges));
 		}
+
+		String prettyPrint = GradleUtil.getTaskPrefixedProperty(
+			formatSourceTask, "pretty.print");
+
+		if (Boolean.parseBoolean(prettyPrint)) {
+			final ByteArrayOutputStream byteArrayOutputStream =
+				new ByteArrayOutputStream();
+
+			formatSourceTask.setStandardOutput(byteArrayOutputStream);
+
+			Action<Task> taskAction = new Action<Task>() {
+
+				@Override
+				public void execute(Task task) {
+					_prettyPrint(byteArrayOutputStream);
+				}
+
+			};
+
+			formatSourceTask.doLast(taskAction);
+		}
 	}
 
 	private void _configureTasksFormatSource(
@@ -171,6 +198,27 @@ public class SourceFormatterPlugin implements Plugin<Project> {
 				}
 
 			});
+	}
+
+	private void _prettyPrint(ByteArrayOutputStream byteArrayOutputStream) {
+		try {
+			String s = byteArrayOutputStream.toString();
+
+			try (BufferedReader bufferedReader = new BufferedReader(
+					new StringReader(s.trim()))) {
+
+				String line = null;
+
+				while ((line = bufferedReader.readLine()) != null) {
+					if (!line.matches("Processing checks: \\d*% completed")) {
+						System.out.println(line);
+					}
+				}
+			}
+		}
+		catch (IOException ioe) {
+			throw new UncheckedIOException(ioe);
+		}
 	}
 
 	private static final Spec<Task> _skipIfExecutingParentTaskSpec =

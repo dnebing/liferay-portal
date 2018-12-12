@@ -14,21 +14,35 @@
 
 package com.liferay.jenkins.results.parser;
 
+import java.lang.reflect.Proxy;
+
 /**
  * @author Michael Hashimoto
  */
 public class BuildRunnerFactory {
 
-	public static BuildRunner newBuildRunner(BuildData buildData) {
-		if (buildData instanceof PortalBatchBuildData) {
-			return new PortalBatchBuildRunner((PortalBatchBuildData)buildData);
-		}
-		else if (buildData instanceof PortalTopLevelBuildData) {
-			return new PortalTopLevelBuildRunner(
+	public static BuildRunner<?, ?> newBuildRunner(BuildData buildData) {
+		String jobName = buildData.getJobName();
+
+		BuildRunner<?, ?> buildRunner = null;
+
+		if (jobName.equals("git-bisect-tool")) {
+			buildRunner = new GitBisectToolTopLevelBuildRunner(
 				(PortalTopLevelBuildData)buildData);
 		}
 
-		throw new RuntimeException("Invalid build data " + buildData);
+		if (jobName.contains("-batch")) {
+			buildRunner = new DefaultPortalBatchBuildRunner(
+				(PortalBatchBuildData)buildData);
+		}
+
+		if (buildRunner == null) {
+			throw new RuntimeException("Invalid build data " + buildData);
+		}
+
+		return (BuildRunner<?, ?>)Proxy.newProxyInstance(
+			BuildRunner.class.getClassLoader(),
+			new Class<?>[] {BuildRunner.class}, new MethodLogger(buildRunner));
 	}
 
 }

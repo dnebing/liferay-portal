@@ -56,7 +56,8 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  * @author Marcellus Tavares
  */
 @Component(
-	immediate = true, property = "ddm.form.values.deserializer.type=json"
+	immediate = true, property = "ddm.form.values.deserializer.type=json",
+	service = DDMFormValuesDeserializer.class
 )
 public class DDMFormValuesJSONDeserializer
 	implements DDMFormValuesDeserializer {
@@ -210,9 +211,8 @@ public class DDMFormValuesJSONDeserializer
 		if (isLocalized(valueJSONObject)) {
 			return getLocalizedValue(valueJSONObject);
 		}
-		else {
-			return new UnlocalizedValue(jsonObject.getString("value"));
-		}
+
+		return new UnlocalizedValue(jsonObject.getString("value"));
 	}
 
 	protected boolean isLocalized(JSONObject jsonObject) {

@@ -159,6 +159,197 @@
 		</execute>
 	</command>
 
+	<command name="addUserAndSuborganization">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="Organization#addCP">
+			<var name="orgName" value="Organization2" />
+			<var name="orgType" value="Organization" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Suborganization#addCP">
+			<var name="orgName" value="Organization2" />
+			<var name="suborgName" value="Sub-organization2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Suborganization#addCP">
+			<var name="orgName" value="Organization1" />
+			<var name="suborgName" value="Sub-organization1" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="User#addCP">
+			<var name="userEmailAddress" value="user2@liferay.com" />
+			<var name="userFirstName" value="user2" />
+			<var name="userLastName" value="user2" />
+			<var name="userScreenName" value="user2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#addMemberCP">
+			<var name="orgName" value="Organization1" />
+			<var name="userFirstName" value="user2" />
+			<var name="userLastName" value="user2" />
+			<var name="userName" value="user2 user2" />
+			<var name="userScreenName" value="user2" />
+		</execute>
+
+		<execute macro="Organization#addMemberCP">
+			<var name="orgName" value="Sub-organization1" />
+			<var name="userFirstName" value="user2" />
+			<var name="userLastName" value="user2" />
+			<var name="userName" value="user2 user2" />
+			<var name="userScreenName" value="user2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#gotoCP">
+			<var name="orgName" value="Organization1" />
+			<var name="searchToken" value="Organization1" />
+		</execute>
+
+		<execute macro="User#searchCP">
+			<var name="searchTerm" value="usersn" />
+		</execute>
+
+		<execute macro="Organization#viewAssignMemberCP">
+			<var name="userName" value="userfn userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#editSiteCP">
+			<var name="orgName" value="Organization1" />
+			<var name="orgNameEdit" value="Organization1 Edit" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#editSiteCP">
+			<var name="orgName" value="Sub-organization1" />
+			<var name="orgNameEdit" value="Sub-organization1 Edit" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#deleteCP">
+			<var name="orgName" value="Sub-organization2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#deleteCP">
+			<var name="orgName" value="Organization2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#removeMemberCP">
+			<var name="orgName" value="Sub-organization1 Edit" />
+			<var name="userFullName" value="user2 user2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#deleteCP">
+			<var name="orgName" value="Sub-organization1 Edit" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
+		<execute macro="Organization#searchCP">
+			<var name="orgName" value="Organization1 Edit" />
+			<var name="searchTerm" value="Organization1 Edit" />
+		</execute>
+
+		<execute macro="Organization#viewCP">
+			<var name="orgName" value="Organization1 Edit" />
+			<var name="orgType" value="Organization" />
+		</execute>
+	</command>
+
 	<command name="addWCStructureAndTemplate">
 		<execute macro="Navigator#openURL" />
 
@@ -202,16 +393,11 @@
 		</execute>
 
 		<execute macro="WebContentTemplates#addCP">
+			<var name="structureName" value="WC Structure Name" />
 			<var name="templateDescription" value="WC Template Description" />
 			<var name="templateFieldNames" value="Text" />
 			<var name="templateName" value="WC Template Name" />
 		</execute>
-
-		<execute macro="WebContentTemplates#addStructure">
-			<var name="structureName" value="WC Structure Name" />
-		</execute>
-
-		<execute macro="DDLDataDefinition#save" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -1145,6 +1331,99 @@
 		</execute>
 	</command>
 
+	<command name="ViewPortletsPermissions">
+		<execute macro="User#logoutAndLoginPG">
+			<var name="userLoginEmailAddress" value="userea1@liferay.com" />
+			<var name="userLoginFullName" value="userfn1 userln1" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Message Boards Page" />
+			<var name="siteName" value="Site Name 1" />
+		</execute>
+
+		<execute macro="MessageboardsThread#gotoPG">
+			<var name="lastPostUserName" value="Test Test" />
+			<var name="replyCount" value="0" />
+			<var name="threadSubject" value="Message Boards Subject" />
+		</execute>
+
+		<execute macro="MessageboardsThread#viewPG">
+			<var name="threadBody" value="Message Boards Body" />
+			<var name="threadSubject" value="Message Boards Subject" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Message Boards Page" />
+			<var name="siteName" value="Site Name 1" />
+		</execute>
+
+		<execute function="AssertElementNotPresent" locator1="Portlet#OPTIONS_ICON" />
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Web Content Page" />
+			<var name="siteName" value="Site Name 1" />
+		</execute>
+
+		<execute macro="WebContent#viewPGViaWCD">
+			<var name="webContentContent" value="Web Content Content" />
+		</execute>
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="http://localhost:8080/web/site-name-2/blogs-page" />
+		</execute>
+
+		<execute macro="Portlet#viewNoPermissionPG" />
+
+		<execute macro="User#logoutAndLoginPG">
+			<var name="userLoginEmailAddress" value="userea2@liferay.com" />
+			<var name="userLoginFullName" value="userfn2 userln2" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Wiki Page" />
+			<var name="siteName" value="Site Name 2" />
+		</execute>
+
+		<execute macro="WikiPage#viewFrontPagePG">
+			<var name="wikiPageContent" value="Wiki Front Page Content" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Wiki Page" />
+			<var name="siteName" value="Site Name 2" />
+		</execute>
+
+		<execute macro="Portlet#viewPortletOptions">
+			<var name="OptionsName" value="Configuration" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Documents and Media Page" />
+			<var name="siteName" value="Site Name 2" />
+		</execute>
+
+		<execute macro="DMDocument#viewPG">
+			<var name="dmDocumentTitle" value="Document1" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Documents and Media Page" />
+			<var name="siteName" value="Site Name 2" />
+		</execute>
+
+		<execute macro="Portlet#viewPortletOptions">
+			<var name="OptionsName" value="Permissions" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Blogs Page" />
+			<var name="siteName" value="Site Name 2" />
+		</execute>
+
+		<execute macro="Portlet#viewNoPermissionPG" />
+	</command>
+
 	<command name="viewStagingNestedPortlets">
 		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Staging Test Page" />
@@ -1181,9 +1460,25 @@
 			<var name="pageName" value="Document" />
 		</execute>
 
-		<execute macro="LexiconEntry#changeDisplayStyle">
-			<var name="displayStyle" value="list" />
-		</execute>
+		<var name="key_menuItem" value="List" />
+
+		<execute function="Click" locator1="Icon#CURRENT_DISPLAY_STYLE" />
+
+		<if>
+			<condition function="IsElementPresent" locator1="MenuItem#ANY_MENU_ITEM" />
+			<then>
+				<execute function="Click" locator1="MenuItem#ANY_MENU_ITEM" />
+			</then>
+			<else>
+				<execute macro="Navigator#gotoPage">
+					<var name="pageName" value="Document" />
+				</execute>
+
+				<execute function="Click" locator1="Icon#CURRENT_DISPLAY_STYLE" />
+
+				<execute function="Click" locator1="MenuItem#ANY_MENU_ITEM" />
+			</else>
+		</if>
 
 		<execute macro="DMDocument#viewPG">
 			<var name="dmDocumentTitle" value="Document1" />

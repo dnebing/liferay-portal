@@ -15,13 +15,14 @@
 package com.liferay.document.library.opener.google.drive.web.internal.portlet.action;
 
 import com.liferay.document.library.constants.DLPortletKeys;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.opener.google.drive.DLOpenerGoogleDriveFileReference;
 import com.liferay.document.library.opener.google.drive.DLOpenerGoogleDriveManager;
 import com.liferay.document.library.opener.google.drive.constants.DLOpenerGoogleDriveMimeTypes;
+import com.liferay.document.library.opener.google.drive.upload.UniqueFileEntryTitleProvider;
 import com.liferay.document.library.opener.google.drive.web.internal.constants.DLOpenerGoogleDriveWebConstants;
 import com.liferay.document.library.opener.google.drive.web.internal.constants.DLOpenerGoogleDriveWebKeys;
-import com.liferay.document.library.opener.google.drive.web.internal.upload.UniqueFileEntryTitleProvider;
 import com.liferay.document.library.opener.google.drive.web.internal.util.OAuth2Helper;
 import com.liferay.document.library.opener.google.drive.web.internal.util.State;
 import com.liferay.petra.string.StringPool;
@@ -58,6 +59,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	property = {
+		"javax.portlet.name=" + DLPortletKeys.DOCUMENT_LIBRARY,
 		"javax.portlet.name=" + DLPortletKeys.DOCUMENT_LIBRARY_ADMIN,
 		"mvc.command.name=/document_library/edit_in_google_docs"
 	},
@@ -74,10 +76,11 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 			WebKeys.THEME_DISPLAY);
 
 		try {
-			long fileEntryId = ParamUtil.getLong(actionRequest, "fileEntryId");
-
 			if (_dlOpenerGoogleDriveManager.hasValidCredential(
 					themeDisplay.getUserId())) {
+
+				long fileEntryId = ParamUtil.getLong(
+					actionRequest, "fileEntryId");
 
 				_executeCommand(actionRequest, fileEntryId);
 			}
@@ -124,9 +127,6 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 	private void _executeCommand(ActionRequest actionRequest, long fileEntryId)
 		throws PortalException {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		if (cmd.equals(DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_ADD)) {
@@ -148,6 +148,8 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 						() -> _addGoogleDriveFileEntry(
 							repositoryId, folderId, contentType,
 							serviceContext)));
+
+				hideDefaultSuccessMessage(actionRequest);
 			}
 			catch (PortalException pe) {
 				throw pe;
@@ -157,26 +159,30 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 			}
 		}
 		else if (cmd.equals(
-					 DLOpenerGoogleDriveWebConstants.
-						 GOOGLE_DRIVE_CANCEL_CHECKOUT)) {
+					DLOpenerGoogleDriveWebConstants.
+						GOOGLE_DRIVE_CANCEL_CHECKOUT)) {
 
 			_dlAppService.cancelCheckOut(fileEntryId);
 		}
 		else if (cmd.equals(
-					 DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_CHECKIN)) {
+					DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_CHECKIN)) {
 
-			boolean majorVersion = ParamUtil.getBoolean(
-				actionRequest, "majorVersion");
+			DLVersionNumberIncrease dlVersionNumberIncrease =
+				DLVersionNumberIncrease.valueOf(
+					ParamUtil.getString(actionRequest, "versionIncrease"),
+					DLVersionNumberIncrease.AUTOMATIC);
+
 			String changeLog = ParamUtil.getString(actionRequest, "changeLog");
 
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				actionRequest);
 
 			_dlAppService.checkInFileEntry(
-				fileEntryId, majorVersion, changeLog, serviceContext);
+				fileEntryId, dlVersionNumberIncrease, changeLog,
+				serviceContext);
 		}
 		else if (cmd.equals(
-					 DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_CHECKOUT)) {
+					DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_CHECKOUT)) {
 
 			try {
 				ServiceContext serviceContext =
@@ -188,6 +194,8 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 						_transactionConfig,
 						() -> _checkOutGoogleDriveFileEntry(
 							fileEntryId, serviceContext)));
+
+				hideDefaultSuccessMessage(actionRequest);
 			}
 			catch (PortalException pe) {
 				throw pe;
@@ -197,7 +205,10 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 			}
 		}
 		else if (cmd.equals(
-					 DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_EDIT)) {
+					DLOpenerGoogleDriveWebConstants.GOOGLE_DRIVE_EDIT)) {
+
+			ThemeDisplay themeDisplay =
+				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 			_saveDLOpenerGoogleDriveFileReference(
 				actionRequest,
@@ -214,7 +225,7 @@ public class EditInGoogleDriveMVCActionCommand extends BaseMVCActionCommand {
 		throws PortalException {
 
 		LiferayPortletURL liferayPortletURL = PortletURLFactoryUtil.create(
-			portletRequest, DLPortletKeys.DOCUMENT_LIBRARY_ADMIN,
+			portletRequest, _portal.getPortletId(portletRequest),
 			_portal.getControlPanelPlid(portletRequest),
 			PortletRequest.RENDER_PHASE);
 

@@ -112,8 +112,9 @@ public class EditExportConfigurationMVCActionCommand
 			actionRequest, "exportImportConfigurationId");
 
 		if (exportImportConfigurationId > 0) {
-			deleteExportImportConfigurationIds =
-				new long[] {exportImportConfigurationId};
+			deleteExportImportConfigurationIds = new long[] {
+				exportImportConfigurationId
+			};
 		}
 		else {
 			deleteExportImportConfigurationIds = StringUtil.split(
@@ -287,10 +288,9 @@ public class EditExportConfigurationMVCActionCommand
 			return ExportImportConfigurationHelper.
 				updateExportLayoutExportImportConfiguration(actionRequest);
 		}
-		else {
-			return ExportImportConfigurationHelper.
-				addExportLayoutExportImportConfiguration(actionRequest);
-		}
+
+		return ExportImportConfigurationHelper.
+			addExportLayoutExportImportConfiguration(actionRequest);
 	}
 
 	@Reference

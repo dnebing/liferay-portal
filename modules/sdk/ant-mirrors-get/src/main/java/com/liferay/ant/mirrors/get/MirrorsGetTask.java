@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -78,12 +79,16 @@ public class MirrorsGetTask extends Task {
 	public void setSrc(String src) {
 		Project project = getProject();
 
-		src = project.replaceProperties(src);
+		_src = project.replaceProperties(src);
 
-		Matcher matcher = _srcPattern.matcher(src);
+		if (_src.startsWith("file:")) {
+			return;
+		}
+
+		Matcher matcher = _srcPattern.matcher(_src);
 
 		if (!matcher.find()) {
-			throw new RuntimeException("Invalid src attribute: " + src);
+			throw new RuntimeException("Invalid src attribute: " + _src);
 		}
 
 		_fileName = matcher.group(2);
@@ -119,11 +124,11 @@ public class MirrorsGetTask extends Task {
 
 		System.out.println(sb.toString());
 
-		URL sourceFileURL = new URL("file:" + sourceFile.getAbsolutePath());
+		URI sourceFileURI = sourceFile.toURI();
 
 		long time = System.currentTimeMillis();
 
-		int size = toFile(sourceFileURL, targetFile);
+		int size = toFile(sourceFileURI.toURL(), targetFile);
 
 		if (_verbose) {
 			sb = new StringBuilder();
@@ -139,6 +144,20 @@ public class MirrorsGetTask extends Task {
 	}
 
 	protected void doExecute() throws IOException {
+		if (_src.startsWith("file:")) {
+			File srcFile = new File(_src.substring("file:".length()));
+
+			File targetFile = _dest;
+
+			if (_dest.exists() && _dest.isDirectory()) {
+				targetFile = new File(_dest, srcFile.getName());
+			}
+
+			copyFile(srcFile, targetFile);
+
+			return;
+		}
+
 		Matcher matcher = _mirrorsHostNamePattern.matcher(_path);
 
 		if (_tryLocalNetwork && matcher.find()) {
@@ -531,6 +550,7 @@ public class MirrorsGetTask extends Task {
 	private String _mirrorsHostname;
 	private String _path;
 	private boolean _skipChecksum;
+	private String _src;
 	private boolean _tryLocalNetwork = true;
 	private boolean _verbose;
 

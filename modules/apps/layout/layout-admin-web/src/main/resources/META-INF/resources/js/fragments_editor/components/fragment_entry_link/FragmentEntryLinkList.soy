@@ -1,0 +1,319 @@
+{namespace com.liferay.layout.admin.web.FragmentEntryLinkList}
+
+/**
+ * FragmentEntryLinkList
+ */
+{template .render}
+	{@param defaultEditorConfigurations: ?}
+	{@param defaultLanguageId: string}
+	{@param fragmentEntryLinks: ?}
+	{@param imageSelectorURL: string}
+	{@param languageId: string}
+	{@param layoutData: [
+		nextColumnId: number,
+		nextRowId: number,
+		structure: list<[
+			columns: list<[
+				columnId: string,
+				fragmentEntryLinkIds: list<string>,
+				size: string
+			]>,
+			empty: bool,
+			rowId: string
+		]>
+	]}
+	{@param portletNamespace: string}
+	{@param spritemap: string}
+	{@param? _handleFragmentMove: any}
+	{@param? dropTargetTypes: ?}
+	{@param? highlightMapping: bool}
+	{@param? hoveredElementBorder: string}
+	{@param? hoveredElementId: string}
+	{@param? hoveredElementType: string}
+	{@param? mappingFieldsURL: string}
+	{@param? selectedMappingTypes: [
+		subtype: [
+			id: string,
+			label: string
+		],
+		type: [
+			id: string,
+			label: string
+		]
+	]}
+	{@param? store: ?}
+
+	{let $entryLinksClasses kind="text"}
+		container-fluid
+		fragment-entry-link-drop-target
+		fragment-entry-link-list
+		layouts-drop-target
+
+		{if $highlightMapping}
+			{sp}mapping
+		{/if}
+
+		{if $languageId != $defaultLanguageId}
+			{sp}translating
+		{/if}
+	{/let}
+
+	{if $layoutData.structure and (length($layoutData.structure) > 0)}
+		<div class="{$entryLinksClasses}" ref="fragmentEntryLinks">
+			{foreach $row in $layoutData.structure}
+				{call .row}
+					{param _handleFragmentMove: $_handleFragmentMove /}
+					{param columns: $row.columns /}
+					{param defaultEditorConfigurations: $defaultEditorConfigurations /}
+					{param defaultLanguageId: $defaultLanguageId /}
+					{param dropTargetTypes: $dropTargetTypes /}
+					{param empty: $row.empty /}
+					{param fragmentEntryLinks: $fragmentEntryLinks /}
+					{param hoveredElementBorder: $hoveredElementBorder /}
+					{param hoveredElementId: $hoveredElementId /}
+					{param hoveredElementType: $hoveredElementType /}
+					{param imageSelectorURL: $imageSelectorURL /}
+					{param key: $row.rowId /}
+					{param languageId: $languageId /}
+					{param mappingFieldsURL: $mappingFieldsURL /}
+					{param portletNamespace: $portletNamespace /}
+					{param rowId: $row.rowId /}
+					{param selectedMappingTypes: $selectedMappingTypes /}
+					{param spritemap: $spritemap /}
+					{param store: $store /}
+				{/call}
+			{/foreach}
+		</div>
+	{else}
+		{call .noFragmentsMessage /}
+	{/if}
+{/template}
+
+/**
+ * Row
+ */
+{template .row}
+	{@param columns: list<[
+		columnId: string,
+		fragmentEntryLinkIds: list<string>,
+		size: string
+	]>}
+	{@param defaultEditorConfigurations: ?}
+	{@param defaultLanguageId: string}
+	{@param fragmentEntryLinks: ?}
+	{@param imageSelectorURL: string}
+	{@param languageId: string}
+	{@param portletNamespace: string}
+	{@param rowId: string}
+	{@param spritemap: string}
+	{@param? _handleFragmentMove: any}
+	{@param? dropTargetTypes: ?}
+	{@param? empty: bool}
+	{@param? hoveredElementBorder: string}
+	{@param? hoveredElementId: string}
+	{@param? hoveredElementType: string}
+	{@param? mappingFieldsURL: string}
+	{@param? selectedMappingTypes: [
+		subtype: [
+			id: string,
+			label: string
+		],
+		type: [
+			id: string,
+			label: string
+		]
+	]}
+	{@param? store: ?}
+
+	{let $styleModifier kind="text"}
+		{if $hoveredElementId == $rowId and $hoveredElementType == $dropTargetTypes.section}
+			{$hoveredElementBorder}
+		{/if}
+	{/let}
+
+	{let $sectionClasses kind="text"}
+		fragment-entry-link-list__row-section
+		fragment-entry-link-drop-target
+		{sp}layouts-drop-target
+		{sp}{$styleModifier}
+
+		{if $empty}
+			{sp}fragment-entry-link-list__row-section--empty
+		{/if}
+	{/let}
+
+	<section
+		class="{$sectionClasses}"
+		data-layout-section-id="{$rowId}"
+	>
+		<div class="container row-container">
+			<div class="row">
+				{foreach $column in $columns}
+					{call .column}
+						{param _handleFragmentMove: $_handleFragmentMove /}
+						{param columnId: $column.columnId /}
+						{param defaultEditorConfigurations: $defaultEditorConfigurations /}
+						{param defaultLanguageId: $defaultLanguageId /}
+						{param dropTargetTypes: $dropTargetTypes /}
+						{param fragmentEntryLinkIds: $column.fragmentEntryLinkIds /}
+						{param fragmentEntryLinks: $fragmentEntryLinks /}
+						{param hoveredElementBorder: $hoveredElementBorder /}
+						{param hoveredElementId: $hoveredElementId /}
+						{param hoveredElementType: $hoveredElementType /}
+						{param imageSelectorURL: $imageSelectorURL /}
+						{param key: $column.columnId /}
+						{param languageId: $languageId /}
+						{param mappingFieldsURL: $mappingFieldsURL /}
+						{param portletNamespace: $portletNamespace /}
+						{param selectedMappingTypes: $selectedMappingTypes /}
+						{param size: $column.size /}
+						{param spritemap: $spritemap /}
+						{param store: $store /}
+					{/call}
+				{/foreach}
+			</div>
+		</div>
+	</section>
+{/template}
+
+/**
+ * Column
+ */
+{template .column}
+	{@param columnId: string}
+	{@param defaultEditorConfigurations: ?}
+	{@param defaultLanguageId: string}
+	{@param fragmentEntryLinkIds: list<string>}
+	{@param fragmentEntryLinks: ?}
+	{@param imageSelectorURL: string}
+	{@param languageId: string}
+	{@param portletNamespace: string}
+	{@param size: string}
+	{@param spritemap: string}
+	{@param? _handleFragmentMove: any}
+	{@param? dropTargetTypes: ?}
+	{@param? hoveredElementBorder: string}
+	{@param? hoveredElementId: string}
+	{@param? hoveredElementType: string}
+	{@param? mappingFieldsURL: string}
+	{@param? selectedMappingTypes: [
+		subtype: [
+			id: string,
+			label: string
+		],
+		type: [
+			id: string,
+			label: string
+		]
+	]}
+	{@param? store: ?}
+
+	{let $columnClasses kind="text"}
+		col
+		{sp}col-{$size}
+		{sp}fragment-entry-link-list__col
+		{sp}fragment-entry-link-drop-target
+	{/let}
+
+	<div class="{$columnClasses}" data-column-id="{$columnId}">
+		{foreach $fragmentEntryLinkId in $fragmentEntryLinkIds}
+			{let $fragmentEntryLink: $fragmentEntryLinks[$fragmentEntryLinkId] /}
+
+			{if $fragmentEntryLink}
+				{call .fragmentEntryLink}
+					{param content: $fragmentEntryLink.content /}
+					{param defaultEditorConfigurations: $defaultEditorConfigurations /}
+					{param defaultLanguageId: $defaultLanguageId /}
+					{param dropTargetTypes: $dropTargetTypes /}
+					{param editableValues: $fragmentEntryLink.editableValues /}
+					{param fragmentEntryLinkId: $fragmentEntryLink.fragmentEntryLinkId /}
+					{param hoveredElementBorder: $hoveredElementBorder /}
+					{param hoveredElementId: $hoveredElementId /}
+					{param hoveredElementType: $hoveredElementType /}
+					{param imageSelectorURL: $imageSelectorURL /}
+					{param key: $fragmentEntryLink.fragmentEntryLinkId /}
+					{param languageId: $languageId /}
+					{param mappingFieldsURL: $mappingFieldsURL /}
+					{param name: $fragmentEntryLink.name /}
+					{param portletNamespace: $portletNamespace /}
+					{param selectedMappingTypes: $selectedMappingTypes /}
+					{param spritemap: $spritemap /}
+					{param store: $store /}
+					{param _handleFragmentMove: $_handleFragmentMove /}
+				{/call}
+			{/if}
+		{/foreach}
+	</div>
+{/template}
+
+/**
+ * FragmentEntryLink
+ */
+{template .fragmentEntryLink}
+	{@param defaultEditorConfigurations: ?}
+	{@param defaultLanguageId: ?}
+	{@param editableValues: ?}
+	{@param fragmentEntryLinkId: string}
+	{@param imageSelectorURL: ?}
+	{@param hoveredElementBorder: ?}
+	{@param hoveredElementId: ?}
+	{@param hoveredElementType: ?}
+	{@param languageId: ?}
+	{@param mappingFieldsURL: ?}
+	{@param name: string}
+	{@param portletNamespace: ?}
+	{@param selectedMappingTypes: ?}
+	{@param spritemap: ?}
+	{@param store: ?}
+	{@param? _handleFragmentMove: ?}
+	{@param? content: ?}
+	{@param? dropTargetTypes: ?}
+
+	{let $styleModifier kind="text"}
+		{if $hoveredElementId == $fragmentEntryLinkId and $hoveredElementType == $dropTargetTypes.fragment}
+			{$hoveredElementBorder}
+		{/if}
+	{/let}
+
+	<div key="{$fragmentEntryLinkId}">
+		{call com.liferay.layout.admin.web.FragmentEntryLink.render}
+			{param content: $content /}
+			{param defaultEditorConfigurations: $defaultEditorConfigurations /}
+			{param defaultLanguageId: $defaultLanguageId /}
+			{param editableValues: $editableValues /}
+			{param events: [
+				'move': $_handleFragmentMove
+			] /}
+			{param fragmentEntryLinkId: $fragmentEntryLinkId /}
+			{param imageSelectorURL: $imageSelectorURL /}
+			{param languageId: $languageId /}
+			{param name: $name /}
+			{param portletNamespace: $portletNamespace /}
+			{param selectedMappingTypes: $selectedMappingTypes /}
+			{param showMapping: $selectedMappingTypes and $mappingFieldsURL ? true : false /}
+			{param spritemap: $spritemap /}
+			{param store: $store /}
+			{param styleModifier: $styleModifier /}
+		{/call}
+	</div>
+{/template}
+
+/**
+ * No fragments message
+ */
+{template .noFragmentsMessage}
+	{let $emptyListClasses kind="text"}
+		fragment-entry-link-drop-target
+		{sp}layouts-drop-target
+		{sp}no-fragments-message
+		{sp}taglib-empty-result-message
+	{/let}
+
+	<div class="{$emptyListClasses}" data-fragment-empty-list>
+		<div class="taglib-empty-result-message-header"></div>
+
+		<div class="text-center text-muted">
+			{msg desc=""}the-fragment-editor-is-empty{/msg}
+		</div>
+	</div>
+{/template}

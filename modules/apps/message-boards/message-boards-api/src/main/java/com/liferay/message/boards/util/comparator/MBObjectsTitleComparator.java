@@ -32,8 +32,9 @@ public class MBObjectsTitleComparator<T> extends OrderByComparator<T> {
 		"modelCategory ASC, priority DESC, name DESC, modifiedDate DESC, " +
 			"modelId ASC";
 
-	public static final String[] ORDER_BY_FIELDS =
-		{"modelCategory", "priority", "name", "modifiedDate", "modelId"};
+	public static final String[] ORDER_BY_FIELDS = {
+		"modelCategory", "priority", "name", "modifiedDate", "modelId"
+	};
 
 	public MBObjectsTitleComparator() {
 		this(false);
@@ -53,9 +54,8 @@ public class MBObjectsTitleComparator<T> extends OrderByComparator<T> {
 		if (_ascending) {
 			return value;
 		}
-		else {
-			return -value;
-		}
+
+		return -value;
 	}
 
 	@Override
@@ -63,9 +63,8 @@ public class MBObjectsTitleComparator<T> extends OrderByComparator<T> {
 		if (_ascending) {
 			return ORDER_BY_ASC;
 		}
-		else {
-			return ORDER_BY_DESC;
-		}
+
+		return ORDER_BY_DESC;
 	}
 
 	@Override

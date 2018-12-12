@@ -14,27 +14,39 @@
 
 package com.liferay.jenkins.results.parser;
 
-import java.util.Map;
-
 /**
  * @author Michael Hashimoto
  */
 public class BuildDataFactory {
 
 	public static BatchBuildData newBatchBuildData(
-		Map<String, String> buildParameters,
-		JenkinsJSONObject jenkinsJSONObject, String runID) {
+		String runID, String jobName, String buildURL) {
 
-		return new PortalBatchBuildData(
-			buildParameters, jenkinsJSONObject, runID);
+		if (jobName.contains("git-bisect-tool") || jobName.contains("portal")) {
+			return new PortalBatchBuildData(runID, jobName, buildURL);
+		}
+
+		return new DefaultBatchBuildData(runID, jobName, buildURL);
+	}
+
+	public static BuildData newBuildData(
+		String runID, String jobName, String buildURL) {
+
+		if (jobName.endsWith("-batch")) {
+			return newBatchBuildData(runID, jobName, buildURL);
+		}
+
+		return newTopLevelBuildData(runID, jobName, buildURL);
 	}
 
 	public static TopLevelBuildData newTopLevelBuildData(
-		Map<String, String> buildParameters,
-		JenkinsJSONObject jenkinsJSONObject, String runID) {
+		String runID, String jobName, String buildURL) {
 
-		return new PortalTopLevelBuildData(
-			buildParameters, jenkinsJSONObject, runID);
+		if (jobName.contains("git-bisect-tool") || jobName.contains("portal")) {
+			return new PortalTopLevelBuildData(runID, jobName, buildURL);
+		}
+
+		return new DefaultTopLevelBuildData(runID, jobName, buildURL);
 	}
 
 }

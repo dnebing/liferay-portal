@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_1_0.dtd">
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_2_0.dtd">
 
 <service-builder api-package-path="com.liferay.portal.kernel" auto-import-default-references="false" mvcc-enabled="true" package-path="com.liferay.portal">
 	<namespace>Portal</namespace>
@@ -476,17 +476,39 @@
 			<finder-column comparator="LIKE" name="treePath" />
 			<finder-column name="site" />
 		</finder>
+		<finder db-index="false" name="C_LikeN_S" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column case-sensitive="false" comparator="LIKE" name="name" />
+			<finder-column name="site" />
+		</finder>
+		<finder name="C_S_A" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column name="site" />
+			<finder-column name="active" />
+		</finder>
 		<finder db-index="false" name="G_C_C_P" return-type="Collection">
 			<finder-column comparator="&gt;" name="groupId" />
 			<finder-column name="companyId" />
 			<finder-column name="classNameId" />
 			<finder-column name="parentGroupId" />
 		</finder>
+		<finder db-index="false" name="G_C_P_S" return-type="Collection">
+			<finder-column comparator="&gt;" name="groupId" />
+			<finder-column name="companyId" />
+			<finder-column name="parentGroupId" />
+			<finder-column name="site" />
+		</finder>
 		<finder name="C_C_L_GK" return-type="Group" unique="true">
 			<finder-column name="companyId" />
 			<finder-column name="classNameId" />
 			<finder-column name="liveGroupId" />
 			<finder-column name="groupKey" />
+		</finder>
+		<finder db-index="false" name="C_P_LikeN_S" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column name="parentGroupId" />
+			<finder-column case-sensitive="false" comparator="LIKE" name="name" />
+			<finder-column name="site" />
 		</finder>
 		<finder name="C_P_S_I" return-type="Collection">
 			<finder-column name="companyId" />
@@ -581,6 +603,9 @@
 
 		<!-- Other fields -->
 
+		<column name="parentPlid" type="long" />
+		<column name="leftPlid" type="long" />
+		<column name="rightPlid" type="long" />
 		<column name="privateLayout" type="boolean" />
 		<column accessor="true" name="layoutId" type="long" />
 		<column name="parentLayoutId" type="long" />
@@ -617,6 +642,9 @@
 		</finder>
 		<finder name="CompanyId" return-type="Collection">
 			<finder-column name="companyId" />
+		</finder>
+		<finder name="ParentPlid" return-type="Collection">
+			<finder-column name="parentPlid" />
 		</finder>
 		<finder name="IconImageId" return-type="Layout">
 			<finder-column name="iconImageId" />
@@ -1285,10 +1313,19 @@
 			<finder-column name="companyId" />
 			<finder-column name="name" />
 		</finder>
+		<finder name="C_LikeN" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column case-sensitive="false" comparator="LIKE" name="name" />
+		</finder>
 		<finder db-index="false" name="O_C_P" return-type="Collection">
 			<finder-column comparator="&gt;" name="organizationId" />
 			<finder-column name="companyId" />
 			<finder-column name="parentOrganizationId" />
+		</finder>
+		<finder name="C_P_LikeN" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column name="parentOrganizationId" />
+			<finder-column case-sensitive="false" comparator="LIKE" name="name" />
 		</finder>
 
 		<!-- References -->
@@ -2826,6 +2863,10 @@
 			<finder-column name="companyId" />
 			<finder-column case-sensitive="false" name="name" />
 		</finder>
+		<finder name="C_LikeN" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column case-sensitive="false" comparator="LIKE" name="name" />
+		</finder>
 		<finder db-index="false" name="U_C_P" return-type="Collection">
 			<finder-column comparator="&gt;" name="userGroupId" />
 			<finder-column name="companyId" />
@@ -3298,6 +3339,12 @@
 			<finder-column name="companyId" />
 			<finder-column name="workflowDefinitionName" />
 			<finder-column name="workflowDefinitionVersion" />
+		</finder>
+		<finder name="G_C_C_C" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="companyId" />
+			<finder-column name="classNameId" />
+			<finder-column name="classPK" />
 		</finder>
 		<finder name="G_C_C_C_T" return-type="WorkflowDefinitionLink">
 			<finder-column name="groupId" />

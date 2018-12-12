@@ -17,12 +17,20 @@ package com.liferay.fragment.processor;
 import com.liferay.fragment.constants.FragmentEntryLinkConstants;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.LocaleUtil;
+
+import java.util.Locale;
 
 /**
  * @author Pavel Savinov
  */
 public interface FragmentEntryProcessor {
+
+	public default JSONArray getAvailableTagsJSONArray() {
+		return null;
+	}
 
 	public default JSONObject getDefaultEditableValuesJSONObject(String html) {
 		return null;
@@ -36,8 +44,17 @@ public interface FragmentEntryProcessor {
 			fragmentEntryLink, html, FragmentEntryLinkConstants.EDIT);
 	}
 
-	public String processFragmentEntryLinkHTML(
+	public default String processFragmentEntryLinkHTML(
 			FragmentEntryLink fragmentEntryLink, String html, String mode)
+		throws PortalException {
+
+		return processFragmentEntryLinkHTML(
+			fragmentEntryLink, html, mode, LocaleUtil.getMostRelevantLocale());
+	}
+
+	public String processFragmentEntryLinkHTML(
+			FragmentEntryLink fragmentEntryLink, String html, String mode,
+			Locale locale)
 		throws PortalException;
 
 	public void validateFragmentEntryHTML(String html) throws PortalException;

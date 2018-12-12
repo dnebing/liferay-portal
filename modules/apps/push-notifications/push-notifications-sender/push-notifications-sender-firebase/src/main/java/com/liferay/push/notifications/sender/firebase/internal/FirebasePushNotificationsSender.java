@@ -44,7 +44,8 @@ import org.osgi.service.component.annotations.Modified;
 @Component(
 	configurationPid = "com.liferay.push.notifications.sender.firebase.internal.configuration.FirebasePushNotificationsSenderConfiguration",
 	immediate = true,
-	property = "platform=" + FirebasePushNotificationsSender.PLATFORM
+	property = "platform=" + FirebasePushNotificationsSender.PLATFORM,
+	service = PushNotificationsSender.class
 )
 public class FirebasePushNotificationsSender
 	implements PushNotificationsSender {
@@ -188,7 +189,7 @@ public class FirebasePushNotificationsSender
 			List<String> localizedArguments = new ArrayList<>();
 
 			for (int i = 0; i < titleLocalizedArgumentsJSONArray.length();
-					i++) {
+				 i++) {
 
 				localizedArguments.add(
 					titleLocalizedArgumentsJSONArray.getString(i));

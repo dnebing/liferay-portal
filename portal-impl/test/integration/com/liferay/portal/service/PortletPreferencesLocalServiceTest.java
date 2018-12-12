@@ -27,17 +27,15 @@ import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceWrapper;
 import com.liferay.portal.kernel.service.ServiceWrapper;
-import com.liferay.portal.kernel.spring.aop.AdvisedSupport;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.service.util.test.PortletPreferencesImplTestUtil;
 import com.liferay.portal.service.util.test.PortletPreferencesTestUtil;
-import com.liferay.portal.spring.aop.ServiceBeanAopCacheManagerUtil;
-import com.liferay.portal.spring.aop.ServiceBeanAopProxy;
+import com.liferay.portal.spring.aop.ServiceBeanAopInvocationHandler;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.LayoutTestUtil;
 import com.liferay.portlet.PortletPreferencesImpl;
@@ -407,8 +405,9 @@ public class PortletPreferencesLocalServiceTest {
 	@Test
 	public void testFetchLayoutJxPortletPreferences() throws Exception {
 		PortletPreferencesImpl portletPreferencesImpl =
-			(PortletPreferencesImpl)PortletPreferencesTestUtil.
-				fetchLayoutJxPortletPreferences(_layout, _portlet);
+			(PortletPreferencesImpl)
+				PortletPreferencesTestUtil.fetchLayoutJxPortletPreferences(
+					_layout, _portlet);
 
 		Assert.assertNull(portletPreferencesImpl);
 	}
@@ -1496,27 +1495,26 @@ public class PortletPreferencesLocalServiceTest {
 		assertValues(portletPreferencesImpl, name, values);
 	}
 
-	protected void replaceService() throws Exception {
-		AdvisedSupport advisedSupport = ServiceBeanAopProxy.getAdvisedSupport(
-			PortletPreferencesLocalServiceUtil.getService());
+	protected void replaceService() {
+		ServiceBeanAopInvocationHandler serviceBeanAopInvocationHandler =
+			ProxyUtil.fetchInvocationHandler(
+				PortletPreferencesLocalServiceUtil.getService(),
+				ServiceBeanAopInvocationHandler.class);
 
-		Object previousService = advisedSupport.getTarget();
+		Object previousService = serviceBeanAopInvocationHandler.getTarget();
 
 		ServiceWrapper<PortletPreferencesLocalService> serviceWrapper =
 			new TestPortletPreferencesLocalServiceWrapper(
 				(PortletPreferencesLocalService)previousService);
 
 		_serviceBag = new ServiceBag<>(
-			ClassLoaderUtil.getPortalClassLoader(), advisedSupport,
+			PortalClassLoaderUtil.getClassLoader(),
+			serviceBeanAopInvocationHandler,
 			PortletPreferencesLocalService.class, serviceWrapper);
-
-		ServiceBeanAopCacheManagerUtil.reset();
 	}
 
 	protected void resetService() throws Exception {
 		_serviceBag.replace();
-
-		ServiceBeanAopCacheManagerUtil.reset();
 	}
 
 	private static final String[] _MULTIPLE_VALUES = {"value1", "value2"};

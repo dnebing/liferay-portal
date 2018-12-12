@@ -17,10 +17,10 @@ package com.liferay.portal.kernel.util.comparator;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.PortletCategory;
+import com.liferay.portal.kernel.test.util.PropsTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.Props;
-import com.liferay.portal.kernel.util.PropsUtil;
 
+import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -44,13 +44,7 @@ public class PortletCategoryComparatorTest extends PowerMockito {
 
 	@Before
 	public void setUp() {
-		when(
-			_props.get(Matchers.anyString())
-		).thenReturn(
-			null
-		);
-
-		PropsUtil.setProps(_props);
+		PropsTestUtil.setProps(Collections.emptyMap());
 
 		setUpLanguageUtil();
 	}
@@ -88,8 +82,5 @@ public class PortletCategoryComparatorTest extends PowerMockito {
 
 	@Mock
 	private Language _language;
-
-	@Mock
-	private Props _props;
 
 }

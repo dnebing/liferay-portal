@@ -144,7 +144,7 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 
 							if (Validator.isNull(indent)) {
 								for (int i = 0; i < lineLeadingTabCount - 1;
-										i++) {
+									 i++) {
 
 									indent += StringPool.TAB;
 								}
@@ -904,12 +904,11 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 									lineNumber, previousLine, null, false, true,
 									0);
 							}
-							else {
-								return _getCombinedLinesContent(
-									content, line, trimmedLine, lineLength,
-									lineNumber, previousLine,
-									linePart + StringPool.SPACE, true, true, 0);
-							}
+
+							return _getCombinedLinesContent(
+								content, line, trimmedLine, lineLength,
+								lineNumber, previousLine,
+								linePart + StringPool.SPACE, true, true, 0);
 						}
 
 						String partAfterComma = trimmedLine.substring(x + 1);
@@ -923,7 +922,8 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 						x = x + pos + 1;
 					}
 				}
-				else if ((trimmedLine.length() + previousLineLength) <
+				else if (!trimmedPreviousLine.startsWith(").") &&
+						 (trimmedLine.length() + previousLineLength) <
 							 getMaxLineLength()) {
 
 					if ((getLevel(line, "{", "}") == 0) &&
@@ -1104,15 +1104,15 @@ public class JavaCombineLinesCheck extends BaseFileCheck {
 	private static final String _FIT_ON_SINGLE_LINE_EXCLUDES =
 		"fit.on.single.line.excludes";
 
-	private final Pattern _combinedLinesPattern1 = Pattern.compile(
+	private static final Pattern _combinedLinesPattern1 = Pattern.compile(
 		"\n(\t*).+(=|\\]) (\\{)\n");
-	private final Pattern _combinedLinesPattern2 = Pattern.compile(
+	private static final Pattern _combinedLinesPattern2 = Pattern.compile(
 		"\n(\t*)@.+(\\()\n");
-	private final Pattern _combinedLinesPattern3 = Pattern.compile(
+	private static final Pattern _combinedLinesPattern3 = Pattern.compile(
 		"(\n\t*(private|protected|public) void)\n\t+(\\w+\\(\\)( \\{)?\n)");
-	private final Pattern _combinedLinesPattern4 = Pattern.compile(
+	private static final Pattern _combinedLinesPattern4 = Pattern.compile(
 		"(\n\t*(extends|implements))\n\t+([\\w.]+ \\{\n)");
-	private final Pattern _combinedLinesPattern5 = Pattern.compile(
+	private static final Pattern _combinedLinesPattern5 = Pattern.compile(
 		"(\n\t*(private|protected|public)( .*[^\\{;\n])?)\n\t*(.+ [\\{;]\n)");
 
 }

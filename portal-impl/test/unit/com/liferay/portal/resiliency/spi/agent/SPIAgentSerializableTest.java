@@ -28,15 +28,16 @@ import com.liferay.portal.kernel.resiliency.spi.agent.annotation.Direction;
 import com.liferay.portal.kernel.resiliency.spi.agent.annotation.DistributedRegistry;
 import com.liferay.portal.kernel.resiliency.spi.agent.annotation.MatchType;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
+import com.liferay.portal.kernel.servlet.ServletContextClassLoaderPool;
 import com.liferay.portal.kernel.test.CaptureHandler;
 import com.liferay.portal.kernel.test.JDKLoggerTestUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 import com.liferay.portal.kernel.test.rule.NewEnv;
+import com.liferay.portal.kernel.test.util.PropsTestUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtilAdvice;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.ThreadLocalDistributor;
@@ -59,6 +60,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -98,6 +100,8 @@ public class SPIAgentSerializableTest {
 		_classLoader = new URLClassLoader(
 			new URL[0], currentThread.getContextClassLoader());
 
+		ServletContextClassLoaderPool.register(
+			_SERVLET_CONTEXT_NAME, _classLoader);
 		ClassLoaderPool.register(_SERVLET_CONTEXT_NAME, _classLoader);
 
 		ClassLoaderPool.unregister(ClassLoaderPool.class.getClassLoader());
@@ -500,21 +504,23 @@ public class SPIAgentSerializableTest {
 		}
 	}
 
-	@AdviseWith(
-		adviceClasses = {DeserializerAdvice.class, PropsUtilAdvice.class}
-	)
+	@AdviseWith(adviceClasses = DeserializerAdvice.class)
 	@NewEnv(type = NewEnv.Type.CLASSLOADER)
 	@Test
 	public void testSerialization() throws IOException {
 
 		// Unable to send
 
-		PropsUtilAdvice.setProps(
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put(
 			PropsKeys.INTRABAND_MAILBOX_REAPER_THREAD_ENABLED,
 			Boolean.FALSE.toString());
-		PropsUtilAdvice.setProps(
+		properties.put(
 			PropsKeys.INTRABAND_MAILBOX_STORAGE_LIFE,
 			String.valueOf(Long.MAX_VALUE));
+
+		PropsTestUtil.setProps(properties);
 
 		final AtomicLong receiptReference = new AtomicLong();
 
@@ -630,11 +636,18 @@ public class SPIAgentSerializableTest {
 		ClassLoader oldClassLoader = ClassLoaderPool.getClassLoader(
 			_SERVLET_CONTEXT_NAME);
 
-		ClassLoaderPool.register(_SERVLET_CONTEXT_NAME, incapableClassLoader);
+		ServletContextClassLoaderPool.unregister(_SERVLET_CONTEXT_NAME);
+		ClassLoaderPool.unregister(_SERVLET_CONTEXT_NAME);
 
 		byte[] receiptData = new byte[8];
 
 		BigEndianCodec.putLong(receiptData, 0, actualReceipt);
+
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+
+		currentThread.setContextClassLoader(incapableClassLoader);
 
 		try {
 			SPIAgentSerializable.readFrom(
@@ -650,6 +663,10 @@ public class SPIAgentSerializableTest {
 		}
 		finally {
 			ClassLoaderPool.register(_SERVLET_CONTEXT_NAME, oldClassLoader);
+			ServletContextClassLoaderPool.register(
+				_SERVLET_CONTEXT_NAME, oldClassLoader);
+
+			currentThread.setContextClassLoader(contextClassLoader);
 		}
 
 		// Successfully receive

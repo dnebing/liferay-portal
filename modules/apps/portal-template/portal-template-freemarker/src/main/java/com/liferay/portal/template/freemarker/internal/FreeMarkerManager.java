@@ -592,56 +592,40 @@ public class FreeMarkerManager extends BaseSingleTemplateManager {
 		public Set<String> addingBundle(
 			Bundle bundle, BundleEvent bundleEvent) {
 
-			boolean track = false;
-			Set<String> trackedKeys = new HashSet<>();
+			URL url = bundle.getEntry("/META-INF/taglib-mappings.properties");
 
-			Enumeration<URL> enumeration = bundle.findEntries(
-				"/META-INF", "taglib-mappings.properties", true);
+			if (url == null) {
+				BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
 
-			if (enumeration != null) {
-				while (enumeration.hasMoreElements()) {
-					URL url = enumeration.nextElement();
+				List<BundleCapability> bundleCapabilities =
+					bundleWiring.getCapabilities("osgi.extender");
 
-					try (InputStream inputStream = url.openStream()) {
-						Properties properties = PropertiesUtil.load(
-							inputStream, StringPool.UTF8);
+				for (BundleCapability bundleCapability : bundleCapabilities) {
+					Map<String, Object> attributes =
+						bundleCapability.getAttributes();
 
-						@SuppressWarnings("unchecked")
-						Map<String, String> map = PropertiesUtil.toMap(
-							properties);
+					Object value = attributes.get("osgi.extender");
 
-						_taglibMappings.putAll(map);
-
-						trackedKeys.addAll(map.keySet());
-
-						track = true;
-					}
-					catch (Exception e) {
-						_log.error(e, e);
+					if (value.equals("jsp.taglib")) {
+						return Collections.emptySet();
 					}
 				}
 			}
+			else {
+				try (InputStream inputStream = url.openStream()) {
+					Properties properties = PropertiesUtil.load(
+						inputStream, StringPool.UTF8);
 
-			BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
+					@SuppressWarnings("unchecked")
+					Map<String, String> map = PropertiesUtil.toMap(properties);
 
-			List<BundleCapability> bundleCapabilities =
-				bundleWiring.getCapabilities("osgi.extender");
+					_taglibMappings.putAll(map);
 
-			for (BundleCapability bundleCapability : bundleCapabilities) {
-				Map<String, Object> attributes =
-					bundleCapability.getAttributes();
-
-				Object value = attributes.get("osgi.extender");
-
-				if (value.equals("jsp.taglib")) {
-					track = true;
-
-					break;
+					return map.keySet();
 				}
-			}
-
-			if (track) {
-				return trackedKeys;
+				catch (Exception e) {
+					_log.error(e, e);
+				}
 			}
 
 			return null;

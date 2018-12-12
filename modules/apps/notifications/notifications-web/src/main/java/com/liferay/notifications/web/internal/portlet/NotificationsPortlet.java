@@ -74,19 +74,7 @@ public class NotificationsPortlet extends MVCPortlet {
 			actionRequest, "rowIds");
 
 		for (long userNotificationEventId : userNotificationEventIds) {
-			try {
-				UserNotificationEvent userNotificationEvent =
-					_userNotificationEventLocalService.
-						fetchUserNotificationEvent(userNotificationEventId);
-
-				if (userNotificationEvent != null) {
-					_userNotificationEventLocalService.
-						deleteUserNotificationEvent(userNotificationEvent);
-				}
-			}
-			catch (Exception e) {
-				throw new PortletException(e);
-			}
+			_deleteUserNotificationEvent(userNotificationEventId);
 		}
 
 		_sendRedirect(actionRequest, actionResponse);
@@ -99,13 +87,7 @@ public class NotificationsPortlet extends MVCPortlet {
 		long userNotificationEventId = ParamUtil.getLong(
 			actionRequest, "userNotificationEventId");
 
-		try {
-			_userNotificationEventLocalService.deleteUserNotificationEvent(
-				userNotificationEventId);
-		}
-		catch (Exception e) {
-			throw new PortletException(e);
-		}
+		_deleteUserNotificationEvent(userNotificationEventId);
 
 		_sendRedirect(actionRequest, actionResponse);
 	}
@@ -296,32 +278,8 @@ public class NotificationsPortlet extends MVCPortlet {
 	protected void setRelease(Release release) {
 	}
 
-	@Reference(unbind = "-")
-	protected void setSubscriptionLocalService(
-		SubscriptionLocalService subscriptionLocalService) {
-
-		_subscriptionLocalService = subscriptionLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setUserNotificationDeliveryLocalService(
-		UserNotificationDeliveryLocalService
-			userNotificationDeliveryLocalService) {
-
-		_userNotificationDeliveryLocalService =
-			userNotificationDeliveryLocalService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setUserNotificationEventLocalService(
-		UserNotificationEventLocalService userNotificationEventLocalService) {
-
-		_userNotificationEventLocalService = userNotificationEventLocalService;
-	}
-
 	protected void updateArchived(
-			long userNotificationEventId, boolean archived)
-		throws Exception {
+		long userNotificationEventId, boolean archived) {
 
 		UserNotificationEvent userNotificationEvent =
 			_userNotificationEventLocalService.fetchUserNotificationEvent(
@@ -337,6 +295,17 @@ public class NotificationsPortlet extends MVCPortlet {
 			userNotificationEvent);
 	}
 
+	private void _deleteUserNotificationEvent(long userNotificationEventId) {
+		UserNotificationEvent userNotificationEvent =
+			_userNotificationEventLocalService.fetchUserNotificationEvent(
+				userNotificationEventId);
+
+		if (userNotificationEvent != null) {
+			_userNotificationEventLocalService.deleteUserNotificationEvent(
+				userNotificationEvent);
+		}
+	}
+
 	private void _sendRedirect(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException {
@@ -348,15 +317,17 @@ public class NotificationsPortlet extends MVCPortlet {
 		}
 	}
 
-	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.notifications.web)",
-		unbind = "-"
-	)
+	@Reference(target = "(bundle.symbolic.name=com.liferay.notifications.web)")
 	private ResourceBundleLoader _resourceBundleLoader;
 
+	@Reference
 	private SubscriptionLocalService _subscriptionLocalService;
+
+	@Reference
 	private UserNotificationDeliveryLocalService
 		_userNotificationDeliveryLocalService;
+
+	@Reference
 	private UserNotificationEventLocalService
 		_userNotificationEventLocalService;
 

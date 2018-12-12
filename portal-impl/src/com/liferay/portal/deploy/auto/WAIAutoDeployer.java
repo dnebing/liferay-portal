@@ -14,7 +14,6 @@
 
 package com.liferay.portal.deploy.auto;
 
-import com.liferay.portal.kernel.deploy.auto.AutoDeployException;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.portlet.DefaultFriendlyURLMapper;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -32,15 +31,6 @@ import java.util.Properties;
  * @author Connor McKay
  */
 public class WAIAutoDeployer extends PortletAutoDeployer {
-
-	public WAIAutoDeployer() throws AutoDeployException {
-		try {
-			addRequiredJar(jars, "portals-bridges.jar");
-		}
-		catch (Exception e) {
-			throw new AutoDeployException(e);
-		}
-	}
 
 	@Override
 	public void copyXmls(
@@ -144,7 +134,8 @@ public class WAIAutoDeployer extends PortletAutoDeployer {
 
 	private static final String[] _INIT_PARAM_DEFAULT_VALUES = {"500"};
 
-	private static final String[] _INIT_PARAM_NAMES =
-		{"wai.connector.iframe.height.default"};
+	private static final String[] _INIT_PARAM_NAMES = {
+		"wai.connector.iframe.height.default"
+	};
 
 }

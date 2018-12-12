@@ -71,7 +71,10 @@ import org.osgi.util.tracker.BundleTracker;
  * @author Miguel Pastor
  * @author Raymond Augé
  */
-@Component(immediate = true)
+@Component(
+	immediate = true,
+	service = com.liferay.portal.osgi.web.wab.generator.WabGenerator.class
+)
 public class WabGenerator
 	implements com.liferay.portal.osgi.web.wab.generator.WabGenerator {
 
@@ -172,8 +175,8 @@ public class WabGenerator
 
 		Set<String> contextPaths = new HashSet<>();
 
-		try (DirectoryStream<Path> directoryStream =
-				Files.newDirectoryStream(path.toRealPath(), "*.war")) {
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(
+				path.toRealPath(), "*.war")) {
 
 			for (Path warPath : directoryStream) {
 				URI uri = warPath.toUri();

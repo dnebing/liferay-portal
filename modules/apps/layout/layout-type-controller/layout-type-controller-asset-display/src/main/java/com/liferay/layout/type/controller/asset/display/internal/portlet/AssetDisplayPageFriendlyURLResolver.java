@@ -19,6 +19,7 @@ import com.liferay.asset.display.contributor.AssetDisplayContributorTracker;
 import com.liferay.asset.display.contributor.constants.AssetDisplayWebKeys;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryService;
+import com.liferay.asset.util.AssetHelper;
 import com.liferay.layout.type.controller.asset.display.internal.constants.AssetDisplayLayoutTypeControllerConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
@@ -32,8 +33,12 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.WebKeys;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -78,12 +83,17 @@ public class AssetDisplayPageFriendlyURLResolver
 		request.setAttribute(
 			AssetDisplayWebKeys.ASSET_DISPLAY_CONTRIBUTOR,
 			assetDisplayContributor);
-		request.setAttribute(AssetDisplayWebKeys.ASSET_ENTRY, assetEntry);
+		request.setAttribute(WebKeys.LAYOUT_ASSET_ENTRY, assetEntry);
 
 		Locale locale = _portal.getLocale(request);
 
-		_portal.addPageSubtitle(assetEntry.getTitle(locale), request);
-		_portal.addPageDescription(assetEntry.getDescription(locale), request);
+		_portal.setPageTitle(assetEntry.getTitle(locale), request);
+		_portal.setPageDescription(assetEntry.getDescription(locale), request);
+
+		_portal.setPageKeywords(
+			_assetHelper.getAssetKeywords(
+				assetEntry.getClassName(), assetEntry.getClassPK()),
+			request);
 
 		Layout layout = getAssetDisplayLayout(groupId);
 
@@ -130,6 +140,16 @@ public class AssetDisplayPageFriendlyURLResolver
 		long defaultUserId = _userLocalService.getDefaultUserId(
 			group.getCompanyId());
 
+		Map<Locale, String> nameMap = new HashMap<>();
+
+		Locale locale = LocaleUtil.getSiteDefault();
+
+		nameMap.put(locale, "Asset Display Page");
+
+		UnicodeProperties typeSettingsProperties = new UnicodeProperties();
+
+		typeSettingsProperties.put("visible", Boolean.FALSE.toString());
+
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
@@ -137,9 +157,9 @@ public class AssetDisplayPageFriendlyURLResolver
 			"layout.instanceable.allowed", Boolean.TRUE);
 
 		return _layoutLocalService.addLayout(
-			defaultUserId, groupId, false, 0, "Asset Display Page", null, null,
-			AssetDisplayLayoutTypeControllerConstants.LAYOUT_TYPE_ASSET_DISPLAY,
-			true, null, serviceContext);
+			defaultUserId, groupId, false, 0, nameMap, null, null, null, null,
+			"asset_display", typeSettingsProperties.toString(), true,
+			new HashMap<>(), serviceContext);
 	}
 
 	@Reference
@@ -147,6 +167,9 @@ public class AssetDisplayPageFriendlyURLResolver
 
 	@Reference
 	private AssetEntryService _assetEntryService;
+
+	@Reference
+	private AssetHelper _assetHelper;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

@@ -63,7 +63,6 @@ import com.liferay.portal.kernel.theme.NavItem;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil_IW;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.DateUtil_IW;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -89,6 +88,8 @@ import com.liferay.portal.kernel.util.Validator_IW;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
 import com.liferay.portal.kernel.xml.SAXReader;
+import com.liferay.portal.struts.Definition;
+import com.liferay.portal.struts.TilesUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,9 +114,6 @@ import javax.portlet.RenderResponse;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts.tiles.ComponentContext;
-import org.apache.struts.tiles.taglib.ComponentConstants;
 
 /**
  * @author Tina Tian
@@ -212,8 +210,9 @@ public class TemplateContextHelper {
 	}
 
 	public TemplateControlContext getTemplateControlContext() {
-		ClassLoader contextClassLoader =
-			ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
 		return new TemplateControlContext(null, contextClassLoader);
 	}
@@ -867,30 +866,31 @@ public class TemplateContextHelper {
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		ComponentContext componentContext =
-			(ComponentContext)request.getAttribute(
-				ComponentConstants.COMPONENT_CONTEXT);
+		Definition definition = (Definition)request.getAttribute(
+			TilesUtil.DEFINITION);
 
-		if (componentContext == null) {
+		if (definition == null) {
 			themeDisplay.setTilesSelectable(true);
 
 			return;
 		}
 
-		String tilesTitle = (String)componentContext.getAttribute("title");
+		Map<String, String> attributes = definition.getAttributes();
+
+		String tilesTitle = attributes.get("title");
 
 		themeDisplay.setTilesTitle(tilesTitle);
 
 		contextObjects.put("tilesTitle", tilesTitle);
 
-		String tilesContent = (String)componentContext.getAttribute("content");
+		String tilesContent = attributes.get("content");
 
 		themeDisplay.setTilesContent(tilesContent);
 
 		contextObjects.put("tilesContent", tilesContent);
 
 		boolean tilesSelectable = GetterUtil.getBoolean(
-			(String)componentContext.getAttribute("selectable"));
+			attributes.get("selectable"));
 
 		themeDisplay.setTilesSelectable(tilesSelectable);
 
@@ -1372,8 +1372,8 @@ public class TemplateContextHelper {
 				throw new IOException(
 					StringBundler.concat(
 						"Denied access to resource ", url.toString(),
-						". $httpUtil template variable supports only http and ",
-						"https protocols."));
+						". $httpUtil template variable supports only HTTP and ",
+						"HTTPS protocols."));
 			}
 
 			if (isLocationAccessDenied(url.toString())) {

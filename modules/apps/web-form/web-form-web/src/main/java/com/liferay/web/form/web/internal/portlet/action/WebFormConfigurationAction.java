@@ -66,9 +66,8 @@ public class WebFormConfigurationAction extends DefaultConfigurationAction {
 		if (cmd.equals(Constants.ADD)) {
 			return "/edit_field.jsp";
 		}
-		else {
-			return "/configuration.jsp";
-		}
+
+		return "/configuration.jsp";
 	}
 
 	@Override
@@ -90,9 +89,6 @@ public class WebFormConfigurationAction extends DefaultConfigurationAction {
 		boolean updateFields = ParamUtil.getBoolean(
 			actionRequest, "updateFields");
 
-		String portletResource = ParamUtil.getString(
-			actionRequest, "portletResource");
-
 		PortletPreferences preferences = actionRequest.getPreferences();
 
 		LocalizationUtil.setLocalizedPreferencesValues(
@@ -113,6 +109,9 @@ public class WebFormConfigurationAction extends DefaultConfigurationAction {
 
 		if (updateFields) {
 			int i = 1;
+
+			String portletResource = ParamUtil.getString(
+				actionRequest, "portletResource");
 
 			String databaseTableName = WebFormUtil.getNewDatabaseTableName(
 				portletResource);
@@ -141,6 +140,7 @@ public class WebFormConfigurationAction extends DefaultConfigurationAction {
 				Map<Locale, String> fieldParagraphMap =
 					LocalizationUtil.getLocalizationMap(
 						actionRequest, "fieldParagraph" + formFieldsIndex);
+
 				String fieldValidationScript = ParamUtil.getString(
 					actionRequest, "fieldValidationScript" + formFieldsIndex);
 				String fieldValidationErrorMessage = ParamUtil.getString(

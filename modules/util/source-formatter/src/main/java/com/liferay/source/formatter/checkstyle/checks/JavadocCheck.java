@@ -54,23 +54,28 @@ public class JavadocCheck extends BaseCheck {
 		javadoc = fileContents.getJavadocBefore(javadoc.getStartLineNo());
 
 		if (javadoc != null) {
-			DetailAST nameAST = detailAST.findFirstToken(TokenTypes.IDENT);
+			DetailAST nameDetailAST = detailAST.findFirstToken(
+				TokenTypes.IDENT);
 
 			Object[] arguments = null;
 
-			if (nameAST == null) {
+			if (nameDetailAST == null) {
 				arguments = new Object[] {_getClassName()};
 			}
 			else {
-				arguments = new Object[] {nameAST.getText()};
+				arguments = new Object[] {nameDetailAST.getText()};
 			}
 
-			log(detailAST.getLineNo(), _MSG_MULTIPLE_JAVADOC, arguments);
+			log(detailAST, _MSG_MULTIPLE_JAVADOC, arguments);
 		}
 	}
 
 	private void _checkJavadoc(TextBlock javadoc) {
 		String[] text = javadoc.getText();
+
+		if (text.length == 1) {
+			return;
+		}
 
 		_checkLine(javadoc, text, 1, "/**", _MSG_INCORRECT_FIRST_LINE, true);
 		_checkLine(javadoc, text, 2, StringPool.STAR, _MSG_EMPTY_LINE, false);

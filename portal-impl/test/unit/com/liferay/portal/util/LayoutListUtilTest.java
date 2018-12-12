@@ -14,14 +14,15 @@
 
 package com.liferay.portal.util;
 
-import com.germinus.easyconf.ConfigurationSerializer;
-
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.configuration.ConfigurationImpl;
 import com.liferay.portal.json.JSONArrayImpl;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceWrapper;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -37,69 +38,54 @@ import org.apache.commons.lang.time.StopWatch;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.mockito.Mockito;
-
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * @author László Csontos
  */
-@PrepareForTest(
-	{
-		ConfigurationSerializer.class, LayoutLocalServiceUtil.class,
-		LocalizationUtil.class, PropsUtil.class
+public class LayoutListUtilTest {
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		LocalizationUtil localizationUtil = new LocalizationUtil();
+
+		localizationUtil.setLocalization(new LocalizationImpl());
+
+		ReflectionTestUtil.setFieldValue(
+			PropsUtil.class, "_configuration",
+			new ConfigurationImpl(
+				PropsUtil.class.getClassLoader(), PropsFiles.PORTAL, 0, null) {
+
+				@Override
+				public String get(String key) {
+					return StringPool.BLANK;
+				}
+
+				@Override
+				public String[] getArray(String key) {
+					return new String[0];
+				}
+
+			});
 	}
-)
-@RunWith(PowerMockRunner.class)
-public class LayoutListUtilTest extends PowerMockito {
 
 	@Before
 	public void setUp() throws Exception {
-		mockStatic(ConfigurationSerializer.class);
-
-		when(
-			ConfigurationSerializer.getSerializer()
-		).thenReturn(
-			null
-		);
-
-		mockStatic(LayoutLocalServiceUtil.class);
-
 		addLayouts(0, 0);
 
-		when(
-			LayoutLocalServiceUtil.getLayouts(
-				Mockito.anyLong(), Mockito.anyBoolean())
-		).thenReturn(
-			_layouts
-		);
+		ReflectionTestUtil.setFieldValue(
+			LayoutLocalServiceUtil.class, "_service",
+			new LayoutLocalServiceWrapper(null) {
 
-		mockStatic(LocalizationUtil.class);
+				@Override
+				public List<Layout> getLayouts(
+					long groupId, boolean privateLayout) {
 
-		when(
-			LocalizationUtil.getLocalization()
-		).thenReturn(
-			new LocalizationImpl()
-		);
+					return _layouts;
+				}
 
-		mockStatic(PropsUtil.class);
-
-		when(
-			PropsUtil.get(Mockito.anyString())
-		).thenReturn(
-			StringPool.BLANK
-		);
-
-		when(
-			PropsUtil.getArray(Mockito.anyString())
-		).thenReturn(
-			new String[0]
-		);
+			});
 
 		Class<?> clazz = getClass();
 

@@ -14,6 +14,7 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
 import com.liferay.poshi.runner.util.Dom4JUtil;
 
 import java.io.IOException;
@@ -42,7 +43,8 @@ public class ForPoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new ForPoshiElement(parentPoshiElement, poshiScript);
@@ -52,7 +54,14 @@ public class ForPoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
+	public String getPoshiLogDescriptor() {
+		return getBlockName(getPoshiScript());
+	}
+
+	@Override
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
+
 		String blockName = getBlockName(poshiScript);
 
 		String parentheticalContent = getParentheticalContent(blockName);
@@ -95,7 +104,8 @@ public class ForPoshiElement extends PoshiElement {
 	}
 
 	protected ForPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}

@@ -114,11 +114,11 @@ public class HtmlImpl implements Html {
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
 
-			String replacement = null;
-
 			if ((c < 256) && ((c >= 128) || _VALID_CHARS[c])) {
 				continue;
 			}
+
+			String replacement = null;
 
 			if (c == '<') {
 				replacement = "&lt;";
@@ -243,6 +243,12 @@ public class HtmlImpl implements Html {
 						}
 						else if (c == CharPool.APOSTROPHE) {
 							replacement = "&#39;";
+						}
+						else if (c == CharPool.GREATER_THAN) {
+							replacement = "&gt;";
+						}
+						else if (c == CharPool.LESS_THAN) {
+							replacement = "&lt;";
 						}
 						else if (c == CharPool.QUOTE) {
 							replacement = "&quot;";
@@ -847,9 +853,8 @@ public class HtmlImpl implements Html {
 
 			return !Character.isLetter(item);
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected int stripTag(char[] tag, String text, int pos) {
@@ -945,11 +950,13 @@ public class HtmlImpl implements Html {
 		'e', 'f'
 	};
 
-	private static final String[] _MS_WORD_HTML =
-		{"&reg;", StringPool.APOSTROPHE, StringPool.QUOTE, StringPool.QUOTE};
+	private static final String[] _MS_WORD_HTML = {
+		"&reg;", StringPool.APOSTROPHE, StringPool.QUOTE, StringPool.QUOTE
+	};
 
-	private static final String[] _MS_WORD_UNICODE =
-		{"\u00ae", "\u2019", "\u201c", "\u201d"};
+	private static final String[] _MS_WORD_UNICODE = {
+		"\u00ae", "\u2019", "\u201c", "\u201d"
+	};
 
 	private static final char[] _TAG_SCRIPT = {'s', 'c', 'r', 'i', 'p', 't'};
 
@@ -964,6 +971,7 @@ public class HtmlImpl implements Html {
 		'<', '>', '*', '$', '"', '"', ' ', 9, 10, 13, 133, 8232
 	};
 
+	private static final Pattern _pattern = Pattern.compile("([\\s<&]|$)");
 	private static final Map<String, String> _unescapeMap =
 		new HashMap<String, String>() {
 			{
@@ -995,7 +1003,5 @@ public class HtmlImpl implements Html {
 		_VALID_CHARS['-'] = true;
 		_VALID_CHARS['_'] = true;
 	}
-
-	private final Pattern _pattern = Pattern.compile("([\\s<&]|$)");
 
 }

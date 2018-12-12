@@ -138,6 +138,14 @@ public class LayoutPageTemplateEntryServiceImpl
 		return layoutPageTemplateEntry;
 	}
 
+	@Override
+	public LayoutPageTemplateEntry fetchLayoutPageTemplateEntryByUuidAndGroupId(
+		String uuid, long groupId) {
+
+		return layoutPageTemplateEntryLocalService.
+			fetchLayoutPageTemplateEntryByUuidAndGroupId(uuid, groupId);
+	}
+
 	/**
 	 * @deprecated As of Judson (7.1.x), with no direct replacement
 	 */
@@ -221,6 +229,14 @@ public class LayoutPageTemplateEntryServiceImpl
 		return getLayoutPageTemplateEntries(
 			groupId, type, WorkflowConstants.STATUS_ANY, start, end,
 			orderByComparator);
+	}
+
+	@Override
+	public List<LayoutPageTemplateEntry> getLayoutPageTemplateEntries(
+		long groupId, long classNameId, int type, boolean defaultTemplate) {
+
+		return layoutPageTemplateEntryPersistence.filterFindByG_C_T_D(
+			groupId, classNameId, type, defaultTemplate);
 	}
 
 	@Override

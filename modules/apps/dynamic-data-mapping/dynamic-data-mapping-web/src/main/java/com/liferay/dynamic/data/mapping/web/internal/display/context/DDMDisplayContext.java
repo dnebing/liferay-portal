@@ -136,8 +136,8 @@ public class DDMDisplayContext {
 
 		if (DDMTemplatePermission.containsAddTemplatePermission(
 				_ddmWebRequestHelper.getPermissionChecker(),
-				_ddmWebRequestHelper.getScopeGroupId(),
-				getClassNameId(), scopeClassNameId) &&
+				_ddmWebRequestHelper.getScopeGroupId(), getClassNameId(),
+				scopeClassNameId) &&
 			(Validator.isNull(expectedTemplateTypeValue) ||
 			 expectedTemplateTypeValue.equals(actualTemplateTypeValue))) {
 
@@ -488,9 +488,6 @@ public class DDMDisplayContext {
 
 		return new CreationMenu() {
 			{
-
-				String message = "add";
-
 				if (getClassNameId() ==
 						PortalUtil.getClassNameId(DDMStructure.class)) {
 
@@ -509,6 +506,8 @@ public class DDMDisplayContext {
 					addTemplateURL.setParameter(
 						"resourceClassNameId",
 						String.valueOf(getResourceClassNameId()));
+
+					String message = "add";
 
 					if (containsAddTemplatePermission(
 							DDMTemplateConstants.TEMPLATE_TYPE_FORM)) {
@@ -698,9 +697,6 @@ public class DDMDisplayContext {
 	public boolean isShowAddTemplateButton() throws PortalException {
 		DDMDisplay ddmDisplay = getDDMDisplay();
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)_renderRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		long classNameId = getClassNameId();
 		long resourceClassNameId = PortalUtil.getClassNameId(
 			ddmDisplay.getStructureType());
@@ -708,6 +704,9 @@ public class DDMDisplayContext {
 		if ((classNameId == 0) || (resourceClassNameId == 0)) {
 			return true;
 		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_renderRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		if (ddmDisplay.isShowAddButton(themeDisplay.getScopeGroup()) &&
 			DDMTemplatePermission.containsAddTemplatePermission(
@@ -829,10 +828,8 @@ public class DDMDisplayContext {
 			portletURL.setParameter("classNameId", String.valueOf(classNameId));
 		}
 
-		long classPK = getClassPK();
-
 		if (classNameId != 0) {
-			portletURL.setParameter("classPK", String.valueOf(classPK));
+			portletURL.setParameter("classPK", String.valueOf(getClassPK()));
 		}
 
 		long resourceClassNameId = getResourceClassNameId();
@@ -897,9 +894,9 @@ public class DDMDisplayContext {
 	protected String getScopedStructureLabel() {
 		String scopeTitle = ParamUtil.getString(_renderRequest, "scopeTitle");
 
-		DDMDisplay ddmDisplay = getDDMDisplay();
-
 		if (Validator.isNull(scopeTitle)) {
+			DDMDisplay ddmDisplay = getDDMDisplay();
+
 			return ddmDisplay.getTitle(_ddmWebRequestHelper.getLocale());
 		}
 
@@ -988,7 +985,7 @@ public class DDMDisplayContext {
 			templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY;
 		}
 		else if (scopeTemplateType.equals(
-					 DDMTemplateConstants.TEMPLATE_TYPE_FORM)) {
+					DDMTemplateConstants.TEMPLATE_TYPE_FORM)) {
 
 			templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_FORM;
 		}
@@ -1087,16 +1084,13 @@ public class DDMDisplayContext {
 		long[] groupIds = ddmDisplay.getTemplateGroupIds(
 			themeDisplay, showAncestorScopes());
 
-		long[] classPKs = ddmDisplay.getTemplateClassPKs(
-			_ddmWebRequestHelper.getCompanyId(), getStructureClassNameId(),
-			getClassPK());
-
 		List<DDMTemplate> results = _ddmTemplateService.search(
 			_ddmWebRequestHelper.getCompanyId(), groupIds,
-			getTemplateClassNameIds(), classPKs, getResourceClassNameId(),
-			searchTerms.getKeywords(), searchTerms.getType(), getTemplateMode(),
-			searchTerms.getStatus(), templateSearch.getStart(),
-			templateSearch.getEnd(), templateSearch.getOrderByComparator());
+			getTemplateClassNameIds(), _getDDMTemplateClassPKs(),
+			getResourceClassNameId(), searchTerms.getKeywords(),
+			searchTerms.getType(), getTemplateMode(), searchTerms.getStatus(),
+			templateSearch.getStart(), templateSearch.getEnd(),
+			templateSearch.getOrderByComparator());
 
 		templateSearch.setResults(results);
 	}
@@ -1115,21 +1109,25 @@ public class DDMDisplayContext {
 		long[] groupIds = ddmDisplay.getTemplateGroupIds(
 			themeDisplay, showAncestorScopes());
 
-		long[] classPKs = ddmDisplay.getTemplateClassPKs(
-			_ddmWebRequestHelper.getCompanyId(), getStructureClassNameId(),
-			getClassPK());
-
 		int total = _ddmTemplateService.searchCount(
 			_ddmWebRequestHelper.getCompanyId(), groupIds,
-			getTemplateClassNameIds(), classPKs, getResourceClassNameId(),
-			searchTerms.getKeywords(), searchTerms.getType(), getTemplateMode(),
-			searchTerms.getStatus());
+			getTemplateClassNameIds(), _getDDMTemplateClassPKs(),
+			getResourceClassNameId(), searchTerms.getKeywords(),
+			searchTerms.getType(), getTemplateMode(), searchTerms.getStatus());
 
 		templateSearch.setTotal(total);
 	}
 
 	protected boolean showAncestorScopes() {
 		return ParamUtil.getBoolean(_renderRequest, "showAncestorScopes");
+	}
+
+	private long[] _getDDMTemplateClassPKs() {
+		if (getClassPK() > 0) {
+			return new long[] {getClassPK()};
+		}
+
+		return null;
 	}
 
 	private final DDMDisplayRegistry _ddmDisplayRegistry;

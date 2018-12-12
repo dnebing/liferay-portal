@@ -30,7 +30,7 @@ String currentURL = PortalUtil.getCurrentURL(request);
 
 	<div dir="<%= userLocaleLanguageDir %>">
 		<div class="d-block">
-			<button class="close" id="ignoreUserLocaleOptions" type="button">&times;</button>
+			<button aria-label="<%= LanguageUtil.get(request, "close") %>" class="close" id="ignoreUserLocaleOptions" type="button">&times;</button>
 
 			<%= LanguageUtil.format(userLocale, "this-page-is-displayed-in-x", locale.getDisplayName(userLocale)) %>
 		</div>

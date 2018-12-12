@@ -76,9 +76,8 @@ public class IconMenuTag extends BaseBodyTagSupport implements BodyTag {
 
 			return EVAL_BODY_AGAIN;
 		}
-		else {
-			return SKIP_BODY;
-		}
+
+		return SKIP_BODY;
 	}
 
 	@Override
@@ -378,10 +377,8 @@ public class IconMenuTag extends BaseBodyTagSupport implements BodyTag {
 						jspWriter.write("\"></i> ");
 					}
 
-					boolean auiImage = false;
-
 					if (Validator.isNotNull(_icon)) {
-						auiImage = _icon.startsWith(_AUI_PATH);
+						boolean auiImage = _icon.startsWith(_AUI_PATH);
 
 						if (auiImage) {
 							jspWriter.write(" <i class=\"icon-");

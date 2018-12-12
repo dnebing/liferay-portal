@@ -37,7 +37,9 @@ import com.liferay.item.selector.criteria.url.criterion.URLItemSelectorCriterion
 import com.liferay.layout.admin.web.internal.constants.LayoutAdminWebKeys;
 import com.liferay.layout.admin.web.internal.util.SoyContextFactoryUtil;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
+import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryServiceUtil;
+import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalServiceUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
@@ -156,6 +158,9 @@ public class FragmentsEditorDisplayContext {
 		soyContext.put("imageSelectorURL", itemSelectorURL.toString());
 
 		soyContext.put("languageId", _themeDisplay.getLanguageId());
+		soyContext.put("lastSaveDate", StringPool.BLANK);
+		soyContext.put(
+			"layoutData", JSONFactoryUtil.createJSONObject(_getLayoutData()));
 
 		if (_showMapping) {
 			soyContext.put(
@@ -206,8 +211,9 @@ public class FragmentsEditorDisplayContext {
 		}
 
 		soyContext.put(
-			"updateFragmentEntryLinksURL",
-			_getFragmentEntryActionURL("/layout/update_fragment_entry_links"));
+			"updateLayoutPageTemplateDataURL",
+			_getFragmentEntryActionURL(
+				"/layout/update_layout_page_template_data"));
 		soyContext.put(
 			"updateLayoutPageTemplateEntryAssetTypeURL",
 			_getFragmentEntryActionURL(
@@ -296,6 +302,16 @@ public class FragmentsEditorDisplayContext {
 			desiredItemSelectorReturnTypes);
 
 		return imageItemSelectorCriterion;
+	}
+
+	private String _getLayoutData() throws PortalException {
+		LayoutPageTemplateStructure layoutPageTemplateStructure =
+			LayoutPageTemplateStructureLocalServiceUtil.
+				fetchLayoutPageTemplateStructure(
+					_themeDisplay.getScopeGroupId(), _classNameId, _classPK,
+					true);
+
+		return layoutPageTemplateStructure.getData();
 	}
 
 	private LayoutPageTemplateEntry _getLayoutPageTemplateEntry()
@@ -459,10 +475,10 @@ public class FragmentsEditorDisplayContext {
 		return soyContexts;
 	}
 
-	private List<SoyContext> _getSoyContextFragmentEntryLinks()
+	private SoyContext _getSoyContextFragmentEntryLinks()
 		throws PortalException {
 
-		List<SoyContext> soyContexts = new ArrayList<>();
+		SoyContext soyContexts = SoyContextFactoryUtil.createSoyContext();
 
 		List<FragmentEntryLink> fragmentEntryLinks =
 			FragmentEntryLinkLocalServiceUtil.getFragmentEntryLinks(
@@ -496,9 +512,10 @@ public class FragmentsEditorDisplayContext {
 					"fragmentEntryLinkId",
 					String.valueOf(fragmentEntryLink.getFragmentEntryLinkId()));
 				soyContext.put("name", fragmentEntry.getName());
-				soyContext.put("position", fragmentEntryLink.getPosition());
 
-				soyContexts.add(soyContext);
+				soyContexts.put(
+					String.valueOf(fragmentEntryLink.getFragmentEntryLinkId()),
+					soyContext);
 			}
 		}
 		finally {

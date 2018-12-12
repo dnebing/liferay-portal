@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.web.internal.user.facet.portlet;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.facet.config.FacetConfiguration;
 import com.liferay.portal.search.facet.Facet;
@@ -31,6 +32,7 @@ public class UserFacetBuilder {
 	public Facet build() {
 		Facet facet = _userFacetFactory.newInstance(_searchContext);
 
+		facet.setAggregationName(getAggregationName(facet.getFieldName()));
 		facet.setFacetConfiguration(buildFacetConfiguration(facet));
 
 		facet.select(_selectedUserNames);
@@ -44,6 +46,10 @@ public class UserFacetBuilder {
 
 	public void setMaxTerms(int maxTerms) {
 		_maxTerms = maxTerms;
+	}
+
+	public void setPortletId(String portletId) {
+		_portletId = portletId;
 	}
 
 	public void setSearchContext(SearchContext searchContext) {
@@ -72,8 +78,13 @@ public class UserFacetBuilder {
 		return facetConfiguration;
 	}
 
+	protected String getAggregationName(String fieldName) {
+		return fieldName + StringPool.PERIOD + _portletId;
+	}
+
 	private int _frequencyThreshold;
 	private int _maxTerms;
+	private String _portletId;
 	private SearchContext _searchContext;
 	private String[] _selectedUserNames;
 	private final UserFacetFactory _userFacetFactory;

@@ -22,10 +22,13 @@ import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
 import com.liferay.osgi.service.tracker.collections.map.PropertyServiceReferenceComparator;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 
 import java.util.Collections;
+import java.util.Locale;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -39,6 +42,28 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = FragmentEntryProcessorRegistry.class)
 public class FragmentEntryProcessorRegistryImpl
 	implements FragmentEntryProcessorRegistry {
+
+	@Override
+	public JSONArray getAvailableTagsJSONArray() {
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		for (FragmentEntryProcessor fragmentEntryProcessor :
+				_serviceTrackerList) {
+
+			JSONArray availableTagsJSONArray =
+				fragmentEntryProcessor.getAvailableTagsJSONArray();
+
+			if (availableTagsJSONArray == null) {
+				continue;
+			}
+
+			for (int i = 0; i < availableTagsJSONArray.length(); i++) {
+				jsonArray.put(availableTagsJSONArray.getJSONObject(i));
+			}
+		}
+
+		return jsonArray;
+	}
 
 	@Override
 	public JSONObject getDefaultEditableValuesJSONObject(String html) {
@@ -72,7 +97,7 @@ public class FragmentEntryProcessorRegistryImpl
 
 	@Override
 	public String processFragmentEntryLinkHTML(
-			FragmentEntryLink fragmentEntryLink, String mode)
+			FragmentEntryLink fragmentEntryLink, String mode, Locale locale)
 		throws PortalException {
 
 		String html = fragmentEntryLink.getHtml();
@@ -81,7 +106,7 @@ public class FragmentEntryProcessorRegistryImpl
 				_serviceTrackerList) {
 
 			html = fragmentEntryProcessor.processFragmentEntryLinkHTML(
-				fragmentEntryLink, html, mode);
+				fragmentEntryLink, html, mode, locale);
 		}
 
 		return html;

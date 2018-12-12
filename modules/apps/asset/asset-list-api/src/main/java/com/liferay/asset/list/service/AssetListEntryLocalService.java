@@ -18,8 +18,11 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.asset.list.model.AssetListEntry;
 
+import com.liferay.exportimport.kernel.lar.PortletDataContext;
+
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -63,6 +66,9 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	 *
 	 * Never modify or reference this interface directly. Always use {@link AssetListEntryLocalServiceUtil} to access the asset list entry local service. Add custom service methods to {@link com.liferay.asset.list.service.impl.AssetListEntryLocalServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public void addAssetEntrySelection(long assetListEntryId,
+		long assetEntryId, ServiceContext serviceContext)
+		throws PortalException;
 
 	/**
 	* Adds the asset list entry to the database. Also notifies the appropriate model listeners.
@@ -77,6 +83,18 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 		String title, int type, ServiceContext serviceContext)
 		throws PortalException;
 
+	public AssetListEntry addAssetListEntry(long userId, long groupId,
+		String title, int type, String typeSettings,
+		ServiceContext serviceContext) throws PortalException;
+
+	public AssetListEntry addDynamicAssetListEntry(long userId, long groupId,
+		String title, String typeSettings, ServiceContext serviceContext)
+		throws PortalException;
+
+	public AssetListEntry addManualAssetListEntry(long userId, long groupId,
+		String title, long[] assetEntryIds, ServiceContext serviceContext)
+		throws PortalException;
+
 	/**
 	* Creates a new asset list entry with the primary key. Does not add the asset list entry to the database.
 	*
@@ -85,6 +103,9 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	*/
 	@Transactional(enabled = false)
 	public AssetListEntry createAssetListEntry(long assetListEntryId);
+
+	public void deleteAssetEntrySelection(long assetListEntryId, int position)
+		throws PortalException;
 
 	/**
 	* Deletes the asset list entry from the database. Also notifies the appropriate model listeners.
@@ -116,6 +137,7 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -124,6 +146,7 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -138,6 +161,7 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -154,6 +178,7 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -163,6 +188,7 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -172,11 +198,23 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public AssetListEntry fetchAssetListEntry(long assetListEntryId);
+
+	/**
+	* Returns the asset list entry matching the UUID and group.
+	*
+	* @param uuid the asset list entry's UUID
+	* @param groupId the primary key of the group
+	* @return the matching asset list entry, or <code>null</code> if a matching asset list entry could not be found
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public AssetListEntry fetchAssetListEntryByUuidAndGroupId(String uuid,
+		long groupId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ActionableDynamicQuery getActionableDynamicQuery();
@@ -194,6 +232,35 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	*/
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<AssetListEntry> getAssetListEntries(int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetListEntry> getAssetListEntries(long groupId);
+
+	/**
+	* Returns all the asset list entries matching the UUID and company.
+	*
+	* @param uuid the UUID of the asset list entries
+	* @param companyId the primary key of the company
+	* @return the matching asset list entries, or an empty list if no matches were found
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetListEntry> getAssetListEntriesByUuidAndCompanyId(
+		String uuid, long companyId);
+
+	/**
+	* Returns a range of asset list entries matching the UUID and company.
+	*
+	* @param uuid the UUID of the asset list entries
+	* @param companyId the primary key of the company
+	* @param start the lower bound of the range of asset list entries
+	* @param end the upper bound of the range of asset list entries (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @return the range of matching asset list entries, or an empty list if no matches were found
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<AssetListEntry> getAssetListEntriesByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<AssetListEntry> orderByComparator);
 
 	/**
 	* Returns the number of asset list entries.
@@ -214,6 +281,22 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	public AssetListEntry getAssetListEntry(long assetListEntryId)
 		throws PortalException;
 
+	/**
+	* Returns the asset list entry matching the UUID and group.
+	*
+	* @param uuid the asset list entry's UUID
+	* @param groupId the primary key of the group
+	* @return the matching asset list entry
+	* @throws PortalException if a matching asset list entry could not be found
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public AssetListEntry getAssetListEntryByUuidAndGroupId(String uuid,
+		long groupId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		PortletDataContext portletDataContext);
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery();
 
@@ -229,6 +312,9 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException;
 
+	public void moveAssetEntrySelection(long assetListEntryId, int position,
+		int newPosition) throws PortalException;
+
 	/**
 	* Updates the asset list entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
@@ -240,4 +326,11 @@ public interface AssetListEntryLocalService extends BaseLocalService,
 
 	public AssetListEntry updateAssetListEntry(long assetListEntryId,
 		String title) throws PortalException;
+
+	public AssetListEntry updateAssetListEntryTypeSettings(
+		long assetListEntryId, String typeSettings) throws PortalException;
+
+	public AssetListEntry updateAssetListEntryTypeSettingsProperties(
+		long assetListEntryId, String typeSettingsProperties)
+		throws PortalException;
 }

@@ -14,16 +14,16 @@
 
 package com.liferay.portal.resiliency.service;
 
-import com.liferay.petra.lang.ClassLoaderPool;
 import com.liferay.portal.internal.resiliency.service.ServiceMethodProcessCallable;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiServiceInvokerUtil;
 import com.liferay.portal.kernel.nio.intraband.rpc.IntrabandRPCUtil;
 import com.liferay.portal.kernel.resiliency.spi.SPI;
 import com.liferay.portal.kernel.resiliency.spi.SPIRegistryUtil;
-import com.liferay.portal.kernel.security.access.control.AccessControl;
 import com.liferay.portal.kernel.security.access.control.AccessControlThreadLocal;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
+import com.liferay.portal.kernel.servlet.ServletContextClassLoaderPool;
 import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
+import com.liferay.portal.util.PropsValues;
 
 import java.io.Serializable;
 
@@ -39,14 +39,12 @@ import org.aopalliance.intercept.MethodInvocation;
 public class PortalResiliencyAdvice
 	extends AnnotationChainableMethodAdvice<AccessControlled> {
 
+	public PortalResiliencyAdvice() {
+		super(AccessControlled.class);
+	}
+
 	@Override
 	public Object before(MethodInvocation methodInvocation) throws Throwable {
-		AccessControlled accessControlled = findAnnotation(methodInvocation);
-
-		if (accessControlled == AccessControl.NULL_ACCESS_CONTROLLED) {
-			return null;
-		}
-
 		boolean remoteAccess = AccessControlThreadLocal.isRemoteAccess();
 
 		if (!remoteAccess) {
@@ -57,15 +55,9 @@ public class PortalResiliencyAdvice
 
 		Class<?> targetClass = targetObject.getClass();
 
-		String servletContextName = ClassLoaderPool.getContextName(
-			targetClass.getClassLoader());
-
-		SPI spi = SPIRegistryUtil.getServletContextSPI(servletContextName);
+		SPI spi = _getSPI(targetClass);
 
 		if (spi == null) {
-			serviceBeanAopCacheManager.removeMethodInterceptor(
-				methodInvocation, this);
-
 			return null;
 		}
 
@@ -92,8 +84,34 @@ public class PortalResiliencyAdvice
 	}
 
 	@Override
-	public AccessControlled getNullAnnotation() {
-		return AccessControl.NULL_ACCESS_CONTROLLED;
+	public boolean isEnabled(Class<?> targetClass, Method method) {
+		if (!PropsValues.PORTAL_RESILIENCY_ENABLED) {
+			return false;
+		}
+
+		if (!super.isEnabled(targetClass, method)) {
+			return false;
+		}
+
+		SPI spi = _getSPI(targetClass);
+
+		if (spi == null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private SPI _getSPI(Class<?> targetClass) {
+		String servletContextName =
+			ServletContextClassLoaderPool.getServletContextName(
+				targetClass.getClassLoader());
+
+		if (servletContextName == null) {
+			return null;
+		}
+
+		return SPIRegistryUtil.getServletContextSPI(servletContextName);
 	}
 
 }

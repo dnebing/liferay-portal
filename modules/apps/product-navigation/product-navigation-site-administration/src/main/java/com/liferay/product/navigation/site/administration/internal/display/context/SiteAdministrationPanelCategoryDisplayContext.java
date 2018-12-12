@@ -320,11 +320,11 @@ public class SiteAdministrationPanelCategoryDisplayContext {
 			return _stagingLabel;
 		}
 
-		Group group = getGroup();
-
 		_stagingLabel = StringPool.BLANK;
 
 		if (isShowStagingInfo()) {
+			Group group = getGroup();
+
 			if (group.isStagingGroup()) {
 				_stagingLabel = "staging";
 			}
@@ -430,8 +430,6 @@ public class SiteAdministrationPanelCategoryDisplayContext {
 	}
 
 	protected String getGroupAdministrationURL(Group group) {
-		PortletURL groupAdministrationURL = null;
-
 		if (_panelCategoryHelper == null) {
 			return null;
 		}
@@ -441,9 +439,10 @@ public class SiteAdministrationPanelCategoryDisplayContext {
 			_themeDisplay.getPermissionChecker(), group);
 
 		if (Validator.isNotNull(portletId)) {
-			groupAdministrationURL = PortalUtil.getControlPanelPortletURL(
-				_portletRequest, group, portletId, 0, 0,
-				PortletRequest.RENDER_PHASE);
+			PortletURL groupAdministrationURL =
+				PortalUtil.getControlPanelPortletURL(
+					_portletRequest, group, portletId, 0, 0,
+					PortletRequest.RENDER_PHASE);
 
 			if (groupAdministrationURL != null) {
 				return groupAdministrationURL.toString();
@@ -459,28 +458,20 @@ public class SiteAdministrationPanelCategoryDisplayContext {
 	}
 
 	protected boolean hasStagingPermission() throws PortalException {
-		if (!GroupPermissionUtil.contains(
+		if (GroupPermissionUtil.contains(
 				_themeDisplay.getPermissionChecker(), getGroup(),
-				ActionKeys.MANAGE_STAGING)) {
-
-			return false;
-		}
-
-		if (!GroupPermissionUtil.contains(
+				ActionKeys.MANAGE_STAGING) ||
+			GroupPermissionUtil.contains(
 				_themeDisplay.getPermissionChecker(), getGroup(),
-				ActionKeys.PUBLISH_STAGING)) {
-
-			return false;
-		}
-
-		if (!GroupPermissionUtil.contains(
+				ActionKeys.PUBLISH_STAGING) ||
+			GroupPermissionUtil.contains(
 				_themeDisplay.getPermissionChecker(), getGroup(),
 				ActionKeys.VIEW_STAGING)) {
 
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	protected void updateLatentGroup(long groupId) {

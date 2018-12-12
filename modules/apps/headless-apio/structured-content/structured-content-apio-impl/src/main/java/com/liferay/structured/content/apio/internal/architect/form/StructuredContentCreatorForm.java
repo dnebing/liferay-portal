@@ -15,33 +15,34 @@
 package com.liferay.structured.content.apio.internal.architect.form;
 
 import com.liferay.apio.architect.form.Form;
+import com.liferay.category.apio.architect.identifier.CategoryIdentifier;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.structure.apio.architect.identifier.ContentStructureIdentifier;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Instances of this class represent the values extracted from a structured
- * content form.
+ * Represents the values extracted from a structured content form.
  *
  * @author Alejandro Hernández
- * @review
  */
 public class StructuredContentCreatorForm {
 
 	/**
-	 * Builds a {@code Form} that generates {@code StructuredContentCreatorForm}
-	 * depending on the HTTP body.
+	 * Builds a {@code Form} that generates a {@code
+	 * StructuredContentCreatorForm} that depends on the HTTP body.
 	 *
-	 * @param  formBuilder the {@code Form} builder
-	 * @return a structured content creator form
-	 * @review
+	 * @param  formBuilder the form builder
+	 * @return the form
 	 */
 	public static Form<StructuredContentCreatorForm> buildForm(
 		Form.Builder<StructuredContentCreatorForm> formBuilder) {
@@ -52,28 +53,43 @@ public class StructuredContentCreatorForm {
 			__ -> "This form can be used to create a structured content"
 		).constructor(
 			StructuredContentCreatorForm::new
+		).addOptionalDate(
+			"datePublished", StructuredContentCreatorForm::setPublishedDate
+		).addOptionalLinkedModelList(
+			"category", CategoryIdentifier.class,
+			StructuredContentCreatorForm::setCategories
+		).addOptionalNestedModelList(
+			"values", StructuredContentValuesForm::buildForm,
+			StructuredContentCreatorForm::setStructuredContentValuesForms
+		).addOptionalString(
+			"description", StructuredContentCreatorForm::setDescription
 		).addOptionalStringList(
 			"keywords", StructuredContentCreatorForm::setKeywords
-		).addRequiredDate(
-			"displayDate", StructuredContentCreatorForm::setDisplayDate
-		).addRequiredString(
-			"description", StructuredContentCreatorForm::setDescription
-		).addRequiredString(
-			"structure", StructuredContentCreatorForm::setStructure
-		).addRequiredString(
-			"template", StructuredContentCreatorForm::setTemplate
-		).addRequiredString(
-			"text", StructuredContentCreatorForm::setText
+		).addRequiredLinkedModel(
+			"contentStructure", ContentStructureIdentifier.class,
+			StructuredContentCreatorForm::setContentStructureId
 		).addRequiredString(
 			"title", StructuredContentCreatorForm::setTitle
 		).build();
 	}
 
+	public List<Long> getCategories() {
+		return _categories;
+	}
+
+	/**
+	 * Returns the structured content's structure ID.
+	 *
+	 * @return the structure ID
+	 */
+	public Long getContentStructureId() {
+		return _contentStructureId;
+	}
+
 	/**
 	 * Returns the structured content's description map.
 	 *
-	 * @return the structured content's description map
-	 * @review
+	 * @return the description map
 	 */
 	public Map<Locale, String> getDescriptionMap(Locale locale) {
 		Map<Locale, String> descriptionMap = new HashMap<>();
@@ -84,111 +100,84 @@ public class StructuredContentCreatorForm {
 	}
 
 	/**
-	 * Returns the structured content's display date day.
+	 * Returns the day from the structured content's publication date.
 	 *
-	 * @return the structured content's display date day
-	 * @review
+	 * @return the publication date's day
 	 */
-	public int getDisplayDateDay() {
-		return _displayDateDay;
+	public Optional<Integer> getPublishedDateDayOptional() {
+		return Optional.ofNullable(_publishedDateDay);
 	}
 
 	/**
-	 * Returns the structured content's display date hour.
+	 * Returns the hour from the structured content's publication date.
 	 *
-	 * @return the structured content's display date hour
-	 * @review
+	 * @return the publication date's hour
 	 */
-	public int getDisplayDateHour() {
-		return _displayDateHour;
+	public Optional<Integer> getPublishedDateHourOptional() {
+		return Optional.ofNullable(_publishedDateHour);
 	}
 
 	/**
-	 * Returns the structured content's display date minute.
+	 * Returns the minute from the structured content's publication date.
 	 *
-	 * @return the structured content's display date minute
-	 * @review
+	 * @return the publication date's minute
 	 */
-	public int getDisplayDateMinute() {
-		return _displayDateMinute;
+	public Optional<Integer> getPublishedDateMinuteOptional() {
+		return Optional.ofNullable(_publishedDateMinute);
 	}
 
 	/**
-	 * Returns the structured content's display date month.
+	 * Returns the month from the structured content's publication date.
 	 *
-	 * @return the structured content's display date month
-	 * @review
+	 * @return the publication date's month
 	 */
-	public int getDisplayDateMonth() {
-		return _displayDateMonth;
+	public Optional<Integer> getPublishedDateMonthOptional() {
+		return Optional.ofNullable(_publishedDateMonth);
 	}
 
 	/**
-	 * Returns the structured content's display date year.
+	 * Returns the year from the structured content's publication date.
 	 *
-	 * @return the structured content's display date year
-	 * @review
+	 * @return the publication date's year
 	 */
-	public int getDisplayDateYear() {
-		return _displayDateYear;
+	public Optional<Integer> getPublishedDateYearOptional() {
+		return Optional.ofNullable(_publishedDateYear);
 	}
 
 	/**
-	 * Returns the service context related with this form
+	 * Returns this form's service context.
 	 *
 	 * @param  groupId the group ID
 	 * @return the service context
-	 * @review
 	 */
 	public ServiceContext getServiceContext(long groupId) {
 		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
-		serviceContext.setScopeGroupId(groupId);
 
 		if (ListUtil.isNotEmpty(_keywords)) {
 			serviceContext.setAssetTagNames(ArrayUtil.toStringArray(_keywords));
 		}
 
+		if (ListUtil.isNotEmpty(_categories)) {
+			serviceContext.setAssetCategoryIds(
+				ArrayUtil.toLongArray(_categories));
+		}
+
+		serviceContext.setScopeGroupId(groupId);
+
 		return serviceContext;
 	}
 
-	/**
-	 * Returns the structured content's structure ID.
-	 *
-	 * @return the structured content's structure ID
-	 * @review
-	 */
-	public String getStructure() {
-		return _structure;
-	}
-
-	/**
-	 * Returns the structured content's template ID.
-	 *
-	 * @return the structured content's template ID
-	 * @review
-	 */
-	public String getTemplate() {
-		return _template;
-	}
-
-	/**
-	 * Returns the structured content's text.
-	 *
-	 * @return the structured content's text
-	 * @review
-	 */
-	public String getText() {
-		return _text;
+	public List<StructuredContentValuesForm> getStructuredContentValuesForms() {
+		return _structuredContentValuesForms;
 	}
 
 	/**
 	 * Returns the structured content's title map.
 	 *
-	 * @return the structured content's title map
-	 * @review
+	 * @return the title map
 	 */
 	public Map<Locale, String> getTitleMap(Locale locale) {
 		Map<Locale, String> titleMap = new HashMap<>();
@@ -198,52 +187,55 @@ public class StructuredContentCreatorForm {
 		return titleMap;
 	}
 
-	public void setDescription(String description) {
-		_description = description;
+	public void setCategories(List<Long> categories) {
+		_categories = categories;
 	}
 
-	public void setDisplayDate(Date displayDate) {
-		Calendar calendar = Calendar.getInstance();
+	public void setContentStructureId(Long contentStructureId) {
+		_contentStructureId = contentStructureId;
+	}
 
-		calendar.setTime(displayDate);
-
-		_displayDateMonth = calendar.get(Calendar.MONTH);
-		_displayDateDay = calendar.get(Calendar.DATE);
-		_displayDateYear = calendar.get(Calendar.YEAR);
-		_displayDateHour = calendar.get(Calendar.HOUR);
-		_displayDateMinute = calendar.get(Calendar.MINUTE);
+	public void setDescription(String description) {
+		_description = description;
 	}
 
 	public void setKeywords(List<String> keywords) {
 		_keywords = keywords;
 	}
 
-	public void setStructure(String structure) {
-		_structure = structure;
+	public void setPublishedDate(Date publishedDate) {
+		Calendar calendar = Calendar.getInstance();
+
+		calendar.setTime(publishedDate);
+
+		_publishedDateDay = calendar.get(Calendar.DATE);
+		_publishedDateHour = calendar.get(Calendar.HOUR);
+		_publishedDateMinute = calendar.get(Calendar.MINUTE);
+		_publishedDateMonth = calendar.get(Calendar.MONTH);
+		_publishedDateYear = calendar.get(Calendar.YEAR);
 	}
 
-	public void setTemplate(String template) {
-		_template = template;
-	}
+	public void setStructuredContentValuesForms(
+		List<StructuredContentValuesForm> structuredContentValuesForms) {
 
-	public void setText(String text) {
-		_text = text;
+		_structuredContentValuesForms = structuredContentValuesForms;
 	}
 
 	public void setTitle(String title) {
 		_title = title;
 	}
 
+	private List<Long> _categories;
+	private Long _contentStructureId;
 	private String _description;
-	private Integer _displayDateDay;
-	private Integer _displayDateHour;
-	private Integer _displayDateMinute;
-	private Integer _displayDateMonth;
-	private Integer _displayDateYear;
 	private List<String> _keywords;
-	private String _structure;
-	private String _template;
-	private String _text;
+	private Integer _publishedDateDay;
+	private Integer _publishedDateHour;
+	private Integer _publishedDateMinute;
+	private Integer _publishedDateMonth;
+	private Integer _publishedDateYear;
+	private List<StructuredContentValuesForm> _structuredContentValuesForms =
+		new ArrayList<>();
 	private String _title;
 
 }

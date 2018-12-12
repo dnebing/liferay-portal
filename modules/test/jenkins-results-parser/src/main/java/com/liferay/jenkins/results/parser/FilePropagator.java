@@ -49,6 +49,10 @@ public class FilePropagator {
 		return _threadsDurationTotal / _threadsCompletedCount;
 	}
 
+	public List<String> getErrorSlaves() {
+		return _errorSlaves;
+	}
+
 	public void setCleanUpCommand(String cleanUpCommand) {
 		_cleanUpCommand = cleanUpCommand;
 	}
@@ -145,7 +149,7 @@ public class FilePropagator {
 			}
 			else {
 				commands.add(
-					"rsync -svI " + sourceFileName + " " + targetFileName);
+					"rsync -Iqs " + sourceFileName + " " + targetFileName);
 			}
 
 			String targetDirName = targetFileName.substring(
@@ -262,14 +266,15 @@ public class FilePropagator {
 						filePropagatorTask._targetFileName));
 
 				commands.add(
-					"rsync -svI " + _mirrorSlave + ":" +
+					"rsync -Iqs " + _mirrorSlave + ":" +
 						filePropagatorTask._targetFileName + " " +
 							filePropagatorTask._targetFileName);
 			}
 
 			try {
-				_successful = _filePropagator._executeBashCommands(
-					commands, _targetSlave) == 0;
+				_successful =
+					_filePropagator._executeBashCommands(
+						commands, _targetSlave) == 0;
 			}
 			catch (Exception e) {
 				_successful = false;

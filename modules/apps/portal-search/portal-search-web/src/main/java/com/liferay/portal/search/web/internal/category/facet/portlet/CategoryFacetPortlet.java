@@ -15,9 +15,11 @@
 package com.liferay.portal.search.web.internal.category.facet.portlet;
 
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.facet.category.CategoryFacetFactory;
 import com.liferay.portal.search.web.internal.category.facet.builder.AssetCategoriesFacetConfiguration;
@@ -98,7 +100,8 @@ public class CategoryFacetPortlet extends MVCPortlet {
 		PortletSharedSearchResponse portletSharedSearchResponse,
 		RenderRequest renderRequest) {
 
-		Facet facet = portletSharedSearchResponse.getFacet(getFieldName());
+		Facet facet = portletSharedSearchResponse.getFacet(
+			getAggregationName(renderRequest));
 
 		CategoryFacetPortletPreferences categoryFacetPortletPreferences =
 			new CategoryFacetPortletPreferencesImpl(
@@ -149,6 +152,12 @@ public class CategoryFacetPortlet extends MVCPortlet {
 		return assetCategoriesSearchFacetDisplayBuilder.build();
 	}
 
+	protected String getAggregationName(RenderRequest renderRequest) {
+		String portletId = portal.getPortletId(renderRequest);
+
+		return getFieldName() + StringPool.PERIOD + portletId;
+	}
+
 	protected String getFieldName() {
 		Facet facet = categoryFacetFactory.newInstance(null);
 
@@ -160,6 +169,9 @@ public class CategoryFacetPortlet extends MVCPortlet {
 
 	@Reference
 	protected CategoryFacetFactory categoryFacetFactory;
+
+	@Reference
+	protected Portal portal;
 
 	@Reference
 	protected PortletSharedSearchRequest portletSharedSearchRequest;

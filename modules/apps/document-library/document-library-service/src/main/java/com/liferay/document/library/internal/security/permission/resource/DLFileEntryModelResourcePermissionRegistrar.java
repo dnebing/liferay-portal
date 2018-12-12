@@ -24,6 +24,7 @@ import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.exportimport.kernel.staging.permission.StagingPermission;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.BaseModelPermissionCheckerUtil;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
@@ -54,7 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Preston Crary
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class DLFileEntryModelResourcePermissionRegistrar {
 
 	@Activate
@@ -157,6 +158,11 @@ public class DLFileEntryModelResourcePermissionRegistrar {
 		target = "(model.class.name=com.liferay.document.library.kernel.model.DLFolder)"
 	)
 	private ModelResourcePermission<DLFolder> _dlFolderModelResourcePermission;
+
+	@Reference(
+		target = ModuleServiceLifecycle.DATABASE_INITIALIZED, unbind = "-"
+	)
+	private ModuleServiceLifecycle _moduleServiceLifecycle;
 
 	@Reference(target = "(resource.name=" + DLConstants.RESOURCE_NAME + ")")
 	private PortletResourcePermission _portletResourcePermission;

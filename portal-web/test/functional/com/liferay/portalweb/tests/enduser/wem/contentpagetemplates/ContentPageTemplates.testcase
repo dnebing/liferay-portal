@@ -1,0 +1,274 @@
+<definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
+	<property name="testray.main.component.name" value="Layout Page Templates" />
+
+	<set-up>
+		<execute macro="TestCase#setUpPortalInstance" />
+
+		<execute macro="User#firstLoginPG" />
+
+		<execute macro="JSONGroup#addGroup">
+			<var name="groupName" value="Test Site Name" />
+		</execute>
+
+		<execute macro="FragmentsAdmin#openFragmentsAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<execute macro="FragmentsAdmin#importCollectionFromDependenciesFolder">
+			<var name="collectionZipFile" value="fragment-collection.zip" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#openPageTemplatesAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+	</set-up>
+
+	<tear-down>
+		<var method="PropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+
+		<if>
+			<equals arg1="${testPortalInstance}" arg2="true" />
+			<then>
+				<execute macro="PortalInstances#tearDownCP" />
+			</then>
+			<else>
+				<execute macro="JSONGroup#deleteGroupByName">
+					<var name="groupName" value="Test Site Name" />
+				</execute>
+			</else>
+		</if>
+	</tear-down>
+
+	<command name="AddLayoutPageTemplateRemoveFragment" priority="5">
+		<description message="Add and remove a fragment in the page editor." />
+		<property name="portal.acceptance" value="false" />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#add">
+			<var name="pageTemplateName" value="Page Template Name" />
+		</execute>
+
+		<execute macro="PageEditor#addFragment">
+			<var name="collectionName" value="Collection Name" />
+			<var name="fragmentName" value="Button" />
+		</execute>
+
+		<execute macro="PageEditor#viewAutoSaveMessage" />
+
+		<execute macro="PageEditor#removeFragment">
+			<var name="fragmentName" value="Button" />
+		</execute>
+
+		<execute macro="PageEditor#viewAutoSaveMessage" />
+
+		<execute macro="PageEditor#viewEditorEmpty" />
+	</command>
+
+	<command name="ChangeEditableImage" priority="5">
+		<description message="Change a fragment's editable image field." />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#add">
+			<var name="pageTemplateName" value="Page Template Name" />
+		</execute>
+
+		<execute macro="PageEditor#addFragment">
+			<var name="collectionName" value="Collection Name" />
+			<var name="fragmentName" value="Image" />
+		</execute>
+
+		<execute macro="PageEditor#editFragmentImage">
+			<var name="fileName" value="Document_1.png" />
+			<var name="fragmentName" value="Image" />
+			<var name="id" value="image" />
+		</execute>
+	</command>
+
+	<command name="ChangeEditableText" priority="5">
+		<description message="Change a fragment's editable text field." />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#add">
+			<var name="pageTemplateName" value="Page Template Name" />
+		</execute>
+
+		<execute macro="PageEditor#addFragment">
+			<var name="collectionName" value="Collection Name" />
+			<var name="fragmentName" value="Content" />
+		</execute>
+
+		<execute macro="PageEditor#editFragmentText">
+			<var name="fragmentName" value="Content" />
+			<var name="id" value="content" />
+			<var name="text" value="Editing Finished" />
+		</execute>
+
+		<execute macro="PageEditor#viewFragmentEditableText">
+			<var name="editableText" value="Editing Finished" />
+			<var name="fragmentName" value="Content" />
+			<var name="id" value="content" />
+		</execute>
+	</command>
+
+	<command name="DeleteCollection" priority="5">
+		<description message="Delete a page template collection." />
+		<property name="portal.acceptance" value="true" />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Collection Name" />
+		</execute>
+
+		<execute macro="Collection#deleteCollection">
+			<var name="collectionName" value="Collection Name" />
+		</execute>
+
+		<execute macro="Collection#viewNotPresent">
+			<var name="rowEntry" value="Collection Name" />
+		</execute>
+	</command>
+
+	<command name="DeletePageTemplate" priority="5">
+		<description message="Delete a page template." />
+		<property name="portal.acceptance" value="true" />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#add">
+			<var name="pageTemplateName" value="Page Template Name" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#openPageTemplatesAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="LexiconEntry#delete">
+			<var name="rowEntry" value="Page Template Name" />
+		</execute>
+
+		<execute macro="LexiconEntry#viewNoEntry">
+			<var name="rowEntry" value="Page Template Name" />
+		</execute>
+	</command>
+
+	<command name="RenameCollection" priority="4">
+		<description message="Rename a page template collection." />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionDescription" value="Collection Description Original" />
+			<var name="collectionName" value="Collection Name Original" />
+		</execute>
+
+		<execute macro="Collection#renameCollection">
+			<var name="collectionDescription" value="Collection Description New" />
+			<var name="collectionName" value="Collection Name Original" />
+			<var name="collectionNameEdit" value="Collection Name New" />
+		</execute>
+
+		<execute macro="Collection#viewPresent">
+			<var name="collectionName" value="Collection Name New" />
+		</execute>
+	</command>
+
+	<command name="RenamePageTemplate" priority="4">
+		<description message="Rename a page template." />
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#add">
+			<var name="pageTemplateName" value="Page Template Name" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#openPageTemplatesAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#rename">
+			<var name="pageTemplateName" value="Page Template Name New" />
+			<var name="rowEntry" value="Page Template Name" />
+		</execute>
+
+		<execute macro="LexiconEntry#viewEntryName">
+			<var name="rowEntry" value="Page Template Name New" />
+		</execute>
+	</command>
+
+	<command name="ViewDraftFragmentDoesNotDisplayInSidebar" priority="4">
+		<description message="An unpublished fragment should not show up in the fragments sidebar." />
+
+		<execute macro="FragmentsAdmin#openFragmentsAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<execute macro="FragmentsAdmin#addCollection">
+			<var name="collectionDescription" value="Collection Description" />
+			<var name="collectionName" value="New Collection" />
+		</execute>
+
+		<execute macro="FragmentsAdmin#addSection">
+			<var name="fragmentName" value="Fragment Name" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#openPageTemplatesAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#addCollection">
+			<var name="collectionName" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavNested">
+			<var name="navNested" value="Page Template Collection" />
+		</execute>
+
+		<execute macro="PageTemplatesAdmin#add">
+			<var name="pageTemplateName" value="Page Template Name" />
+		</execute>
+
+		<execute macro="PageEditor#viewCollectionNotPresent">
+			<var name="collectionName" value="New Collection" />
+		</execute>
+	</command>
+</definition>

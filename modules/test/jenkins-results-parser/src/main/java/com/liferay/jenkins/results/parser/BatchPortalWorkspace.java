@@ -17,18 +17,13 @@ package com.liferay.jenkins.results.parser;
 /**
  * @author Peter Yoo
  */
-public class BatchPortalWorkspace
-	extends PortalWorkspace implements BatchWorkspace {
+public class BatchPortalWorkspace extends BasePortalWorkspace {
 
 	protected BatchPortalWorkspace(
-		String portalGitHubURL, String portalUpstreamBranchName) {
+		String portalGitHubURL, String portalUpstreamBranchName,
+		String portalBranchSHA) {
 
-		super(portalGitHubURL, portalUpstreamBranchName);
-	}
-
-	@Override
-	protected boolean synchronizeGitBranches() {
-		return false;
+		super(portalGitHubURL, portalUpstreamBranchName, portalBranchSHA);
 	}
 
 }

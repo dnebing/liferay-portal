@@ -183,6 +183,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	public List<ReadingTimeEntry> findByUuid(String uuid, int start, int end,
 		OrderByComparator<ReadingTimeEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -206,7 +208,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ReadingTimeEntry readingTimeEntry : list) {
-					if (!Objects.equals(uuid, readingTimeEntry.getUuid())) {
+					if (!uuid.equals(readingTimeEntry.getUuid())) {
 						list = null;
 
 						break;
@@ -230,10 +232,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -416,6 +415,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	public ReadingTimeEntry[] findByUuid_PrevAndNext(long readingTimeEntryId,
 		String uuid, OrderByComparator<ReadingTimeEntry> orderByComparator)
 		throws NoSuchEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		ReadingTimeEntry readingTimeEntry = findByPrimaryKey(readingTimeEntryId);
 
 		Session session = null;
@@ -461,10 +462,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -584,6 +582,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -597,10 +597,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -715,6 +712,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	@Override
 	public ReadingTimeEntry fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -740,10 +739,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -827,6 +823,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -840,10 +838,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -989,6 +984,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 		int start, int end,
 		OrderByComparator<ReadingTimeEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1016,7 +1013,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ReadingTimeEntry readingTimeEntry : list) {
-					if (!Objects.equals(uuid, readingTimeEntry.getUuid()) ||
+					if (!uuid.equals(readingTimeEntry.getUuid()) ||
 							(companyId != readingTimeEntry.getCompanyId())) {
 						list = null;
 
@@ -1041,10 +1038,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1244,6 +1238,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 		long readingTimeEntryId, String uuid, long companyId,
 		OrderByComparator<ReadingTimeEntry> orderByComparator)
 		throws NoSuchEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		ReadingTimeEntry readingTimeEntry = findByPrimaryKey(readingTimeEntryId);
 
 		Session session = null;
@@ -1289,10 +1285,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1418,6 +1411,8 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1431,10 +1426,7 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1730,6 +1722,9 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 
 	public ReadingTimeEntryPersistenceImpl() {
 		setModelClass(ReadingTimeEntry.class);
+
+		setModelImplClass(ReadingTimeEntryImpl.class);
+		setEntityCacheEnabled(ReadingTimeEntryModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -2212,54 +2207,6 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	/**
 	 * Returns the reading time entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the reading time entry
-	 * @return the reading time entry, or <code>null</code> if a reading time entry with the primary key could not be found
-	 */
-	@Override
-	public ReadingTimeEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(ReadingTimeEntryModelImpl.ENTITY_CACHE_ENABLED,
-				ReadingTimeEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		ReadingTimeEntry readingTimeEntry = (ReadingTimeEntry)serializable;
-
-		if (readingTimeEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				readingTimeEntry = (ReadingTimeEntry)session.get(ReadingTimeEntryImpl.class,
-						primaryKey);
-
-				if (readingTimeEntry != null) {
-					cacheResult(readingTimeEntry);
-				}
-				else {
-					entityCache.putResult(ReadingTimeEntryModelImpl.ENTITY_CACHE_ENABLED,
-						ReadingTimeEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(ReadingTimeEntryModelImpl.ENTITY_CACHE_ENABLED,
-					ReadingTimeEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return readingTimeEntry;
-	}
-
-	/**
-	 * Returns the reading time entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param readingTimeEntryId the primary key of the reading time entry
 	 * @return the reading time entry, or <code>null</code> if a reading time entry with the primary key could not be found
 	 */
@@ -2556,6 +2503,11 @@ public class ReadingTimeEntryPersistenceImpl extends BasePersistenceImpl<Reading
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

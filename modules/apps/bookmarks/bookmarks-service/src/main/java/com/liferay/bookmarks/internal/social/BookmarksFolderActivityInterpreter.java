@@ -72,19 +72,17 @@ public class BookmarksFolderActivityInterpreter
 			if (Validator.isNull(groupName)) {
 				return "activity-bookmarks-folder-move-to-trash";
 			}
-			else {
-				return "activity-bookmarks-folder-move-to-trash-in";
-			}
+
+			return "activity-bookmarks-folder-move-to-trash-in";
 		}
 		else if (activityType ==
-					 SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
+					SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
 
 			if (Validator.isNull(groupName)) {
 				return "activity-bookmarks-folder-restore-from-trash";
 			}
-			else {
-				return "activity-bookmarks-folder-restore-from-trash-in";
-			}
+
+			return "activity-bookmarks-folder-restore-from-trash-in";
 		}
 
 		return null;
@@ -101,8 +99,9 @@ public class BookmarksFolderActivityInterpreter
 			activity.getGroupId(), activity.getClassPK(), actionId);
 	}
 
-	private static final String[] _CLASS_NAMES =
-		{BookmarksFolder.class.getName()};
+	private static final String[] _CLASS_NAMES = {
+		BookmarksFolder.class.getName()
+	};
 
 	@Reference(
 		target = "(model.class.name=com.liferay.bookmarks.model.BookmarksFolder)"

@@ -1,17 +1,22 @@
 import {Config} from 'metal-state';
-import {pageStructure} from './util/config.es';
-import Builder from './pages/builder/index.es';
-import Component from 'metal-jsx';
-import dom from 'metal-dom';
-import LayoutProvider from './components/LayoutProvider/index.es';
-import loader from './components/FieldsLoader/index.es';
-import RuleBuilder from './pages/RuleBuilder/index.es';
-import withAppComposer from './hocs/withAppComposer/index.es';
 import {EventHandler} from 'metal-events';
-
-const STR_UNTITLED_FORM = Liferay.Language.get('untitled-form');
-
-const LayoutProviderWithAppComposer = withAppComposer(LayoutProvider);
+import {isKeyInSet, isModifyingKey} from 'dynamic-data-mapping-form-builder/metal/js/util/dom.es';
+import {pageStructure} from 'dynamic-data-mapping-form-builder/metal/js/util/config.es';
+import {sub} from 'dynamic-data-mapping-form-builder/metal/js/util/strings.es';
+import autobind from 'autobind-decorator';
+import AutoSave from './util/AutoSave.es';
+import ClayModal from 'clay-modal';
+import Component from 'metal-jsx';
+import core from 'metal';
+import dom from 'metal-dom';
+import FormBuilder from 'dynamic-data-mapping-form-builder/metal/js/components/FormBuilder/index.es';
+import LayoutProvider from 'dynamic-data-mapping-form-builder/metal/js/components/LayoutProvider/index.es';
+import loader from 'dynamic-data-mapping-form-builder/metal/js/components/FieldsLoader/index.es';
+import PreviewButton from './components/PreviewButton/PreviewButton.es';
+import PublishButton from './components/PublishButton/PublishButton.es';
+import RuleBuilder from 'dynamic-data-mapping-form-builder/metal/js/components/RuleBuilder/index.es';
+import ShareFormPopover from './components/ShareFormPopover/ShareFormPopover.es';
+import StateSyncronizer from './util/StateSyncronizer.es';
 
 /**
  * Form.
@@ -32,12 +37,32 @@ class Form extends Component {
 		context: Config.shapeOf(
 			{
 				pages: Config.arrayOf(pageStructure),
-				rules: Config.array()
+				paginationMode: Config.string(),
+				rules: Config.array(),
+				successPageSettings: Config.object()
 			}
 		).required().setter('_setContext'),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * The rules of a form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+		dataProviderInstanceParameterSettingsURL: Config.string().required(),
+
+		/**
+		 * The rules of a form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+		dataProviderInstancesURL: Config.string().required(),
+
+		/**
+		 * The default language id of the form.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -47,7 +72,27 @@ class Form extends Component {
 		defaultLanguageId: Config.string().value(themeDisplay.getDefaultLanguageId()),
 
 		/**
-		 * The context for rendering a layout that represents a form.
+		 * The default language id of the form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		editingLanguageId: Config.string().value(themeDisplay.getDefaultLanguageId()),
+
+		/**
+		 * A map with all translated values available as the form description.
+		 * @default 0
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		formInstanceId: Config.string().value(0),
+
+		/**
+		 * A map with all translated values available as the form description.
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
@@ -55,6 +100,26 @@ class Form extends Component {
 		 */
 
 		localizedDescription: Config.object().value({}),
+
+		/**
+		 * A map with all translated values available as the form name.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		functionsMetadata: Config.object().value({}),
+
+		/**
+		 * A map with all translated values available as the form name.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		functionsURL: Config.string().required(),
 
 		/**
 		 * The context for rendering a layout that represents a form.
@@ -77,6 +142,25 @@ class Form extends Component {
 		namespace: Config.string().required(),
 
 		/**
+		 * Wether the form is published or not
+		 * @default false
+		 * @instance
+		 * @memberof Form
+		 * @type {!boolean}
+		 */
+
+		published: Config.bool().value(false),
+
+		/**
+		 * The rules of a form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+		rolesURL: Config.string().required(),
+
+		/**
 		 * The rules of a form.
 		 * @default undefined
 		 * @instance
@@ -91,182 +175,316 @@ class Form extends Component {
 		 * @default undefined
 		 * @instance
 		 * @memberof Form
+		 * @type {!boolean}
+		 */
+		saved: Config.bool(),
+
+		/**
+		 * The path to the SVG spritemap file containing the icons.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
 		 * @type {!string}
 		 */
 
-		spritemap: Config.string().required()
+		spritemap: Config.string().required(),
+
+		/**
+		 * Map of translated strings
+		 * @default {}
+		 * @instance
+		 * @memberof Form
+		 * @type {!object}
+		 */
+
+		strings: Config.object().value({})
 	};
 
 	static STATE = {
 
 		/**
-		 * The represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
-		 * @default undefined
+		 * Represent the current active screen mode where 0 => FormBuilder and 1 => RuleBuilder
+		 * @default 0
+		 * @instance
+		 * @memberof Form
+		 * @type {!number}
+		 */
+
+		activeFormMode: Config.number().value(0),
+
+		/**
+		 * Internal mirror of the pages state
+		 * @default _pagesValueFn
 		 * @instance
 		 * @memberof Form
 		 * @type {!array}
 		 */
 
-		activeFormMode: Config.number().value(0),
+		pages: Config.arrayOf(pageStructure).valueFn('_pagesValueFn'),
 
-		saveButtonLabel: Config.string().value(Liferay.Language.get('save-form'))
+		/**
+		 * @default _paginationModeValueFn
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+
+		paginationMode: Config.string().valueFn('_paginationModeValueFn'),
+
+		/**
+		 * The label of the save button
+		 * @default 'save-form'
+		 * @instance
+		 * @memberof Form
+		 * @type {!string}
+		 */
+
+		saveButtonLabel: Config.string().valueFn('_saveButtonLabelValueFn')
 	}
 
-	_getFormContext(pages) {
-		return {...this.props.context, pages};
+	@autobind
+	_resolvePublishURL() {
+		return this._autoSave.save(false).then(
+			() => {
+				return {
+					formInstanceId: this._getFormInstanceId(),
+					publishURL: this._createFormURL()
+				};
+			}
+		);
 	}
 
-	_setContext(context) {
-		if (!context.pages.length) {
-			context = {
-				...context,
-				pages: [
-					{
-						description: '',
-						rows: [],
-						title: ''
-					}
-				]
-			};
+	@autobind
+	_resolvePreviewURL() {
+		return this._autoSave.save(true).then(
+			() => {
+				return `${this._createFormURL()}/preview`;
+			}
+		);
+	}
+
+	_saveButtonLabelValueFn() {
+		const {strings} = this.props;
+
+		return strings['save-form'];
+	}
+
+	checkEditorLimit(event, limit) {
+		const charCode = (event.which) ? event.which : event.keyCode;
+
+		if (this.isForbiddenKey(event, limit) && (charCode != 91)) {
+			event.preventDefault();
+		}
+	}
+
+	disposed() {
+		super.disposed();
+
+		if (this._autoSave) {
+			this._autoSave.dispose();
 		}
 
-		return context;
-	}
-
-	_getLocalizedName() {
-		const {
-			defaultLanguageId,
-			localizedName
-		} = this.props;
-
-		if (!localizedName[defaultLanguageId].trim()) {
-			localizedName[defaultLanguageId] = STR_UNTITLED_FORM;
-		}
-
-		return localizedName;
-	}
-
-	_getSerializedFormBuilderContext() {
-		return JSON.stringify(this.getState());
-	}
-
-	/*
-	 * Handles "pagesChanged" event. Updates hidden input with serialized From Builder context.
-	 * @param {!Event} event
-	 * @private
-	 */
-
-	_handlePagesChanged(event) {
-		this.refs.serializedFormBuilderContextInput.value = JSON.stringify(this._getFormContext(event.newVal));
+		this._eventHandler.removeAllListeners();
 	}
 
 	/**
-	 * Handles click on save button. Saves Form when clicked.
-	 * @param {!Event} event
-	 * @private
+	 * @inheritDoc
 	 */
 
-	_handleSaveButtonClicked(event) {
-		event.preventDefault();
+	attached() {
+		const {layoutProvider} = this.refs;
+		const {localizedDescription, localizedName, namespace} = this.props;
+		const {paginationMode} = this.state;
 
-		this.setState(
-			{
-				saveButtonLabel: Liferay.Language.get('saving')
+		this._eventHandler = new EventHandler();
+
+		Promise.all(
+			[
+				this._createEditor('nameEditor').then(
+					editor => {
+						this._eventHandler.add(
+							dom.on(editor.element.$, 'keydown', this._handleNameEditorKeydown.bind(this)),
+							dom.on(editor.element.$, 'keyup', this._handleNameEditorCopyAndPaste.bind(this)),
+							dom.on(editor.element.$, 'keypress', this._handleNameEditorCopyAndPaste.bind(this))
+						);
+
+						return editor;
+					}
+				),
+				this._createEditor('descriptionEditor'),
+				this._getSettingsDDMForm()
+			]
+		).then(
+			results => {
+				const translationManager = Liferay.component(`${namespace}translationManager`);
+
+				this._stateSyncronizer = new StateSyncronizer(
+					{
+						descriptionEditor: results[1],
+						layoutProvider,
+						localizedDescription,
+						localizedName,
+						nameEditor: results[0],
+						namespace,
+						paginationMode,
+						settingsDDMForm: results[2],
+						translationManager
+					},
+					this.element
+				);
+
+				this._autoSave = new AutoSave(
+					{
+						form: document.querySelector(`#${namespace}editForm`),
+						interval: Liferay.DDM.FormSettings.autosaveInterval,
+						namespace,
+						stateSyncronizer: this._stateSyncronizer,
+						url: Liferay.DDM.FormSettings.autosaveURL
+					},
+					this.element
+				);
+
+				this._eventHandler.add(this._autoSave.on('autosaved', this._updateAutoSaveMessage.bind(this)));
 			}
 		);
 
-		this.submitForm();
-	}
-
-	/**
-	 * Handles click on plus button. Button shows Sidebar when clicked.
-	 * @private
-	 */
-
-	_handleAddFieldButtonClicked() {
-		const {builder} = this.refs;
-
-		if (builder) {
-			const {sidebar} = builder.refs;
-
-			sidebar.props.mode = 'add';
-			sidebar.show();
-		}
-	}
-
-	created() {
-		this._eventHandler = new EventHandler();
-	}
-
-	attached() {
 		this._eventHandler.add(
-			dom.on('#addFieldButton', 'click', this._handleAddFieldButtonClicked.bind(this)),
+			dom.on('.back-url-link', 'click', this._handleBackButtonClicked.bind(this)),
 			dom.on('.forms-management-bar li', 'click', this._handleFormNavClicked.bind(this))
 		);
 	}
 
-	_handleFormNavClicked(event) {
-		const {delegateTarget, target} = event;
-		const {navItemIndex} = delegateTarget.dataset;
-		const addButton = document.querySelector('#addFieldButton');
-		const formBuilderButtons = document.querySelector('.ddm-form-builder-buttons');
-		const publishIcon = document.querySelector('.publish-icon');
-		if (navItemIndex !== this.state.activeFormMode) {
-			this.setState(
-				{
-					activeFormMode: parseInt(navItemIndex, 10)
+	_createFormURL() {
+		let formURL;
+
+		const settingsDDMForm = Liferay.component('settingsDDMForm');
+
+		if (settingsDDMForm && settingsDDMForm.getField('requireAuthentication').getValue()) {
+			formURL = Liferay.DDM.FormSettings.restrictedFormURL;
+		}
+		else {
+			formURL = Liferay.DDM.FormSettings.sharedFormURL;
+		}
+
+		return formURL + this._getFormInstanceId();
+	}
+
+	_getFormInstanceId() {
+		const {namespace} = this.props;
+
+		return document.querySelector(`#${namespace}formInstanceId`).value;
+	}
+
+	_getSettingsDDMForm() {
+		let promise;
+
+		const settingsDDMForm = Liferay.component('settingsDDMForm');
+
+		if (settingsDDMForm) {
+			promise = Promise.resolve(settingsDDMForm);
+		}
+		else {
+			promise = Liferay.componentReady('settingsDDMForm');
+		}
+
+		return promise;
+	}
+
+	_handleBackButtonClicked(event) {
+		if (this._autoSave.hasUnsavedChanges()) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			const href = event.delegateTarget.href;
+
+			this.refs.discardChangesModal.visible = true;
+
+			const listener = this.refs.discardChangesModal.addListener(
+				'clickButton',
+				({target}) => {
+					if (target.classList.contains('close-modal')) {
+						window.location.href = href;
+					}
+
+					listener.dispose();
+
+					this.refs.discardChangesModal.emit('hide');
 				}
 			);
-			document.querySelector('.forms-management-bar li>a.active').classList.remove('active');
-			if (parseInt(this.state.activeFormMode, 10)) {
-				formBuilderButtons.classList.add('hide');
-				publishIcon.classList.add('hide');
-			}
-			else {
-				formBuilderButtons.classList.remove('hide');
-				addButton.classList.remove('hide');
-				publishIcon.classList.remove('hide');
-			}
-			target.classList.add('active');
 		}
 	}
 
-	getState() {
-		const {
-			context,
-			defaultLanguageId,
-			localizedDescription,
-			namespace
-		} = this.props;
-		const translationManager = Liferay.component(`${namespace}translationManager`);
+	_updateAutoSaveMessage({savedAsDraft, modifiedDate}) {
+		const {namespace, strings} = this.props;
 
-		return {
-			availableLanguageIds: translationManager && translationManager.get('availableLocales'),
-			defaultLanguageId,
-			description: localizedDescription,
-			name: this._getLocalizedName(),
-			pages: context.pages
-		};
+		let message = '';
+
+		if (savedAsDraft) {
+			message = strings['draft-x'];
+		}
+		else {
+			message = strings['saved-x'];
+		}
+
+		const autoSaveMessageNode = document.querySelector(`#${namespace}autosaveMessage`);
+
+		autoSaveMessageNode.innerHTML = sub(
+			message,
+			[
+				modifiedDate
+			]
+		);
 	}
 
-	submitForm() {
-		const {namespace} = this.props;
+	isForbiddenKey(event, limit) {
+		const charCode = event.which ? event.which : event.keyCode;
+		let forbidden = false;
 
-		this.syncInputValues();
-
-		submitForm(document.querySelector(`#${namespace}editForm`));
+		if (
+			event.target.innerText.length >= limit &&
+			isModifyingKey(charCode) &&
+			!isKeyInSet(charCode, ['BACKSPACE', 'DELETE', 'ESC', 'ENTER'])
+		) {
+			forbidden = true;
+		}
+		return forbidden;
 	}
 
-	syncInputValues() {
-		const state = this.getState();
-		const {
-			description,
-			name
-		} = state;
+	preventCopyAndPaste(event, limit) {
+		const {target} = event;
 
-		this.refs.descriptionInput.value = JSON.stringify(description);
-		this.refs.nameInput.value = JSON.stringify(name);
-		this.refs.serializedFormBuilderContextInput.value = this._getSerializedFormBuilderContext();
+		if (this.isForbiddenKey(event, limit)) {
+			target.innerText = target.innerText.substr(0, limit);
+
+			const range = document.createRange();
+			const sel = window.getSelection();
+
+			range.setStart(target.childNodes[0], target.textContent.length);
+			range.collapse(true);
+
+			sel.removeAllRanges();
+			sel.addRange(range);
+		}
+	}
+
+	willReceiveProps({published = {}}) {
+		if (published.newVal != null) {
+			this._updateShareFormIcon(published.newVal);
+		}
+	}
+
+	_updateShareFormIcon(published) {
+		const {saved, strings} = this.props;
+		const shareFormIcon = document.querySelector('.share-form-icon');
+
+		if (saved && published) {
+			shareFormIcon.classList.remove('ddm-btn-disabled');
+			shareFormIcon.setAttribute('title', Liferay.Language.get('copy-url'));
+		}
+		else {
+			shareFormIcon.classList.add('ddm-btn-disabled');
+			shareFormIcon.setAttribute('title', strings['publish-the-form-to-get-its-shareable-link']);
+		}
 	}
 
 	/**
@@ -276,54 +494,352 @@ class Form extends Component {
 	render() {
 		const {
 			context,
+			formInstanceId,
 			namespace,
-			spritemap
+			published,
+			spritemap,
+			strings
 		} = this.props;
 
-		const {
-			saveButtonLabel
-		} = this.state;
-
-		const events = {
-			pagesChanged: this._handlePagesChanged.bind(this)
-		};
+		const {saveButtonLabel} = this.state;
 
 		const layoutProviderProps = {
 			...this.props,
-			pages: context.pages
+			events: {
+				pagesChanged: this._handlePagesChanged.bind(this),
+				paginationModeChanged: this._handlePaginationModeChanded.bind(this)
+			},
+			initialPages: context.pages,
+			initialPaginationMode: context.paginationMode,
+			initialSuccessPageSettings: context.successPageSettings,
+			ref: 'layoutProvider'
 		};
 
-		let mode = <Builder events={events} namespace={this.props.namespace} ref="builder" />;
-		if (parseInt(this.state.activeFormMode, 10)) {
-			mode = <RuleBuilder pages={context.pages} rules={this.props.rules} spritemap={spritemap} />;
-		}
+		const showRuleBuilder = parseInt(this.state.activeFormMode, 10) === 1;
 
 		return (
-			<div>
-				<input name={`${namespace}description`} ref="descriptionInput" type="hidden" />
-				<input name={`${namespace}name`} ref="nameInput" type="hidden" />
-				<input name={`${namespace}serializedFormBuilderContext`} ref="serializedFormBuilderContextInput" type="hidden" value={this._getSerializedFormBuilderContext()} />
-				<input name={`${namespace}serializedSettingsContext`} ref="serializedSettingsContextInput" type="hidden" />
-
-				<LayoutProviderWithAppComposer {...layoutProviderProps}>
-					{mode}
-				</LayoutProviderWithAppComposer>
+			<div class={'ddm-form-builder'}>
+				<LayoutProvider {...layoutProviderProps}>
+					<RuleBuilder
+						dataProviderInstancesURL={this.props.dataProviderInstancesURL}
+						functionsMetadata={this.props.functionsMetadata}
+						functionsURL={this.props.functionsURL}
+						pages={context.pages}
+						rolesURL={this.props.rolesURL}
+						rules={this.props.rules}
+						spritemap={spritemap}
+						visible={showRuleBuilder}
+					/>
+					<FormBuilder
+						namespace={this.props.namespace}
+						ref="builder"
+						visible={!showRuleBuilder}
+					/>
+				</LayoutProvider>
 
 				<div class="container-fluid-1280">
 					<div class="button-holder ddm-form-builder-buttons">
-						<button class="btn btn-primary ddm-button btn-default" ref="publishButton" type="button">
-							{Liferay.Language.get('publish-button')}
-						</button>
+						<PublishButton
+							events={
+								{
+									publishedChanged: this._handlePublishedChanged
+								}
+							}
+							formInstanceId={formInstanceId}
+							namespace={namespace}
+							published={published}
+							resolvePublishURL={this._resolvePublishURL}
+							spritemap={spritemap}
+							url={Liferay.DDM.FormSettings.publishFormInstanceURL}
+						/>
 						<button class="btn ddm-button btn-default" data-onclick="_handleSaveButtonClicked" ref="saveButton">
 							{saveButtonLabel}
 						</button>
-						<button class="btn ddm-button btn-link" ref="previewButton" type="button">
-							{Liferay.Language.get('preview-form')}
-						</button>
+						<PreviewButton
+							namespace={namespace}
+							resolvePreviewURL={this._resolvePreviewURL}
+							spritemap={spritemap}
+						/>
 					</div>
+
+					<ClayModal
+						body={strings['any-unsaved-changes-will-be-lost-are-you-sure-you-want-to-leave']}
+						footerButtons={
+							[
+								{
+									'alignment': 'right',
+									'label': strings.leave,
+									'style': 'secondary',
+									'type': 'close'
+								},
+								{
+									'alignment': 'right',
+									'label': strings.stay,
+									'style': 'primary',
+									'type': 'button'
+								}
+							]
+						}
+						ref={'discardChangesModal'}
+						size={'sm'}
+						spritemap={spritemap}
+						title={strings['leave-form']}
+					/>
 				</div>
+				{published && (
+					<ShareFormPopover
+						spritemap={spritemap}
+						strings={strings}
+						url={this._createFormURL()}
+					/>
+				)}
 			</div>
 		);
+	}
+
+	submitForm() {
+		const {namespace} = this.props;
+
+		this._stateSyncronizer.syncInputs();
+
+		submitForm(document.querySelector(`#${namespace}editForm`));
+	}
+
+	_paginationModeValueFn() {
+		const {context} = this.props;
+
+		return context.paginationMode;
+	}
+
+	_createEditor(name) {
+		const {namespace} = this.props;
+
+		const editorName = `${namespace}${name}`;
+
+		const editor = window[editorName];
+
+		let promise;
+
+		if (editor) {
+			editor.create();
+
+			promise = Promise.resolve(CKEDITOR.instances[editorName]);
+		}
+		else {
+			promise = new Promise(
+				resolve => {
+					Liferay.on(
+						'editorAPIReady',
+						event => {
+							if (event.editorName === editorName) {
+								event.editor.create();
+
+								resolve(CKEDITOR.instances[editorName]);
+							}
+						}
+					);
+				}
+			);
+		}
+
+		return promise;
+	}
+
+	/**
+	 * @param newVal
+	 * Handles "paginationModeChanged" event. Updates the page mode to use it when form builder is saved.
+	 */
+
+	_handlePaginationModeChanded({newVal}) {
+		this.setState(
+			{
+				paginationMode: newVal
+			}
+		);
+	}
+
+	@autobind
+	_handlePublishedChanged({newVal}) {
+		const {saved} = this.props;
+		const shareFormIcon = document.querySelector('.share-form-icon');
+
+		this.props.published = newVal;
+		if (newVal && !saved) {
+			this.props.saved = true;
+			shareFormIcon.classList.remove('hide');
+		}
+		else if (!newVal && !saved) {
+			shareFormIcon.classList.add('hide');
+		}
+	}
+
+	_handleFormNavClicked(event) {
+		const {delegateTarget, target} = event;
+		const {navItemIndex} = delegateTarget.dataset;
+
+		if (navItemIndex !== this.state.activeFormMode) {
+			const newActiveFormMode = parseInt(navItemIndex, 10);
+
+			this.setState(
+				{
+					activeFormMode: newActiveFormMode
+				}
+			);
+
+			document.querySelector('.forms-management-bar li > a.active').classList.remove('active');
+			target.classList.add('active');
+
+			this.syncActiveFormMode(newActiveFormMode);
+		}
+	}
+
+	syncActiveFormMode(activeFormMode) {
+		const {published, saved} = this.props;
+		const formBasicInfo = document.querySelector('.ddm-form-basic-info');
+		const formBuilderButtons = document.querySelector('.ddm-form-builder-buttons');
+		const publishIcon = document.querySelector('.publish-icon');
+		const ShareURLButton = document.querySelector('.lfr-ddm-share-url-button');
+		const translationManager = document.querySelector('.ddm-translation-manager');
+
+		if (parseInt(activeFormMode, 10)) {
+			formBasicInfo.classList.add('hide');
+			formBuilderButtons.classList.add('hide');
+			ShareURLButton.classList.add('hide');
+		}
+		else {
+			formBasicInfo.classList.remove('hide');
+			formBuilderButtons.classList.remove('hide');
+
+			if (saved || published) {
+				ShareURLButton.classList.remove('hide');
+			}
+		}
+
+		if (publishIcon && translationManager) {
+			if (parseInt(activeFormMode, 10)) {
+				publishIcon.classList.add('hide');
+				translationManager.classList.add('hide');
+			}
+			else {
+				publishIcon.classList.remove('hide');
+				translationManager.classList.remove('hide');
+			}
+		}
+	}
+
+	/*
+	 * Handles "pagesChanged" event. Updates hidden input with serialized From Builder context.
+	 * @param {!Event} event
+	 * @private
+	 */
+
+	_handlePagesChanged(event) {
+		this.setState(
+			{
+				pages: event.newVal
+			}
+		);
+	}
+
+	/**
+	 * Handles click on save button. Saves Form when clicked.
+	 * @param {!Event} event
+	 * @private
+	 */
+
+	_handleSaveButtonClicked(event) {
+		const {strings} = this.props;
+
+		event.preventDefault();
+
+		this.setState(
+			{
+				saveButtonLabel: strings.saving
+			}
+		);
+
+		this.submitForm();
+	}
+
+	_handleNameEditorCopyAndPaste(event) {
+		return this.preventCopyAndPaste(event, 120);
+	}
+
+	_handleNameEditorKeydown(event) {
+		return this.checkEditorLimit(event, 120);
+	}
+
+	_openSidebar() {
+		const {builder} = this.refs;
+
+		if (builder) {
+			const {sidebar} = builder.refs;
+
+			sidebar.open();
+		}
+	}
+
+	_pagesValueFn() {
+		const {context} = this.props;
+
+		return context.pages;
+	}
+
+	/*
+	 * Returns the map with all translated names or a map with just "Intitled Form" in case
+	 * there are no translations available.
+	 * @private
+	 */
+
+	_setContext(context) {
+		let {successPageSettings} = context;
+		const {successPage} = context;
+
+		if (!successPageSettings) {
+			successPageSettings = successPage;
+		}
+
+		if (core.isString(successPageSettings.title)) {
+			successPageSettings.title = {};
+			successPageSettings.title[themeDisplay.getLanguageId()] = '';
+		}
+
+		if (core.isString(successPageSettings.body)) {
+			successPageSettings.body = {};
+			successPageSettings.body[themeDisplay.getLanguageId()] = '';
+		}
+
+		if (!context.pages.length) {
+			context = {
+				...context,
+				pages: [
+					{
+						description: '',
+						localizedDescription: {
+							[themeDisplay.getLanguageId()]: ''
+						},
+						localizedTitle: {
+							[themeDisplay.getLanguageId()]: ''
+						},
+						rows: [
+							{
+								columns: [
+									{
+										fields: [],
+										size: 12
+									}
+								]
+							}
+						],
+						title: ''
+					}
+				],
+				paginationMode: 'wizard',
+				successPageSettings
+			};
+		}
+
+		return context;
 	}
 }
 

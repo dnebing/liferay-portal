@@ -147,14 +147,14 @@ public class ImageEditorDLDisplayContextHelper {
 			_showImageEditorAction = false;
 		}
 		else if (!_fileEntry.containsPermission(
-					 _themeDisplay.getPermissionChecker(), ActionKeys.UPDATE) ||
+					_themeDisplay.getPermissionChecker(), ActionKeys.UPDATE) ||
 				 (_fileEntry.isCheckedOut() && !_fileEntry.hasLock())) {
 
 			_showImageEditorAction = false;
 		}
 		else if (!ArrayUtil.contains(
-					 PropsValues.DL_FILE_ENTRY_PREVIEW_IMAGE_MIME_TYPES,
-					 _fileEntry.getMimeType())) {
+					PropsValues.DL_FILE_ENTRY_PREVIEW_IMAGE_MIME_TYPES,
+					_fileEntry.getMimeType())) {
 
 			_showImageEditorAction = false;
 		}
@@ -233,7 +233,7 @@ public class ImageEditorDLDisplayContextHelper {
 		String fileEntryPreviewURL = DLUtil.getPreviewURL(
 			_fileEntry, _fileVersion, _themeDisplay, StringPool.BLANK);
 
-		StringBundler sb = new StringBundler(10);
+		StringBundler sb = new StringBundler(12);
 
 		sb.append(liferayPortletResponse.getNamespace());
 		sb.append("editWithImageEditor('");
@@ -244,6 +244,8 @@ public class ImageEditorDLDisplayContextHelper {
 		sb.append(_fileEntry.getFileName());
 		sb.append("', '");
 		sb.append(fileEntryPreviewURL);
+		sb.append("', '");
+		sb.append(_fileEntry.getMimeType());
 		sb.append("');");
 
 		return sb.toString();

@@ -839,9 +839,8 @@ public class UserImpl extends UserBaseImpl {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -849,9 +848,8 @@ public class UserImpl extends UserBaseImpl {
 		if (getStatus() == WorkflowConstants.STATUS_APPROVED) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -934,7 +932,7 @@ public class UserImpl extends UserBaseImpl {
 		}
 
 		if (isEmailAddressComplete() && isEmailAddressVerificationComplete() &&
-			!isPasswordReset() && isReminderQueryComplete() &&
+			!_isRequirePasswordReset() && isReminderQueryComplete() &&
 			isTermsOfUseComplete()) {
 
 			return true;
@@ -1005,6 +1003,16 @@ public class UserImpl extends UserBaseImpl {
 				HtmlUtil.escapeURL(normalizedScreenName),
 				String.valueOf(getUserId())
 			});
+	}
+
+	private boolean _isRequirePasswordReset() {
+		if (!isPasswordReset() ||
+			((_passwordPolicy != null) && !_passwordPolicy.isChangeable())) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static final boolean _HAS_USERS_PROFILE_FRIENDLY_URL =

@@ -25,7 +25,6 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
@@ -41,7 +40,6 @@ import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.IndexWriterHelper;
-import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchPermissionChecker;
 import com.liferay.portal.kernel.search.Summary;
@@ -50,8 +48,7 @@ import com.liferay.portal.kernel.search.filter.QueryFilter;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
-import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -64,13 +61,9 @@ import java.util.Set;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author Leonardo Barros
  */
-@Component(immediate = true, service = Indexer.class)
 public class DDMFormInstanceRecordIndexer
 	extends BaseIndexer<DDMFormInstanceRecord> {
 
@@ -313,10 +306,7 @@ public class DDMFormInstanceRecordIndexer
 	}
 
 	protected ResourceBundle getResourceBundle(Locale defaultLocale) {
-		ResourceBundleLoader portalResourceBundleLoader =
-			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
-
-		return portalResourceBundleLoader.loadResourceBundle(defaultLocale);
+		return PortalUtil.getResourceBundle(defaultLocale);
 	}
 
 	protected String getTitle(long ddmFormInstanceId, Locale locale) {
@@ -343,94 +333,64 @@ public class DDMFormInstanceRecordIndexer
 				getIndexableActionableDynamicQuery();
 
 		indexableActionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Property ddmFormInstanceRecordIdProperty =
+					PropertyFactoryUtil.forName("formInstanceRecordId");
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Property ddmFormInstanceRecordIdProperty =
-						PropertyFactoryUtil.forName("formInstanceRecordId");
+				DynamicQuery ddmFormInstanceRecordVersionDynamicQuery =
+					ddmFormInstanceRecordVersionLocalService.dynamicQuery();
 
-					DynamicQuery ddmFormInstanceRecordVersionDynamicQuery =
-						ddmFormInstanceRecordVersionLocalService.dynamicQuery();
+				ddmFormInstanceRecordVersionDynamicQuery.setProjection(
+					ProjectionFactoryUtil.property("formInstanceRecordId"));
 
-					ddmFormInstanceRecordVersionDynamicQuery.setProjection(
-						ProjectionFactoryUtil.property("formInstanceRecordId"));
+				dynamicQuery.add(
+					ddmFormInstanceRecordIdProperty.in(
+						ddmFormInstanceRecordVersionDynamicQuery));
 
-					dynamicQuery.add(
-						ddmFormInstanceRecordIdProperty.in(
-							ddmFormInstanceRecordVersionDynamicQuery));
+				Property ddmFormInstanceProperty = PropertyFactoryUtil.forName(
+					"formInstanceId");
 
-					Property ddmFormInstanceProperty =
-						PropertyFactoryUtil.forName("formInstanceId");
+				DynamicQuery ddmFormInstanceDynamicQuery =
+					ddmFormInstanceLocalService.dynamicQuery();
 
-					DynamicQuery ddmFormInstanceDynamicQuery =
-						ddmFormInstanceLocalService.dynamicQuery();
+				ddmFormInstanceDynamicQuery.setProjection(
+					ProjectionFactoryUtil.property("formInstanceId"));
 
-					ddmFormInstanceDynamicQuery.setProjection(
-						ProjectionFactoryUtil.property("formInstanceId"));
-
-					dynamicQuery.add(
-						ddmFormInstanceProperty.in(
-							ddmFormInstanceDynamicQuery));
-				}
-
+				dynamicQuery.add(
+					ddmFormInstanceProperty.in(ddmFormInstanceDynamicQuery));
 			});
 		indexableActionableDynamicQuery.setCompanyId(companyId);
 		indexableActionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.
-				PerformActionMethod<DDMFormInstanceRecord>() {
+			(DDMFormInstanceRecord ddmFormInstanceRecord) -> {
+				try {
+					Document document = getDocument(ddmFormInstanceRecord);
 
-				@Override
-				public void performAction(
-						DDMFormInstanceRecord ddmFormInstanceRecord)
-					throws PortalException {
-
-					try {
-						Document document = getDocument(ddmFormInstanceRecord);
-
-						if (document != null) {
-							indexableActionableDynamicQuery.addDocuments(
-								document);
-						}
-					}
-					catch (PortalException pe) {
-						if (_log.isWarnEnabled()) {
-							_log.warn(
-								"Unable to index form instance record " +
-									ddmFormInstanceRecord.
-										getFormInstanceRecordId(),
-								pe);
-						}
+					if (document != null) {
+						indexableActionableDynamicQuery.addDocuments(document);
 					}
 				}
-
+				catch (PortalException pe) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Unable to index form instance record " +
+								ddmFormInstanceRecord.getFormInstanceRecordId(),
+							pe);
+					}
+				}
 			});
 		indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
 
 		indexableActionableDynamicQuery.performActions();
 	}
 
-	@Reference
 	protected ClassNameLocalService classNameLocalService;
-
-	@Reference
 	protected DDMFormInstanceLocalService ddmFormInstanceLocalService;
-
-	@Reference
 	protected DDMFormInstanceRecordLocalService
 		ddmFormInstanceRecordLocalService;
-
-	@Reference
 	protected DDMFormInstanceRecordVersionLocalService
 		ddmFormInstanceRecordVersionLocalService;
-
-	@Reference
 	protected DDMIndexer ddmIndexer;
-
-	@Reference
 	protected IndexWriterHelper indexWriterHelper;
-
-	@Reference
 	protected SearchPermissionChecker searchPermissionChecker;
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -52,9 +52,8 @@ public class UnicodeFormatter {
 		if (upperCase) {
 			return _byteToHex(b, hexes, _HEX_DIGITS_UPPER_CASE);
 		}
-		else {
-			return _byteToHex(b, hexes, _HEX_DIGITS);
-		}
+
+		return _byteToHex(b, hexes, _HEX_DIGITS);
 	}
 
 	public static String charToHex(char c) {
@@ -91,8 +90,6 @@ public class UnicodeFormatter {
 	}
 
 	public static String parseString(String hexString) {
-		StringBuilder sb = new StringBuilder();
-
 		char[] array = hexString.toCharArray();
 
 		if ((array.length % 6) != 0) {
@@ -100,6 +97,8 @@ public class UnicodeFormatter {
 
 			return hexString;
 		}
+
+		StringBuilder sb = new StringBuilder();
 
 		for (int i = 2; i < hexString.length(); i = i + 6) {
 			String s = hexString.substring(i, i + 4);

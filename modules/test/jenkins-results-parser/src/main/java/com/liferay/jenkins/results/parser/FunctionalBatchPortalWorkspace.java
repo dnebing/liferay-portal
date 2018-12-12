@@ -22,11 +22,13 @@ import java.util.Properties;
 public class FunctionalBatchPortalWorkspace extends BatchPortalWorkspace {
 
 	protected FunctionalBatchPortalWorkspace(
-		String portalGitHubURL, String portalUpstreamBranchName) {
+		String portalGitHubURL, String portalUpstreamBranchName,
+		String portalBranchSHA) {
 
-		super(portalGitHubURL, portalUpstreamBranchName);
+		super(portalGitHubURL, portalUpstreamBranchName, portalBranchSHA);
 
 		_setPortalBuildProperties();
+		_setPortalReleaseProperties();
 	}
 
 	private void _setPortalBuildProperties() {
@@ -35,10 +37,32 @@ public class FunctionalBatchPortalWorkspace extends BatchPortalWorkspace {
 		properties.put("jsp.precompile", "on");
 		properties.put("jsp.precompile.parallel", "on");
 
-		PortalLocalGitRepository portalLocalGitRepository =
-			getPrimaryPortalLocalGitRepository();
+		PortalWorkspaceGitRepository primaryPortalWorkspaceGitRepository =
+			getPrimaryPortalWorkspaceGitRepository();
 
-		portalLocalGitRepository.setBuildProperties(properties);
+		primaryPortalWorkspaceGitRepository.setPortalBuildProperties(
+			properties);
+	}
+
+	private void _setPortalReleaseProperties() {
+		WorkspaceGitRepository pluginsWorkspaceGitRepository =
+			getPluginsWorkspaceGitRepository();
+
+		if (pluginsWorkspaceGitRepository == null) {
+			return;
+		}
+
+		Properties properties = new Properties();
+
+		properties.put(
+			"lp.plugins.dir",
+			String.valueOf(pluginsWorkspaceGitRepository.getDirectory()));
+
+		PortalWorkspaceGitRepository primaryPortalWorkspaceGitRepository =
+			getPrimaryPortalWorkspaceGitRepository();
+
+		primaryPortalWorkspaceGitRepository.setPortalReleaseProperties(
+			properties);
 	}
 
 }

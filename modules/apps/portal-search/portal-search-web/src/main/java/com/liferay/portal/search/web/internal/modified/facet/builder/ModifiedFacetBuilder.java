@@ -52,7 +52,7 @@ public class ModifiedFacetBuilder {
 
 		facet.setFacetConfiguration(buildFacetConfiguration(facet));
 
-		String rangeString = _getSelectedRangeString();
+		String rangeString = _getSelectedRangeString(facet);
 
 		if (!Validator.isBlank(rangeString)) {
 			facet.select(rangeString);
@@ -141,12 +141,16 @@ public class ModifiedFacetBuilder {
 		return rangesMap;
 	}
 
-	private String _getSelectedRangeString() {
+	private String _getSelectedRangeString(Facet facet) {
 		if (!Validator.isBlank(_customRangeFrom) &&
 			!Validator.isBlank(_customRangeTo)) {
 
-			return _dateRangeFactory.getRangeString(
+			String rangeString = _dateRangeFactory.getRangeString(
 				_customRangeFrom, _customRangeTo);
+
+			_searchContext.setAttribute(facet.getFieldId(), rangeString);
+
+			return rangeString;
 		}
 
 		if (!ArrayUtil.isEmpty(_selectedRanges)) {
@@ -157,10 +161,9 @@ public class ModifiedFacetBuilder {
 			if (rangesMap.containsKey(selectedRange)) {
 				return rangesMap.get(selectedRange);
 			}
-			else {
-				return _dateRangeFactory.getRangeString(
-					selectedRange, _calendarFactory.getCalendar());
-			}
+
+			return _dateRangeFactory.getRangeString(
+				selectedRange, _calendarFactory.getCalendar());
 		}
 
 		return null;

@@ -57,7 +57,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * @author Iván Zaera
  * @author Roberto Díaz
  */
-@Component(immediate = true)
+@Component(immediate = true, service = ItemSelectorCriterionSerializer.class)
 public class ItemSelectorCriterionSerializerImpl
 	implements ItemSelectorCriterionSerializer {
 
@@ -145,8 +145,9 @@ public class ItemSelectorCriterionSerializerImpl
 		_serviceTrackerMap.close();
 	}
 
-	private static final String[] _EXCLUDED_FIELD_NAMES =
-		{"availableItemSelectorReturnTypes", "class"};
+	private static final String[] _EXCLUDED_FIELD_NAMES = {
+		"availableItemSelectorReturnTypes", "class"
+	};
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ItemSelectorCriterionSerializerImpl.class);
@@ -255,8 +256,8 @@ public class ItemSelectorCriterionSerializerImpl
 	}
 
 	private class ItemSelectorReturnTypeServiceTrackerCustomizer
-		implements
-			ServiceTrackerCustomizer<ItemSelectorView, ItemSelectorView> {
+		implements ServiceTrackerCustomizer
+			<ItemSelectorView, ItemSelectorView> {
 
 		@Override
 		public ItemSelectorView addingService(
@@ -322,16 +323,12 @@ public class ItemSelectorCriterionSerializerImpl
 	private class ItemSelectorViewReturnTypeProviderServiceTrackerCustomizer
 		implements ServiceTrackerCustomizer
 			<ItemSelectorViewReturnTypeProvider,
-				ItemSelectorViewReturnTypeProvider> {
+			 ItemSelectorViewReturnTypeProvider> {
 
 		@Override
 		public ItemSelectorViewReturnTypeProvider addingService(
 			ServiceReference<ItemSelectorViewReturnTypeProvider>
 				serviceReference) {
-
-			ItemSelectorViewReturnTypeProvider
-				itemSelectorViewReturnTypeProvider = _bundleContext.getService(
-					serviceReference);
 
 			String itemSelectorViewKey = GetterUtil.getString(
 				serviceReference.getProperty("item.selector.view.key"));
@@ -342,6 +339,10 @@ public class ItemSelectorCriterionSerializerImpl
 			if (itemSelectorView == null) {
 				return null;
 			}
+
+			ItemSelectorViewReturnTypeProvider
+				itemSelectorViewReturnTypeProvider = _bundleContext.getService(
+					serviceReference);
 
 			List<ItemSelectorReturnType> supportedItemSelectorReturnTypes =
 				itemSelectorViewReturnTypeProvider.

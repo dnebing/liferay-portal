@@ -69,7 +69,6 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portlet.PortletPreferencesImpl;
 import com.liferay.site.exception.InitializationException;
 import com.liferay.site.initializer.SiteInitializer;
-import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 
 import java.io.InputStream;
 
@@ -99,7 +98,8 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true,
-	property = "site.initializer.key=" + WesterosBankSiteInitializer.KEY
+	property = "site.initializer.key=" + WesterosBankSiteInitializer.KEY,
+	service = SiteInitializer.class
 )
 public class WesterosBankSiteInitializer implements SiteInitializer {
 
@@ -214,9 +214,6 @@ public class WesterosBankSiteInitializer implements SiteInitializer {
 			_addLayouts(
 				businessLayout, _LAYOUT_NAMES_CHILDREN_BUSINESS,
 				fragmentEntriesMap, serviceContext);
-
-			_siteNavigationMenuLocalService.addDefaultSiteNavigationMenu(
-				serviceContext.getUserId(), groupId, serviceContext);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -608,19 +605,22 @@ public class WesterosBankSiteInitializer implements SiteInitializer {
 			StringPool.BLANK, StringPool.BLANK);
 	}
 
-	private static final String[] _LAYOUT_NAMES_CHILDREN_ASSURANCE =
-		{"Travel Insurance", "Home insurance", "Life insurance"};
+	private static final String[] _LAYOUT_NAMES_CHILDREN_ASSURANCE = {
+		"Travel Insurance", "Home insurance", "Life insurance"
+	};
 
-	private static final String[] _LAYOUT_NAMES_CHILDREN_BUSINESS =
-		{"Credit Cards for Business", "Assurance for Business"};
+	private static final String[] _LAYOUT_NAMES_CHILDREN_BUSINESS = {
+		"Credit Cards for Business", "Assurance for Business"
+	};
 
 	private static final String[] _LAYOUT_NAMES_CHILDREN_CHECKING = {
 		"All credit cards", "Check your eligibility",
 		"Balance-transfer credit cards", "Purchase credit card"
 	};
 
-	private static final String[] _LAYOUT_NAMES_CHILDREN_LOANS =
-		{"Mortgages", "All mortgage products", "Mortgate rates and charges"};
+	private static final String[] _LAYOUT_NAMES_CHILDREN_LOANS = {
+		"Mortgages", "All mortgage products", "Mortgate rates and charges"
+	};
 
 	private static final String[] _LAYOUT_NAMES_CHILDREN_PERSONAL = {
 		"Checking and Credit Cards", "Savings and Investments",
@@ -632,8 +632,9 @@ public class WesterosBankSiteInitializer implements SiteInitializer {
 		"Children's Instant Saver", "All interest rates"
 	};
 
-	private static final String[] _LAYOUT_NAMES_FRAGMENT_KEYS =
-		{"features", "links", "news", "offerings", "video"};
+	private static final String[] _LAYOUT_NAMES_FRAGMENT_KEYS = {
+		"features", "links", "news", "offerings", "video"
+	};
 
 	private static final String _PATH =
 		"com/liferay/frontend/theme/westeros/bank/site/initializer/internal" +
@@ -697,9 +698,6 @@ public class WesterosBankSiteInitializer implements SiteInitializer {
 		target = "(osgi.web.symbolicname=com.liferay.frontend.theme.westeros.bank.site.initializer)"
 	)
 	private ServletContext _servletContext;
-
-	@Reference
-	private SiteNavigationMenuLocalService _siteNavigationMenuLocalService;
 
 	@Reference
 	private ThemeLocalService _themeLocalService;

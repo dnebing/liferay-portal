@@ -1,4 +1,4 @@
-<Context crossContext="true" path="">
+<Context crossContext="true">
 	<JarScanner className="com.liferay.support.tomcat.util.scan.NOPJarScanner" />
 
 	<!-- JAAS -->

@@ -31,10 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.AdminClient;
@@ -55,7 +55,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  */
 @Component(
 	configurationPid = "com.liferay.portal.search.elasticsearch6.configuration.ElasticsearchConfiguration",
-	immediate = true
+	immediate = true, service = IndexFactory.class
 )
 public class CompanyIndexFactory implements IndexFactory {
 
@@ -89,10 +89,9 @@ public class CompanyIndexFactory implements IndexFactory {
 		DeleteIndexRequestBuilder deleteIndexRequestBuilder =
 			indicesAdminClient.prepareDelete(indexName);
 
-		DeleteIndexResponse deleteIndexResponse =
-			deleteIndexRequestBuilder.get();
+		ActionResponse actionResponse = deleteIndexRequestBuilder.get();
 
-		LogUtil.logActionResponse(_log, deleteIndexResponse);
+		LogUtil.logActionResponse(_log, actionResponse);
 	}
 
 	@Activate

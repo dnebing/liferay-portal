@@ -48,7 +48,8 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true,
-	property = "name=com.liferay.document.library.web#/document_library/info_panel_file_entry.jsp#fileEntryOwner"
+	property = "name=com.liferay.document.library.web#/document_library/info_panel_file_entry.jsp#fileEntryOwner",
+	service = DynamicSection.class
 )
 public class DLInfoPanelFileEntryOwnerDynamicSection implements DynamicSection {
 
@@ -66,7 +67,7 @@ public class DLInfoPanelFileEntryOwnerDynamicSection implements DynamicSection {
 			"info_panel.jsp-fileEntry");
 
 		int countSharingEntryToUserIds =
-			_sharingEntryLocalService.countFromUserSharingEntries(
+			_sharingEntryLocalService.getFromUserSharingEntriesCount(
 				themeDisplay.getUserId(), classNameId,
 				fileEntry.getFileEntryId());
 
@@ -87,7 +88,7 @@ public class DLInfoPanelFileEntryOwnerDynamicSection implements DynamicSection {
 			fromUserSharingEntries.stream();
 
 		List<User> sharingEntryToUsers = fromUserSharingEntriesStream.map(
-			SharingEntryModel::getFromUserId
+			SharingEntryModel::getToUserId
 		).map(
 			_userLocalService::fetchUserById
 		).filter(

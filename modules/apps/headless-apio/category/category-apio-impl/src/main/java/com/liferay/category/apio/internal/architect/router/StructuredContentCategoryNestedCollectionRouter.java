@@ -21,9 +21,7 @@ import com.liferay.category.apio.architect.identifier.CategoryIdentifier;
 import com.liferay.category.apio.internal.architect.form.NestedCategoryForm;
 import com.liferay.category.apio.internal.architect.router.base.BaseCategoryNestedCollectionRouter;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.service.JournalArticleService;
 import com.liferay.portal.apio.permission.HasPermission;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.structured.content.apio.architect.identifier.StructuredContentIdentifier;
 
 import org.osgi.service.component.annotations.Component;
@@ -31,19 +29,17 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the information necessary to expose the {@code Category} resources
- * contained inside a StructuredContent through a web API. The resources are
- * mapped from the internal model {@link AssetCategory} and {@code
- * JournalArticle}.
+ * of structured content through a web API. The resources are mapped from the
+ * internal models {@code AssetCategory} and {@code JournalArticle}.
  *
  * @author Eduardo Perez
- * @review
  */
-@Component(immediate = true)
+@Component(immediate = true, service = NestedCollectionRouter.class)
 public class StructuredContentCategoryNestedCollectionRouter
 	extends BaseCategoryNestedCollectionRouter<StructuredContentIdentifier>
 	implements NestedCollectionRouter
 		<AssetCategory, Long, CategoryIdentifier, Long,
-			StructuredContentIdentifier> {
+		 StructuredContentIdentifier> {
 
 	@Override
 	public NestedCollectionRoutes<AssetCategory, Long, Long> collectionRoutes(
@@ -63,20 +59,9 @@ public class StructuredContentCategoryNestedCollectionRouter
 		return JournalArticle.class.getName();
 	}
 
-	@Override
-	protected long getResourcePrimKey(long classPK) throws PortalException {
-		JournalArticle journalArticle = _journalArticleService.getArticle(
-			classPK);
-
-		return journalArticle.getResourcePrimKey();
-	}
-
 	@Reference(
 		target = "(model.class.name=com.liferay.asset.kernel.model.AssetCategory)"
 	)
 	private HasPermission<Long> _hasPermission;
-
-	@Reference
-	private JournalArticleService _journalArticleService;
 
 }

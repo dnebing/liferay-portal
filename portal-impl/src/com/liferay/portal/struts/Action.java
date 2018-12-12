@@ -14,11 +14,20 @@
 
 package com.liferay.portal.struts;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
 /**
- * @author     Brian Wing Shun Chan
- * @deprecated As of Bunyan (6.0.x), moved to {@link
- *             com.liferay.portal.kernel.events.Action}
+ * @author Shuyang Zhou
  */
-@Deprecated
-public abstract class Action extends com.liferay.portal.kernel.events.Action {
+public interface Action {
+
+	public ActionForward execute(
+			ActionMapping mapping, HttpServletRequest request,
+			HttpServletResponse response)
+		throws Exception;
+
 }

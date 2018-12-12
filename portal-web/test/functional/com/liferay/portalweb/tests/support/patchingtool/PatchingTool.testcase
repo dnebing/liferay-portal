@@ -48,5 +48,17 @@
 		</execute>
 
 		<execute macro="SignIn#signIn" />
+
+		<execute macro="GogoShell#openGogoShellAdmin" />
+
+		<execute macro="GogoShell#executeCommand">
+			<var name="commandName" value="system:check" />
+		</execute>
+
+		<for list="Declarative Service Soft Circular Dependency Checker check result: No issues were found,Declarative Service Unsatisfied Component Checker check result: No issues were found,Spring Extender Unavailable Component Checker check result: No issues were found" param="outputContent">
+			<execute macro="GogoShell#viewOutPut">
+				<var name="outputContent" value="${outputContent}" />
+			</execute>
+		</for>
 	</command>
 </definition>

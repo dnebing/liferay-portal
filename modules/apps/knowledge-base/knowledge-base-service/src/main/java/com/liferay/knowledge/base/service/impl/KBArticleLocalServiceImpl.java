@@ -76,6 +76,7 @@ import com.liferay.portal.kernel.search.IndexWriterHelper;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.systemevent.SystemEventHierarchyEntryThreadLocal;
@@ -142,6 +143,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		// KB article
 
 		User user = userLocalService.getUser(userId);
+
 		long groupId = serviceContext.getScopeGroupId();
 		urlTitle = normalizeUrlTitle(urlTitle);
 		double priority = getPriority(groupId, parentResourcePrimKey);
@@ -208,8 +210,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		}
 		else {
 			addKBArticleResources(
-				kbArticle, serviceContext.getGroupPermissions(),
-				serviceContext.getGuestPermissions());
+				kbArticle, serviceContext.getModelPermissions());
 		}
 
 		// Asset
@@ -246,6 +247,22 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 	@Override
 	public void addKBArticleResources(
+			KBArticle kbArticle, ModelPermissions modelPermissions)
+		throws PortalException {
+
+		resourceLocalService.addModelResources(
+			kbArticle.getCompanyId(), kbArticle.getGroupId(),
+			kbArticle.getUserId(), KBArticle.class.getName(),
+			kbArticle.getResourcePrimKey(), modelPermissions);
+	}
+
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #addKBArticleResources(KBArticle, ModelPermissions)}
+	 */
+	@Deprecated
+	@Override
+	public void addKBArticleResources(
 			KBArticle kbArticle, String[] groupPermissions,
 			String[] guestPermissions)
 		throws PortalException {
@@ -269,6 +286,11 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			kbArticle, addGroupPermissions, addGuestPermissions);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #addKBArticleResources(KBArticle, ModelPermissions)}
+	 */
+	@Deprecated
 	@Override
 	public void addKBArticleResources(
 			long kbArticleId, String[] groupPermissions,
@@ -1167,16 +1189,6 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 			kbArticlePersistence.update(oldKBArticle);
 		}
 
-		// Resources
-
-		if ((serviceContext.getGroupPermissions() != null) ||
-			(serviceContext.getGuestPermissions() != null)) {
-
-			updateKBArticleResources(
-				kbArticle, serviceContext.getGroupPermissions(),
-				serviceContext.getGuestPermissions());
-		}
-
 		// Asset
 
 		updateKBArticleAsset(
@@ -1385,6 +1397,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		KBArticle kbArticle = getLatestKBArticle(
 			resourcePrimKey, WorkflowConstants.STATUS_ANY);
 
+		kbArticle.setModifiedDate(kbArticle.getModifiedDate());
 		kbArticle.setViewCount(viewCount);
 
 		kbArticlePersistence.update(kbArticle);
@@ -1396,6 +1409,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		kbArticle = getLatestKBArticle(
 			resourcePrimKey, WorkflowConstants.STATUS_APPROVED);
 
+		kbArticle.setModifiedDate(kbArticle.getModifiedDate());
 		kbArticle.setViewCount(viewCount);
 
 		kbArticlePersistence.update(kbArticle);
@@ -2043,7 +2057,7 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		int urlTitleMaxSize = ModelHintsUtil.getMaxLength(
 			KBArticle.class.getName(), "urlTitle");
 
-		if (urlTitle.length() > urlTitleMaxSize) {
+		if (urlTitle.length() > (urlTitleMaxSize + 1)) {
 			throw new KBArticleUrlTitleException.MustNotExceedMaximumSize(
 				urlTitle, urlTitleMaxSize);
 		}
@@ -2080,8 +2094,9 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 	@ServiceReference(type = SubscriptionLocalService.class)
 	protected SubscriptionLocalService subscriptionLocalService;
 
-	private static final int[] _STATUSES =
-		{WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_PENDING};
+	private static final int[] _STATUSES = {
+		WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_PENDING
+	};
 
 	private static final long _TICKET_EXPIRATION = Time.HOUR;
 

@@ -277,6 +277,12 @@ AUI.add(
 					displayLocale = instance.getDefaultLocale();
 				}
 
+				var defaultEditLocale = instance.get('defaultEditLocale');
+
+				if (defaultEditLocale) {
+					displayLocale = defaultEditLocale;
+				}
+
 				return displayLocale;
 			},
 
@@ -350,7 +356,15 @@ AUI.add(
 					initializer: function() {
 						var instance = this;
 
-						Liferay.on('inputLocalized:localeChanged', A.bind('_onLocaleChanged', instance));
+						instance._bindedOnLocaleChanged = A.bind(
+							'_onLocaleChanged',
+							instance
+						);
+
+						Liferay.on(
+							'inputLocalized:localeChanged',
+							instance._bindedOnLocaleChanged
+						);
 					},
 
 					renderUI: function() {
@@ -375,6 +389,13 @@ AUI.add(
 
 					destructor: function() {
 						var instance = this;
+
+						if (instance._bindedOnLocaleChanged) {
+							Liferay.detach(
+								'inputLocalized:localeChanged',
+								instance._bindedOnLocaleChanged
+							);
+						}
 
 						instance.get('container').remove();
 					},
@@ -1123,7 +1144,17 @@ AUI.add(
 					getDocumentLibrarySelectorURL: function() {
 						var instance = this;
 
-						return instance.getDocumentLibraryURL('com.liferay.item.selector.criteria.file.criterion.FileItemSelectorCriterion');
+						var form = instance.getForm();
+
+						var documentLibrarySelectorURL = form.get('documentLibrarySelectorURL');
+
+						var retVal = instance.getDocumentLibraryURL('com.liferay.item.selector.criteria.file.criterion.FileItemSelectorCriterion');
+
+						if (documentLibrarySelectorURL) {
+							retVal = documentLibrarySelectorURL;
+						}
+
+						return retVal;
 					},
 
 					getDocumentLibraryURL: function(criteria) {
@@ -2475,7 +2506,17 @@ AUI.add(
 					getDocumentLibrarySelectorURL: function() {
 						var instance = this;
 
-						return instance.getDocumentLibraryURL('com.liferay.journal.item.selector.criterion.JournalItemSelectorCriterion,com.liferay.item.selector.criteria.image.criterion.ImageItemSelectorCriterion');
+						var form = instance.getForm();
+
+						var imageSelectorURL = form.get('imageSelectorURL');
+
+						var retVal = instance.getDocumentLibraryURL('com.liferay.journal.item.selector.criterion.JournalItemSelectorCriterion,com.liferay.item.selector.criteria.image.criterion.ImageItemSelectorCriterion');
+
+						if (imageSelectorURL) {
+							retVal = imageSelectorURL;
+						}
+
+						return retVal;
 					},
 
 					getDocumentLibraryURL: function(criteria) {
@@ -2955,8 +2996,17 @@ AUI.add(
 						setter: A.one
 					},
 
+					defaultEditLocale: {
+					},
+
+					documentLibrarySelectorURL: {
+					},
+
 					formNode: {
 						valueFn: '_valueFormNode'
+					},
+
+					imageSelectorURL: {
 					},
 
 					liferayForm: {
@@ -2970,6 +3020,11 @@ AUI.add(
 
 					requestedLocale: {
 						validator: Lang.isString
+					},
+
+					synchronousFormSubmission: {
+						validator: Lang.isBoolean,
+						value: true
 					}
 				},
 
@@ -3009,10 +3064,15 @@ AUI.add(
 									instance._afterUpdateRepeatableFields,
 									instance
 								),
-								formNode.on('submit', instance._onSubmitForm, instance),
-								Liferay.after('form:registered', instance._afterFormRegistered, instance),
-								Liferay.on('submitForm', instance._onLiferaySubmitForm, instance)
+								Liferay.after('form:registered', instance._afterFormRegistered, instance)
 							);
+
+							if (instance.get('synchronousFormSubmission')) {
+								instance.eventHandlers.push(
+									formNode.on('submit', instance._onSubmitForm, instance),
+									Liferay.on('submitForm', instance._onLiferaySubmitForm, instance)
+								);
+							}
 						}
 					},
 
@@ -3087,14 +3147,14 @@ AUI.add(
 								ddPlugins.push(
 									{
 										cfg: {
-											constrain: '.lfr-form-content'
+											constrain: '.lfr-ddm-container'
 										},
 										fn: A.Plugin.DDConstrained
 									},
 									{
 										cfg: {
 											horizontal: false,
-											node: '.lfr-form-content'
+											node: '.lfr-ddm-container'
 										},
 										fn: A.Plugin.DDNodeScroll
 									}
@@ -3119,11 +3179,13 @@ AUI.add(
 
 										var dragNodeAncestor = dragNode.ancestor();
 
+										var retVal = dropNode.getData('fieldName') === fieldName;
+
 										if (dropNodeAncestor.get('id') !== dragNodeAncestor.get('id')) {
-											return false;
+											retVal = false;
 										}
 
-										return dropNode.getData('fieldName') === fieldName;
+										return retVal;
 									}
 								}
 							);

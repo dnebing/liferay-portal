@@ -49,13 +49,12 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Javier Gamarra
  * @author Eduardo Pérez
- * @review
  */
-@Component(immediate = true)
+@Component(immediate = true, service = NestedCollectionResource.class)
 public class VocabularyNestedCollectionResource
 	implements NestedCollectionResource
 		<AssetVocabulary, Long, VocabularyIdentifier, Long,
-			ContentSpaceIdentifier> {
+		 ContentSpaceIdentifier> {
 
 	@Override
 	public NestedCollectionRoutes<AssetVocabulary, Long, Long> collectionRoutes(
@@ -113,7 +112,9 @@ public class VocabularyNestedCollectionResource
 			"name", AssetVocabulary::getTitle
 		).addStringList(
 			"availableLanguages",
-			vocabulary -> Arrays.asList(vocabulary.getAvailableLanguageIds())
+			vocabulary -> Arrays.asList(
+				LocaleUtil.toW3cLanguageIds(
+					vocabulary.getAvailableLanguageIds()))
 		).build();
 	}
 

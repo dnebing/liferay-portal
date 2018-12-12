@@ -129,16 +129,4 @@
 
 		<action path="/asset/get_categories" type="com.liferay.portlet.asset.action.GetCategoriesAction" />
 	</action-mappings>
-
-	<!-- Custom Request Processor -->
-
-	<controller contentType="text/html; charset=UTF-8" processorClass="com.liferay.portal.struts.PortalRequestProcessor" />
-
-	<!-- Tiles Plugin -->
-
-	<plug-in className="com.liferay.portal.struts.PortalTilesPlugin">
-		<set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml,/WEB-INF/tiles-defs-ext.xml" />
-		<set-property property="definitions-factory-class" value="com.liferay.portal.struts.PortalI18nFactorySet" />
-		<set-property property="moduleAware" value="true" />
-	</plug-in>
 </struts-config>

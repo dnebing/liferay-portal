@@ -33,7 +33,8 @@ import org.osgi.service.metatype.AttributeDefinition;
  * @author Iván Zaera
  */
 public class AnnotationsExtendedAttributeDefinition
-	implements com.liferay.portal.configuration.metatype.definitions.ExtendedAttributeDefinition {
+	implements com.liferay.portal.configuration.metatype.definitions.
+		ExtendedAttributeDefinition {
 
 	public AnnotationsExtendedAttributeDefinition(
 		Class<?> configurationBeanClass,
@@ -106,18 +107,6 @@ public class AnnotationsExtendedAttributeDefinition
 	@Override
 	public String validate(String value) {
 		return _attributeDefinition.validate(value);
-	}
-
-	private ExtendedAttributeDefinition _getExtendedAttributeDefinition() {
-		try {
-			Method method = _configurationBeanClass.getMethod(
-				_attributeDefinition.getID());
-
-			return method.getAnnotation(ExtendedAttributeDefinition.class);
-		}
-		catch (NoSuchMethodException nsme) {
-			return null;
-		}
 	}
 
 	private void _processExtendedMetatypeFields() {

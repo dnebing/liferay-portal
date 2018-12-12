@@ -14,6 +14,8 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.liferay.jenkins.results.parser.failure.message.generator.CIFailureMessageGenerator;
+import com.liferay.jenkins.results.parser.failure.message.generator.CompileFailureMessageGenerator;
 import com.liferay.jenkins.results.parser.failure.message.generator.DownstreamFailureMessageGenerator;
 import com.liferay.jenkins.results.parser.failure.message.generator.FailureMessageGenerator;
 import com.liferay.jenkins.results.parser.failure.message.generator.GenericFailureMessageGenerator;
@@ -1334,10 +1336,13 @@ public class TopLevelBuild extends BaseBuild {
 
 	private static final FailureMessageGenerator[] _FAILURE_MESSAGE_GENERATORS =
 		{
-			new PoshiTestFailureMessageGenerator(),
+			new CompileFailureMessageGenerator(),
 			new PoshiValidationFailureMessageGenerator(),
+
+			new PoshiTestFailureMessageGenerator(),
 			new RebaseFailureMessageGenerator(),
 
+			new CIFailureMessageGenerator(),
 			new DownstreamFailureMessageGenerator(),
 
 			new GenericFailureMessageGenerator()

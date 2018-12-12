@@ -16,8 +16,9 @@ package com.liferay.portlet.social.service.impl;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
 import com.liferay.portal.kernel.cache.PortalCache;
+import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
+import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lock.LockProtectedAction;
@@ -228,8 +229,6 @@ public class SocialActivityCounterLocalServiceImpl
 			return;
 		}
 
-		User user = userPersistence.findByPrimaryKey(activity.getUserId());
-
 		SocialActivityDefinition activityDefinition =
 			socialActivitySettingLocalService.getActivityDefinition(
 				activity.getGroupId(), activity.getClassName(),
@@ -247,6 +246,8 @@ public class SocialActivityCounterLocalServiceImpl
 		if (activityProcessor != null) {
 			activityProcessor.processActivity(activity);
 		}
+
+		User user = userPersistence.findByPrimaryKey(activity.getUserId());
 
 		AssetEntry assetEntry = activity.getAssetEntry();
 
@@ -835,7 +836,7 @@ public class SocialActivityCounterLocalServiceImpl
 				activityCounterDefinition.getPeriodLength());
 		}
 		else if (!activityCounter.isActivePeriod(
-					 activityCounterDefinition.getPeriodLength())) {
+					activityCounterDefinition.getPeriodLength())) {
 
 			activityCounter = lockProtectedAddActivityCounter(
 				groupId, classNameId, classPK,
@@ -990,7 +991,8 @@ public class SocialActivityCounterLocalServiceImpl
 
 	protected void clearFinderCache() {
 		PortalCache<String, SocialActivityCounter> portalCache =
-			MultiVMPoolUtil.getPortalCache(
+			PortalCacheHelperUtil.getPortalCache(
+				PortalCacheManagerNames.MULTI_VM,
 				SocialActivityCounterFinder.class.getName());
 
 		portalCache.removeAll();

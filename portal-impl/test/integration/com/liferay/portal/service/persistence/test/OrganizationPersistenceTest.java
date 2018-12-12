@@ -258,11 +258,30 @@ public class OrganizationPersistenceTest {
 	}
 
 	@Test
+	public void testCountByC_LikeN() throws Exception {
+		_persistence.countByC_LikeN(RandomTestUtil.nextLong(), "");
+
+		_persistence.countByC_LikeN(0L, "null");
+
+		_persistence.countByC_LikeN(0L, (String)null);
+	}
+
+	@Test
 	public void testCountByO_C_P() throws Exception {
 		_persistence.countByO_C_P(RandomTestUtil.nextLong(),
 			RandomTestUtil.nextLong(), RandomTestUtil.nextLong());
 
 		_persistence.countByO_C_P(0L, 0L, 0L);
+	}
+
+	@Test
+	public void testCountByC_P_LikeN() throws Exception {
+		_persistence.countByC_P_LikeN(RandomTestUtil.nextLong(),
+			RandomTestUtil.nextLong(), "");
+
+		_persistence.countByC_P_LikeN(0L, 0L, "null");
+
+		_persistence.countByC_P_LikeN(0L, 0L, (String)null);
 	}
 
 	@Test

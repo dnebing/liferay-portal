@@ -77,7 +77,7 @@ if (fileEntryTypeId >= 0) {
 	dlFileEntryType = DLFileEntryTypeLocalServiceUtil.getFileEntryType(fileEntryTypeId);
 }
 
-boolean majorVersion = ParamUtil.getBoolean(request, "majorVersion");
+DLVersionNumberIncrease dlVersionNumberIncrease = DLVersionNumberIncrease.valueOf(ParamUtil.getString(request, "versionIncrease"), DLVersionNumberIncrease.AUTOMATIC);
 boolean updateVersionDetails = ParamUtil.getBoolean(request, "updateVersionDetails");
 
 long assetClassPK = 0;
@@ -197,7 +197,7 @@ if (portletTitleBasedNavigation) {
 		<aui:input name="fileEntryId" type="hidden" value="<%= fileEntryId %>" />
 
 		<c:if test="<%= (fileEntry != null) && checkedOut %>">
-			<aui:input name="majorVersion" type="hidden" />
+			<aui:input name="versionIncrease" type="hidden" />
 			<aui:input name="changeLog" type="hidden" />
 		</c:if>
 
@@ -427,14 +427,16 @@ if (portletTitleBasedNavigation) {
 					</c:if>
 				</aui:fieldset>
 
-				<c:if test="<%= (fileEntry != null) && !checkedOut %>">
+				<c:if test="<%= (fileEntry != null) && !checkedOut && dlAdminDisplayContext.isVersioningStrategyOverridable() %>">
 					<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="versioning">
 						<aui:input label="customize-the-version-number-increment-and-describe-my-changes" name="updateVersionDetails" type="toggle-switch" value="<%= updateVersionDetails %>" />
 
 						<div id="<portlet:namespace />versionDetails" style="<%= updateVersionDetails ? StringPool.BLANK : "display: none" %>">
-							<aui:input checked="<%= majorVersion %>" label="major-version" name="majorVersion" type="radio" value="<%= true %>" />
+							<aui:input checked="<%= dlVersionNumberIncrease == DLVersionNumberIncrease.MAJOR %>" label="major-version" name="versionIncrease" type="radio" value="<%= DLVersionNumberIncrease.MAJOR %>" />
 
-							<aui:input checked="<%= !majorVersion %>" label="minor-version" name="majorVersion" type="radio" value="<%= false %>" />
+							<aui:input checked="<%= dlVersionNumberIncrease == DLVersionNumberIncrease.MINOR %>" label="minor-version" name="versionIncrease" type="radio" value="<%= DLVersionNumberIncrease.MINOR %>" />
+
+							<aui:input checked="<%= (dlVersionNumberIncrease == DLVersionNumberIncrease.AUTOMATIC) || (dlVersionNumberIncrease == DLVersionNumberIncrease.NONE) %>" label="keep-current-version-number" name="versionIncrease" type="radio" value="<%= DLVersionNumberIncrease.NONE %>" />
 
 							<aui:model-context />
 
@@ -529,7 +531,7 @@ if (portletTitleBasedNavigation) {
 	/>
 </div>
 
-<c:if test="<%= (fileEntry != null) && checkedOut %>">
+<c:if test="<%= (fileEntry != null) && checkedOut && dlAdminDisplayContext.isVersioningStrategyOverridable() %>">
 
 	<%
 	request.setAttribute("edit_file_entry.jsp-checkedOut", checkedOut);
@@ -556,7 +558,12 @@ if (portletTitleBasedNavigation) {
 
 		form.fm('<%= Constants.CMD %>').val('<%= Constants.UPDATE_AND_CHECKIN %>');
 
-		<portlet:namespace />showVersionDetailsDialog(form);
+		if (<%= dlAdminDisplayContext.isVersioningStrategyOverridable() %>) {
+			<portlet:namespace />showVersionDetailsDialog(form);
+		}
+		else {
+			submitForm(form);
+		}
 	}
 
 	function <portlet:namespace />checkOut() {
@@ -595,9 +602,9 @@ if (portletTitleBasedNavigation) {
 					callback: function(event) {
 						var $ = AUI.$;
 
-						var majorVersionNode = $('input:radio[name="<portlet:namespace />versionDetailsMajorVersion"]:checked');
+						var versionIncreaseNode = $('input:radio[name="<portlet:namespace />versionDetailsVersionIncrease"]:checked');
 
-						form.fm('majorVersion').val(majorVersionNode.val());
+						form.fm('versionIncrease').val(versionIncreaseNode.val());
 
 						var changeLogNode = $('#<portlet:namespace />versionDetailsChangeLog');
 
@@ -631,7 +638,7 @@ if (portletTitleBasedNavigation) {
 	}
 </aui:script>
 
-<c:if test="<%= (fileEntry != null) && !checkedOut %>">
+<c:if test="<%= (fileEntry != null) && !checkedOut && dlAdminDisplayContext.isVersioningStrategyOverridable() %>">
 	<aui:script use="aui-base">
 		$('#<portlet:namespace />updateVersionDetails').on(
 			'click',

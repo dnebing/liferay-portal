@@ -77,6 +77,7 @@ public class TargetPlatformPlugin implements Plugin<Project> {
 
 		final Configuration targetPlatformBomsConfiguration =
 			_addConfigurationTargetPlatformBoms(project);
+
 		final Configuration targetPlatformBundlesConfiguration =
 			_addConfigurationTargetPlatformBundles(project);
 		final Configuration targetPlatformDistroConfiguration =
@@ -337,11 +338,12 @@ public class TargetPlatformPlugin implements Plugin<Project> {
 	private static final Iterable<String> _configurationNames = Arrays.asList(
 		JavaPlugin.COMPILE_CONFIGURATION_NAME, "compileClasspath",
 		"compileInclude", "compileOnly", Dependency.DEFAULT_CONFIGURATION,
-		"implementation", JavaPlugin.RUNTIME_CONFIGURATION_NAME,
-		"runtimeClasspath", "runtimeImplementation", "runtimeOnly",
-		"testCompileClasspath", "testCompileOnly", "testIntegration",
-		"testImplementation", JavaPlugin.TEST_RUNTIME_CONFIGURATION_NAME,
-		"testRuntimeClasspath", "testRuntimeOnly");
+		"implementation", "originalModule", "parentThemes", "portalCommonCSS",
+		JavaPlugin.RUNTIME_CONFIGURATION_NAME, "runtimeClasspath",
+		"runtimeImplementation", "runtimeOnly", "testCompileClasspath",
+		"testCompileOnly", "testIntegration", "testImplementation",
+		JavaPlugin.TEST_RUNTIME_CONFIGURATION_NAME, "testRuntimeClasspath",
+		"testRuntimeOnly");
 	private static final Spec<Task> _skipIfExecutingParentTaskSpec =
 		new SkipIfExecutingParentTaskSpec();
 

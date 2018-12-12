@@ -66,6 +66,9 @@ import java.util.Map;
  */
 public class UserFinderImpl extends UserFinderBaseImpl implements UserFinder {
 
+	public static final String COUNT_BY_ORGANIZATIONS_AND_USER_GROUPS =
+		UserFinder.class.getName() + ".countByOrganizationsAndUserGroups";
+
 	public static final String COUNT_BY_SOCIAL_USERS =
 		UserFinder.class.getName() + ".countBySocialUsers";
 
@@ -316,6 +319,59 @@ public class UserFinderImpl extends UserFinderBaseImpl implements UserFinder {
 		return countByC_FN_MN_LN_SN_EA_S(
 			companyId, firstNames, middleNames, lastNames, screenNames,
 			emailAddresses, status, params, andOperator);
+	}
+
+	@Override
+	public int countByOrganizationsAndUserGroups(
+		long[] organizationIds, long[] userGroupIds) {
+
+		if (ArrayUtil.isEmpty(organizationIds) &&
+			ArrayUtil.isEmpty(userGroupIds)) {
+
+			return 0;
+		}
+
+		if (ArrayUtil.isEmpty(organizationIds)) {
+			organizationIds = new long[] {0L};
+		}
+
+		if (ArrayUtil.isEmpty(userGroupIds)) {
+			userGroupIds = new long[] {0L};
+		}
+
+		Long count = null;
+
+		Session session = openSession();
+
+		try {
+			String sql = CustomSQLUtil.get(
+				COUNT_BY_ORGANIZATIONS_AND_USER_GROUPS);
+
+			sql = StringUtil.replace(
+				sql, new String[] {"[$ORGANIZATION_ID$]", "[$USER_GROUP_ID$]"},
+				new String[] {
+					StringUtil.merge(organizationIds),
+					StringUtil.merge(userGroupIds)
+				});
+
+			SQLQuery sqlQuery = session.createSynchronizedSQLQuery(sql);
+
+			sqlQuery.addScalar(COUNT_COLUMN_NAME, Type.LONG);
+
+			count = (Long)sqlQuery.uniqueResult();
+		}
+		catch (Exception e) {
+			throw new SystemException(e);
+		}
+		finally {
+			if (count == null) {
+				count = Long.valueOf(0);
+			}
+
+			closeSession(session);
+		}
+
+		return count.intValue();
 	}
 
 	@Override
@@ -725,6 +781,7 @@ public class UserFinderImpl extends UserFinderBaseImpl implements UserFinder {
 		}
 	}
 
+	@Override
 	public List<User> findByUsersOrgsGtUserId(
 		long companyId, long organizationId, long gtUserId, int size) {
 
@@ -753,6 +810,7 @@ public class UserFinderImpl extends UserFinderBaseImpl implements UserFinder {
 		}
 	}
 
+	@Override
 	public List<User> findByUsersUserGroupsGtUserId(
 		long companyId, long userGroupId, long gtUserId, int size) {
 

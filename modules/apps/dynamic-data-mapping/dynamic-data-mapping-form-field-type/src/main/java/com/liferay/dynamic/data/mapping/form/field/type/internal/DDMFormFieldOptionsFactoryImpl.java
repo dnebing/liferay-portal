@@ -69,10 +69,9 @@ public class DDMFormFieldOptionsFactoryImpl
 			return createDDMFormFieldOptionsFromDataProvider(
 				ddmFormField, ddmFormFieldRenderingContext);
 		}
-		else {
-			return createDDMFormFieldOptions(
-				ddmFormField, ddmFormFieldRenderingContext);
-		}
+
+		return createDDMFormFieldOptions(
+			ddmFormField, ddmFormFieldRenderingContext);
 	}
 
 	protected DDMFormFieldOptions createDDMFormFieldOptions(
@@ -80,8 +79,8 @@ public class DDMFormFieldOptionsFactoryImpl
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
 
 		List<Map<String, String>> options =
-			(List<Map<String, String>>)
-				ddmFormFieldRenderingContext.getProperty("options");
+			(List<Map<String, String>>)ddmFormFieldRenderingContext.getProperty(
+				"options");
 
 		if (options == null) {
 			return ddmFormField.getDDMFormFieldOptions();
@@ -143,7 +142,7 @@ public class DDMFormFieldOptionsFactoryImpl
 					"Default-Output"));
 
 			Optional<List<KeyValuePair>> keyValuesPairsOptional =
-				ddmDataProviderResponse.getOutput(
+				ddmDataProviderResponse.getOutputOptional(
 					ddmDataProviderInstanceOutput, List.class);
 
 			if (!keyValuesPairsOptional.isPresent()) {

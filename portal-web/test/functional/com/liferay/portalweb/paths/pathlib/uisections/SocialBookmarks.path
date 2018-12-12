@@ -29,22 +29,6 @@
 	<td>//select[contains(@id,'availableTypes')]</td>
 	<td></td>
 </tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-<!--SOCIAL_BOOKMARKS_CONFIGURATION-->
-<tr>
-	<td>SOCIAL_BOOKMARKS_CONFIGURATION_CHECKBOX</td>
-	<td>//input[contains(@id,'socialBookmarksTypes${key_socialBookmarkSite}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
 </tbody>
 </table>
 </body>

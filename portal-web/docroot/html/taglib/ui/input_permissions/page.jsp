@@ -38,7 +38,7 @@ String modelName = (String)request.getAttribute("liferay-ui:input-permissions:mo
 	<c:when test="<%= user.getDefaultUser() %>">
 		<liferay-ui:message key="not-available" />
 	</c:when>
-	<c:when test="<%= modelName != null %>">
+	<c:otherwise>
 
 		<%
 		Group siteGroup = GroupLocalServiceUtil.getGroup(themeDisplay.getSiteGroupId());
@@ -133,7 +133,7 @@ String modelName = (String)request.getAttribute("liferay-ui:input-permissions:mo
 				<thead>
 					<tr>
 						<th>
-							<liferay-ui:message key="roles" />
+							<liferay-ui:message key="role" />
 						</th>
 
 						<%
@@ -141,7 +141,7 @@ String modelName = (String)request.getAttribute("liferay-ui:input-permissions:mo
 							String action = (String)supportedActions.get(i);
 						%>
 
-							<th <%= action.equals(ActionKeys.VIEW) ? "class=\"hide-accessible\"" : "" %>>
+							<th class="table-column-text-center">
 								<%= ResourceActionsUtil.getAction(request, action) %>
 							</th>
 
@@ -158,7 +158,7 @@ String modelName = (String)request.getAttribute("liferay-ui:input-permissions:mo
 				%>
 
 					<tr>
-						<td>
+						<td class="table-title">
 							<%= role.getTitle(themeDisplay.getLocale()) %>
 						</td>
 
@@ -206,8 +206,20 @@ String modelName = (String)request.getAttribute("liferay-ui:input-permissions:mo
 							checkboxFieldId = checkboxFieldId + StringPool.UNDERLINE + action;
 						%>
 
-							<td <%= action.equals(ActionKeys.VIEW) ? "class=\"hide-accessible\"" : "" %>>
+							<td class="table-column-text-center">
 								<label class="sr-only" for="<%= checkboxFieldId %>"><liferay-ui:message arguments="<%= new Object[] {ResourceActionsUtil.getAction(request, action), role.getTitle(themeDisplay.getLocale())} %>" key="give-x-permission-to-users-with-role-x" translateArguments="<%= false %>" /></label>
+
+								<c:if test="<%= action.equals(ActionKeys.VIEW) %>">
+									<input <%= checked ? "checked" : "" %> class="hide-accessible" id="<%= checkboxFieldId %>" name="<%= checkboxFieldName %>" type="checkbox" value="<%= action %>" />
+
+									<%
+									disabled = true;
+
+									checkboxFieldId = checkboxFieldId + StringPool.UNDERLINE + "display";
+									checkboxFieldName = checkboxFieldName + StringPool.UNDERLINE + "display";
+									%>
+
+								</c:if>
 
 								<input <%= checked ? "checked" : "" %> <%= disabled ? "disabled" : "" %> id="<%= checkboxFieldId %>" name="<%= checkboxFieldName %>" title='<%= LanguageUtil.format(request, "give-x-permission-to-users-with-role-x", new Object[] {ResourceActionsUtil.getAction(request, action), role.getTitle(themeDisplay.getLocale())}, false) %>' type="checkbox" value="<%= action %>" />
 							</td>
@@ -254,77 +266,19 @@ String modelName = (String)request.getAttribute("liferay-ui:input-permissions:mo
 
 				if (viewableBy == '<%= RoleConstants.GUEST %>') {
 					checkGuestViewPermissions = true;
+					checkGroupViewPermissions = true;
 				}
 				else if (viewableBy == '<%= defaultGroupRole.getName() %>') {
 					checkGroupViewPermissions = true;
 				}
 
-				$('#<%= uniqueNamespace %>guestPermissions_VIEW').prop('checked', checkGuestViewPermissions);
-				$('#<%= uniqueNamespace %>groupPermissions_VIEW').prop('checked', checkGroupViewPermissions);
-			}
-		</aui:script>
-	</c:when>
-	<c:otherwise>
-
-		<%
-		boolean addGroupPermissions = ParamUtil.getBoolean(request, "addGroupPermissions", true);
-		boolean addGuestPermissions = ParamUtil.getBoolean(request, "addGuestPermissions", true);
-		%>
-
-		<input name="<%= namespace %>addGroupPermissions" type="hidden" value="<%= addGroupPermissions %>" />
-		<input name="<%= namespace %>addGuestPermissions" type="hidden" value="<%= addGuestPermissions %>" />
-
-		<div class="checkbox">
-			<label>
-				<input <%= addGroupPermissions ? "checked" : "" %> name="<%= namespace %>addGroupPermissionsBox" onClick="<%= namespace %>checkGroupAndGuestPermissions();" type="checkbox" /> <liferay-ui:message key="assign-default-permissions-to-site" />
-			</label>
-		</div>
-
-		<div class="checkbox">
-			<label>
-				<input <%= addGuestPermissions ? "checked" : "" %> name="<%= namespace %>addGuestPermissionsBox" onClick="<%= namespace %>checkGroupAndGuestPermissions();" type="checkbox" /> <liferay-ui:message key="assign-default-permissions-to-guest" />
-			</label>
-		</div>
-
-		<div class="checkbox">
-			<label>
-				<input <%= (!addGroupPermissions && !addGuestPermissions) ? "checked" : "" %> name="<%= namespace %>addUserPermissionsBox" onClick="<%= namespace %>checkUserPermissions();" type="checkbox" /> <liferay-ui:message key="only-assign-permissions-to-me" />
-			</label>
-		</div>
-
-		<aui:script>
-			function <%= namespace %>checkGroupAndGuestPermissions() {
-				var form = AUI.$(document.<%= formName %>);
-
-				var groupPermissionsChecked = form.fm('addGroupPermissionsBox').prop('checked');
-				var guestPermissionsChecked = form.fm('addGuestPermissionsBox').prop('checked');
-
-				var checkUserPermissions = true;
-
-				if (groupPermissionsChecked || guestPermissionsChecked) {
-					checkUserPermissions = false;
-				}
-
-				form.fm('addUserPermissionsBox').prop('checked', checkUserPermissions);
-
-				form.fm('addGroupPermissions').val(groupPermissionsChecked);
-				form.fm('addGuestPermissions').val(guestPermissionsChecked);
+				<%= uniqueNamespace %>doUpdateViewValue('<%= uniqueNamespace %>guestPermissions_VIEW', checkGuestViewPermissions);
+				<%= uniqueNamespace %>doUpdateViewValue('<%= uniqueNamespace %>groupPermissions_VIEW', checkGroupViewPermissions);
 			}
 
-			function <%= namespace %>checkUserPermissions() {
-				var form = AUI.$(document.<%= formName %>);
-
-				var checkGroupAndGuestPermissions = true;
-
-				if (form.fm('addUserPermissionsBox').prop('checked')) {
-					checkGroupAndGuestPermissions = false;
-				}
-
-				form.fm('addGroupPermissionsBox').prop('checked', checkGroupAndGuestPermissions);
-				form.fm('addGuestPermissionsBox').prop('checked', checkGroupAndGuestPermissions);
-
-				form.fm('addGroupPermissions').val(checkGroupAndGuestPermissions);
-				form.fm('addGuestPermissions').val(checkGroupAndGuestPermissions);
+			function <%= uniqueNamespace %>doUpdateViewValue(id, checkPermission) {
+				$('#' + id).prop('checked', checkPermission);
+				$('#' + id + '_display').prop('checked', checkPermission);
 			}
 		</aui:script>
 	</c:otherwise>

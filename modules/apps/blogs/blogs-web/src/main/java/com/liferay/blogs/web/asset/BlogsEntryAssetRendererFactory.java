@@ -21,7 +21,6 @@ import com.liferay.blogs.constants.BlogsConstants;
 import com.liferay.blogs.constants.BlogsPortletKeys;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.BlogsEntryLocalService;
-import com.liferay.blogs.service.BlogsEntryService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -31,7 +30,7 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -72,7 +71,11 @@ public class BlogsEntryAssetRendererFactory
 		BlogsEntry entry = _blogsEntryLocalService.getEntry(classPK);
 
 		BlogsEntryAssetRenderer blogsEntryAssetRenderer =
-			new BlogsEntryAssetRenderer(entry, _resourceBundleLoader);
+			new BlogsEntryAssetRenderer(
+				entry,
+				ResourceBundleLoaderUtil.
+					getResourceBundleLoaderByBundleSymbolicName(
+						"com.liferay.blogs.web"));
 
 		blogsEntryAssetRenderer.setAssetRendererType(type);
 		blogsEntryAssetRenderer.setServletContext(_servletContext);
@@ -85,10 +88,14 @@ public class BlogsEntryAssetRendererFactory
 			long groupId, String urlTitle)
 		throws PortalException {
 
-		BlogsEntry entry = _blogsEntryService.getEntry(groupId, urlTitle);
+		BlogsEntry entry = _blogsEntryLocalService.getEntry(groupId, urlTitle);
 
 		BlogsEntryAssetRenderer blogsEntryAssetRenderer =
-			new BlogsEntryAssetRenderer(entry, _resourceBundleLoader);
+			new BlogsEntryAssetRenderer(
+				entry,
+				ResourceBundleLoaderUtil.
+					getResourceBundleLoaderByBundleSymbolicName(
+						"com.liferay.blogs.web"));
 
 		blogsEntryAssetRenderer.setServletContext(_servletContext);
 
@@ -161,15 +168,6 @@ public class BlogsEntryAssetRendererFactory
 	}
 
 	@Reference(
-		target = "(bundle.symbolic.name=com.liferay.blogs.web)", unbind = "-"
-	)
-	public void setResourceBundleLoader(
-		ResourceBundleLoader resourceBundleLoader) {
-
-		_resourceBundleLoader = resourceBundleLoader;
-	}
-
-	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.blogs.web)", unbind = "-"
 	)
 	public void setServletContext(ServletContext servletContext) {
@@ -183,18 +181,11 @@ public class BlogsEntryAssetRendererFactory
 		_blogsEntryLocalService = blogsEntryLocalService;
 	}
 
-	@Reference(unbind = "-")
-	protected void setBlogsEntryService(BlogsEntryService blogsEntryService) {
-		_blogsEntryService = blogsEntryService;
-	}
-
 	private BlogsEntryLocalService _blogsEntryLocalService;
 
 	@Reference(target = "(model.class.name=com.liferay.blogs.model.BlogsEntry)")
 	private ModelResourcePermission<BlogsEntry>
 		_blogsEntryModelResourcePermission;
-
-	private BlogsEntryService _blogsEntryService;
 
 	@Reference
 	private Portal _portal;
@@ -202,7 +193,6 @@ public class BlogsEntryAssetRendererFactory
 	@Reference(target = "(resource.name=" + BlogsConstants.RESOURCE_NAME + ")")
 	private PortletResourcePermission _portletResourcePermission;
 
-	private ResourceBundleLoader _resourceBundleLoader;
 	private ServletContext _servletContext;
 
 }

@@ -223,6 +223,7 @@ renderResponse.setTitle(title);
 				<liferay-frontend:fieldset
 					collapsed="<%= true %>"
 					collapsible="<%= true %>"
+					cssClass="structure-restrictions"
 					helpMessage='<%= rootFolder ? "" : "structure-restrictions-help" %>'
 					label='<%= rootFolder ? "" : (workflowEnabled ? "structure-restrictions-and-workflow" : "structure-restrictions") %>'
 				>
@@ -257,13 +258,14 @@ renderResponse.setTitle(title);
 									modelVar="ddmStructure"
 								>
 									<liferay-ui:search-container-column-text
+										cssClass="table-cell-expand table-cell-minw-200 table-title"
 										name="name"
-										truncate="<%= true %>"
 										value="<%= HtmlUtil.escape(ddmStructure.getName(locale)) %>"
 									/>
 
 									<c:if test="<%= workflowEnabled %>">
 										<liferay-ui:search-container-column-text
+											cssClass="table-cell-expand table-cell-minw-200"
 											name="workflow"
 										>
 											<aui:select label="" name='<%= "workflowDefinition" + ddmStructure.getStructureId() %>'>
@@ -307,7 +309,7 @@ renderResponse.setTitle(title);
 								/>
 							</liferay-ui:search-container>
 
-							<aui:button id="selectDMMStructure" value="choose-structure" />
+							<aui:button id="selectDDMStructure" value="choose-structure" />
 						</div>
 					</c:if>
 

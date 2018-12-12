@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
@@ -39,11 +40,17 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true, property = "ddm.form.field.type.name=grid",
-	service =
-		{DDMFormFieldValueAccessor.class, GridDDMFormFieldValueAccessor.class}
+	service = {
+		DDMFormFieldValueAccessor.class, GridDDMFormFieldValueAccessor.class
+	}
 )
 public class GridDDMFormFieldValueAccessor
 	implements DDMFormFieldValueAccessor<JSONObject> {
+
+	@Override
+	public IntFunction<JSONObject[]> getArrayGeneratorIntFunction() {
+		return JSONObject[]::new;
+	}
 
 	@Override
 	public JSONObject getValue(

@@ -8,45 +8,20 @@
 <tr><td rowspan="1" colspan="3">CPSAMLAdminIdentityProviderConnection</td></tr>
 </thead>
 <tbody>
-<tr>
-	<td>SUCCESS_MESSAGE</td>
-	<td>//div[contains(@class,'alert') and contains(@class,'alert-success')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>SAVE_BUTTON</td>
-	<td>//button[contains(.,'Save')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
 <!--IDENTITY_PROVIDER_CONNECTION-->
-<tr>
-	<td>IDENTITY_PROVIDER_CONNECTION_NAME_FIELD</td>
-	<td>//input[contains(@id,'SamlAdminPortlet_name')]</td>
-	<td></td>
-</tr>
 <tr>
 	<td>IDENTITY_PROVIDER_CONNECTION_ENTITY_ID_FIELD</td>
 	<td>//input[contains(@id,'SamlAdminPortlet_samlIdpEntityId')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>IDENTITY_PROVIDER_CONNECTION_METADATA_URL_FIELD</td>
-	<td>//input[contains(@id,'SamlAdminPortlet_metadataUrl')]</td>
+	<td>IDENTITY_PROVIDER_CONNECTION_ATTRIBUTE_ENABLE</td>
+	<td>//label[contains(@for,'attributesEnabled')]/input[@type='checkbox']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>IDENTITY_PROVIDER_CONNECTION_NAME_IDENTIFIER_FORMAT_SELECT</td>
-	<td>//select[contains(@id,'SamlAdminPortlet_nameIdFormat')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>IDENTITY_PROVIDER_CONNECTION_ATTRIBUTE_MAPPING_TEXTAREA</td>
-	<td>//textarea[contains(@id,'SamlAdminPortlet_userAttributeMappings')]</td>
+	<td>IDENTITY_PROVIDER_CONNECTION_ATTRIBUTE_TEXTAREA</td>
+	<td>//textarea[contains(@id,'SamlAdminPortlet_attributeNames')]</td>
 	<td></td>
 </tr>
 </tbody>

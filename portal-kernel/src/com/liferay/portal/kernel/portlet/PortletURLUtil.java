@@ -127,8 +127,12 @@ public class PortletURLUtil {
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse) {
 
-		PortletURL portletURL = (PortletURL)liferayPortletRequest.getAttribute(
+		String attributeName = StringBundler.concat(
+			liferayPortletRequest.getPortletName(), StringPool.DASH,
 			WebKeys.CURRENT_PORTLET_URL);
+
+		PortletURL portletURL = (PortletURL)liferayPortletRequest.getAttribute(
+			attributeName);
 
 		if (portletURL != null) {
 			return portletURL;
@@ -147,8 +151,7 @@ public class PortletURLUtil {
 				liferayPortletRequest, liferayPortletResponse);
 		}
 
-		liferayPortletRequest.setAttribute(
-			WebKeys.CURRENT_PORTLET_URL, portletURL);
+		liferayPortletRequest.setAttribute(attributeName, portletURL);
 
 		return portletURL;
 	}
@@ -381,7 +384,9 @@ public class PortletURLUtil {
 			// Do not set parameter values that are over 32 kb. See LEP-1755.
 
 			for (String value : values) {
-				if (value.length() > _CURRENT_URL_PARAMETER_THRESHOLD) {
+				if ((value == null) ||
+					(value.length() > _CURRENT_URL_PARAMETER_THRESHOLD)) {
+
 					addParam = false;
 
 					break;

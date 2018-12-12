@@ -38,13 +38,13 @@ public class DLServiceUpgrade implements UpgradeStepRegistrator {
 
 		registry.register("0.0.1", "1.0.0", new UpgradeDocumentLibrary(_store));
 
+		registry.register("1.0.0", "1.0.1", new UpgradeDLFileShortcut());
+
 		registry.register(
-			"1.0.0", "1.0.1",
+			"1.0.1", "1.0.2",
 			new UpgradeDLConfiguration(_prefsPropsToConfigurationUpgradeHelper),
 			new UpgradeDLFileEntryConfiguration(
 				_prefsPropsToConfigurationUpgradeHelper));
-
-		registry.register("1.0.1", "1.0.2", new UpgradeDLFileShortcut());
 	}
 
 	@Reference

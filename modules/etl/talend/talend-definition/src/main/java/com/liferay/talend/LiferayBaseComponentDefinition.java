@@ -99,8 +99,9 @@ public abstract class LiferayBaseComponentDefinition
 	public Class<? extends ComponentProperties>[]
 		getNestedCompatibleComponentPropertiesClass() {
 
-		return (Class<? extends ComponentProperties>[])
-			new Class<?>[] {LiferayConnectionProperties.class};
+		return (Class<? extends ComponentProperties>[])new Class<?>[] {
+			LiferayConnectionProperties.class
+		};
 	}
 
 	/**
@@ -163,9 +164,8 @@ public abstract class LiferayBaseComponentDefinition
 				return RuntimeUtil.createRuntimeClassWithCurrentJVMProperties(
 					runtimeInfo, classLoader);
 			}
-			else {
-				return RuntimeUtil.createRuntimeClass(runtimeInfo, classLoader);
-			}
+
+			return RuntimeUtil.createRuntimeClass(runtimeInfo, classLoader);
 		}
 
 	}

@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.portlet.LiferayEventResponse;
 import com.liferay.portal.kernel.portlet.LiferayPortletMode;
 import com.liferay.portal.kernel.portlet.LiferayResourceRequest;
 import com.liferay.portal.kernel.portlet.LiferayResourceResponse;
+import com.liferay.portal.kernel.portlet.LiferayStateAwareResponse;
 import com.liferay.portal.kernel.portlet.PortletConfigFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletContainer;
 import com.liferay.portal.kernel.portlet.PortletContainerException;
@@ -46,6 +47,7 @@ import com.liferay.portal.kernel.portlet.PortletQName;
 import com.liferay.portal.kernel.portlet.PortletQNameUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.WindowStateFactory;
+import com.liferay.portal.kernel.portlet.async.PortletAsyncScopeManager;
 import com.liferay.portal.kernel.portlet.configuration.icon.PortletConfigurationIconMenu;
 import com.liferay.portal.kernel.portlet.toolbar.PortletToolbar;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
@@ -93,6 +95,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.Event;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletMode;
@@ -492,9 +495,20 @@ public class PortletContainerImpl implements PortletContainer {
 			RenderParametersPool.clear(
 				request, layout.getPlid(), portlet.getPortletId());
 
-			RenderParametersPool.put(
-				request, layout.getPlid(), portlet.getPortletId(),
-				liferayActionResponse.getRenderParameterMap());
+			PortletApp portletApp = portlet.getPortletApp();
+
+			if (portletApp.getSpecMajorVersion() < 3) {
+				RenderParametersPool.put(
+					request, layout.getPlid(), portlet.getPortletId(),
+					liferayActionResponse.getRenderParameterMap());
+			}
+			else {
+				Layout requestLayout = (Layout)request.getAttribute(
+					WebKeys.LAYOUT);
+
+				_setAllRenderParameters(
+					request, liferayActionResponse, portlet, requestLayout);
+			}
 
 			List<Event> events = liferayActionResponse.getEvents();
 
@@ -504,20 +518,29 @@ public class PortletContainerImpl implements PortletContainer {
 			if (Validator.isNull(redirectLocation) &&
 				portlet.isActionURLRedirect()) {
 
-				PortletURL portletURL = PortletURLFactoryUtil.create(
-					liferayActionRequest, portlet, layout,
-					PortletRequest.RENDER_PHASE);
+				PortletURL portletURL = null;
 
-				Map<String, String[]> renderParameters =
-					liferayActionResponse.getRenderParameterMap();
+				if (portletApp.getSpecMajorVersion() < 3) {
+					portletURL = PortletURLFactoryUtil.create(
+						liferayActionRequest, portlet, layout,
+						PortletRequest.RENDER_PHASE);
 
-				for (Map.Entry<String, String[]> entry :
-						renderParameters.entrySet()) {
+					Map<String, String[]> renderParameters =
+						liferayActionResponse.getRenderParameterMap();
 
-					String key = entry.getKey();
-					String[] value = entry.getValue();
+					for (Map.Entry<String, String[]> entry :
+							renderParameters.entrySet()) {
 
-					portletURL.setParameter(key, value);
+						String key = entry.getKey();
+						String[] value = entry.getValue();
+
+						portletURL.setParameter(key, value);
+					}
+				}
+				else {
+					portletURL = PortletURLFactoryUtil.create(
+						liferayActionRequest, portlet, layout.getPlid(),
+						PortletRequest.RENDER_PHASE, MimeResponse.Copy.ALL);
 				}
 
 				redirectLocation = portletURL.toString();
@@ -555,7 +578,7 @@ public class PortletContainerImpl implements PortletContainer {
 			windowState = WindowState.MAXIMIZED;
 		}
 		else if (layoutTypePortlet.hasStateMinPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			windowState = WindowState.MINIMIZED;
 		}
@@ -569,37 +592,37 @@ public class PortletContainerImpl implements PortletContainer {
 			portletMode = LiferayPortletMode.ABOUT;
 		}
 		else if (layoutTypePortlet.hasModeConfigPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = LiferayPortletMode.CONFIG;
 		}
 		else if (layoutTypePortlet.hasModeEditPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = PortletMode.EDIT;
 		}
 		else if (layoutTypePortlet.hasModeEditDefaultsPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = LiferayPortletMode.EDIT_DEFAULTS;
 		}
 		else if (layoutTypePortlet.hasModeEditGuestPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = LiferayPortletMode.EDIT_GUEST;
 		}
 		else if (layoutTypePortlet.hasModeHelpPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = PortletMode.HELP;
 		}
 		else if (layoutTypePortlet.hasModePreviewPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = LiferayPortletMode.PREVIEW;
 		}
 		else if (layoutTypePortlet.hasModePrintPortletId(
-					 portlet.getPortletId())) {
+					portlet.getPortletId())) {
 
 			portletMode = LiferayPortletMode.PRINT;
 		}
@@ -636,14 +659,20 @@ public class PortletContainerImpl implements PortletContainer {
 			liferayEventResponse.transferHeaders(response);
 
 			if (liferayEventResponse.isCalledSetRenderParameter()) {
-				Map<String, String[]> renderParameterMap =
-					liferayEventResponse.getRenderParameterMap();
+				PortletApp portletApp = portlet.getPortletApp();
 
-				if (!renderParameterMap.isEmpty()) {
+				if (portletApp.getSpecMajorVersion() < 3) {
+					Map<String, String[]> renderParameterMap =
+						liferayEventResponse.getRenderParameterMap();
+
 					RenderParametersPool.put(
 						request, requestLayout.getPlid(),
 						portlet.getPortletId(),
 						new HashMap<>(renderParameterMap));
+				}
+				else {
+					_setAllRenderParameters(
+						request, liferayEventResponse, portlet, requestLayout);
 				}
 			}
 
@@ -926,10 +955,6 @@ public class PortletContainerImpl implements PortletContainer {
 			PortletPreferencesFactoryUtil.getPortletPreferencesIds(
 				request, portlet.getPortletId());
 
-		PortletPreferences portletPreferences =
-			PortletPreferencesLocalServiceUtil.getStrictPreferences(
-				portletPreferencesIds);
-
 		ServletContext servletContext = (ServletContext)request.getAttribute(
 			WebKeys.CTX);
 
@@ -938,8 +963,6 @@ public class PortletContainerImpl implements PortletContainer {
 
 		PortletConfig portletConfig = PortletConfigFactoryUtil.create(
 			portlet, servletContext);
-
-		PortletContext portletContext = portletConfig.getPortletContext();
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -968,13 +991,35 @@ public class PortletContainerImpl implements PortletContainer {
 			portletDisplay.setWebDAVEnabled(false);
 		}
 
-		LiferayResourceRequest liferayResourceRequest =
-			ResourceRequestFactory.create(
+		LiferayResourceRequest liferayResourceRequest = null;
+
+		PortletRequest portletRequest = (PortletRequest)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
+
+		if (portletRequest instanceof LiferayResourceRequest) {
+			liferayResourceRequest = (LiferayResourceRequest)portletRequest;
+		}
+
+		LiferayResourceResponse liferayResourceResponse = null;
+
+		if (liferayResourceRequest == null) {
+			PortletContext portletContext = portletConfig.getPortletContext();
+			PortletPreferences portletPreferences =
+				PortletPreferencesLocalServiceUtil.getStrictPreferences(
+					portletPreferencesIds);
+
+			liferayResourceRequest = ResourceRequestFactory.create(
 				request, portlet, invokerPortlet, portletContext, windowState,
 				portletMode, portletPreferences, layout.getPlid());
 
-		LiferayResourceResponse liferayResourceResponse =
-			ResourceResponseFactory.create(liferayResourceRequest, response);
+			liferayResourceResponse = ResourceResponseFactory.create(
+				liferayResourceRequest, response);
+		}
+		else {
+			liferayResourceResponse =
+				(LiferayResourceResponse)request.getAttribute(
+					JavaConstants.JAVAX_PORTLET_RESPONSE);
+		}
 
 		liferayResourceRequest.defineObjects(
 			portletConfig, liferayResourceResponse);
@@ -992,6 +1037,77 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 		finally {
 			ServiceContextThreadLocal.popServiceContext();
+
+			if (liferayResourceRequest.isAsyncStarted() &&
+				liferayResourceRequest.isAsyncSupported()) {
+
+				PortletAsyncContextImpl portletAsyncContextImpl =
+					(PortletAsyncContextImpl)
+						liferayResourceRequest.getPortletAsyncContext();
+
+				if (themeDisplay.isAsync()) {
+					PortletAsyncScopeManager portletAsyncScopeManager =
+						portletAsyncContextImpl.getPortletAsyncScopeManager();
+
+					portletAsyncScopeManager.deactivateScopeContexts(true);
+				}
+
+				portletAsyncContextImpl.setReturnedToContainer();
+			}
+		}
+	}
+
+	private void _setAllRenderParameters(
+		HttpServletRequest request,
+		LiferayStateAwareResponse liferayStateAwareResponse, Portlet portlet,
+		Layout requestLayout) {
+
+		MutableRenderParametersImpl mutableRenderParametersImpl =
+			(MutableRenderParametersImpl)
+				liferayStateAwareResponse.getRenderParameters();
+
+		Map<String, String[]> mutableRenderParametersMap =
+			mutableRenderParametersImpl.getParameterMap();
+
+		Map<String, QName> supportedPublicRenderParameterMap = new HashMap<>();
+
+		for (PublicRenderParameter supportedPublicRenderParameter :
+				portlet.getPublicRenderParameters()) {
+
+			supportedPublicRenderParameterMap.put(
+				supportedPublicRenderParameter.getIdentifier(),
+				supportedPublicRenderParameter.getQName());
+		}
+
+		Map<String, String[]> publicRenderParameterMap =
+			PublicRenderParametersPool.get(request, requestLayout.getPlid());
+
+		Map<String, String[]> privateRenderParameterMap = new HashMap<>();
+
+		for (Map.Entry<String, String[]> entry :
+				mutableRenderParametersMap.entrySet()) {
+
+			String key = entry.getKey();
+
+			QName qName = supportedPublicRenderParameterMap.get(key);
+
+			if (qName != null) {
+				String publicRenderParameterName =
+					PortletQNameUtil.getPublicRenderParameterName(qName);
+
+				publicRenderParameterMap.put(
+					publicRenderParameterName, entry.getValue());
+
+				continue;
+			}
+
+			privateRenderParameterMap.put(key, entry.getValue());
+		}
+
+		if (!privateRenderParameterMap.isEmpty()) {
+			RenderParametersPool.put(
+				request, requestLayout.getPlid(), portlet.getPortletId(),
+				privateRenderParameterMap);
 		}
 	}
 

@@ -60,7 +60,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	configurationPid = "com.liferay.portal.security.permission.internal.configuration.InlinePermissionConfiguration",
-	immediate = true
+	immediate = true, service = InlineSQLHelper.class
 )
 public class InlineSQLHelperImpl implements InlineSQLHelper {
 
@@ -373,9 +373,6 @@ public class InlineSQLHelperImpl implements InlineSQLHelper {
 			throw new IllegalArgumentException("classPKField is null");
 		}
 
-		PermissionChecker permissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
-
 		long companyId = 0;
 
 		if (groupIds.length == 1) {
@@ -437,6 +434,9 @@ public class InlineSQLHelperImpl implements InlineSQLHelper {
 		}
 
 		if (companyId == 0) {
+			PermissionChecker permissionChecker =
+				PermissionThreadLocal.getPermissionChecker();
+
 			companyId = permissionChecker.getCompanyId();
 		}
 

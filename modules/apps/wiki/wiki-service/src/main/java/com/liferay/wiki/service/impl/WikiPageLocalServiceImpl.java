@@ -51,6 +51,7 @@ import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.settings.GroupServiceSettingsLocator;
 import com.liferay.portal.kernel.settings.LocalizedValuesMap;
 import com.liferay.portal.kernel.social.SocialActivityManagerUtil;
@@ -228,9 +229,7 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 				serviceContext.isAddGuestPermissions());
 		}
 		else {
-			addPageResources(
-				page, serviceContext.getGroupPermissions(),
-				serviceContext.getGuestPermissions());
+			addPageResources(page, serviceContext.getModelPermissions());
 		}
 
 		// Node
@@ -360,11 +359,11 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 			List<ObjectValuePair<String, InputStream>> inputStreamOVPs)
 		throws PortalException {
 
-		List<FileEntry> fileEntries = new ArrayList<>();
-
 		if (inputStreamOVPs.isEmpty()) {
 			return Collections.emptyList();
 		}
+
+		List<FileEntry> fileEntries = new ArrayList<>();
 
 		for (ObjectValuePair<String, InputStream> inputStreamOVP :
 				inputStreamOVPs) {
@@ -407,6 +406,11 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 		addPageResources(page, addGroupPermissions, addGuestPermissions);
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #addPageResources(WikiPage, ModelPermissions)}
+	 */
+	@Deprecated
 	@Override
 	public void addPageResources(
 			long nodeId, String title, String[] groupPermissions,
@@ -430,6 +434,22 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 			addGroupPermissions, addGuestPermissions);
 	}
 
+	@Override
+	public void addPageResources(
+			WikiPage page, ModelPermissions modelPermissions)
+		throws PortalException {
+
+		resourceLocalService.addModelResources(
+			page.getCompanyId(), page.getGroupId(), page.getUserId(),
+			WikiPage.class.getName(), page.getResourcePrimKey(),
+			modelPermissions);
+	}
+
+	/**
+	 * @deprecated As of Judson (7.1.x), replaced by {@link
+	 *             #addPageResources(WikiPage, ModelPermissions)}
+	 */
+	@Deprecated
 	@Override
 	public void addPageResources(
 			WikiPage page, String[] groupPermissions, String[] guestPermissions)
@@ -1366,10 +1386,9 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return wikiPagePersistence.findByN_H(nodeId, head, start, end, obc);
 		}
-		else {
-			return wikiPagePersistence.findByN_H_S(
-				nodeId, head, status, start, end, obc);
-		}
+
+		return wikiPagePersistence.findByN_H_S(
+			nodeId, head, status, start, end, obc);
 	}
 
 	@Override
@@ -1410,11 +1429,9 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 				userId, nodeId, status, start, end,
 				new PageCreateDateComparator(false));
 		}
-		else {
-			return wikiPagePersistence.findByN_S(
-				nodeId, status, start, end,
-				new PageCreateDateComparator(false));
-		}
+
+		return wikiPagePersistence.findByN_S(
+			nodeId, status, start, end, new PageCreateDateComparator(false));
 	}
 
 	@Override
@@ -1464,9 +1481,8 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 			return wikiPagePersistence.countByN_H_NotS(
 				nodeId, head, WorkflowConstants.STATUS_IN_TRASH);
 		}
-		else {
-			return wikiPagePersistence.countByN_H_S(nodeId, head, status);
-		}
+
+		return wikiPagePersistence.countByN_H_S(nodeId, head, status);
 	}
 
 	@Override
@@ -1479,9 +1495,8 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 		if (userId > 0) {
 			return wikiPagePersistence.countByU_N_S(userId, nodeId, status);
 		}
-		else {
-			return wikiPagePersistence.countByN_S(nodeId, status);
-		}
+
+		return wikiPagePersistence.countByN_S(nodeId, status);
 	}
 
 	@Override
@@ -1565,9 +1580,8 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 		if (count > 0) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -2535,18 +2549,16 @@ public class WikiPageLocalServiceImpl extends WikiPageLocalServiceBaseImpl {
 		if (link != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected boolean isUsedTitle(long nodeId, String title) {
 		if (getPagesCount(nodeId, title) > 0) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected void moveDependentChildPagesFromTrash(

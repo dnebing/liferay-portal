@@ -18,10 +18,10 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.asset.list.model.AssetListEntry;
 
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.string.StringBundler;
 
 import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.util.HashUtil;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -66,9 +66,11 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(21);
+		StringBundler sb = new StringBundler(25);
 
-		sb.append("{assetListEntryId=");
+		sb.append("{uuid=");
+		sb.append(uuid);
+		sb.append(", assetListEntryId=");
 		sb.append(assetListEntryId);
 		sb.append(", groupId=");
 		sb.append(groupId);
@@ -82,12 +84,14 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
-		sb.append(", typeSettings=");
-		sb.append(typeSettings);
 		sb.append(", title=");
 		sb.append(title);
 		sb.append(", type=");
 		sb.append(type);
+		sb.append(", typeSettings=");
+		sb.append(typeSettings);
+		sb.append(", lastPublishDate=");
+		sb.append(lastPublishDate);
 		sb.append("}");
 
 		return sb.toString();
@@ -96,6 +100,13 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 	@Override
 	public AssetListEntry toEntityModel() {
 		AssetListEntryImpl assetListEntryImpl = new AssetListEntryImpl();
+
+		if (uuid == null) {
+			assetListEntryImpl.setUuid("");
+		}
+		else {
+			assetListEntryImpl.setUuid(uuid);
+		}
 
 		assetListEntryImpl.setAssetListEntryId(assetListEntryId);
 		assetListEntryImpl.setGroupId(groupId);
@@ -123,13 +134,6 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 			assetListEntryImpl.setModifiedDate(new Date(modifiedDate));
 		}
 
-		if (typeSettings == null) {
-			assetListEntryImpl.setTypeSettings("");
-		}
-		else {
-			assetListEntryImpl.setTypeSettings(typeSettings);
-		}
-
 		if (title == null) {
 			assetListEntryImpl.setTitle("");
 		}
@@ -139,6 +143,20 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 
 		assetListEntryImpl.setType(type);
 
+		if (typeSettings == null) {
+			assetListEntryImpl.setTypeSettings("");
+		}
+		else {
+			assetListEntryImpl.setTypeSettings(typeSettings);
+		}
+
+		if (lastPublishDate == Long.MIN_VALUE) {
+			assetListEntryImpl.setLastPublishDate(null);
+		}
+		else {
+			assetListEntryImpl.setLastPublishDate(new Date(lastPublishDate));
+		}
+
 		assetListEntryImpl.resetOriginalValues();
 
 		return assetListEntryImpl;
@@ -146,6 +164,8 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 
 	@Override
 	public void readExternal(ObjectInput objectInput) throws IOException {
+		uuid = objectInput.readUTF();
+
 		assetListEntryId = objectInput.readLong();
 
 		groupId = objectInput.readLong();
@@ -156,15 +176,23 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 		userName = objectInput.readUTF();
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
-		typeSettings = objectInput.readUTF();
 		title = objectInput.readUTF();
 
 		type = objectInput.readInt();
+		typeSettings = objectInput.readUTF();
+		lastPublishDate = objectInput.readLong();
 	}
 
 	@Override
 	public void writeExternal(ObjectOutput objectOutput)
 		throws IOException {
+		if (uuid == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(uuid);
+		}
+
 		objectOutput.writeLong(assetListEntryId);
 
 		objectOutput.writeLong(groupId);
@@ -183,13 +211,6 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
 
-		if (typeSettings == null) {
-			objectOutput.writeUTF("");
-		}
-		else {
-			objectOutput.writeUTF(typeSettings);
-		}
-
 		if (title == null) {
 			objectOutput.writeUTF("");
 		}
@@ -198,8 +219,18 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 		}
 
 		objectOutput.writeInt(type);
+
+		if (typeSettings == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(typeSettings);
+		}
+
+		objectOutput.writeLong(lastPublishDate);
 	}
 
+	public String uuid;
 	public long assetListEntryId;
 	public long groupId;
 	public long companyId;
@@ -207,7 +238,8 @@ public class AssetListEntryCacheModel implements CacheModel<AssetListEntry>,
 	public String userName;
 	public long createDate;
 	public long modifiedDate;
-	public String typeSettings;
 	public String title;
 	public int type;
+	public String typeSettings;
+	public long lastPublishDate;
 }

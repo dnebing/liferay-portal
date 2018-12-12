@@ -61,6 +61,7 @@ import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -74,8 +75,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-import org.apache.struts.util.RequestUtils;
+import org.apache.struts.Globals;
 
 /**
  * @author Brian Wing Shun Chan
@@ -388,9 +390,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (resources == null) {
 			return new ArrayList<>();
 		}
-		else {
-			return new ArrayList<>(resources);
-		}
+
+		return new ArrayList<>(resources);
 	}
 
 	@Override
@@ -512,9 +513,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (name.indexOf(CharPool.PERIOD) != -1) {
 			return getModelResourceActions(name);
 		}
-		else {
-			return getPortletResourceActions(name);
-		}
+
+		return getPortletResourceActions(name);
 	}
 
 	@Override
@@ -538,9 +538,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (name.contains(StringPool.PERIOD)) {
 			return getModelResourceGroupDefaultActions(name);
 		}
-		else {
-			return getPortletResourceGroupDefaultActions(name);
-		}
+
+		return getPortletResourceGroupDefaultActions(name);
 	}
 
 	@Override
@@ -590,9 +589,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if ((modelActions != null) && !modelActions.isEmpty()) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -600,9 +598,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (_organizationModelResources.contains(modelResource)) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -610,9 +607,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (_portalModelResources.contains(modelResource)) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -620,9 +616,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (_rootModelResources.contains(modelResource)) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -865,9 +860,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		if (permissionsElement != null) {
 			return permissionsElement.element(childElementName);
 		}
-		else {
-			return parentElement.element(childElementName);
-		}
+
+		return parentElement.element(childElementName);
 	}
 
 	private Set<String> _getPortletMimeTypeActions(
@@ -887,7 +881,7 @@ public class ResourceActionsImpl implements ResourceActions {
 						actions.add(ActionKeys.PREFERENCES);
 					}
 					else if (StringUtil.equalsIgnoreCase(
-								 actionId, "edit_guest")) {
+								actionId, "edit_guest")) {
 
 						actions.add(ActionKeys.GUEST_PREFERENCES);
 					}
@@ -977,7 +971,17 @@ public class ResourceActionsImpl implements ResourceActions {
 	private String _getResourceBundlesString(
 		HttpServletRequest request, String key) {
 
-		Locale locale = RequestUtils.getUserLocale(request, null);
+		Locale locale = null;
+
+		HttpSession session = request.getSession(false);
+
+		if (session != null) {
+			locale = (Locale)session.getAttribute(Globals.LOCALE_KEY);
+		}
+
+		if (locale == null) {
+			locale = request.getLocale();
+		}
 
 		return _getResourceBundlesString(locale, key);
 	}
@@ -1138,8 +1142,8 @@ public class ResourceActionsImpl implements ResourceActions {
 		}
 	}
 
-	private List<String> _readActionKeys(Element parentElement) {
-		List<String> actions = new ArrayList<>();
+	private void _readActionKeys(
+		Collection<String> actions, Element parentElement) {
 
 		for (Element actionKeyElement : parentElement.elements("action-key")) {
 			String actionKey = actionKeyElement.getTextTrim();
@@ -1150,8 +1154,6 @@ public class ResourceActionsImpl implements ResourceActions {
 
 			actions.add(actionKey);
 		}
-
-		return actions;
 	}
 
 	private void _readGroupDefaultActions(
@@ -1177,7 +1179,7 @@ public class ResourceActionsImpl implements ResourceActions {
 
 		groupDefaultActions.clear();
 
-		groupDefaultActions.addAll(_readActionKeys(groupDefaultsElement));
+		_readActionKeys(groupDefaultActions, groupDefaultsElement);
 	}
 
 	private void _readGuestDefaultActions(
@@ -1192,7 +1194,7 @@ public class ResourceActionsImpl implements ResourceActions {
 
 		guestDefaultActions.clear();
 
-		guestDefaultActions.addAll(_readActionKeys(guestDefaultsElement));
+		_readActionKeys(guestDefaultActions, guestDefaultsElement);
 	}
 
 	private void _readGuestUnsupportedActions(
@@ -1208,8 +1210,7 @@ public class ResourceActionsImpl implements ResourceActions {
 
 		guestUnsupportedActions.clear();
 
-		guestUnsupportedActions.addAll(
-			_readActionKeys(guestUnsupportedElement));
+		_readActionKeys(guestUnsupportedActions, guestUnsupportedElement);
 
 		_checkGuestUnsupportedActions(
 			guestUnsupportedActions, guestDefaultActions);
@@ -1230,7 +1231,7 @@ public class ResourceActionsImpl implements ResourceActions {
 
 		layoutManagerActions.clear();
 
-		layoutManagerActions.addAll(_readActionKeys(layoutManagerElement));
+		_readActionKeys(layoutManagerActions, layoutManagerElement);
 	}
 
 	private String _readModelResource(
@@ -1356,7 +1357,7 @@ public class ResourceActionsImpl implements ResourceActions {
 			return;
 		}
 
-		ownerDefaultActions.addAll(_readActionKeys(ownerDefaultsElement));
+		_readActionKeys(ownerDefaultActions, ownerDefaultsElement);
 	}
 
 	private String _readPortletResource(
@@ -1425,7 +1426,7 @@ public class ResourceActionsImpl implements ResourceActions {
 		Element supportsElement = _getPermissionsChildElement(
 			parentElement, "supports");
 
-		supportsActions.addAll(_readActionKeys(supportsElement));
+		_readActionKeys(supportsActions, supportsElement);
 
 		return supportsActions;
 	}

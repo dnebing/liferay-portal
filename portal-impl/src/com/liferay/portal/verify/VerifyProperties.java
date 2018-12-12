@@ -78,6 +78,12 @@ public class VerifyProperties extends VerifyProcess {
 		propertiesResourceNames.add(0, "portal.properties");
 
 		for (String propertyResourceName : propertiesResourceNames) {
+			if (propertyResourceName.contains("${") &&
+				propertyResourceName.contains("}")) {
+
+				continue;
+			}
+
 			try (InputStream inputStream = getPropertiesResourceAsStream(
 					propertyResourceName)) {
 
@@ -263,10 +269,6 @@ public class VerifyProperties extends VerifyProcess {
 
 	private static final String[][] _MIGRATED_PORTAL_KEYS = {
 		{"cookie.http.only.names.excludes", "cookie.http.only.names.excludes"},
-		{
-			"finalize.manager.thread.enabled",
-			"com.liferay.portal.kernel.memory.FinalizeManager.thread.enabled"
-		},
 		{
 			"http.header.secure.x.content.type.options",
 			"http.header.secure.x.content.type.options"
@@ -1677,7 +1679,7 @@ public class VerifyProperties extends VerifyProcess {
 		"default.user.public.layout.wap.color.scheme.id",
 		"default.user.public.layout.wap.theme.id",
 		"default.wap.color.scheme.id", "default.wap.theme.id",
-		"discussion.thread.view",
+		"discussion.subscribe.by.default", "discussion.thread.view",
 		"dl.file.entry.image.exif.metadata.rotation.enabled",
 		"dl.file.entry.previewable.processor.max.size",
 		"dl.file.entry.read.count.enabled", "dl.file.extensions",
@@ -1717,6 +1719,10 @@ public class VerifyProperties extends VerifyProcess {
 		"ehcache.cache.manager.peer.provider.factory",
 		"ehcache.cache.manager.statistics.thread.pool.size",
 		"ehcache.multi.vm.config.location.peerProviderProperties",
+		"ehcache.rmi.peer.listener.factory.class",
+		"ehcache.rmi.peer.listener.factory.properties",
+		"ehcache.rmi.peer.provider.factory.class",
+		"ehcache.rmi.peer.provider.factory.properties",
 		"ehcache.statistics.enabled",
 		"hot.deploy.hook.custom.jsp.verification.enabled",
 		"hibernate.cache.region.factory_class",
@@ -1819,11 +1825,15 @@ public class VerifyProperties extends VerifyProcess {
 		"sites.form.update.seo", "staging.lock.enabled",
 		"social.activity.sets.bundling.enabled", "social.activity.sets.enabled",
 		"social.bookmark.display.styles", "social.bookmark.types",
+		"spring.hibernate.data.source", "spring.hibernate.session.factory",
+		"spring.portlet.configs", "struts.portlet.ignored.parameters.regexp",
+		"struts.portlet.request.processor",
 		"table.mapper.cache.mapping.table.names", "tck.url",
-		"user.groups.indexer.enabled", "users.form.add.identification",
-		"users.indexer.enabled", "users.form.add.main",
-		"users.form.add.miscellaneous", "users.form.my.account.identification",
-		"users.form.my.account.main", "users.form.my.account.miscellaneous",
+		"transaction.manager.impl", "user.groups.indexer.enabled",
+		"users.form.add.identification", "users.indexer.enabled",
+		"users.form.add.main", "users.form.add.miscellaneous",
+		"users.form.my.account.identification", "users.form.my.account.main",
+		"users.form.my.account.miscellaneous",
 		"users.form.update.identification", "users.form.update.main",
 		"users.form.update.miscellaneous", "users.image.check.token",
 		"users.image.default.use.initials", "users.image.max.height",
@@ -1837,8 +1847,11 @@ public class VerifyProperties extends VerifyProcess {
 	};
 
 	private static final String[] _OBSOLETE_SYSTEM_KEYS = {
+		"com.liferay.petra.memory.FinalizeManager.thread.enabled",
+		"com.liferay.portal.kernel.memory.FinalizeManager.thread.enabled",
 		"com.liferay.util.Http.proxy.host", "com.liferay.util.Http.proxy.port",
-		"com.liferay.util.XSSUtil.regexp.pattern"
+		"com.liferay.util.XSSUtil.regexp.pattern",
+		"finalize.manager.thread.enabled"
 	};
 
 	private static final String[][] _RENAMED_PORTAL_KEYS = {
@@ -1868,10 +1881,7 @@ public class VerifyProperties extends VerifyProcess {
 			"default.user.layout.template.id",
 			"default.user.public.layout.template.id"
 		},
-		{
-			"default.user.private.layout.lar",
-			"default.user.private.layouts.lar"
-		},
+		{"default.user.private.layout.lar", "default.user.private.layouts.lar"},
 		{"default.user.public.layout.lar", "default.user.public.layouts.lar"},
 		{
 			"dl.hook.cmis.credentials.password",
@@ -1887,10 +1897,7 @@ public class VerifyProperties extends VerifyProcess {
 		{"dl.hook.impl", "dl.store.impl"},
 		{"dl.hook.jcr.fetch.delay", "dl.store.jcr.fetch.delay"},
 		{"dl.hook.jcr.fetch.max.failures", "dl.store.jcr.fetch.max.failures"},
-		{
-			"dl.hook.jcr.move.version.labels",
-			"dl.store.jcr.move.version.labels"
-		},
+		{"dl.hook.jcr.move.version.labels", "dl.store.jcr.move.version.labels"},
 		{"dl.hook.s3.access.key", "dl.store.s3.access.key"},
 		{"dl.hook.s3.bucket.name", "dl.store.s3.bucket.name"},
 		{"dl.hook.s3.secret.key", "dl.store.s3.secret.key"},

@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import java.net.URLEncoder;
+
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -127,6 +129,15 @@ public class FileUtil {
 
 		String mirrorsCacheArtifactSubdir = url.replaceFirst(
 			"https?:\\/\\/(.+\\/).+", "$1");
+
+		StringBuilder sb = new StringBuilder();
+
+		for (String segment : mirrorsCacheArtifactSubdir.split("/")) {
+			sb.append(URLEncoder.encode(segment, "UTF-8"));
+			sb.append('/');
+		}
+
+		mirrorsCacheArtifactSubdir = sb.toString();
 
 		File mirrorsCacheArtifactDir = new File(
 			_getMirrorsCacheDir(), mirrorsCacheArtifactSubdir);

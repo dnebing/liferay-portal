@@ -159,14 +159,15 @@ public class LDAPAuth implements Authenticator {
 
 		String authMethod = ldapAuthConfiguration.method();
 
-		SystemLDAPConfiguration systemLDAPConfiguration =
-			_systemLDAPConfigurationProvider.getConfiguration(companyId);
-
 		if (authMethod.equals(LDAPConstants.AUTH_METHOD_BIND)) {
 			Hashtable<String, Object> env =
 				(Hashtable<String, Object>)ctx.getEnvironment();
 
+			SystemLDAPConfiguration systemLDAPConfiguration =
+				_systemLDAPConfigurationProvider.getConfiguration(companyId);
+
 			env.put(Context.REFERRAL, systemLDAPConfiguration.referral());
+
 			env.put(Context.SECURITY_CREDENTIALS, password);
 			env.put(Context.SECURITY_PRINCIPAL, userDN);
 
@@ -236,7 +237,7 @@ public class LDAPAuth implements Authenticator {
 			}
 		}
 		else if (authMethod.equals(
-					 LDAPConstants.AUTH_METHOD_PASSWORD_COMPARE)) {
+					LDAPConstants.AUTH_METHOD_PASSWORD_COMPARE)) {
 
 			ldapAuthResult = new LDAPAuthResult();
 
@@ -609,9 +610,8 @@ public class LDAPAuth implements Authenticator {
 		if (ldapAuthConfiguration.required()) {
 			return failureCode;
 		}
-		else {
-			return SUCCESS;
-		}
+
+		return SUCCESS;
 	}
 
 	protected LDAPAuthResult getFailedLDAPAuthResult(Map<String, Object> env) {

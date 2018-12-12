@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.form.builder.internal.servlet;
 
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunction;
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -23,29 +24,24 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.io.IOException;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author Rafael Praxedes
@@ -60,66 +56,44 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 	},
 	service = Servlet.class
 )
-public class DDMFormFunctionsServlet extends HttpServlet {
-
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC,
-		policyOption = ReferencePolicyOption.GREEDY
-	)
-	protected void addDDMExpressionFunction(
-		DDMExpressionFunction ddmExpressionFunction,
-		Map<String, Object> properties) {
-
-		if (properties.containsKey(
-				"ddm.form.evaluator.function.available.on.calculation.rule") &&
-			properties.containsKey("ddm.form.evaluator.function.name")) {
-
-			boolean available = MapUtil.getBoolean(
-				properties,
-				"ddm.form.evaluator.function.available.on.calculation.rule");
-
-			if (!available) {
-				return;
-			}
-
-			String functionName = MapUtil.getString(
-				properties, "ddm.form.evaluator.function.name");
-
-			_ddmExpressionFunctions.putIfAbsent(
-				functionName, ddmExpressionFunction);
-		}
-	}
+public class DDMFormFunctionsServlet extends BaseDDMFormBuilderServlet {
 
 	@Override
 	protected void doGet(
 			HttpServletRequest request, HttpServletResponse response)
 		throws IOException, ServletException {
 
-		String languageId = ParamUtil.getString(request, "languageId");
+		Map<String, DDMExpressionFunction> ddmExpressionFunctions = null;
 
-		Set<Map.Entry<String, DDMExpressionFunction>> entries =
-			_ddmExpressionFunctions.entrySet();
+		try {
+			ddmExpressionFunctions = getDDMExpressionFunctions();
 
-		JSONArray jsonArray = toJSONArray(
-			entries, LocaleUtil.fromLanguageId(languageId));
+			String languageId = ParamUtil.getString(request, "languageId");
 
-		response.setContentType(ContentTypes.APPLICATION_JSON);
-		response.setStatus(HttpServletResponse.SC_OK);
+			JSONArray jsonArray = toJSONArray(
+				ddmExpressionFunctions.entrySet(),
+				LocaleUtil.fromLanguageId(languageId));
 
-		ServletResponseUtil.write(response, jsonArray.toJSONString());
+			response.setContentType(ContentTypes.APPLICATION_JSON);
+			response.setStatus(HttpServletResponse.SC_OK);
+
+			ServletResponseUtil.write(response, jsonArray.toJSONString());
+		}
+		finally {
+			if (ddmExpressionFunctions != null) {
+				_ddmExpressionFunctionTracker.ungetDDMExpressionFunctions(
+					ddmExpressionFunctions);
+			}
+		}
 	}
 
-	protected void removeDDMExpressionFunction(
-		DDMExpressionFunction ddmExpressionFunction,
-		Map<String, Object> properties) {
+	protected Map<String, DDMExpressionFunction> getDDMExpressionFunctions() {
+		Set<String> functionNames = new HashSet<>();
 
-		if (properties.containsKey("ddm.form.evaluator.function.name")) {
-			String functionName = MapUtil.getString(
-				properties, "ddm.form.evaluator.function.name");
+		functionNames.add("sum");
 
-			_ddmExpressionFunctions.remove(functionName);
-		}
+		return _ddmExpressionFunctionTracker.getDDMExpressionFunctions(
+			functionNames);
 	}
 
 	protected JSONArray toJSONArray(
@@ -162,8 +136,8 @@ public class DDMFormFunctionsServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Map<String, DDMExpressionFunction> _ddmExpressionFunctions =
-		new ConcurrentHashMap<>();
+	@Reference
+	private DDMExpressionFunctionTracker _ddmExpressionFunctionTracker;
 
 	@Reference
 	private JSONFactory _jsonFactory;

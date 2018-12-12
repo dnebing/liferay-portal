@@ -30,7 +30,7 @@
 						<div class="modal-title" id="{$headerId}">{$header}</div>
 
 						{if not $noCloseButton}
-							<button type="button" class="close" data-onclick="hide" aria-label="Close">
+							<button type="button" class="close" data-onclick="hide" aria-label="{msg desc="The word 'Close' used as a verb"}close{/msg}">
 								<svg class="lexicon-icon">
 									<use xlink:href="{$spritemap}#times"></use>
 								</svg>
@@ -39,7 +39,7 @@
 					{/if}
 				</header>
 
-				<section class="modal-body" id="{$bodyId}" role="document" tabindex="0">
+				<section class="modal-body inline-scroller" id="{$bodyId}" role="document" tabindex="0">
 					{if $body}
 						{$body}
 					{/if}

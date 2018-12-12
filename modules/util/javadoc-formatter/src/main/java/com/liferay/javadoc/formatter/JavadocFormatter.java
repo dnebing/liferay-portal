@@ -59,8 +59,6 @@ import java.io.Writer;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -228,6 +226,7 @@ public class JavadocFormatter {
 
 				File javadocsXmlFile = (File)tuple.getObject(1);
 				String oldJavadocsXmlContent = (String)tuple.getObject(2);
+
 				Document javadocsXmlDocument = (Document)tuple.getObject(3);
 
 				Element javadocsXmlRootElement =
@@ -1171,7 +1170,7 @@ public class JavadocFormatter {
 
 		// Capitalize ID
 
-		text = text.replaceAll("[?@param id](?i)\\bid(s)?\\b", " ID$1");
+		text = text.replaceAll("(?i)(?<!@link) id(s)?\\b", " ID$1");
 
 		// Wrap special constants in code tags
 
@@ -1184,17 +1183,6 @@ public class JavadocFormatter {
 
 	private String _formattedString(Node node) throws IOException {
 		return Dom4jUtil.toString(node);
-	}
-
-	private String _getAbsolutePath(String fileName) {
-		Path filePath = Paths.get(fileName);
-
-		filePath = filePath.toAbsolutePath();
-
-		filePath = filePath.normalize();
-
-		return StringUtil.replace(
-			filePath.toString(), CharPool.BACK_SLASH, CharPool.SLASH);
 	}
 
 	private int _getAdjustedLineNumber(int lineNumber, JavaModel javaModel) {
@@ -1231,11 +1219,11 @@ public class JavadocFormatter {
 	}
 
 	private String _getCDATA(String cdata) {
-		StringBundler sb = new StringBundler();
-
 		if ((cdata == null) || cdata.isEmpty()) {
 			return StringPool.BLANK;
 		}
+
+		StringBundler sb = new StringBundler();
 
 		int cdataBeginIndex = 0;
 
@@ -1940,9 +1928,8 @@ public class JavadocFormatter {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private boolean _hasPublicModifier(JavaClass javaClass) {
@@ -2105,6 +2092,12 @@ public class JavadocFormatter {
 			String fileName, JavaClass javaClass, Document javaClassDocument)
 		throws Exception {
 
+		Tuple javadocsXmlTuple = _getJavadocsXmlTuple(fileName);
+
+		if (javadocsXmlTuple == null) {
+			return;
+		}
+
 		String javaClassFullyQualifiedName = javaClass.getFullyQualifiedName();
 
 		/*if (!javaClassFullyQualifiedName.contains(".service.") ||
@@ -2112,12 +2105,6 @@ public class JavadocFormatter {
 
 			return;
 		}*/
-
-		Tuple javadocsXmlTuple = _getJavadocsXmlTuple(fileName);
-
-		if (javadocsXmlTuple == null) {
-			return;
-		}
 
 		Document javadocsXmlDocument = (Document)javadocsXmlTuple.getObject(3);
 
@@ -2379,6 +2366,9 @@ public class JavadocFormatter {
 		Files.write(file.toPath(), s.getBytes(StandardCharsets.UTF_8));
 	}
 
+	private static final Pattern _paragraphTagPattern = Pattern.compile(
+		"(^.*?(?=\n\n|$)+|(?<=<p>\n).*?(?=\n</p>))", Pattern.DOTALL);
+
 	private final String _author;
 	private Document _deprecationsDocument;
 	private final String _deprecationSyncDirName;
@@ -2394,8 +2384,6 @@ public class JavadocFormatter {
 	private final Set<String> _modifiedFileNames = new HashSet<>();
 	private final String _outputFilePrefix;
 	private String _packagePath;
-	private final Pattern _paragraphTagPattern = Pattern.compile(
-		"(^.*?(?=\n\n|$)+|(?<=<p>\n).*?(?=\n</p>))", Pattern.DOTALL);
 	private final boolean _updateJavadocs;
 
 }

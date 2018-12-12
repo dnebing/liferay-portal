@@ -28,22 +28,29 @@ import com.liferay.portal.kernel.security.auth.session.AuthenticatedSessionManag
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.TicketLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.servlet.HttpMethods;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.pwd.PwdToolkitUtilThreadLocal;
-import com.liferay.portal.util.PropsValues;
+import com.liferay.portal.struts.Action;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
@@ -51,18 +58,26 @@ import org.apache.struts.action.ActionMapping;
  * @author Brian Wing Shun Chan
  * @author Mika Koivisto
  */
-public class UpdatePasswordAction extends Action {
+public class UpdatePasswordAction implements Action {
 
 	@Override
 	public ActionForward execute(
-			ActionMapping actionMapping, ActionForm actionForm,
-			HttpServletRequest request, HttpServletResponse response)
+			ActionMapping actionMapping, HttpServletRequest request,
+			HttpServletResponse response)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		Ticket ticket = getTicket(request);
+
+		if ((ticket != null) &&
+			StringUtil.equals(request.getMethod(), HttpMethods.GET)) {
+
+			resendAsPost(request, response);
+
+			return null;
+		}
 
 		request.setAttribute(WebKeys.TICKET, ticket);
 
@@ -166,6 +181,45 @@ public class UpdatePasswordAction extends Action {
 		return true;
 	}
 
+	protected void resendAsPost(
+			HttpServletRequest request, HttpServletResponse response)
+		throws IOException {
+
+		response.setHeader(
+			"Cache-Control", "no-cache, no-store, must-revalidate");
+		response.setHeader("Expires", "0");
+		response.setHeader("Pragma", "no-cache");
+
+		PrintWriter printWriter = response.getWriter();
+
+		Map<String, String[]> parameterMap = request.getParameterMap();
+
+		StringBundler sb = new StringBundler(7 + parameterMap.size() * 5);
+
+		sb.append("<html><body onload=\"document.fm.submit();\">");
+		sb.append("<form action=\"");
+		sb.append(PortalUtil.getPortalURL(request));
+		sb.append("/c/portal/update_password\" method=\"post\" name=\"fm\">");
+
+		for (String name : parameterMap.keySet()) {
+			String value = ParamUtil.getString(request, name);
+
+			sb.append("<input name=\"");
+			sb.append(HtmlUtil.escapeAttribute(name));
+			sb.append("\" type=\"hidden\" value=\"");
+			sb.append(HtmlUtil.escapeAttribute(value));
+			sb.append("\"/>");
+		}
+
+		sb.append("<noscript>");
+		sb.append("<input type=\"submit\" value=\"Please continue here...\"/>");
+		sb.append("</noscript></form></body></html>");
+
+		printWriter.write(sb.toString());
+
+		printWriter.close();
+	}
+
 	protected void updatePassword(
 			HttpServletRequest request, HttpServletResponse response,
 			ThemeDisplay themeDisplay, Ticket ticket)
@@ -204,35 +258,30 @@ public class UpdatePasswordAction extends Action {
 		if (ticket != null) {
 			TicketLocalServiceUtil.deleteTicket(ticket);
 
-			User user = UserLocalServiceUtil.getUser(userId);
-
-			Company company = CompanyLocalServiceUtil.getCompanyById(
-				user.getCompanyId());
-
-			String login = null;
-
-			String authType = company.getAuthType();
-
-			if (authType.equals(CompanyConstants.AUTH_TYPE_EA)) {
-				login = user.getEmailAddress();
-			}
-			else if (authType.equals(CompanyConstants.AUTH_TYPE_SN)) {
-				login = user.getScreenName();
-			}
-			else if (authType.equals(CompanyConstants.AUTH_TYPE_ID)) {
-				login = String.valueOf(userId);
-			}
-
-			AuthenticatedSessionManagerUtil.login(
-				request, response, login, password1, false, null);
-
 			UserLocalServiceUtil.updatePasswordReset(userId, false);
 		}
-		else if (PropsValues.SESSION_STORE_PASSWORD) {
-			HttpSession session = request.getSession();
 
-			session.setAttribute(WebKeys.USER_PASSWORD, password1);
+		User user = UserLocalServiceUtil.getUser(userId);
+
+		Company company = CompanyLocalServiceUtil.getCompanyById(
+			user.getCompanyId());
+
+		String login = null;
+
+		String authType = company.getAuthType();
+
+		if (authType.equals(CompanyConstants.AUTH_TYPE_EA)) {
+			login = user.getEmailAddress();
 		}
+		else if (authType.equals(CompanyConstants.AUTH_TYPE_SN)) {
+			login = user.getScreenName();
+		}
+		else if (authType.equals(CompanyConstants.AUTH_TYPE_ID)) {
+			login = String.valueOf(userId);
+		}
+
+		AuthenticatedSessionManagerUtil.login(
+			request, response, login, password1, false, null);
 	}
 
 }

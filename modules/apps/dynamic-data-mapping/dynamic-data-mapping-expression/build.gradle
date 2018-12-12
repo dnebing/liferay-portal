@@ -4,9 +4,6 @@ import org.apache.tools.ant.filters.FixCrLfFilter
 
 apply plugin: 'antlr'
 
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
-
 String parserDirName = "com/liferay/dynamic/data/mapping/expression/internal/parser"
 
 cleanGenerateGrammarSource {
@@ -23,6 +20,7 @@ dependencies {
 
 	compileInclude group: "org.abego.treelayout", name: "org.abego.treelayout.core", version: "1.0.1"
 	compileInclude group: "org.antlr", name: "antlr4-runtime", version: "4.3"
+	compileInclude group: "org.apache.commons", name: "commons-pool2", version: "2.6.0"
 
 	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "default"
@@ -30,6 +28,7 @@ dependencies {
 	compileOnly group: "org.antlr", name: "antlr4", version: "4.3"
 	compileOnly group: "org.antlr", name: "antlr4-annotations", version: "4.3"
 	compileOnly group: "org.osgi", name: "org.osgi.core", version: "5.0.0"
+	compileOnly group: "org.osgi", name: "org.osgi.enterprise", version: "5.0.0"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations", version: "1.3.0"
 	compileOnly project(":apps:dynamic-data-mapping:dynamic-data-mapping-api")
 	compileOnly project(":core:osgi-service-tracker-collections")

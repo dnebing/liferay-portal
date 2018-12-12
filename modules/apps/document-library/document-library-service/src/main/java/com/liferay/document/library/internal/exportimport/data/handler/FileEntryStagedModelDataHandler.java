@@ -23,6 +23,7 @@ import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.model.DLFileVersion;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
@@ -71,6 +72,7 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.RepositoryLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
@@ -366,8 +368,6 @@ public class FileEntryStagedModelDataHandler
 			PortletDataContext portletDataContext, FileEntry fileEntry)
 		throws Exception {
 
-		long userId = portletDataContext.getUserId(fileEntry.getUserUuid());
-
 		if (RepositoryUtil.isExternalRepository(fileEntry.getRepositoryId())) {
 
 			// References has been automatically imported, nothing to do here
@@ -400,6 +400,9 @@ public class FileEntryStagedModelDataHandler
 
 		serviceContext.setAttribute(
 			"sourceFileName", "A." + fileEntry.getExtension());
+
+		long userId = portletDataContext.getUserId(fileEntry.getUserUuid());
+
 		serviceContext.setUserId(userId);
 
 		Element fileEntryElement = portletDataContext.getImportDataElement(
@@ -573,7 +576,8 @@ public class FileEntryStagedModelDataHandler
 									userId, existingFileEntry.getFileEntryId(),
 									fileEntry.getFileName(),
 									fileEntry.getMimeType(), fileEntryTitle,
-									fileEntry.getDescription(), null, false, is,
+									fileEntry.getDescription(), null,
+									DLVersionNumberIncrease.MINOR, is,
 									fileEntry.getSize(), serviceContext);
 						}
 						else {
@@ -628,7 +632,8 @@ public class FileEntryStagedModelDataHandler
 				}
 
 				if (ExportImportThreadLocal.isStagingInProcess()) {
-					_overrideFileVersion(importedFileEntry, version);
+					_overrideFileVersion(
+						importedFileEntry, version, serviceContext);
 				}
 			}
 			else {
@@ -681,8 +686,6 @@ public class FileEntryStagedModelDataHandler
 			PortletDataContext portletDataContext, FileEntry fileEntry)
 		throws Exception {
 
-		long userId = portletDataContext.getUserId(fileEntry.getUserUuid());
-
 		FileEntry existingFileEntry = fetchStagedModelByUuidAndGroupId(
 			fileEntry.getUuid(), portletDataContext.getScopeGroupId());
 
@@ -694,6 +697,8 @@ public class FileEntryStagedModelDataHandler
 			DLFileEntry.class.getName());
 
 		if (trashHandler.isRestorable(existingFileEntry.getFileEntryId())) {
+			long userId = portletDataContext.getUserId(fileEntry.getUserUuid());
+
 			trashHandler.restoreTrashEntry(
 				userId, existingFileEntry.getFileEntryId());
 		}
@@ -936,8 +941,11 @@ public class FileEntryStagedModelDataHandler
 	}
 
 	private void _overrideFileVersion(
-			final FileEntry importedFileEntry, final String version)
+			final FileEntry importedFileEntry, final String version,
+			ServiceContext serviceContext)
 		throws PortalException {
+
+		ServiceContextThreadLocal.pushServiceContext(serviceContext);
 
 		try {
 			TransactionInvokerUtil.invoke(
@@ -982,6 +990,9 @@ public class FileEntryStagedModelDataHandler
 		}
 		catch (Throwable t) {
 			throw new PortalException(t);
+		}
+		finally {
+			ServiceContextThreadLocal.popServiceContext();
 		}
 	}
 

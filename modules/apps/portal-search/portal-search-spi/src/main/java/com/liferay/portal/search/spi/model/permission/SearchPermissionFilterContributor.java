@@ -20,12 +20,33 @@ import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 
 /**
+ * Contributes new filters for checking permissions on search results. Matches
+ * are based on the fields indexed by the corresponding {@link
+ * SearchPermissionFieldContributor}.
+ *
+ * <p>
+ * Register implementations of this interface as OSGi components using the
+ * service {@code SearchPermissionFilterContributor}.
+ * </p>
+ *
  * @author Sergio González
  */
 @ConsumerType
 @FunctionalInterface
 public interface SearchPermissionFilterContributor {
 
+	/**
+	 * Contributes filters to check against indexed fields.
+	 *
+	 * @param booleanFilter the parent search result permission checking filter
+	 * @param companyId the primary key of the company in the current search
+	 *        context
+	 * @param groupIds the primary keys of the groups in the current search
+	 *        context
+	 * @param userId the primary key of the user in the current search context
+	 * @param permissionChecker the permission checker in use
+	 * @param className the class name of the entity being permission checked
+	 */
 	public void contribute(
 		BooleanFilter booleanFilter, long companyId, long[] groupIds,
 		long userId, PermissionChecker permissionChecker, String className);

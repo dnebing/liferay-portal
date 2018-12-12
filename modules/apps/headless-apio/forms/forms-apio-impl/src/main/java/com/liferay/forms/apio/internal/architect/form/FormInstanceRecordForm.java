@@ -17,16 +17,15 @@ package com.liferay.forms.apio.internal.architect.form;
 import com.liferay.apio.architect.form.Form;
 
 /**
- * Instances of this class represent the values extracted from a form instance
- * record form.
+ * Represents the values extracted from a form instance record form.
  *
  * @author Paulo Cruz
  */
 public class FormInstanceRecordForm {
 
 	/**
-	 * Builds a {@code Form} that generates {@code FormInstanceRecordForm}
-	 * depending on the HTTP body.
+	 * Builds a {@code Form} that generates a {@code FormInstanceRecordForm}
+	 * that depends on the HTTP body.
 	 *
 	 * @param  formBuilder the {@code Form} builder
 	 * @return a form instance record form
@@ -42,10 +41,10 @@ public class FormInstanceRecordForm {
 					"record"
 		).constructor(
 			FormInstanceRecordForm::new
-		).addRequiredString(
-			"fieldValues", FormInstanceRecordForm::setFieldValues
 		).addRequiredBoolean(
 			"isDraft", FormInstanceRecordForm::setDraft
+		).addRequiredString(
+			"fieldValues", FormInstanceRecordForm::setFieldValues
 		).build();
 	}
 

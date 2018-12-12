@@ -16,7 +16,6 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.NoSuchResourceActionException;
@@ -29,7 +28,6 @@ import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
-import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.security.permission.PermissionCacheUtil;
@@ -247,15 +245,10 @@ public class ResourceActionLocalServiceImpl
 		final long bitwiseValue = resourceAction.getBitwiseValue();
 
 		ActionableDynamicQuery.AddCriteriaMethod addCriteriaMethod =
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				Property nameProperty = PropertyFactoryUtil.forName("name");
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					Property nameProperty = PropertyFactoryUtil.forName("name");
-
-					dynamicQuery.add(nameProperty.eq(name));
-				}
-
+				dynamicQuery.add(nameProperty.eq(name));
 			};
 
 		for (Company company : companyLocalService.getCompanies()) {
@@ -265,27 +258,18 @@ public class ResourceActionLocalServiceImpl
 			actionableDynamicQuery.setAddCriteriaMethod(addCriteriaMethod);
 			actionableDynamicQuery.setCompanyId(company.getCompanyId());
 			actionableDynamicQuery.setPerformActionMethod(
-				new ActionableDynamicQuery.
-					PerformActionMethod<ResourcePermission>() {
+				(ResourcePermission resourcePermission) -> {
+					long actionIds = resourcePermission.getActionIds();
 
-					@Override
-					public void performAction(
-						ResourcePermission resourcePermission) {
+					if ((actionIds & bitwiseValue) != 0) {
+						actionIds &= ~bitwiseValue;
 
-						long actionIds = resourcePermission.getActionIds();
+						resourcePermission.setActionIds(actionIds);
+						resourcePermission.setViewActionId(actionIds % 2 == 1);
 
-						if ((actionIds & bitwiseValue) != 0) {
-							actionIds &= ~bitwiseValue;
-
-							resourcePermission.setActionIds(actionIds);
-							resourcePermission.setViewActionId(
-								actionIds % 2 == 1);
-
-							resourcePermissionPersistence.update(
-								resourcePermission);
-						}
+						resourcePermissionPersistence.update(
+							resourcePermission);
 					}
-
 				});
 
 			try {
@@ -307,7 +291,7 @@ public class ResourceActionLocalServiceImpl
 	}
 
 	@Override
-	@Skip
+	@Transactional(enabled = false)
 	public ResourceAction fetchResourceAction(String name, String actionId) {
 		String key = encodeKey(name, actionId);
 
@@ -315,7 +299,7 @@ public class ResourceActionLocalServiceImpl
 	}
 
 	@Override
-	@Skip
+	@Transactional(enabled = false)
 	public ResourceAction getResourceAction(String name, String actionId)
 		throws PortalException {
 

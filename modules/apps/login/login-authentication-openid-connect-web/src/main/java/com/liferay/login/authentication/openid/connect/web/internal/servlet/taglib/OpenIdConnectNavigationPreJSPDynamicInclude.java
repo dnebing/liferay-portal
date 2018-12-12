@@ -37,6 +37,10 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
+ * Checks if OpenID authentication has been enabled for the portal instance when
+ * Liferay Portal's Sign In portlet is requested; if so, an OpenID link is added
+ * to the Sign In portlet for triggering the authentication process.
+ *
  * @author Michael C. Han
  */
 @Component(immediate = true, service = DynamicInclude.class)
@@ -91,6 +95,7 @@ public class OpenIdConnectNavigationPreJSPDynamicInclude
 		return _log;
 	}
 
+	@Override
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.login.authentication.openid.connect.web)",
 		unbind = "-"

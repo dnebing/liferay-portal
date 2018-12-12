@@ -86,6 +86,7 @@ public class MessageListenerImpl implements MessageListener {
 			}
 
 			Company company = getCompany(messageIdString);
+
 			long categoryId = MBMailUtil.getCategoryId(messageIdString);
 
 			MBCategory category = _mbCategoryLocalService.getCategory(
@@ -164,6 +165,7 @@ public class MessageListenerImpl implements MessageListener {
 			}
 
 			long groupId = 0;
+
 			long categoryId = MBMailUtil.getCategoryId(messageIdString);
 
 			MBCategory category = _mbCategoryLocalService.fetchMBCategory(
@@ -297,9 +299,8 @@ public class MessageListenerImpl implements MessageListener {
 		if (PropsValues.POP_SERVER_SUBDOMAIN.length() > 0) {
 			return recipient;
 		}
-		else {
-			return MBMailUtil.getParentMessageIdString(message);
-		}
+
+		return MBMailUtil.getParentMessageIdString(message);
 	}
 
 	protected boolean isAutoReply(Message message) throws MessagingException {

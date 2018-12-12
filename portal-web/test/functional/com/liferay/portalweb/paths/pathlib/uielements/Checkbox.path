@@ -84,6 +84,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>DELETIONS</td>
+	<td>//label[contains(.,'Deletions')]/input[contains(@id,'DELETIONS')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>DISPLAY_ADDITIONAL_ACTIVITY_COUNTERS</td>
 	<td>//label[contains(.,'Display Additional Activity Counters')]/input[@type='checkbox']</td>
 	<td></td>
@@ -96,6 +101,11 @@
 <tr>
 	<td>DISPLAY_IMMEDIATELY</td>
 	<td>//input[contains(@name,'displayImmediately')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ENABLE_AUTO_TAGGING</td>
+	<td>//label[contains(.,'Enable auto tagging')]/input[@type='checkbox']</td>
 	<td></td>
 </tr>
 <tr>
@@ -391,6 +401,11 @@
 <tr>
 	<td>SITE_OWNER</td>
 	<td>//tr[contains(.,'Site Owner')]//input[@type='checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SITE_TEMPLATE</td>
+	<td>//tr[contains(.,'${key_siteTemplateName}')]//input</td>
 	<td></td>
 </tr>
 <tr>

@@ -73,9 +73,8 @@ public class DefaultAuditRouter implements AuditRouter {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
@@ -161,7 +160,7 @@ public class DefaultAuditRouter implements AuditRouter {
 		_auditEnabled = auditConfiguration.enabled();
 	}
 
-	@Reference (
+	@Reference(
 		cardinality = ReferenceCardinality.MULTIPLE,
 		policy = ReferencePolicy.DYNAMIC,
 		policyOption = ReferencePolicyOption.GREEDY

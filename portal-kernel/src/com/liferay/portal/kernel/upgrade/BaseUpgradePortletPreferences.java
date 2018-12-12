@@ -124,8 +124,9 @@ public abstract class BaseUpgradePortletPreferences extends UpgradeProcess {
 				boolean privateLayout = rs.getBoolean("privateLayout");
 				long layoutId = rs.getLong("layoutId");
 
-				layout =
-					new Object[] {groupId, companyId, privateLayout, layoutId};
+				layout = new Object[] {
+					groupId, companyId, privateLayout, layoutId
+				};
 			}
 		}
 		finally {
@@ -162,8 +163,9 @@ public abstract class BaseUpgradePortletPreferences extends UpgradeProcess {
 				boolean privateLayout = rs.getBoolean("privateLayout");
 				long layoutId = rs.getLong("layoutRevisionId");
 
-				layoutRevision =
-					new Object[] {groupId, companyId, privateLayout, layoutId};
+				layoutRevision = new Object[] {
+					groupId, companyId, privateLayout, layoutId
+				};
 			}
 		}
 		finally {
@@ -282,11 +284,11 @@ public abstract class BaseUpgradePortletPreferences extends UpgradeProcess {
 					long portletPreferencesId = rs.getLong(
 						"portletPreferencesId");
 					long companyId = rs.getLong("companyId");
-					long ownerId = rs.getLong("ownerId");
-					int ownerType = rs.getInt("ownerType");
-					long plid = rs.getLong("plid");
 
 					if (companyId > 0) {
+						int ownerType = rs.getInt("ownerType");
+						long plid = rs.getLong("plid");
+						long ownerId = rs.getLong("ownerId");
 						String portletId = rs.getString("portletId");
 						String preferences = GetterUtil.getString(
 							rs.getString("preferences"));

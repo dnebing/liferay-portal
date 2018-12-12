@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.PwdGenerator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -98,10 +97,6 @@ public class OpenIdServiceHandlerImpl implements OpenIdServiceHandler {
 
 		request = _portal.getOriginalServletRequest(request);
 
-		String receivingURL = ParamUtil.getString(request, "openid.return_to");
-		ParameterList parameterList = new ParameterList(
-			request.getParameterMap());
-
 		HttpSession session = request.getSession();
 
 		DiscoveryInformation discoveryInformation =
@@ -111,6 +106,10 @@ public class OpenIdServiceHandlerImpl implements OpenIdServiceHandler {
 		if (discoveryInformation == null) {
 			return null;
 		}
+
+		String receivingURL = ParamUtil.getString(request, "openid.return_to");
+		ParameterList parameterList = new ParameterList(
+			request.getParameterMap());
 
 		AuthSuccess authSuccess = null;
 		String firstName = null;
@@ -179,7 +178,7 @@ public class OpenIdServiceHandlerImpl implements OpenIdServiceHandler {
 							}
 						}
 						else if (openIdAXType.equals(
-									 _OPEN_ID_AX_ATTR_FIRST_NAME)) {
+									_OPEN_ID_AX_ATTR_FIRST_NAME)) {
 
 							if (Validator.isNull(firstName)) {
 								firstName = getFirstValue(
@@ -188,7 +187,7 @@ public class OpenIdServiceHandlerImpl implements OpenIdServiceHandler {
 							}
 						}
 						else if (openIdAXType.equals(
-									 _OPEN_ID_AX_ATTR_FULL_NAME)) {
+									_OPEN_ID_AX_ATTR_FULL_NAME)) {
 
 							String fullName = fetchResponse.getAttributeValue(
 								_OPEN_ID_AX_ATTR_FULL_NAME);
@@ -206,7 +205,7 @@ public class OpenIdServiceHandlerImpl implements OpenIdServiceHandler {
 							}
 						}
 						else if (openIdAXType.equals(
-									 _OPEN_ID_AX_ATTR_LAST_NAME)) {
+									_OPEN_ID_AX_ATTR_LAST_NAME)) {
 
 							if (Validator.isNull(lastName)) {
 								lastName = getFirstValue(
@@ -278,12 +277,9 @@ public class OpenIdServiceHandlerImpl implements OpenIdServiceHandler {
 
 		long creatorUserId = 0;
 		long companyId = themeDisplay.getCompanyId();
-		boolean autoPassword = false;
-
-		String password1 = PwdGenerator.getPassword();
-
-		String password2 = password1;
-
+		boolean autoPassword = true;
+		String password1 = null;
+		String password2 = null;
 		boolean autoScreenName = true;
 		String screenName = StringPool.BLANK;
 		long facebookId = 0;

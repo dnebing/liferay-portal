@@ -46,9 +46,10 @@ public class GradlePropertiesCheck extends BaseFileCheck {
 
 				if (array.length == 2) {
 					String key = array[0].trim();
-					String value = array[1].trim();
 
 					if (ArrayUtil.contains(_KEYS_WITH_QUOTED_VALUE, key)) {
+						String value = array[1].trim();
+
 						String strippedValue = StringUtil.removeChars(
 							value, CharPool.APOSTROPHE, CharPool.QUOTE);
 
@@ -69,7 +70,8 @@ public class GradlePropertiesCheck extends BaseFileCheck {
 		return sb.toString();
 	}
 
-	private static final String[] _KEYS_WITH_QUOTED_VALUE =
-		{"sourceCompatibility", "targetCompatibility"};
+	private static final String[] _KEYS_WITH_QUOTED_VALUE = {
+		"sourceCompatibility", "targetCompatibility"
+	};
 
 }

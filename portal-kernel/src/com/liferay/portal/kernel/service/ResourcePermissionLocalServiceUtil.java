@@ -185,6 +185,14 @@ public class ResourcePermissionLocalServiceUtil {
 			resourceActionBitwiseValue);
 	}
 
+	public static void copyModelResourcePermissions(long companyId,
+		String name, long oldPrimKey, long newPrimKey)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService()
+			.copyModelResourcePermissions(companyId, name, oldPrimKey,
+			newPrimKey);
+	}
+
 	/**
 	* Creates a new resource permission with the primary key. Does not add the resource permission to the database.
 	*
@@ -748,6 +756,12 @@ public class ResourcePermissionLocalServiceUtil {
 		return getService()
 				   .hasScopeResourcePermission(companyId, name, scope, roleId,
 			actionId);
+	}
+
+	public static void initPortletDefaultPermissions(
+		com.liferay.portal.kernel.model.Portlet portlet)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().initPortletDefaultPermissions(portlet);
 	}
 
 	/**

@@ -14,12 +14,12 @@
 
 package com.liferay.configuration.admin.web.internal.model;
 
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition.Scope;
 import com.liferay.portal.configuration.metatype.definitions.ExtendedAttributeDefinition;
 import com.liferay.portal.configuration.metatype.definitions.ExtendedObjectClassDefinition;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -311,8 +311,8 @@ public class ConfigurationModel implements ExtendedObjectClassDefinition {
 		}
 
 		return filteredExtendedAttributeDefinitionsList.toArray(
-			new ExtendedAttributeDefinition[
-				filteredExtendedAttributeDefinitionsList.size()]);
+			new ExtendedAttributeDefinition
+				[filteredExtendedAttributeDefinitionsList.size()]);
 	}
 
 	private final String _bundleLocation;

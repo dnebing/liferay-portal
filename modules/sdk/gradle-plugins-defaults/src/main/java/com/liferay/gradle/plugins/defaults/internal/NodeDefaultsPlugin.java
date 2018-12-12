@@ -23,7 +23,6 @@ import com.liferay.gradle.plugins.node.tasks.ExecuteNpmTask;
 import com.liferay.gradle.plugins.node.tasks.NpmInstallTask;
 import com.liferay.gradle.plugins.node.tasks.PublishNodeModuleTask;
 import com.liferay.gradle.plugins.util.PortalTools;
-import com.liferay.gradle.util.Validator;
 
 import java.io.File;
 
@@ -79,7 +78,7 @@ public class NodeDefaultsPlugin extends BaseDefaultsPlugin<NodePlugin> {
 		npmInstallTask.setNodeModulesDigestFile(
 			new File(npmInstallTask.getNodeModulesDir(), ".digest"));
 
-		if (Validator.isNull(portalVersion)) {
+		if (!PortalTools.PORTAL_VERSION_7_0_X.equals(portalVersion)) {
 			npmInstallTask.setUseNpmCI(Boolean.TRUE);
 		}
 	}

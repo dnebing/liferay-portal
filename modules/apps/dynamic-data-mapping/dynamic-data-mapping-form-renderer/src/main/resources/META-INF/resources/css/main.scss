@@ -73,6 +73,7 @@ body .ddm-user-view-content {
 
 	.required-warning {
 		margin-bottom: 25px;
+		padding-left: 32px;
 
 		.icon-asterisk {
 			margin-left: 4px;
@@ -500,5 +501,21 @@ body .ddm-user-view-content {
 
 	.form-check-inline {
 		margin-right: 11px;
+	}
+}
+
+.ddm-tooltip {
+	display: inline-block;
+	padding-left: 8px;
+}
+
+div.ddm-tooltip-container {
+	opacity: 1;
+	position: absolute;
+	visibility: visible;
+	width: 230px;
+
+	&.clay-tooltip-bottom {
+		margin-left: 108px;
 	}
 }

@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TreeNode;
+import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.wiki.engine.creole.internal.antlrwiki.translator.internal.UnformattedHeadingTextVisitor;
 import com.liferay.wiki.engine.creole.internal.antlrwiki.translator.internal.UnformattedLinksTextVisitor;
 import com.liferay.wiki.engine.creole.internal.parser.ast.CollectionNode;
@@ -32,11 +33,12 @@ import com.liferay.wiki.engine.creole.internal.parser.ast.WikiPageNode;
 import com.liferay.wiki.engine.creole.internal.parser.ast.extension.TableOfContentsNode;
 import com.liferay.wiki.engine.creole.internal.parser.ast.link.LinkNode;
 import com.liferay.wiki.engine.creole.internal.parser.visitor.XhtmlTranslationVisitor;
-import com.liferay.wiki.exception.NoSuchPageException;
 import com.liferay.wiki.model.WikiPage;
 import com.liferay.wiki.service.WikiPageLocalServiceUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletURL;
 
@@ -65,11 +67,16 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 
 		String unformattedText = getUnformattedHeadingText(headingNode);
 
-		String markup = getHeadingMarkup(_page.getTitle(), unformattedText);
+		String markup = getHeadingMarkup(
+			_page.getTitle(), unformattedText, _headingCounts);
 
 		append(" id=\"");
 		append(markup);
 		append("\">");
+
+		int count = _headingCounts.getOrDefault(unformattedText, 0);
+
+		_headingCounts.put(unformattedText, count + 1);
 
 		traverse(headingNode.getChildASTNodes());
 
@@ -95,11 +102,11 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 		append(" src=\"");
 
 		if (imageNode.isAbsoluteLink()) {
-			append(imageNode.getLink());
+			append(URLCodec.encodeURL(imageNode.getLink()));
 		}
 		else {
 			append(_attachmentURLPrefix);
-			append(imageNode.getLink());
+			append(URLCodec.encodeURL(imageNode.getLink()));
 		}
 
 		append("\" />");
@@ -129,6 +136,8 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 	public void visit(TableOfContentsNode tableOfContentsNode) {
 		TableOfContentsVisitor tableOfContentsVisitor =
 			new TableOfContentsVisitor();
+
+		_tableOfContentsHeadingCounts.clear();
 
 		TreeNode<HeadingNode> tableOfContents = tableOfContentsVisitor.compose(
 			_rootWikiPageNode);
@@ -212,10 +221,16 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 			}
 
 			append(StringPool.POUND);
-			append(getHeadingMarkup(_page.getTitle(), content));
+			append(
+				getHeadingMarkup(
+					_page.getTitle(), content, _tableOfContentsHeadingCounts));
 			append("\">");
 			append(content);
 			append("</a>");
+
+			int count = _tableOfContentsHeadingCounts.getOrDefault(content, 0);
+
+			_tableOfContentsHeadingCounts.put(content, count + 1);
 
 			appendTableOfContents(treeNode, depth + 1);
 
@@ -228,11 +243,11 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 	protected void appendWikiHref(LinkNode linkNode) {
 		WikiPage page = null;
 
+		String title = StringUtil.replace(
+			linkNode.getLink(), CharPool.NO_BREAK_SPACE, StringPool.SPACE);
+
 		try {
-			page = WikiPageLocalServiceUtil.getPage(
-				_page.getNodeId(), linkNode.getLink());
-		}
-		catch (NoSuchPageException nspe) {
+			page = WikiPageLocalServiceUtil.fetchPage(_page.getNodeId(), title);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -249,17 +264,15 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 			return;
 		}
 
-		String pageTitle = linkNode.getLink();
-
 		if ((page != null) && (_viewPageURL != null)) {
-			_viewPageURL.setParameter("title", pageTitle);
+			_viewPageURL.setParameter("title", title);
 
 			append(_viewPageURL.toString());
 
 			_viewPageURL.setParameter("title", _page.getTitle());
 		}
 		else if (_editPageURL != null) {
-			_editPageURL.setParameter("title", pageTitle);
+			_editPageURL.setParameter("title", title);
 
 			append(_editPageURL.toString());
 
@@ -267,15 +280,20 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 		}
 	}
 
-	protected String getHeadingMarkup(String prefix, String text) {
-		StringBundler sb = new StringBundler(4);
+	protected String getHeadingMarkup(
+		String prefix, String text, Map<String, Integer> textCounts) {
 
-		sb.append(_HEADING_ANCHOR_PREFIX);
-		sb.append(prefix);
-		sb.append(StringPool.DASH);
-		sb.append(text.trim());
+		String postfix = StringPool.BLANK;
 
-		return StringUtil.replace(sb.toString(), CharPool.SPACE, CharPool.PLUS);
+		if (textCounts.containsKey(text)) {
+			postfix = StringPool.DASH + String.valueOf(textCounts.get(text));
+		}
+
+		return StringUtil.replace(
+			StringBundler.concat(
+				_HEADING_ANCHOR_PREFIX, prefix, StringPool.DASH, text.trim(),
+				postfix),
+			CharPool.SPACE, CharPool.PLUS);
 	}
 
 	protected String getUnformattedHeadingText(HeadingNode headingNode) {
@@ -296,6 +314,9 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 			}
 		}
 		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
 		}
 
 		return null;
@@ -308,8 +329,11 @@ public class XhtmlTranslator extends XhtmlTranslationVisitor {
 
 	private String _attachmentURLPrefix;
 	private PortletURL _editPageURL;
+	private final Map<String, Integer> _headingCounts = new HashMap<>();
 	private WikiPage _page;
 	private WikiPageNode _rootWikiPageNode;
+	private final Map<String, Integer> _tableOfContentsHeadingCounts =
+		new HashMap<>();
 	private PortletURL _viewPageURL;
 
 }

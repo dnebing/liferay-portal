@@ -75,7 +75,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcellus Tavares
  * @author Bruno Basto
  */
-@Component(immediate = true)
+@Component(immediate = true, service = JournalConverter.class)
 public class JournalConverterImpl implements JournalConverter {
 
 	public JournalConverterImpl() {
@@ -288,7 +288,6 @@ public class JournalConverterImpl implements JournalConverter {
 		throws PortalException {
 
 		String name = dynamicElementElement.attributeValue("name");
-		String instanceId = dynamicElementElement.attributeValue("instance-id");
 
 		if (!ddmStructure.hasField(name)) {
 			return;
@@ -313,6 +312,8 @@ public class JournalConverterImpl implements JournalConverter {
 				ddmFields.put(ddmField);
 			}
 		}
+
+		String instanceId = dynamicElementElement.attributeValue("instance-id");
 
 		updateFieldsDisplay(ddmFields, name, instanceId);
 
@@ -560,9 +561,10 @@ public class JournalConverterImpl implements JournalConverter {
 					JournalArticle journalArticle =
 						_journalArticleLocalService.fetchLatestArticle(classPK);
 
-					String title = journalArticle.getTitle(defaultLocale);
-
-					jsonObject.put("title", title);
+					jsonObject.put("groupId", journalArticle.getGroupId());
+					jsonObject.put(
+						"title", journalArticle.getTitle(defaultLocale));
+					jsonObject.put("uuid", journalArticle.getUuid());
 				}
 
 				serializable = jsonObject.toString();

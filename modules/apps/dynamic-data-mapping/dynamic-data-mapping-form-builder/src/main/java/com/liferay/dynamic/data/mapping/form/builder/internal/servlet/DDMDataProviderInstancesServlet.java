@@ -25,10 +25,12 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
 
@@ -37,7 +39,6 @@ import java.util.Locale;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -57,7 +58,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = Servlet.class
 )
-public class DDMDataProviderInstancesServlet extends HttpServlet {
+public class DDMDataProviderInstancesServlet extends BaseDDMFormBuilderServlet {
 
 	@Override
 	protected void doGet(
@@ -84,11 +85,16 @@ public class DDMDataProviderInstancesServlet extends HttpServlet {
 		HttpServletRequest request) {
 
 		try {
-			String languageId = ParamUtil.getString(request, "languageId");
+			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+			String languageId = ParamUtil.getString(
+				request, "languageId", themeDisplay.getLanguageId());
 
 			Locale locale = LocaleUtil.fromLanguageId(languageId);
 
-			long scopeGroupId = ParamUtil.getLong(request, "scopeGroupId");
+			long scopeGroupId = ParamUtil.getLong(
+				request, "scopeGroupId", themeDisplay.getScopeGroupId());
 
 			long[] groupIds = _portal.getCurrentAndAncestorSiteGroupIds(
 				scopeGroupId);

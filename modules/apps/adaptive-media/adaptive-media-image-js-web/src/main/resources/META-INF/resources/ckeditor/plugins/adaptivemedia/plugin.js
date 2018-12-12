@@ -1,13 +1,15 @@
 (function() {
 	var Lang = AUI().Lang;
 
-	var STR_ADAPTIVE_MEDIA_URL_RETURN_TYPE = 'com.liferay.adaptive.media.image.item.selector.AMImageURLItemSelectorReturnType';
-
 	var STR_ADAPTIVE_MEDIA_FILE_ENTRY_RETURN_TYPE = 'com.liferay.adaptive.media.image.item.selector.AMImageFileEntryItemSelectorReturnType';
+
+	var STR_ADAPTIVE_MEDIA_URL_RETURN_TYPE = 'com.liferay.adaptive.media.image.item.selector.AMImageURLItemSelectorReturnType';
 
 	var TPL_PICTURE_TAG = '<picture {fileEntryAttributeName}="{fileEntryId}">{sources}<img src="{defaultSrc}"></picture>';
 
 	var TPL_SOURCE_TAG = '<source srcset="{srcset}" media="{media}">';
+
+	var IE9 = AUI.Env.UA.ie >= 9;
 
 	CKEDITOR.plugins.add(
 		'adaptivemedia',
@@ -29,11 +31,7 @@
 
 							event.cancel();
 
-							var onSelectedImageChangeFn = AUI._.bind(
-								instance._onSelectedImageChange,
-								instance,
-								editor
-							);
+							var onSelectedImageChangeFn = instance._onSelectedImageChange.bind(instance, editor);
 
 							editor.execCommand('imageselector', onSelectedImageChangeFn);
 
@@ -41,6 +39,22 @@
 						}
 					}
 				);
+			},
+
+			_getImgElement: function(imageSrc, selectedItem, fileEntryAttributeName) {
+				var imgEl = CKEDITOR.dom.element.createFromHtml('<img>');
+
+				if (selectedItem.returnType === STR_ADAPTIVE_MEDIA_FILE_ENTRY_RETURN_TYPE) {
+					var itemValue = JSON.parse(selectedItem.value);
+
+					imgEl.setAttribute('src', itemValue.url);
+					imgEl.setAttribute(fileEntryAttributeName, itemValue.fileEntryId);
+				}
+				else {
+					imgEl.setAttribute('src', imageSrc);
+				}
+
+				return imgEl;
 			},
 
 			_getPictureElement: function(selectedItem, fileEntryAttributeName) {
@@ -92,26 +106,19 @@
 				return pictureEl;
 			},
 
-			_getImgElement: function(imageSrc, selectedItem, fileEntryAttributeName) {
-				var imgEl = CKEDITOR.dom.element.createFromHtml('<img>');
+			_isEmptySelection: function(editor) {
+				var selection = editor.getSelection();
 
-				if (selectedItem.returnType === STR_ADAPTIVE_MEDIA_FILE_ENTRY_RETURN_TYPE) {
-					var itemValue = JSON.parse(selectedItem.value);
+				var ranges = selection.getRanges();
 
-					imgEl.setAttribute('src', itemValue.url);
-					imgEl.setAttribute(fileEntryAttributeName, itemValue.fileEntryId);
-				}
-				else {
-					imgEl.setAttribute('src', imageSrc);
-				}
-
-				return imgEl;
+				return selection.getType() === CKEDITOR.SELECTION_NONE || (ranges.length === 1 && (ranges[0].collapsed || IE9));
 			},
 
 			_onSelectedImageChange: function(editor, imageSrc, selectedItem) {
-				var el;
 				var instance = this;
-				var isSelectionEmpty = editor.isSelectionEmpty();
+
+				var el;
+
 				var fileEntryAttributeName = editor.config.adaptiveMediaFileEntryAttributeName;
 
 				if (selectedItem.returnType === STR_ADAPTIVE_MEDIA_URL_RETURN_TYPE) {
@@ -123,8 +130,13 @@
 
 				editor.insertHtml(el.getOuterHtml());
 
-				if (isSelectionEmpty) {
-					editor.execCommand('enter');
+				if (instance._isEmptySelection(editor)) {
+					if (IE9) {
+						editor.insertHtml(el.getOuterHtml() + ' <br /> ');
+					}
+					else {
+						editor.execCommand('enter');
+					}
 				}
 			}
 		}

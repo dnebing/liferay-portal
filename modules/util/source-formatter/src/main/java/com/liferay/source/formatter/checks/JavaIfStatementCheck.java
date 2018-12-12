@@ -265,7 +265,7 @@ public class JavaIfStatementCheck extends IfStatementCheck {
 				int expectedLeadingWhitespace = 0;
 
 				if (previousLine.contains(StringPool.TAB + "else if (")) {
-					expectedLeadingWhitespace = baseLeadingWhitespace + 4;
+					expectedLeadingWhitespace = baseLeadingWhitespace + 3;
 				}
 				else if (previousLine.contains(StringPool.TAB + "if (")) {
 					expectedLeadingWhitespace = baseLeadingWhitespace + 4;
@@ -413,9 +413,9 @@ public class JavaIfStatementCheck extends IfStatementCheck {
 		}
 	}
 
-	private final Pattern _ifStatementCriteriaPattern = Pattern.compile(
+	private static final Pattern _ifStatementCriteriaPattern = Pattern.compile(
 		".*?( [|&^]+( |\\Z)|\\) \\{\\Z)");
-	private final Pattern _ifStatementPattern = Pattern.compile(
-		"\t+(catch|(else )?if|while) \\(.*?(\\) \\{|;)\n", Pattern.DOTALL);
+	private static final Pattern _ifStatementPattern = Pattern.compile(
+		"\t+((else )?if|while) \\(.*?(\\) \\{|;)\n", Pattern.DOTALL);
 
 }

@@ -166,14 +166,14 @@ public class UserPermissionImpl
 						continue;
 					}
 					else if (UserGroupRoleLocalServiceUtil.hasUserGroupRole(
-								 user.getUserId(),
+								user.getUserId(),
 								organizationGroup.getGroupId(),
 								RoleConstants.ORGANIZATION_ADMINISTRATOR,
 								true) &&
 							 !UserGroupRoleLocalServiceUtil.hasUserGroupRole(
 								 permissionChecker.getUserId(),
-								organizationGroup.getGroupId(),
-								RoleConstants.ORGANIZATION_OWNER, true)) {
+								 organizationGroup.getGroupId(),
+								 RoleConstants.ORGANIZATION_OWNER, true)) {
 
 						continue;
 					}

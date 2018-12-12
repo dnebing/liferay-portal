@@ -21,7 +21,15 @@ public class AssetListFormConstants {
 
 	public static final String CATEGORY_KEY_GENERAL = "general";
 
-	public static final String ENTRY_KEY_DETAILS = "details";
+	public static final String ENTRY_KEY_ASSET_ENTRIES = "asset_entries";
+
+	public static final String ENTRY_KEY_FILTER = "filter";
+
+	public static final String ENTRY_KEY_ORDERING = "ordering";
+
+	public static final String ENTRY_KEY_SCOPE = "scope";
+
+	public static final String ENTRY_KEY_SOURCE = "source";
 
 	public static final String SCREEN_NAVIGATION_KEY_ASSET_LIST =
 		"edit.asset.list.form";

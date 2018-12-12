@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil;
 import com.liferay.portal.kernel.cache.thread.local.ThreadLocalCachable;
-import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -95,7 +94,6 @@ import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.security.permission.RolePermissions;
 import com.liferay.portal.kernel.security.permission.UserBag;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -526,10 +524,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the organization to the group.
+	 * Adds the group to the organization.
 	 *
 	 * @param organizationId the primary key of the organization
-	 * @param group the primary key of the group
+	 * @param group the group
 	 */
 	@Override
 	public void addOrganizationGroup(long organizationId, Group group) {
@@ -544,7 +542,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the organization to the group.
+	 * Adds the group to the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param groupId the primary key of the group
@@ -562,7 +560,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the organizations to the groups.
+	 * Adds the groups to the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param groups the groups
@@ -580,7 +578,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the organization to the groups.
+	 * Adds the groups to the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param groupIds the primary keys of the groups
@@ -598,7 +596,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the user group to the group.
+	 * Adds the group to the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param group the group
@@ -616,7 +614,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the user group to the group.
+	 * Adds the group to the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param groupId the primary key of the group
@@ -634,7 +632,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the user group to the groups.
+	 * Adds the groups to the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param groups the groups
@@ -652,7 +650,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Adds the user group to the groups.
+	 * Adds the groups to the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param groupIds the primary keys of the groups
@@ -814,7 +812,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Clears the organization from the groups.
+	 * Clears the groups from the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 */
@@ -831,7 +829,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Clears the user group from the groups.
+	 * Clears the groups from the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 */
@@ -1153,7 +1151,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the organization from the group.
+	 * Deletes the group from the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param group the group
@@ -1171,7 +1169,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the organization from the group.
+	 * Deletes the group from the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param groupId the primary key of the group
@@ -1189,7 +1187,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the organization from the groups.
+	 * Deletes the groups from the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param groups the groups
@@ -1209,7 +1207,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the organization from the groups.
+	 * Deletes the groups from the organization.
 	 *
 	 * @param organizationId the primary key of the organization
 	 * @param groupIds the primary keys of the groups
@@ -1227,7 +1225,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the user group from the group.
+	 * Deletes the group from the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param group the group
@@ -1245,7 +1243,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the user group from the group.
+	 * Deletes the group from the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param groupId the primary key of the group
@@ -1263,7 +1261,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the user group from the groups.
+	 * Deletes the groups from the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param groups the groups
@@ -1281,7 +1279,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Removes the user group from the groups.
+	 * Deletes the groups from the user group.
 	 *
 	 * @param userGroupId the primary key of the user group
 	 * @param groupIds the primary keys of the groups
@@ -1396,7 +1394,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         <code>null</code> if a matching group could not be found
 	 */
 	@Override
-	@Skip
+	@Transactional(enabled = false)
 	public Group fetchGroup(long companyId, String groupKey) {
 		Group group = _systemGroupsMap.get(
 			StringUtil.toHexString(companyId).concat(groupKey));
@@ -1449,13 +1447,107 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 * Returns all the active or inactive groups associated with the company.
 	 *
 	 * @param  companyId the primary key of the company
-	 * @param  active whether to return only active groups, or only inactive
+	 * @param  active whether to return only active groups or only inactive
 	 *         groups
-	 * @return the active or inactive groups associated with the company
+	 * @return the active or inactive groups
 	 */
 	@Override
 	public List<Group> getActiveGroups(long companyId, boolean active) {
 		return groupPersistence.findByC_A(companyId, active);
+	}
+
+	/**
+	 * Returns the active or inactive groups associated with the company and,
+	 * optionally, the main site.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end -
+	 * start</code> instances. <code>start</code> and <code>end</code> are not
+	 * primary keys, they are indexes in the result set. Thus, <code>0</code>
+	 * refers to the first result in the set. Setting both <code>start</code>
+	 * and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	 * result set.
+	 * </p>
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  site whether the group is associated with a main site
+	 * @param  active whether to return only active groups or only inactive
+	 *         groups
+	 * @param  start the lower bound of the range of groups to return
+	 * @param  end the upper bound of the range of groups to return (not
+	 *         inclusive)
+	 * @param  obc the comparator to order the groups (optionally
+	 *         <code>null</code>)
+	 * @return the active or inactive groups
+	 */
+	@Override
+	public List<Group> getActiveGroups(
+		long companyId, boolean site, boolean active, int start, int end,
+		OrderByComparator<Group> obc) {
+
+		return groupPersistence.findByC_S_A(
+			companyId, site, active, start, end, obc);
+	}
+
+	/**
+	 * Returns the active or inactive groups associated with the company.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end -
+	 * start</code> instances. <code>start</code> and <code>end</code> are not
+	 * primary keys, they are indexes in the result set. Thus, <code>0</code>
+	 * refers to the first result in the set. Setting both <code>start</code>
+	 * and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full
+	 * result set.
+	 * </p>
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to return only active groups or only inactive
+	 *         groups
+	 * @param  start the lower bound of the range of groups to return
+	 * @param  end the upper bound of the range of groups to return (not
+	 *         inclusive)
+	 * @param  obc the comparator to order the groups (optionally
+	 *         <code>null</code>)
+	 * @return the active or inactive groups
+	 */
+	@Override
+	public List<Group> getActiveGroups(
+		long companyId, boolean active, int start, int end,
+		OrderByComparator<Group> obc) {
+
+		return groupPersistence.findByC_A(companyId, active, start, end, obc);
+	}
+
+	/**
+	 * Returns the number of active or inactive groups associated with the
+	 * company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to count only active groups or only inactive
+	 *         groups
+	 * @return the number of active or inactive groups
+	 */
+	@Override
+	public int getActiveGroupsCount(long companyId, boolean active) {
+		return groupPersistence.countByC_A(companyId, active);
+	}
+
+	/**
+	 * Returns the number of active or inactive groups associated with the
+	 * company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to count only active groups or only inactive
+	 *         groups
+	 * @param  site whether the group is to be associated with a main site
+	 * @return the number of active or inactive groups
+	 */
+	@Override
+	public int getActiveGroupsCount(
+		long companyId, boolean active, boolean site) {
+
+		return groupPersistence.countByC_S_A(companyId, active, site);
 	}
 
 	/**
@@ -1557,7 +1649,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 * @throws PortalException if a portal exception occurred
 	 */
 	@Override
-	@Skip
+	@Transactional(enabled = false)
 	public Group getGroup(long companyId, String groupKey)
 		throws PortalException {
 
@@ -1636,6 +1728,24 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 		return groupPersistence.findByC_P_S(
 			companyId, parentGroupId, site, start, end);
+	}
+
+	@Override
+	public List<Group> getGroups(
+		long companyId, long parentGroupId, String name, boolean site,
+		int start, int end) {
+
+		if (Validator.isNull(name)) {
+			return getGroups(companyId, parentGroupId, site, start, end);
+		}
+
+		if (parentGroupId == GroupConstants.ANY_PARENT_GROUP_ID) {
+			return groupPersistence.findByC_LikeN_S(
+				companyId, name, site, start, end);
+		}
+
+		return groupPersistence.findByC_P_LikeN_S(
+			companyId, parentGroupId, name, site, start, end);
 	}
 
 	@Override
@@ -1725,6 +1835,22 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		}
 
 		return groupPersistence.countByC_P_S(companyId, parentGroupId, site);
+	}
+
+	@Override
+	public int getGroupsCount(
+		long companyId, long parentGroupId, String name, boolean site) {
+
+		if (Validator.isNull(name)) {
+			return getGroupsCount(companyId, parentGroupId, site);
+		}
+
+		if (parentGroupId == GroupConstants.ANY_PARENT_GROUP_ID) {
+			return groupPersistence.countByC_LikeN_S(companyId, name, site);
+		}
+
+		return groupPersistence.countByC_P_LikeN_S(
+			companyId, parentGroupId, name, site);
 	}
 
 	/**
@@ -2155,9 +2281,8 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			return search(
 				user.getCompanyId(), null, null, groupParams, start, end);
 		}
-		else {
-			return userPersistence.getGroups(userId, start, end);
-		}
+
+		return userPersistence.getGroups(userId, start, end);
 	}
 
 	/**
@@ -2347,9 +2472,8 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		if (groupPersistence.fetchByLiveGroupId(liveGroupId) != null) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	/**
@@ -2384,13 +2508,12 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		if (groupFinder.countByG_U(groupId, userId, inherit) > 0) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	@Override
-	@Skip
+	@Transactional(enabled = false)
 	public boolean isLiveGroupActive(Group group) {
 		if (group == null) {
 			return false;
@@ -3650,7 +3773,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			groupKey = getOrgGroupName(organization.getName());
 		}
 		else if (!GroupConstants.USER_PERSONAL_SITE.equals(
-					 group.getGroupKey())) {
+					group.getGroupKey())) {
 
 			groupKey = String.valueOf(classPK);
 		}
@@ -3791,9 +3914,6 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 		Group group = groupPersistence.findByPrimaryKey(groupId);
 
-		UnicodeProperties oldTypeSettingsProperties =
-			group.getTypeSettingsProperties();
-
 		UnicodeProperties typeSettingsProperties = new UnicodeProperties(true);
 
 		typeSettingsProperties.fastLoad(typeSettings);
@@ -3802,6 +3922,9 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			PropsKeys.LOCALES);
 
 		if (Validator.isNotNull(newLanguageIds)) {
+			UnicodeProperties oldTypeSettingsProperties =
+				group.getTypeSettingsProperties();
+
 			String oldLanguageIds = oldTypeSettingsProperties.getProperty(
 				PropsKeys.LOCALES, StringPool.BLANK);
 
@@ -4601,9 +4724,8 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	protected boolean isStaging(ServiceContext serviceContext) {
@@ -4681,27 +4803,20 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			});
 		indexableActionableDynamicQuery.setCompanyId(companyId);
 		indexableActionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<User>() {
+			(User user) -> {
+				if (!user.isDefaultUser()) {
+					try {
+						Document document = indexer.getDocument(user);
 
-				@Override
-				public void performAction(User user) {
-					if (!user.isDefaultUser()) {
-						try {
-							Document document = indexer.getDocument(user);
-
-							indexableActionableDynamicQuery.addDocuments(
-								document);
-						}
-						catch (PortalException pe) {
-							if (_log.isWarnEnabled()) {
-								_log.warn(
-									"Unable to index user " + user.getUserId(),
-									pe);
-							}
+						indexableActionableDynamicQuery.addDocuments(document);
+					}
+					catch (PortalException pe) {
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"Unable to index user " + user.getUserId(), pe);
 						}
 					}
 				}
-
 			});
 		indexableActionableDynamicQuery.setSearchEngineId(
 			indexer.getSearchEngineId());
@@ -5062,9 +5177,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			}
 		}
 
-		Group parentGroup = groupPersistence.findByPrimaryKey(parentGroupId);
-
 		if (group.isStagingGroup()) {
+			Group parentGroup = groupPersistence.findByPrimaryKey(
+				parentGroupId);
+
 			Group staginGroup = parentGroup.getStagingGroup();
 
 			long stagingGroupId = staginGroup.getGroupId();

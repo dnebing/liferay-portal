@@ -16,13 +16,11 @@ package com.liferay.portal.search.test.util.indexing;
 
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
-import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.IndexSearcher;
 import com.liferay.portal.kernel.search.IndexWriter;
-import com.liferay.portal.kernel.search.ParseException;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -37,6 +35,9 @@ import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.IdempotentRetryAssert;
 import com.liferay.portal.search.test.util.SearchMapUtil;
 
+import java.io.Serializable;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -44,8 +45,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 
@@ -113,37 +116,60 @@ public abstract class BaseIndexingTestCase {
 		return Collections.singletonMap(key, value);
 	}
 
-	protected void addDocument(DocumentCreationHelper documentCreationHelper)
-		throws Exception {
-
+	protected void addDocument(DocumentCreationHelper documentCreationHelper) {
 		Document document = DocumentFixture.newDocument(
 			COMPANY_ID, GROUP_ID, _entryClassName);
 
 		documentCreationHelper.populate(document);
 
-		_indexWriter.addDocument(createSearchContext(), document);
-	}
+		try {
+			_indexWriter.addDocument(createSearchContext(), document);
+		}
+		catch (SearchException se) {
+			Throwable t = se.getCause();
 
-	protected void addDocuments(
-			Function<String, DocumentCreationHelper> function,
-			Collection<String> values)
-		throws Exception {
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
 
-		for (String value : values) {
-			addDocument(function.apply(value));
+			throw new RuntimeException(se);
 		}
 	}
 
-	protected void assertSearch(Consumer<IndexingTestHelper> consumer)
-		throws Exception {
+	protected void addDocuments(
+		Function<String, DocumentCreationHelper> function,
+		Collection<String> values) {
 
-		IdempotentRetryAssert.retryAssert(
-			10, TimeUnit.SECONDS,
-			() -> {
-				consumer.accept(new IndexingTestHelper());
+		addDocuments(function, values.stream());
+	}
 
-				return null;
-			});
+	protected void addDocuments(
+		Function<String, DocumentCreationHelper> function,
+		Stream<String> stream) {
+
+		stream.map(
+			function
+		).forEach(
+			this::addDocument
+		);
+	}
+
+	protected void assertSearch(Consumer<IndexingTestHelper> consumer) {
+		try {
+			IdempotentRetryAssert.retryAssert(
+				10, TimeUnit.SECONDS,
+				() -> {
+					consumer.accept(new IndexingTestHelper());
+
+					return null;
+				});
+		}
+		catch (RuntimeException re) {
+			throw (RuntimeException)re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected abstract IndexingFixture createIndexingFixture() throws Exception;
@@ -160,6 +186,10 @@ public abstract class BaseIndexingTestCase {
 				new TermQueryImpl(key, value), BooleanClauseOccur.MUST));
 
 		return booleanQueryImpl;
+	}
+
+	protected String getEntryClassName() {
+		return _entryClassName;
 	}
 
 	protected IndexSearcher getIndexSearcher() {
@@ -189,10 +219,19 @@ public abstract class BaseIndexingTestCase {
 		}
 	}
 
-	protected Hits search(
-		SearchContext searchContext, QueryContributor queryContributor) {
+	protected long searchCount(SearchContext searchContext, Query query) {
+		try {
+			return _indexSearcher.searchCount(searchContext, query);
+		}
+		catch (SearchException se) {
+			Throwable t = se.getCause();
 
-		return search(searchContext, _getQuery(queryContributor));
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+
+			throw new RuntimeException(se);
+		}
 	}
 
 	protected void setPreBooleanFilter(Filter filter, Query query) {
@@ -213,6 +252,15 @@ public abstract class BaseIndexingTestCase {
 			_searchContext = createSearchContext();
 		}
 
+		public void assertResultCount(int expected) {
+			Document[] documents = _hits.getDocs();
+
+			Assert.assertEquals(
+				(String)_searchContext.getAttribute("queryString") + "->" +
+					Arrays.toString(documents),
+				expected, documents.length);
+		}
+
 		public void assertValues(
 			String fieldName, List<String> expectedValues) {
 
@@ -221,47 +269,81 @@ public abstract class BaseIndexingTestCase {
 				_hits.getDocs(), fieldName, expectedValues);
 		}
 
+		public void define(Consumer<SearchContext> consumer) {
+			consumer.accept(_searchContext);
+		}
+
+		public String getQueryString() {
+			return (String)_searchContext.getAttribute("queryString");
+		}
+
+		public SearchContext getSearchContext() {
+			return _searchContext;
+		}
+
 		public void search() {
-			QueryContributor queryContributor = null;
-
-			if (_filter != null) {
-				queryContributor =
-					booleanQuery -> setPreBooleanFilter(_filter, booleanQuery);
-			}
-
 			_hits = BaseIndexingTestCase.this.search(
-				_searchContext, _getQuery(queryContributor));
+				_searchContext, getQuery());
+		}
+
+		public long searchCount() {
+			return BaseIndexingTestCase.this.searchCount(
+				_searchContext, getQuery());
 		}
 
 		public void setFilter(Filter filter) {
 			_filter = filter;
 		}
 
-		private Filter _filter;
-		private Hits _hits;
-		private final SearchContext _searchContext;
+		public void setPostFilter(Filter postFilter) {
+			_postFilter = postFilter;
+		}
 
-	}
+		public void setQuery(Query query) {
+			_query = query;
+		}
 
-	private Query _getQuery(QueryContributor queryContributor) {
-		Query query = getDefaultQuery();
+		public void setQueryContributor(QueryContributor queryContributor) {
+			_queryContributor = queryContributor;
+		}
 
-		if (queryContributor == null) {
+		public void setSearchContextAttribute(String name, Serializable value) {
+			_searchContext.setAttribute(name, value);
+		}
+
+		public void verify(Consumer<Hits> consumer) {
+			consumer.accept(_hits);
+		}
+
+		protected Query getQuery() {
+			Query query = _query;
+
+			if (query == null) {
+				query = getDefaultQuery();
+			}
+
+			if (_queryContributor != null) {
+				_queryContributor.contribute(query);
+			}
+
+			if (_filter != null) {
+				setPreBooleanFilter(_filter, query);
+			}
+
+			if (_postFilter != null) {
+				query.setPostFilter(_postFilter);
+			}
+
 			return query;
 		}
 
-		BooleanQuery booleanQuery = new BooleanQueryImpl();
+		private Filter _filter;
+		private Hits _hits;
+		private Filter _postFilter;
+		private Query _query;
+		private QueryContributor _queryContributor;
+		private final SearchContext _searchContext;
 
-		try {
-			booleanQuery.add(query, BooleanClauseOccur.MUST);
-		}
-		catch (ParseException pe) {
-			throw new RuntimeException(pe);
-		}
-
-		queryContributor.contribute(booleanQuery);
-
-		return booleanQuery;
 	}
 
 	private final DocumentFixture _documentFixture = new DocumentFixture();

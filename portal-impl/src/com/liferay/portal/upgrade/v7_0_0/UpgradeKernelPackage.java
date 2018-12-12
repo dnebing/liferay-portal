@@ -139,7 +139,9 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 			return;
 		}
 
-		try (LoggingTimer loggingTimer = new LoggingTimer(tableName)) {
+		try (LoggingTimer loggingTimer = new LoggingTimer(
+				getClass(), tableName)) {
+
 			StringBundler updateSB = new StringBundler(7);
 
 			updateSB.append("update ");
@@ -207,7 +209,9 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 			WildcardMode wildcardMode, boolean preventDuplicates)
 		throws Exception {
 
-		try (LoggingTimer loggingTimer = new LoggingTimer(tableName)) {
+		try (LoggingTimer loggingTimer = new LoggingTimer(
+				getClass(), tableName)) {
+
 			if (preventDuplicates) {
 				_executeDelete(tableName, columnName, names, wildcardMode);
 			}
@@ -305,23 +309,14 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 			"com.liferay.portal.model.BackgroundTask",
 			"com.liferay.portal.background.task.model.BackgroundTask"
 		},
-		{
-			"com.liferay.portal.model.Lock",
-			"com.liferay.portal.lock.model.Lock"
-		},
+		{"com.liferay.portal.model.Lock", "com.liferay.portal.lock.model.Lock"},
 		{"com.liferay.portal.model.", "com.liferay.portal.kernel.model."},
 		{
 			"com.liferay.portlet.announcements.model.",
 			"com.liferay.announcements.kernel.model."
 		},
-		{
-			"com.liferay.portlet.asset.model.",
-			"com.liferay.asset.kernel.model."
-		},
-		{
-			"com.liferay.portlet.blogs.model.",
-			"com.liferay.blogs.kernel.model."
-		},
+		{"com.liferay.portlet.asset.model.", "com.liferay.asset.kernel.model."},
+		{"com.liferay.portlet.blogs.model.", "com.liferay.blogs.kernel.model."},
 		{
 			"com.liferay.portlet.documentlibrary.model.",
 			"com.liferay.document.library.kernel.model."
@@ -350,10 +345,7 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 			"com.liferay.portlet.social.model.",
 			"com.liferay.social.kernel.model."
 		},
-		{
-			"com.liferay.portlet.trash.model.",
-			"com.liferay.trash.kernel.model."
-		},
+		{"com.liferay.portlet.trash.model.", "com.liferay.trash.kernel.model."},
 		{
 			"com.liferay.socialnetworking.model.",
 			"com.liferay.social.networking.model."
@@ -363,10 +355,7 @@ public class UpgradeKernelPackage extends UpgradeProcess {
 	private static final String[][] _RESOURCE_NAMES = {
 		{"com.liferay.portlet.asset", "com.liferay.asset"},
 		{"com.liferay.portlet.blogs", "com.liferay.blogs"},
-		{
-			"com.liferay.portlet.documentlibrary",
-			"com.liferay.document.library"
-		},
+		{"com.liferay.portlet.documentlibrary", "com.liferay.document.library"},
 		{"com.liferay.portlet.messageboards", "com.liferay.message.boards"}
 	};
 

@@ -699,6 +699,8 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 		int start, int end,
 		OrderByComparator<KaleoDefinitionVersion> orderByComparator,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -727,8 +729,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoDefinitionVersion kaleoDefinitionVersion : list) {
 					if ((companyId != kaleoDefinitionVersion.getCompanyId()) ||
-							!Objects.equals(name,
-								kaleoDefinitionVersion.getName())) {
+							!name.equals(kaleoDefinitionVersion.getName())) {
 						list = null;
 
 						break;
@@ -754,10 +755,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_C_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_NAME_3);
 			}
 			else {
@@ -955,6 +953,8 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 		long kaleoDefinitionVersionId, long companyId, String name,
 		OrderByComparator<KaleoDefinitionVersion> orderByComparator)
 		throws NoSuchDefinitionVersionException {
+		name = Objects.toString(name, "");
+
 		KaleoDefinitionVersion kaleoDefinitionVersion = findByPrimaryKey(kaleoDefinitionVersionId);
 
 		Session session = null;
@@ -1004,10 +1004,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_C_N_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_C_N_NAME_3);
 		}
 		else {
@@ -1131,6 +1128,8 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 	 */
 	@Override
 	public int countByC_N(long companyId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_N;
 
 		Object[] finderArgs = new Object[] { companyId, name };
@@ -1146,10 +1145,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_C_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_NAME_3);
 			}
 			else {
@@ -1282,6 +1278,9 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 	@Override
 	public KaleoDefinitionVersion fetchByC_N_V(long companyId, String name,
 		String version, boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+		version = Objects.toString(version, "");
+
 		Object[] finderArgs = new Object[] { companyId, name, version };
 
 		Object result = null;
@@ -1310,10 +1309,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_C_N_V_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_V_NAME_3);
 			}
 			else {
@@ -1324,10 +1320,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_C_N_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_V_VERSION_3);
 			}
 			else {
@@ -1416,6 +1409,9 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 	 */
 	@Override
 	public int countByC_N_V(long companyId, String name, String version) {
+		name = Objects.toString(name, "");
+		version = Objects.toString(version, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_C_N_V;
 
 		Object[] finderArgs = new Object[] { companyId, name, version };
@@ -1431,10 +1427,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_C_N_V_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_V_NAME_3);
 			}
 			else {
@@ -1445,10 +1438,7 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_C_N_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_C_N_V_VERSION_3);
 			}
 			else {
@@ -1505,6 +1495,9 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 
 	public KaleoDefinitionVersionPersistenceImpl() {
 		setModelClass(KaleoDefinitionVersion.class);
+
+		setModelImplClass(KaleoDefinitionVersionImpl.class);
+		setEntityCacheEnabled(KaleoDefinitionVersionModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -1935,54 +1928,6 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 	/**
 	 * Returns the kaleo definition version with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kaleo definition version
-	 * @return the kaleo definition version, or <code>null</code> if a kaleo definition version with the primary key could not be found
-	 */
-	@Override
-	public KaleoDefinitionVersion fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KaleoDefinitionVersionModelImpl.ENTITY_CACHE_ENABLED,
-				KaleoDefinitionVersionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KaleoDefinitionVersion kaleoDefinitionVersion = (KaleoDefinitionVersion)serializable;
-
-		if (kaleoDefinitionVersion == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoDefinitionVersion = (KaleoDefinitionVersion)session.get(KaleoDefinitionVersionImpl.class,
-						primaryKey);
-
-				if (kaleoDefinitionVersion != null) {
-					cacheResult(kaleoDefinitionVersion);
-				}
-				else {
-					entityCache.putResult(KaleoDefinitionVersionModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoDefinitionVersionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KaleoDefinitionVersionModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoDefinitionVersionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kaleoDefinitionVersion;
-	}
-
-	/**
-	 * Returns the kaleo definition version with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kaleoDefinitionVersionId the primary key of the kaleo definition version
 	 * @return the kaleo definition version, or <code>null</code> if a kaleo definition version with the primary key could not be found
 	 */
@@ -2276,6 +2221,11 @@ public class KaleoDefinitionVersionPersistenceImpl extends BasePersistenceImpl<K
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

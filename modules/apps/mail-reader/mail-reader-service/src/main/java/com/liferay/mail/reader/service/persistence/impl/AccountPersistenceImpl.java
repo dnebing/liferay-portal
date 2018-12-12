@@ -663,6 +663,8 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 	@Override
 	public Account fetchByU_A(long userId, String address,
 		boolean retrieveFromCache) {
+		address = Objects.toString(address, "");
+
 		Object[] finderArgs = new Object[] { userId, address };
 
 		Object result = null;
@@ -690,10 +692,7 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 
 			boolean bindAddress = false;
 
-			if (address == null) {
-				query.append(_FINDER_COLUMN_U_A_ADDRESS_1);
-			}
-			else if (address.equals("")) {
+			if (address.isEmpty()) {
 				query.append(_FINDER_COLUMN_U_A_ADDRESS_3);
 			}
 			else {
@@ -786,6 +785,8 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 	 */
 	@Override
 	public int countByU_A(long userId, String address) {
+		address = Objects.toString(address, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_U_A;
 
 		Object[] finderArgs = new Object[] { userId, address };
@@ -801,10 +802,7 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 
 			boolean bindAddress = false;
 
-			if (address == null) {
-				query.append(_FINDER_COLUMN_U_A_ADDRESS_1);
-			}
-			else if (address.equals("")) {
+			if (address.isEmpty()) {
 				query.append(_FINDER_COLUMN_U_A_ADDRESS_3);
 			}
 			else {
@@ -854,6 +852,9 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 
 	public AccountPersistenceImpl() {
 		setModelClass(Account.class);
+
+		setModelImplClass(AccountImpl.class);
+		setEntityCacheEnabled(AccountModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -1241,53 +1242,6 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 	/**
 	 * Returns the account with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the account
-	 * @return the account, or <code>null</code> if a account with the primary key could not be found
-	 */
-	@Override
-	public Account fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(AccountModelImpl.ENTITY_CACHE_ENABLED,
-				AccountImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Account account = (Account)serializable;
-
-		if (account == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				account = (Account)session.get(AccountImpl.class, primaryKey);
-
-				if (account != null) {
-					cacheResult(account);
-				}
-				else {
-					entityCache.putResult(AccountModelImpl.ENTITY_CACHE_ENABLED,
-						AccountImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(AccountModelImpl.ENTITY_CACHE_ENABLED,
-					AccountImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return account;
-	}
-
-	/**
-	 * Returns the account with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param accountId the primary key of the account
 	 * @return the account, or <code>null</code> if a account with the primary key could not be found
 	 */
@@ -1583,6 +1537,11 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

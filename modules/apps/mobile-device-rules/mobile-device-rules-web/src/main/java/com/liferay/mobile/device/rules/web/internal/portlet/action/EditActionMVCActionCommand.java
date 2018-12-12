@@ -113,12 +113,11 @@ public class EditActionMVCActionCommand extends BaseMVCActionCommand {
 	protected void updateAction(ActionRequest actionRequest) throws Exception {
 		long actionId = ParamUtil.getLong(actionRequest, "actionId");
 
-		long ruleGroupInstanceId = ParamUtil.getLong(
-			actionRequest, "ruleGroupInstanceId");
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, "name");
 		Map<Locale, String> descriptionMap =
 			LocalizationUtil.getLocalizationMap(actionRequest, "description");
+
 		String type = ParamUtil.getString(actionRequest, "type");
 
 		ActionHandler actionHandler = ActionHandlerManagerUtil.getActionHandler(
@@ -136,6 +135,9 @@ public class EditActionMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest);
 
 		if (actionId <= 0) {
+			long ruleGroupInstanceId = ParamUtil.getLong(
+				actionRequest, "ruleGroupInstanceId");
+
 			_mdrActionService.addAction(
 				ruleGroupInstanceId, nameMap, descriptionMap, type,
 				typeSettingsProperties, serviceContext);

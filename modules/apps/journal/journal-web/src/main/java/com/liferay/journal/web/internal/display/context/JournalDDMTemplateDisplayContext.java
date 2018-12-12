@@ -31,15 +31,16 @@ import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.staging.StagingGroupHelper;
+import com.liferay.staging.StagingGroupHelperUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -83,6 +84,16 @@ public class JournalDDMTemplateDisplayContext {
 		};
 	}
 
+	public long getClassPK() {
+		if (_classPK != null) {
+			return _classPK;
+		}
+
+		_classPK = ParamUtil.getLong(_request, "classPK");
+
+		return _classPK;
+	}
+
 	public String getClearResultsURL() {
 		PortletURL clearResultsURL = _getPortletURL();
 
@@ -107,7 +118,7 @@ public class JournalDDMTemplateDisplayContext {
 							"classNameId",
 							String.valueOf(
 								PortalUtil.getClassNameId(DDMStructure.class)),
-							"classPK", String.valueOf(_getClassPK()),
+							"classPK", String.valueOf(getClassPK()),
 							"resourceClassNameId",
 							String.valueOf(
 								PortalUtil.getClassNameId(
@@ -125,17 +136,12 @@ public class JournalDDMTemplateDisplayContext {
 			return _ddmStructure;
 		}
 
-		long structureClassNameId = PortalUtil.getClassNameId(
-			DDMStructure.class);
-
-		if ((_getClassPK() <= 0) ||
-			(structureClassNameId != _getClassNameId())) {
-
+		if (getClassPK() <= 0) {
 			return _ddmStructure;
 		}
 
 		_ddmStructure = DDMStructureLocalServiceUtil.fetchStructure(
-			_getClassPK());
+			getClassPK());
 
 		return _ddmStructure;
 	}
@@ -290,6 +296,17 @@ public class JournalDDMTemplateDisplayContext {
 		ThemeDisplay themeDisplay = (ThemeDisplay)_renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
+		Group group = themeDisplay.getScopeGroup();
+
+		StagingGroupHelper stagingGroupHelper =
+			StagingGroupHelperUtil.getStagingGroupHelper();
+
+		if (stagingGroupHelper.isLocalLiveGroup(group) ||
+			stagingGroupHelper.isRemoteLiveGroup(group)) {
+
+			return false;
+		}
+
 		if (DDMTemplatePermission.containsAddTemplatePermission(
 				themeDisplay.getPermissionChecker(),
 				themeDisplay.getScopeGroupId(),
@@ -302,45 +319,12 @@ public class JournalDDMTemplateDisplayContext {
 		return false;
 	}
 
-	private long _getClassNameId() {
-		if (_classNameId != null) {
-			return _classNameId;
-		}
-
-		_classNameId = ParamUtil.getLong(_request, "classNameId");
-
-		return _classNameId;
-	}
-
-	private long _getClassPK() {
-		if (_classPK != null) {
-			return _classPK;
-		}
-
-		_classPK = ParamUtil.getLong(_request, "classPK");
-
-		return _classPK;
-	}
-
 	private long[] _getDDMTemplateClassPKs() {
-		if (_getClassPK() > 0) {
-			return new long[] {_getClassPK()};
+		if (getClassPK() > 0) {
+			return new long[] {getClassPK()};
 		}
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)_renderRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		List<DDMStructure> ddmStructures =
-			DDMStructureLocalServiceUtil.getClassStructures(
-				themeDisplay.getCompanyId(),
-				PortalUtil.getClassNameId(JournalArticle.class));
-
-		List<Long> classPKs = ListUtil.toList(
-			ddmStructures, DDMStructure.STRUCTURE_ID_ACCESSOR);
-
-		classPKs.add(0, 0L);
-
-		return ArrayUtil.toLongArray(classPKs);
+		return null;
 	}
 
 	private List<DropdownItem> _getFilterNavigationDropdownItems() {
@@ -419,7 +403,6 @@ public class JournalDDMTemplateDisplayContext {
 		return portletURL;
 	}
 
-	private Long _classNameId;
 	private Long _classPK;
 	private DDMStructure _ddmStructure;
 	private SearchContainer _ddmTemplateSearch;

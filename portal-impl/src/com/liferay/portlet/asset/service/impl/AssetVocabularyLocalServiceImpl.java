@@ -100,6 +100,7 @@ public class AssetVocabularyLocalServiceImpl
 		// Vocabulary
 
 		User user = userLocalService.getUser(userId);
+
 		String name = titleMap.get(LocaleUtil.getSiteDefault());
 
 		validate(groupId, name);
@@ -461,9 +462,8 @@ public class AssetVocabularyLocalServiceImpl
 		if (assetVocabularyPersistence.countByG_N(groupId, name) == 0) {
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
 	protected BaseModelSearchResult<AssetVocabulary> searchVocabularies(

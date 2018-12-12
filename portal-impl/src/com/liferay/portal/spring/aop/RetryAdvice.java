@@ -22,8 +22,6 @@ import com.liferay.portal.kernel.spring.aop.Retry;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.util.PropsValues;
 
-import java.lang.annotation.Annotation;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,18 +32,13 @@ import org.aopalliance.intercept.MethodInvocation;
  */
 public class RetryAdvice extends AnnotationChainableMethodAdvice<Retry> {
 
-	@Override
-	public Retry getNullAnnotation() {
-		return _nullRetry;
+	public RetryAdvice() {
+		super(Retry.class);
 	}
 
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
 		Retry retry = findAnnotation(methodInvocation);
-
-		if (retry == _nullRetry) {
-			return methodInvocation.proceed();
-		}
 
 		int retries = retry.retries();
 
@@ -72,7 +65,7 @@ public class RetryAdvice extends AnnotationChainableMethodAdvice<Retry> {
 		ServiceBeanMethodInvocation serviceBeanMethodInvocation =
 			(ServiceBeanMethodInvocation)methodInvocation;
 
-		serviceBeanMethodInvocation.mark();
+		int index = serviceBeanMethodInvocation.getIndex();
 
 		Object returnValue = null;
 		Throwable throwable = null;
@@ -122,7 +115,7 @@ public class RetryAdvice extends AnnotationChainableMethodAdvice<Retry> {
 				}
 			}
 
-			serviceBeanMethodInvocation.reset();
+			serviceBeanMethodInvocation.setIndex(index);
 		}
 
 		if (throwable != null) {
@@ -153,29 +146,5 @@ public class RetryAdvice extends AnnotationChainableMethodAdvice<Retry> {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(RetryAdvice.class);
-
-	private static final Retry _nullRetry = new Retry() {
-
-		@Override
-		public Class<? extends RetryAcceptor> acceptor() {
-			return null;
-		}
-
-		@Override
-		public Class<? extends Annotation> annotationType() {
-			return Retry.class;
-		}
-
-		@Override
-		public Property[] properties() {
-			return null;
-		}
-
-		@Override
-		public int retries() {
-			return 0;
-		}
-
-	};
 
 }

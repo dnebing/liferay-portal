@@ -96,35 +96,31 @@ public class CalendarActivityInterpreter extends BaseSocialActivityInterpreter {
 			if (Validator.isNull(groupName)) {
 				return "activity-calendar-booking-add-booking";
 			}
-			else {
-				return "activity-calendar-booking-add-booking-in";
-			}
+
+			return "activity-calendar-booking-add-booking-in";
 		}
 		else if (activityType == SocialActivityConstants.TYPE_MOVE_TO_TRASH) {
 			if (Validator.isNull(groupName)) {
 				return "activity-calendar-booking-move-to-trash";
 			}
-			else {
-				return "activity-calendar-booking-move-to-trash-in";
-			}
+
+			return "activity-calendar-booking-move-to-trash-in";
 		}
 		else if (activityType ==
-					 SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
+					SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
 
 			if (Validator.isNull(groupName)) {
 				return "activity-calendar-booking-restore-from-trash";
 			}
-			else {
-				return "activity-calendar-booking-restore-from-trash-in";
-			}
+
+			return "activity-calendar-booking-restore-from-trash-in";
 		}
 		else if (activityType == CalendarActivityKeys.UPDATE_CALENDAR_BOOKING) {
 			if (Validator.isNull(groupName)) {
 				return "activity-calendar-booking-update-booking";
 			}
-			else {
-				return "activity-calendar-booking-update-booking-in";
-			}
+
+			return "activity-calendar-booking-update-booking-in";
 		}
 
 		return StringPool.BLANK;
@@ -151,8 +147,9 @@ public class CalendarActivityInterpreter extends BaseSocialActivityInterpreter {
 		_calendarBookingLocalService = calendarBookingLocalService;
 	}
 
-	private static final String[] _CLASS_NAMES =
-		{CalendarBooking.class.getName()};
+	private static final String[] _CLASS_NAMES = {
+		CalendarBooking.class.getName()
+	};
 
 	private CalendarBookingLocalService _calendarBookingLocalService;
 

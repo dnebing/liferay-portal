@@ -23,7 +23,11 @@ OAuth2Application oAuth2Application = oAuth2AuthorizePortletDisplayContext.getOA
 
 Map<String, String> oAuth2Parameters = oAuth2AuthorizePortletDisplayContext.getOAuth2Parameters();
 
-String replyTo = PortalUtil.escapeRedirect(oAuth2Parameters.get("reply_to"));
+String replyTo = oAuth2Parameters.get("reply_to");
+
+if (Validator.isNotNull(replyTo) && !replyTo.startsWith(PortalUtil.getPortalURL(request))) {
+	replyTo = PortalUtil.escapeRedirect(replyTo);
+}
 %>
 
 <div class="closed consent container-fluid-1280">

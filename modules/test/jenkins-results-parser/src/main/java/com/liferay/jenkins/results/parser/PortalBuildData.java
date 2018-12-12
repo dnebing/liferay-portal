@@ -19,8 +19,21 @@ package com.liferay.jenkins.results.parser;
  */
 public interface PortalBuildData extends BuildData {
 
+	public String getPortalBranchSHA();
+
 	public String getPortalGitHubURL();
 
 	public String getPortalUpstreamBranchName();
+
+	public void setPortalBranchSHA(String portalBranchSHA);
+
+	public void setPortalGitHubURL(String portalGitHubURL);
+
+	public void setPortalUpstreamBranchName(String portalUpstreamBranchName);
+
+	public final String DEFAULT_PORTAL_GITHUB_URL =
+		"https://github.com/liferay/liferay-portal/tree/master";
+
+	public final String DEFAULT_PORTAL_UPSTREAM_BRANCH_NAME = "master";
 
 }

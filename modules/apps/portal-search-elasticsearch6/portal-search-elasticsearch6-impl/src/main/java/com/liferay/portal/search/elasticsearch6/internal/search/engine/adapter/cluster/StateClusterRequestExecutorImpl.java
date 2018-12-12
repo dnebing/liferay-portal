@@ -21,13 +21,14 @@ import com.liferay.portal.search.engine.adapter.cluster.StateClusterResponse;
 
 import java.io.IOException;
 
+import org.elasticsearch.action.admin.cluster.state.ClusterStateAction;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.xpack.watcher.watch.Payload;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,11 +58,11 @@ public class StateClusterRequestExecutorImpl
 			xContentBuilder.startObject();
 
 			xContentBuilder = clusterState.toXContent(
-				xContentBuilder, Payload.XContent.EMPTY_PARAMS);
+				xContentBuilder, ToXContent.EMPTY_PARAMS);
 
 			xContentBuilder.endObject();
 
-			return new StateClusterResponse(xContentBuilder.string());
+			return new StateClusterResponse(Strings.toString(xContentBuilder));
 		}
 		catch (IOException ioe) {
 			throw new SystemException(ioe);
@@ -71,11 +72,9 @@ public class StateClusterRequestExecutorImpl
 	protected ClusterStateRequestBuilder createClusterStateRequestBuilder(
 		StateClusterRequest stateClusterRequest) {
 
-		ClusterAdminClient clusterAdminClient =
-			elasticsearchConnectionManager.getClusterAdminClient();
-
 		ClusterStateRequestBuilder clusterStateRequestBuilder =
-			clusterAdminClient.prepareState();
+			ClusterStateAction.INSTANCE.newRequestBuilder(
+				elasticsearchConnectionManager.getClient());
 
 		clusterStateRequestBuilder.setIndices(
 			stateClusterRequest.getIndexNames());

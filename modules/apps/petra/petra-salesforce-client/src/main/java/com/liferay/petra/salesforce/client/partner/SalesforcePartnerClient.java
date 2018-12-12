@@ -14,6 +14,8 @@
 
 package com.liferay.petra.salesforce.client.partner;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.petra.salesforce.client.SalesforceClient;
 
 import com.sforce.soap.partner.DeleteResult;
@@ -21,6 +23,7 @@ import com.sforce.soap.partner.DescribeGlobalResult;
 import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.GetDeletedResult;
 import com.sforce.soap.partner.GetUpdatedResult;
+import com.sforce.soap.partner.GetUserInfoResult;
 import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.SaveResult;
@@ -35,6 +38,7 @@ import java.util.List;
  * @author Brian Wing Shun Chan
  * @author Peter Shin
  */
+@ProviderType
 public interface SalesforcePartnerClient extends SalesforceClient {
 
 	public List<SaveResult> create(SObject[] sObjects)
@@ -59,6 +63,8 @@ public interface SalesforcePartnerClient extends SalesforceClient {
 			String typeName, Calendar startCalendar, Calendar endCalendar,
 			int retryCount)
 		throws ConnectionException;
+
+	public GetUserInfoResult getUserInfo() throws ConnectionException;
 
 	public LoginResult login(String username, String password, int retryCount)
 		throws ConnectionException;

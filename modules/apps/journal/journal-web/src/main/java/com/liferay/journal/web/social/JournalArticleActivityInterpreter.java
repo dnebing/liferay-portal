@@ -64,14 +64,6 @@ public class JournalArticleActivityInterpreter
 			SocialActivity activity, ServiceContext serviceContext)
 		throws Exception {
 
-		AssetRendererFactory journalArticleAssetRendererFactory =
-			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClass(
-				JournalArticle.class);
-
-		AssetRenderer journalArticleAssetRenderer =
-			journalArticleAssetRendererFactory.getAssetRenderer(
-				activity.getClassPK());
-
 		LiferayPortletRequest liferayPortletRequest =
 			serviceContext.getLiferayPortletRequest();
 
@@ -80,6 +72,14 @@ public class JournalArticleActivityInterpreter
 
 		if ((liferayPortletRequest != null) &&
 			(liferayPortletResponse != null)) {
+
+			AssetRendererFactory journalArticleAssetRendererFactory =
+				AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClass(
+					JournalArticle.class);
+
+			AssetRenderer journalArticleAssetRenderer =
+				journalArticleAssetRendererFactory.getAssetRenderer(
+					activity.getClassPK());
 
 			return journalArticleAssetRenderer.getURLViewInContext(
 				serviceContext.getLiferayPortletRequest(),
@@ -118,35 +118,31 @@ public class JournalArticleActivityInterpreter
 			if (Validator.isNull(groupName)) {
 				return "activity-journal-article-add-web-content";
 			}
-			else {
-				return "activity-journal-article-add-web-content-in";
-			}
+
+			return "activity-journal-article-add-web-content-in";
 		}
 		else if (activityType == JournalActivityKeys.UPDATE_ARTICLE) {
 			if (Validator.isNull(groupName)) {
 				return "activity-journal-article-update-web-content";
 			}
-			else {
-				return "activity-journal-article-update-web-content-in";
-			}
+
+			return "activity-journal-article-update-web-content-in";
 		}
 		else if (activityType == SocialActivityConstants.TYPE_MOVE_TO_TRASH) {
 			if (Validator.isNull(groupName)) {
 				return "activity-journal-article-move-to-trash";
 			}
-			else {
-				return "activity-journal-article-move-to-trash-in";
-			}
+
+			return "activity-journal-article-move-to-trash-in";
 		}
 		else if (activityType ==
-					 SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
+					SocialActivityConstants.TYPE_RESTORE_FROM_TRASH) {
 
 			if (Validator.isNull(groupName)) {
 				return "activity-journal-article-restore-from-trash";
 			}
-			else {
-				return "activity-journal-article-restore-from-trash-in";
-			}
+
+			return "activity-journal-article-restore-from-trash-in";
 		}
 
 		return null;
@@ -186,8 +182,9 @@ public class JournalArticleActivityInterpreter
 		_journalArticleLocalService = journalArticleLocalService;
 	}
 
-	private static final String[] _CLASS_NAMES =
-		{JournalArticle.class.getName()};
+	private static final String[] _CLASS_NAMES = {
+		JournalArticle.class.getName()
+	};
 
 	private JournalArticleLocalService _journalArticleLocalService;
 

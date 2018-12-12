@@ -14,7 +14,10 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
+
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.dom4j.Attribute;
 import org.dom4j.Element;
@@ -36,7 +39,8 @@ public class ConditionPoshiElement extends ExecutePoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new ConditionPoshiElement(parentPoshiElement, poshiScript);
@@ -59,7 +63,8 @@ public class ConditionPoshiElement extends ExecutePoshiElement {
 	}
 
 	protected ConditionPoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(_ELEMENT_NAME, parentPoshiElement, poshiScript);
 	}
@@ -78,29 +83,20 @@ public class ConditionPoshiElement extends ExecutePoshiElement {
 		return poshiScriptSnippet;
 	}
 
+	@Override
+	protected Pattern getConditionPattern() {
+		return _conditionPattern;
+	}
+
 	private boolean _isElementType(
 		PoshiElement parentPoshiElement, String poshiScript) {
 
-		if (!isConditionValidInParent(parentPoshiElement)) {
-			return false;
-		}
-
-		poshiScript = poshiScript.trim();
-
-		if (poshiScript.contains(" && ") || poshiScript.contains(" || ") ||
-			poshiScript.startsWith("!") || poshiScript.startsWith("contains") ||
-			poshiScript.startsWith("else if (")) {
-
-			return false;
-		}
-
-		if (poshiScript.endsWith(")") && !poshiScript.startsWith("isSet(")) {
-			return true;
-		}
-
-		return false;
+		return isConditionElementType(parentPoshiElement, poshiScript);
 	}
 
 	private static final String _ELEMENT_NAME = "condition";
+
+	private static final Pattern _conditionPattern = Pattern.compile(
+		"^(?!isSet|contains)[\\w\\.]+\\([\\s\\S]*\\)$");
 
 }

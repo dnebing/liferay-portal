@@ -33,6 +33,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ErrorCollector;
 
@@ -40,6 +41,11 @@ import org.junit.rules.ErrorCollector;
  * @author Peter Yoo
  */
 public class Test {
+
+	@Before
+	public void setUp() throws Exception {
+		JenkinsResultsParserUtil.clearCache();
+	}
 
 	@Rule
 	public ErrorCollector errorCollector = new ErrorCollector();
@@ -99,8 +105,10 @@ public class Test {
 
 			errorCollector.addError(
 				new Throwable(
-					"Expected message mismatch in sample '" + sampleKey +
-						"'."));
+					JenkinsResultsParserUtil.combine(
+						"Expected message mismatch in sample '", sampleKey,
+						"'.\n Expected message file: ",
+						expectedMessageFile.getPath())));
 		}
 	}
 
@@ -299,6 +307,25 @@ public class Test {
 		}
 
 		return string.replace("${" + token + "}", value);
+	}
+
+	protected void testEquals(String expected, String actual) {
+		if (!((expected == null) ^ (actual == null))) {
+			if ((expected != null) && !expected.equals(actual)) {
+				errorCollector.addError(
+					new Throwable(
+						JenkinsResultsParserUtil.combine(
+							"String mismatch\nExpected:", expected, "\nActual:",
+							actual)));
+			}
+		}
+		else {
+			errorCollector.addError(
+				new Throwable(
+					JenkinsResultsParserUtil.combine(
+						"String mismatch\nExpected:", expected, "\nActual:",
+						actual)));
+		}
 	}
 
 	protected String toURLString(File file) throws Exception {

@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.repository.LocalRepository;
 import com.liferay.portal.kernel.repository.RepositoryProviderUtil;
 import com.liferay.portal.kernel.repository.capabilities.TemporaryFileEntriesCapability;
+import com.liferay.portal.kernel.repository.capabilities.TrashCapability;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -113,10 +114,13 @@ public class EditFolderMVCActionCommand extends BaseMVCActionCommand {
 
 		for (long deleteFolderId : deleteFolderIds) {
 			if (moveToTrash) {
-				Folder folder = _dlTrashService.moveFolderToTrash(
-					deleteFolderId);
+				Folder folder = _dlAppService.getFolder(deleteFolderId);
 
-				if (folder.getModel() instanceof DLFolder) {
+				if (folder.isRepositoryCapabilityProvided(
+						TrashCapability.class)) {
+
+					_dlTrashService.moveFolderToTrash(deleteFolderId);
+
 					trashedModels.add((DLFolder)folder.getModel());
 				}
 			}
@@ -217,9 +221,6 @@ public class EditFolderMVCActionCommand extends BaseMVCActionCommand {
 	protected void updateFolder(ActionRequest actionRequest) throws Exception {
 		long folderId = ParamUtil.getLong(actionRequest, "folderId");
 
-		long repositoryId = ParamUtil.getLong(actionRequest, "repositoryId");
-		long parentFolderId = ParamUtil.getLong(
-			actionRequest, "parentFolderId");
 		String name = ParamUtil.getString(actionRequest, "name");
 		String description = ParamUtil.getString(actionRequest, "description");
 
@@ -229,6 +230,11 @@ public class EditFolderMVCActionCommand extends BaseMVCActionCommand {
 		if (folderId <= 0) {
 
 			// Add folder
+
+			long repositoryId = ParamUtil.getLong(
+				actionRequest, "repositoryId");
+			long parentFolderId = ParamUtil.getLong(
+				actionRequest, "parentFolderId");
 
 			_dlAppService.addFolder(
 				repositoryId, parentFolderId, name, description,

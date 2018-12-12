@@ -21,14 +21,19 @@ import com.liferay.dynamic.data.mapping.form.builder.internal.converter.DDMFormR
 import com.liferay.dynamic.data.mapping.form.builder.internal.converter.DDMFormRuleDeserializer;
 import com.liferay.dynamic.data.mapping.form.builder.internal.converter.model.DDMFormRule;
 import com.liferay.dynamic.data.mapping.form.builder.internal.converter.serializer.DDMFormRuleSerializerContext;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTypeServicesTracker;
+import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldValueAccessor;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
+import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -125,6 +130,19 @@ public class DDMFormContextToDDMForm
 		return availableLocales;
 	}
 
+	protected Object getBooleanValue(
+		String type, String serializedValue, Locale defaultLocale) {
+
+		Object value = getValueFromValueAccessor(
+			type, serializedValue, defaultLocale);
+
+		if (!(value instanceof Boolean)) {
+			value = Boolean.valueOf(serializedValue);
+		}
+
+		return value;
+	}
+
 	protected DDMFormFieldOptions getDDMFormFieldOptions(
 		JSONObject jsonObject, Set<Locale> availableLocales,
 		Locale defaultLocale) {
@@ -180,27 +198,20 @@ public class DDMFormContextToDDMForm
 				serializedValue, availableLocales, defaultLocale);
 		}
 		else if (Objects.equals(dataType, "boolean")) {
-			return Boolean.valueOf(serializedValue);
+			return getBooleanValue(type, serializedValue, defaultLocale);
 		}
 		else if (Objects.equals(type, "validation")) {
 			return getDDMFormFieldValidation(serializedValue);
 		}
 		else if (localizable) {
 			return getLocalizedValue(
-				serializedValue, availableLocales, defaultLocale);
+				serializedValue, type, availableLocales, defaultLocale);
 		}
 		else if (Objects.equals(type, "select")) {
-			return getDDMFormFieldSelectValue(serializedValue);
+			return getSelectValue(type, serializedValue, defaultLocale);
 		}
-		else {
-			return serializedValue;
-		}
-	}
 
-	protected JSONArray getDDMFormFieldSelectValue(String serializedValue)
-		throws PortalException {
-
-		return jsonFactory.createJSONArray(serializedValue);
+		return serializedValue;
 	}
 
 	protected DDMFormFieldValidation getDDMFormFieldValidation(
@@ -242,7 +253,7 @@ public class DDMFormContextToDDMForm
 	}
 
 	protected LocalizedValue getLocalizedValue(
-			String serializedValue, Set<Locale> availableLocales,
+			String serializedValue, String type, Set<Locale> availableLocales,
 			Locale defaultLocale)
 		throws PortalException {
 
@@ -257,10 +268,45 @@ public class DDMFormContextToDDMForm
 			String valueString = jsonObject.getString(
 				LocaleUtil.toLanguageId(availableLocale), defaultValueString);
 
+			valueString = String.valueOf(
+				getValueFromValueAccessor(type, valueString, defaultLocale));
+
 			localizedValue.addString(availableLocale, valueString);
 		}
 
 		return localizedValue;
+	}
+
+	protected Object getSelectValue(
+			String type, String serializedValue, Locale defaultLocale)
+		throws JSONException {
+
+		Object value = getValueFromValueAccessor(
+			type, serializedValue, defaultLocale);
+
+		if (!(value instanceof JSONArray)) {
+			value = jsonFactory.createJSONArray(serializedValue);
+		}
+
+		return value;
+	}
+
+	protected Object getValueFromValueAccessor(
+		String type, String serializedValue, Locale defaultLocale) {
+
+		DDMFormFieldValueAccessor<?> ddmFormFieldValueAccessor =
+			ddmFormFieldTypeServicesTracker.getDDMFormFieldValueAccessor(type);
+
+		DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
+
+		ddmFormFieldValue.setValue(new UnlocalizedValue(serializedValue));
+
+		if (ddmFormFieldValueAccessor != null) {
+			return ddmFormFieldValueAccessor.getValue(
+				ddmFormFieldValue, defaultLocale);
+		}
+
+		return serializedValue;
 	}
 
 	protected void setDDMFormAvailableLocales(
@@ -350,9 +396,8 @@ public class DDMFormContextToDDMForm
 					if (localizable) {
 						return "localizedValue";
 					}
-					else {
-						return "value";
-					}
+
+					return "value";
 				}
 
 			});
@@ -398,6 +443,9 @@ public class DDMFormContextToDDMForm
 
 		ddmForm.setDDMFormSuccessPageSettings(ddmFormSuccessPageSettings);
 	}
+
+	@Reference
+	protected DDMFormFieldTypeServicesTracker ddmFormFieldTypeServicesTracker;
 
 	@Reference
 	protected DDMFormRuleConverter ddmFormRuleConverter;

@@ -14,6 +14,7 @@
 
 package com.liferay.poshi.runner.elements;
 
+import com.liferay.poshi.runner.script.PoshiScriptParserException;
 import com.liferay.poshi.runner.util.RegexUtil;
 
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class ExecutePoshiElement extends PoshiElement {
 
 	@Override
 	public PoshiElement clone(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		if (_isElementType(parentPoshiElement, poshiScript)) {
 			return new ExecutePoshiElement(parentPoshiElement, poshiScript);
@@ -53,10 +55,22 @@ public class ExecutePoshiElement extends PoshiElement {
 	}
 
 	@Override
-	public void parsePoshiScript(String poshiScript) {
-		String executeType = "macro";
+	public void parsePoshiScript(String poshiScript)
+		throws PoshiScriptParserException {
 
-		if (isValidUtilityClassName(poshiScript)) {
+		String executeType = "macro";
+		String fileExtension = getFileExtension();
+
+		if (fileExtension.equals("function")) {
+			executeType = "function";
+
+			if (poshiScript.startsWith("selenium.")) {
+				executeType = "selenium";
+
+				poshiScript = poshiScript.replace("selenium.", "");
+			}
+		}
+		else if (isValidUtilityClassName(poshiScript)) {
 			executeType = "class";
 		}
 		else if (isValidFunctionFileName(poshiScript)) {
@@ -71,7 +85,9 @@ public class ExecutePoshiElement extends PoshiElement {
 
 			String parentheticalContent = getParentheticalContent(poshiScript);
 
-			add(PoshiNodeFactory.newPoshiNode(this, parentheticalContent));
+			for (String parameter : getMethodParameters(parentheticalContent)) {
+				add(PoshiNodeFactory.newPoshiNode(this, parameter));
+			}
 
 			return;
 		}
@@ -88,7 +104,7 @@ public class ExecutePoshiElement extends PoshiElement {
 		}
 
 		String executeCommandName = RegexUtil.getGroup(
-			poshiScript, "([^\\s]*)\\(", 1);
+			poshiScript, "([^\\s]*?)\\(", 1);
 
 		executeCommandName = executeCommandName.replace(".", "#");
 
@@ -97,6 +113,20 @@ public class ExecutePoshiElement extends PoshiElement {
 		String content = getParentheticalContent(poshiScript);
 
 		if (content.length() == 0) {
+			return;
+		}
+
+		if (executeType.equals("selenium")) {
+			List<String> methodParameters = getMethodParameters(content);
+
+			for (int i = 0; i < methodParameters.size(); i++) {
+				String methodParameter = methodParameters.get(i);
+
+				String value = getDoubleQuotedContent(methodParameter);
+
+				addAttribute("argument" + (i + 1), value);
+			}
+
 			return;
 		}
 
@@ -117,7 +147,7 @@ public class ExecutePoshiElement extends PoshiElement {
 				if (assignment.startsWith(functionAttributeName)) {
 					String name = getNameFromAssignment(assignment);
 
-					String value = getQuotedContent(assignment);
+					String value = getDoubleQuotedContent(assignment);
 
 					value = StringEscapeUtils.unescapeXml(value);
 
@@ -130,6 +160,18 @@ public class ExecutePoshiElement extends PoshiElement {
 			}
 
 			if (functionAttributeAdded) {
+				continue;
+			}
+
+			if (executeType.equals("selenium")) {
+				String name = getNameFromAssignment(assignment);
+
+				String value = getValueFromAssignment(assignment);
+
+				value = getDoubleQuotedContent(value);
+
+				addAttribute(name, value);
+
 				continue;
 			}
 
@@ -155,7 +197,19 @@ public class ExecutePoshiElement extends PoshiElement {
 			if (poshiElementAttributeName.equals("class") ||
 				poshiElementAttributeName.equals("function") ||
 				poshiElementAttributeName.equals("macro") ||
-				poshiElementAttributeName.equals("method")) {
+				poshiElementAttributeName.equals("method") ||
+				poshiElementAttributeName.equals("selenium")) {
+
+				continue;
+			}
+
+			String fileExtension = getFileExtension();
+
+			if (fileExtension.equals("function")) {
+				String poshiElementAttributeValue =
+					poshiElementAttribute.getValue();
+
+				assignments.add(doubleQuoteContent(poshiElementAttributeValue));
 
 				continue;
 			}
@@ -202,7 +256,8 @@ public class ExecutePoshiElement extends PoshiElement {
 	}
 
 	protected ExecutePoshiElement(
-		PoshiElement parentPoshiElement, String poshiScript) {
+			PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super("execute", parentPoshiElement, poshiScript);
 	}
@@ -218,7 +273,8 @@ public class ExecutePoshiElement extends PoshiElement {
 	}
 
 	protected ExecutePoshiElement(
-		String name, PoshiElement parentPoshiElement, String poshiScript) {
+			String name, PoshiElement parentPoshiElement, String poshiScript)
+		throws PoshiScriptParserException {
 
 		super(name, parentPoshiElement, poshiScript);
 	}
@@ -289,7 +345,11 @@ public class ExecutePoshiElement extends PoshiElement {
 			return attributeValue("function");
 		}
 
-		return attributeValue("macro");
+		if (attributeValue("macro") != null) {
+			return attributeValue("macro");
+		}
+
+		return "selenium." + attributeValue("selenium");
 	}
 
 	private boolean _isElementType(

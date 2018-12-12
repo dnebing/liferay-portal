@@ -49,16 +49,14 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(articles)) {
 		%>
 
 		<div class="sidebar-header">
-			<c:if test="<%= journalDisplayContext.isShowEditActions() %>">
-				<ul class="sidebar-header-actions">
-					<li>
-						<liferay-util:include page="/subscribe.jsp" servletContext="<%= application %>" />
-					</li>
-					<li>
-						<liferay-util:include page="/folder_action.jsp" servletContext="<%= application %>" />
-					</li>
-				</ul>
-			</c:if>
+			<ul class="sidebar-header-actions">
+				<li>
+					<liferay-util:include page="/subscribe.jsp" servletContext="<%= application %>" />
+				</li>
+				<li>
+					<liferay-util:include page="/folder_action.jsp" servletContext="<%= application %>" />
+				</li>
+			</ul>
 
 			<h4><%= (folder != null) ? HtmlUtil.escape(folder.getName()) : LanguageUtil.get(request, "home") %></h4>
 
@@ -174,6 +172,12 @@ if (ListUtil.isEmpty(folders) && ListUtil.isEmpty(articles)) {
 					message="tags"
 				/>
 			</div>
+
+			<h5><liferay-ui:message key="original-author" /></h5>
+
+			<p>
+				<%= HtmlUtil.escape(journalDisplayContext.getOriginalAuthor(article)) %>
+			</p>
 
 			<h5><liferay-ui:message key="priority" /></h5>
 

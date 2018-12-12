@@ -29,6 +29,13 @@ import java.util.Optional;
 public interface Operation {
 
 	/**
+	 * Returns the operation's custom route.
+	 *
+	 * @return the custom route
+	 */
+	public String getCustomRoute();
+
+	/**
 	 * Returns this operation's expected form, if present; returns {@code
 	 * Optional#empty()} otherwise.
 	 *
@@ -65,5 +72,13 @@ public interface Operation {
 	 *         otherwise
 	 */
 	public boolean isCollection();
+
+	/**
+	 * Returns {@code true} if this is a custom operation.
+	 *
+	 * @return {@code true} if this is a custom operation; {@code false}
+	 *         otherwise
+	 */
+	public boolean isCustom();
 
 }

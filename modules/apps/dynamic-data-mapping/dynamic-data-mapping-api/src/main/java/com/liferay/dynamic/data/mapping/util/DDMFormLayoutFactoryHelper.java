@@ -25,7 +25,7 @@ import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -87,7 +87,8 @@ public class DDMFormLayoutFactoryHelper {
 
 		com.liferay.dynamic.data.mapping.model.DDMFormLayoutColumn
 			ddmFormLayoutColumn =
-				new com.liferay.dynamic.data.mapping.model.DDMFormLayoutColumn();
+				new com.liferay.dynamic.data.mapping.model.
+					DDMFormLayoutColumn();
 
 		ddmFormLayoutColumn.setDDMFormFieldNames(
 			ListUtil.fromArray(ddmFormLayoutColumnAnnotation.value()));
@@ -190,8 +191,8 @@ public class DDMFormLayoutFactoryHelper {
 	protected ResourceBundle getResourceBundle(Locale locale) {
 		List<ResourceBundle> resourceBundles = new ArrayList<>();
 
-		ResourceBundle portalResourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", locale, PortalClassLoaderUtil.getClassLoader());
+		ResourceBundle portalResourceBundle = PortalUtil.getResourceBundle(
+			locale);
 
 		resourceBundles.add(portalResourceBundle);
 

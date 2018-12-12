@@ -59,6 +59,7 @@ public class ContactLocalServiceImpl extends ContactLocalServiceBaseImpl {
 		throws PortalException {
 
 		User user = userPersistence.findByPrimaryKey(userId);
+
 		Date birthday = PortalUtil.getDate(
 			birthdayMonth, birthdayDay, birthdayYear,
 			ContactBirthdayException.class);
@@ -90,9 +91,7 @@ public class ContactLocalServiceImpl extends ContactLocalServiceBaseImpl {
 		contact.setTwitterSn(twitterSn);
 		contact.setJobTitle(jobTitle);
 
-		contactPersistence.update(contact);
-
-		return contact;
+		return contactPersistence.update(contact);
 	}
 
 	@Indexable(type = IndexableType.DELETE)
@@ -101,7 +100,7 @@ public class ContactLocalServiceImpl extends ContactLocalServiceBaseImpl {
 
 		// Contact
 
-		contactPersistence.remove(contact);
+		contact = contactPersistence.remove(contact);
 
 		// Addresses
 
@@ -136,7 +135,7 @@ public class ContactLocalServiceImpl extends ContactLocalServiceBaseImpl {
 		Contact contact = contactPersistence.fetchByPrimaryKey(contactId);
 
 		if (contact != null) {
-			deleteContact(contact);
+			contact = deleteContact(contact);
 		}
 
 		return contact;
@@ -214,9 +213,7 @@ public class ContactLocalServiceImpl extends ContactLocalServiceBaseImpl {
 		contact.setTwitterSn(twitterSn);
 		contact.setJobTitle(jobTitle);
 
-		contactPersistence.update(contact);
-
-		return contact;
+		return contactPersistence.update(contact);
 	}
 
 	protected void validate(String className, long classPK)

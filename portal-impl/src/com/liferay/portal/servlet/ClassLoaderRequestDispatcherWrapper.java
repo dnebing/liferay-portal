@@ -15,7 +15,7 @@
 package com.liferay.portal.servlet;
 
 import com.liferay.portal.kernel.servlet.PluginContextListener;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 
 import java.io.IOException;
 
@@ -58,8 +58,9 @@ public class ClassLoaderRequestDispatcherWrapper implements RequestDispatcher {
 			boolean include)
 		throws IOException, ServletException {
 
-		ClassLoader contextClassLoader =
-			ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
 		ClassLoader pluginClassLoader =
 			(ClassLoader)_servletContext.getAttribute(
@@ -67,11 +68,11 @@ public class ClassLoaderRequestDispatcherWrapper implements RequestDispatcher {
 
 		try {
 			if (pluginClassLoader == null) {
-				ClassLoaderUtil.setContextClassLoader(
-					ClassLoaderUtil.getPortalClassLoader());
+				currentThread.setContextClassLoader(
+					PortalClassLoaderUtil.getClassLoader());
 			}
 			else {
-				ClassLoaderUtil.setContextClassLoader(pluginClassLoader);
+				currentThread.setContextClassLoader(pluginClassLoader);
 			}
 
 			if (include) {
@@ -82,7 +83,7 @@ public class ClassLoaderRequestDispatcherWrapper implements RequestDispatcher {
 			}
 		}
 		finally {
-			ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+			currentThread.setContextClassLoader(contextClassLoader);
 		}
 	}
 

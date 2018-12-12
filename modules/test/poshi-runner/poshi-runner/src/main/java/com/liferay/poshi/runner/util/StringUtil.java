@@ -121,6 +121,10 @@ public class StringUtil {
 	}
 
 	public static int count(String s, String text) {
+		return count(s, text, s.length());
+	}
+
+	public static int count(String s, String text, int index) {
 		if ((s == null) || (s.length() == 0) || (text == null) ||
 			(text.length() == 0)) {
 
@@ -131,7 +135,7 @@ public class StringUtil {
 
 		int pos = s.indexOf(text);
 
-		while (pos != -1) {
+		while ((pos != -1) && (pos < index)) {
 			pos = s.indexOf(text, pos + text.length());
 
 			count++;
@@ -141,21 +145,24 @@ public class StringUtil {
 	}
 
 	public static int countStartingNewLines(String s) {
-		char[] chars = s.toCharArray();
+		String[] snippets = s.split(
+			System.getProperty("line.separator") + "\\h*", -1);
 
-		int i = 0;
+		if (snippets.length == 1) {
+			return 0;
+		}
 
-		for (char c : chars) {
-			if (c == '\n') {
-				i++;
+		for (int i = 0; i < snippets.length; i++) {
+			String snippet = snippets[i];
 
+			if (snippet.isEmpty()) {
 				continue;
 			}
 
-			break;
+			return i;
 		}
 
-		return i;
+		return snippets.length - 1;
 	}
 
 	public static boolean endsWith(String s, String end) {

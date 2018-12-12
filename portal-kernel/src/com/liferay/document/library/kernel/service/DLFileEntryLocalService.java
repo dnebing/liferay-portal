@@ -18,6 +18,7 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileVersion;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 
@@ -98,9 +99,17 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	public DLFileVersion cancelCheckOut(long userId, long fileEntryId)
 		throws PortalException;
 
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link #checkInFileEntry(long, long, DLVersionNumberIncrease, String, ServiceContext)}
+	*/
+	@Deprecated
 	public void checkInFileEntry(long userId, long fileEntryId,
 		boolean majorVersion, String changeLog, ServiceContext serviceContext)
 		throws PortalException;
+
+	public void checkInFileEntry(long userId, long fileEntryId,
+		DLVersionNumberIncrease dlVersionNumberIncrease, String changeLog,
+		ServiceContext serviceContext) throws PortalException;
 
 	public void checkInFileEntry(long userId, long fileEntryId,
 		String lockUuid, ServiceContext serviceContext)
@@ -199,6 +208,7 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	public void deleteRepositoryFileEntries(long repositoryId, long folderId,
 		boolean includeTrashedEntries) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -207,6 +217,7 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -221,6 +232,7 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -237,6 +249,7 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -246,6 +259,7 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -255,6 +269,7 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 
@@ -657,12 +672,23 @@ public interface DLFileEntryLocalService extends BaseLocalService,
 	@Indexable(type = IndexableType.REINDEX)
 	public DLFileEntry updateDLFileEntry(DLFileEntry dlFileEntry);
 
+	/**
+	* @deprecated As of Judson (7.1.x), replaced by {@link #updateFileEntry(long, long, String, String, String, String, String, DLVersionNumberIncrease, long, Map, File, InputStream, long, ServiceContext)}
+	*/
+	@Deprecated
 	public DLFileEntry updateFileEntry(long userId, long fileEntryId,
 		String sourceFileName, String mimeType, String title,
 		String description, String changeLog, boolean majorVersion,
 		long fileEntryTypeId, Map<String, DDMFormValues> ddmFormValuesMap,
 		File file, InputStream is, long size, ServiceContext serviceContext)
 		throws PortalException;
+
+	public DLFileEntry updateFileEntry(long userId, long fileEntryId,
+		String sourceFileName, String mimeType, String title,
+		String description, String changeLog,
+		DLVersionNumberIncrease dlVersionNumberIncrease, long fileEntryTypeId,
+		Map<String, DDMFormValues> ddmFormValuesMap, File file, InputStream is,
+		long size, ServiceContext serviceContext) throws PortalException;
 
 	public DLFileEntry updateFileEntryType(long userId, long fileEntryId,
 		long fileEntryTypeId, ServiceContext serviceContext)

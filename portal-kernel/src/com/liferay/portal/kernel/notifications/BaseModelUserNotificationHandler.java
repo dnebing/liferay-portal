@@ -124,6 +124,10 @@ public abstract class BaseModelUserNotificationHandler
 
 		String entryURL = jsonObject.getString("entryURL");
 
+		if (Validator.isNull(entryURL)) {
+			return StringPool.BLANK;
+		}
+
 		String entryURLDomain = HttpUtil.getDomain(entryURL);
 
 		String portalURL = serviceContext.getPortalURL();
@@ -159,8 +163,7 @@ public abstract class BaseModelUserNotificationHandler
 			message = "x-added-a-new-x";
 		}
 		else if (notificationType ==
-					 UserNotificationDefinition.
-						 NOTIFICATION_TYPE_UPDATE_ENTRY) {
+					UserNotificationDefinition.NOTIFICATION_TYPE_UPDATE_ENTRY) {
 
 			message = "x-updated-a-x";
 		}

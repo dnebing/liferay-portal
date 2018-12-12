@@ -204,10 +204,6 @@ public class SessionAuthToken implements AuthToken {
 			return true;
 		}
 
-		long plid = layout.getPlid();
-
-		String portletId = portlet.getPortletId();
-
 		String portletToken = ParamUtil.getString(request, "p_p_auth");
 
 		if (Validator.isNull(portletToken)) {
@@ -218,7 +214,8 @@ public class SessionAuthToken implements AuthToken {
 		}
 
 		if (Validator.isNotNull(portletToken)) {
-			String key = PortletPermissionUtil.getPrimaryKey(plid, portletId);
+			String key = PortletPermissionUtil.getPrimaryKey(
+				layout.getPlid(), portlet.getPortletId());
 
 			String sessionToken = getSessionAuthenticationToken(
 				request, key, false);
@@ -265,9 +262,6 @@ public class SessionAuthToken implements AuthToken {
 		String tokenKey = WebKeys.AUTHENTICATION_TOKEN.concat(key);
 
 		while (currentRequest instanceof HttpServletRequestWrapper) {
-			HttpServletRequestWrapper httpServletRequestWrapper =
-				(HttpServletRequestWrapper)currentRequest;
-
 			session = currentRequest.getSession();
 
 			sessionAuthenticationToken = (String)session.getAttribute(tokenKey);
@@ -275,6 +269,9 @@ public class SessionAuthToken implements AuthToken {
 			if (Validator.isNotNull(sessionAuthenticationToken)) {
 				break;
 			}
+
+			HttpServletRequestWrapper httpServletRequestWrapper =
+				(HttpServletRequestWrapper)currentRequest;
 
 			currentRequest =
 				(HttpServletRequest)httpServletRequestWrapper.getRequest();

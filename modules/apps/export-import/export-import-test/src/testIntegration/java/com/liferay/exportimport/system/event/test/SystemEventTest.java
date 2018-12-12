@@ -191,7 +191,6 @@ public class SystemEventTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void testLocalStaging() throws Exception {
 		GroupTestUtil.enableLocalStaging(_liveGroup);

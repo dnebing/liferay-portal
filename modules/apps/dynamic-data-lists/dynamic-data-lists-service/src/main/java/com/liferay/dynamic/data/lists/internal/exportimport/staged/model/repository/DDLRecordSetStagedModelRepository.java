@@ -26,7 +26,6 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -47,8 +46,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	immediate = true,
 	property = "model.class.name=com.liferay.dynamic.data.lists.model.DDLRecordSet",
-	service =
-		{DDLRecordSetStagedModelRepository.class, StagedModelRepository.class}
+	service = {
+		DDLRecordSetStagedModelRepository.class, StagedModelRepository.class
+	}
 )
 public class DDLRecordSetStagedModelRepository
 	implements StagedModelRepository<DDLRecordSet> {
@@ -118,7 +118,13 @@ public class DDLRecordSetStagedModelRepository
 			new DDLRecordSetNameComparator());
 
 		for (DDLRecordSet recordSet : recordSets) {
-			recordSetDDMStructureIds.add(recordSet.getDDMStructureId());
+			DDMStructure ddmStructure =
+				_ddmStructureLocalService.getDDMStructure(
+					recordSet.getDDMStructureId());
+
+			if (ddmStructure.getGroupId() == recordSet.getGroupId()) {
+				recordSetDDMStructureIds.add(recordSet.getDDMStructureId());
+			}
 
 			_ddlRecordSetLocalService.deleteRecordSet(recordSet);
 		}
@@ -162,47 +168,32 @@ public class DDLRecordSetStagedModelRepository
 			exportActionableDynamicQuery.getAddCriteriaMethod();
 
 		exportActionableDynamicQuery.setAddCriteriaMethod(
-			new ActionableDynamicQuery.AddCriteriaMethod() {
+			dynamicQuery -> {
+				addCriteriaMethod.addCriteria(dynamicQuery);
 
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					addCriteriaMethod.addCriteria(dynamicQuery);
+				Property scopeProperty = PropertyFactoryUtil.forName("scope");
 
-					Property scopeProperty = PropertyFactoryUtil.forName(
-						"scope");
-
-					dynamicQuery.add(scopeProperty.eq(scope));
-				}
-
+				dynamicQuery.add(scopeProperty.eq(scope));
 			});
 
 		exportActionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<DDLRecordSet>() {
+			(DDLRecordSet ddlRecordSet) -> {
+				StagedModelDataHandlerUtil.exportStagedModel(
+					portletDataContext, ddlRecordSet);
 
-				@Override
-				public void performAction(DDLRecordSet ddlRecordSet)
-					throws PortalException {
+				DDMStructure ddmStructure = ddlRecordSet.getDDMStructure();
 
-					StagedModelDataHandlerUtil.exportStagedModel(
-						portletDataContext, ddlRecordSet);
+				StagedModelDataHandlerUtil.exportStagedModel(
+					portletDataContext, ddmStructure);
 
-					DDMStructure ddmStructure = ddlRecordSet.getDDMStructure();
+				if (scope == DDLRecordSetConstants.SCOPE_DYNAMIC_DATA_LISTS) {
+					for (DDMTemplate ddmTemplate :
+							ddmStructure.getTemplates()) {
 
-					StagedModelDataHandlerUtil.exportStagedModel(
-						portletDataContext, ddmStructure);
-
-					if (scope ==
-							DDLRecordSetConstants.SCOPE_DYNAMIC_DATA_LISTS) {
-
-						for (DDMTemplate ddmTemplate :
-								ddmStructure.getTemplates()) {
-
-							StagedModelDataHandlerUtil.exportStagedModel(
-								portletDataContext, ddmTemplate);
-						}
+						StagedModelDataHandlerUtil.exportStagedModel(
+							portletDataContext, ddmTemplate);
 					}
 				}
-
 			});
 
 		return exportActionableDynamicQuery;

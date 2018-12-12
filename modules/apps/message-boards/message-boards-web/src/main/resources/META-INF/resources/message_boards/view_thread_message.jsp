@@ -38,8 +38,8 @@ if (message.isAnonymous()) {
 		<div class="card-row card-row-padded">
 			<div class="card-col-field">
 				<div class="list-group-card-icon">
-					<liferay-ui:user-portrait
-						userId="<%= !message.isAnonymous() ? message.getUserId() : 0 %>"
+					<liferay-frontend:user-portrait
+						userId="<%= !message.isAnonymous() ? message.getUserId() : UserConstants.USER_ID_DEFAULT %>"
 					/>
 				</div>
 			</div>
@@ -165,7 +165,8 @@ if (message.isAnonymous()) {
 								classPK="<%= message.getMessageId() %>"
 								contentTitle="<%= message.getSubject() %>"
 								enabled="<%= !message.isInTrash() %>"
-								message='<%= message.isInTrash() ? "flags-are-disabled-because-this-entry-is-in-the-recycle-bin" : StringPool.BLANK %>'
+								label="<%= false %>"
+								message='<%= message.isInTrash() ? "flags-are-disabled-because-this-entry-is-in-the-recycle-bin" : null %>'
 								reportedUserId="<%= message.getUserId() %>"
 							/>
 						</c:if>

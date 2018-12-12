@@ -50,13 +50,11 @@ import org.osgi.service.http.runtime.HttpServiceRuntimeConstants;
 /**
  * @author Raymond Augé
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class HttpAdapter {
 
 	@Activate
 	protected void activate(ComponentContext componentContext) {
-		BundleContext bundleContext = componentContext.getBundleContext();
-
 		_httpServiceServlet = new HttpServiceServlet() {
 
 			@Override
@@ -112,6 +110,8 @@ public class HttpAdapter {
 
 			return;
 		}
+
+		BundleContext bundleContext = componentContext.getBundleContext();
 
 		Dictionary<String, Object> properties = new HashMapDictionary<>();
 

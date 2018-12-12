@@ -14,6 +14,7 @@
 
 package com.liferay.document.library.web.internal.util;
 
+import com.liferay.document.library.web.internal.display.context.DLAdminDisplayContextProvider;
 import com.liferay.document.library.web.internal.display.context.DLDisplayContextProvider;
 import com.liferay.document.library.web.internal.display.context.IGDisplayContextProvider;
 
@@ -25,11 +26,15 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Iván Zaera
  */
-@Component(immediate = true)
+@Component(immediate = true, service = {})
 public class DLWebComponentProvider {
 
 	public static DLWebComponentProvider getDLWebComponentProvider() {
 		return _dlWebComponentProvider;
+	}
+
+	public DLAdminDisplayContextProvider getDLAdminDisplayContextProvider() {
+		return _dlAdminDisplayContextProvider;
 	}
 
 	public DLDisplayContextProvider getDLDisplayContextProvider() {
@@ -65,6 +70,9 @@ public class DLWebComponentProvider {
 	}
 
 	private static DLWebComponentProvider _dlWebComponentProvider;
+
+	@Reference
+	private DLAdminDisplayContextProvider _dlAdminDisplayContextProvider;
 
 	private DLDisplayContextProvider _dlDisplayContextProvider;
 	private IGDisplayContextProvider _igDisplayContextProvider;

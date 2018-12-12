@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
@@ -125,10 +126,23 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	* Adds the model resources with the permissions to the record set.
 	*
 	* @param recordSet the record set
+	* @param modelPermissions the model permissions
+	* @throws PortalException if a portal exception occurred
+	*/
+	public void addRecordSetResources(DDLRecordSet recordSet,
+		ModelPermissions modelPermissions) throws PortalException;
+
+	/**
+	* Adds the model resources with the permissions to the record set.
+	*
+	* @param recordSet the record set
 	* @param groupPermissions whether to add group permissions
 	* @param guestPermissions whether to add guest permissions
 	* @throws PortalException if a portal exception occurred
+	* @deprecated As of Judson (7.1.x), replaced by {@link
+	#addRecordSetResources(DDLRecordSet, ModelPermissions)}
 	*/
+	@Deprecated
 	public void addRecordSetResources(DDLRecordSet recordSet,
 		String[] groupPermissions, String[] guestPermissions)
 		throws PortalException;
@@ -210,6 +224,7 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	*/
 	public void deleteRecordSets(long groupId) throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public DynamicQuery dynamicQuery();
 
 	/**
@@ -218,6 +233,7 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery);
 
 	/**
@@ -232,6 +248,7 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	* @param end the upper bound of the range of model instances (not inclusive)
 	* @return the range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end);
 
@@ -248,6 +265,7 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching rows
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> List<T> dynamicQuery(DynamicQuery dynamicQuery, int start,
 		int end, OrderByComparator<T> orderByComparator);
 
@@ -257,6 +275,7 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	* @param dynamicQuery the dynamic query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery);
 
 	/**
@@ -266,6 +285,7 @@ public interface DDLRecordSetLocalService extends BaseLocalService,
 	* @param projection the projection to apply to the query
 	* @return the number of rows matching the dynamic query
 	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
 		Projection projection);
 

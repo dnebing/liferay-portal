@@ -12,24 +12,12 @@
 		</if>
 	</command>
 
-	<command name="closeMessageSpecific">
-		<var name="key_messageSpecific" value="${messageSpecific}" />
-
-		<execute function="Click" locator1="Icon#CLOSE_SPECIFIC" />
-	</command>
-
 	<command name="closePortalLocalizationWarning">
 		<execute macro="Alert#closeMessage">
 			<var name="messageType" value="PORTAL_LOCALIZATION" />
 		</execute>
 
 		<execute function="Pause" locator1="2000" />
-	</command>
-
-	<command name="viewEmptyFieldMessage">
-		<var name="key_fieldLabel" value="${fieldLabel}" />
-
-		<execute function="AssertTextEquals" locator1="Message#ERROR_EMPTY_FIELD" value1="At least one option should be set for field ${fieldLabel}." />
 	</command>
 
 	<command name="viewErrorMessage">
@@ -41,7 +29,13 @@
 	</command>
 
 	<command name="viewInfoMessage">
-		<execute function="AssertTextEquals" locator1="Message#INFO" value1="${infoMessage}" />
+		<execute function="AssertTextEquals" locator1="Message#INFO_2" value1="${infoMessage}" />
+	</command>
+
+	<command name="viewInfoMessageSpecific">
+		<execute function="AssertElementPresent" locator1="Message#INFO_SPECIFIC">
+			<var name="key_infoMessage" value="${infoMessage}" />
+		</execute>
 	</command>
 
 	<command name="viewLocalizationMessage">
@@ -84,7 +78,9 @@
 		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS" value1="${successMessage}" />
 	</command>
 
-	<command name="waitForSuccessMessageHide">
-		<execute function="AssertNotVisible" locator1="Message#SUCCESS" />
+	<command name="viewWarningSpecific">
+		<execute function="AssertElementPresent" locator1="Message#WARNING_SPECIFIC">
+			<var name="key_warningMessage" value="${warningMessage}" />
+		</execute>
 	</command>
 </definition>

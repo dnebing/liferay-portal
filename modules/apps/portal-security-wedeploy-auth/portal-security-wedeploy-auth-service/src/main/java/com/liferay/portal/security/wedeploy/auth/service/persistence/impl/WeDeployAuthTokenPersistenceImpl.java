@@ -165,6 +165,8 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 	@Override
 	public WeDeployAuthToken fetchByT_T(String token, int type,
 		boolean retrieveFromCache) {
+		token = Objects.toString(token, "");
+
 		Object[] finderArgs = new Object[] { token, type };
 
 		Object result = null;
@@ -190,10 +192,7 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 			boolean bindToken = false;
 
-			if (token == null) {
-				query.append(_FINDER_COLUMN_T_T_TOKEN_1);
-			}
-			else if (token.equals("")) {
+			if (token.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_T_TOKEN_3);
 			}
 			else {
@@ -288,6 +287,8 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 	 */
 	@Override
 	public int countByT_T(String token, int type) {
+		token = Objects.toString(token, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_T_T;
 
 		Object[] finderArgs = new Object[] { token, type };
@@ -301,10 +302,7 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 			boolean bindToken = false;
 
-			if (token == null) {
-				query.append(_FINDER_COLUMN_T_T_TOKEN_1);
-			}
-			else if (token.equals("")) {
+			if (token.isEmpty()) {
 				query.append(_FINDER_COLUMN_T_T_TOKEN_3);
 			}
 			else {
@@ -439,6 +437,9 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 	@Override
 	public WeDeployAuthToken fetchByCI_T_T(String clientId, String token,
 		int type, boolean retrieveFromCache) {
+		clientId = Objects.toString(clientId, "");
+		token = Objects.toString(token, "");
+
 		Object[] finderArgs = new Object[] { clientId, token, type };
 
 		Object result = null;
@@ -465,10 +466,7 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 			boolean bindClientId = false;
 
-			if (clientId == null) {
-				query.append(_FINDER_COLUMN_CI_T_T_CLIENTID_1);
-			}
-			else if (clientId.equals("")) {
+			if (clientId.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_T_T_CLIENTID_3);
 			}
 			else {
@@ -479,10 +477,7 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 			boolean bindToken = false;
 
-			if (token == null) {
-				query.append(_FINDER_COLUMN_CI_T_T_TOKEN_1);
-			}
-			else if (token.equals("")) {
+			if (token.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_T_T_TOKEN_3);
 			}
 			else {
@@ -583,6 +578,9 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 	 */
 	@Override
 	public int countByCI_T_T(String clientId, String token, int type) {
+		clientId = Objects.toString(clientId, "");
+		token = Objects.toString(token, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_CI_T_T;
 
 		Object[] finderArgs = new Object[] { clientId, token, type };
@@ -596,10 +594,7 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 			boolean bindClientId = false;
 
-			if (clientId == null) {
-				query.append(_FINDER_COLUMN_CI_T_T_CLIENTID_1);
-			}
-			else if (clientId.equals("")) {
+			if (clientId.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_T_T_CLIENTID_3);
 			}
 			else {
@@ -610,10 +605,7 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 			boolean bindToken = false;
 
-			if (token == null) {
-				query.append(_FINDER_COLUMN_CI_T_T_TOKEN_1);
-			}
-			else if (token.equals("")) {
+			if (token.isEmpty()) {
 				query.append(_FINDER_COLUMN_CI_T_T_TOKEN_3);
 			}
 			else {
@@ -672,6 +664,9 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 
 	public WeDeployAuthTokenPersistenceImpl() {
 		setModelClass(WeDeployAuthToken.class);
+
+		setModelImplClass(WeDeployAuthTokenImpl.class);
+		setEntityCacheEnabled(WeDeployAuthTokenModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -1090,54 +1085,6 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 	/**
 	 * Returns the we deploy auth token with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the we deploy auth token
-	 * @return the we deploy auth token, or <code>null</code> if a we deploy auth token with the primary key could not be found
-	 */
-	@Override
-	public WeDeployAuthToken fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(WeDeployAuthTokenModelImpl.ENTITY_CACHE_ENABLED,
-				WeDeployAuthTokenImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		WeDeployAuthToken weDeployAuthToken = (WeDeployAuthToken)serializable;
-
-		if (weDeployAuthToken == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				weDeployAuthToken = (WeDeployAuthToken)session.get(WeDeployAuthTokenImpl.class,
-						primaryKey);
-
-				if (weDeployAuthToken != null) {
-					cacheResult(weDeployAuthToken);
-				}
-				else {
-					entityCache.putResult(WeDeployAuthTokenModelImpl.ENTITY_CACHE_ENABLED,
-						WeDeployAuthTokenImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(WeDeployAuthTokenModelImpl.ENTITY_CACHE_ENABLED,
-					WeDeployAuthTokenImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return weDeployAuthToken;
-	}
-
-	/**
-	 * Returns the we deploy auth token with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param weDeployAuthTokenId the primary key of the we deploy auth token
 	 * @return the we deploy auth token, or <code>null</code> if a we deploy auth token with the primary key could not be found
 	 */
@@ -1434,6 +1381,11 @@ public class WeDeployAuthTokenPersistenceImpl extends BasePersistenceImpl<WeDepl
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

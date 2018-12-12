@@ -48,7 +48,8 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true,
-	property = "ddm.data.provider.instance.id=getDataProviderInstanceOutputParameters"
+	property = "ddm.data.provider.instance.id=getDataProviderInstanceOutputParameters",
+	service = DDMDataProvider.class
 )
 public class DDMDataProviderInstanceOutputParametersDataProvider
 	implements DDMDataProvider {
@@ -58,7 +59,7 @@ public class DDMDataProviderInstanceOutputParametersDataProvider
 		DDMDataProviderRequest ddmDataProviderRequest) {
 
 		Optional<Long> dataProviderInstanceIdOptional =
-			ddmDataProviderRequest.getParameter(
+			ddmDataProviderRequest.getParameterOptional(
 				"dataProviderInstanceId", String.class);
 
 		long dataProviderInstanceId = 0;

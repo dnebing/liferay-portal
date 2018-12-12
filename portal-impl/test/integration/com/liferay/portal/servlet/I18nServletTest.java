@@ -147,6 +147,26 @@ public class I18nServletTest {
 	}
 
 	@Test
+	public void testI18nLanguageTag() throws Exception {
+		PropsValues.LOCALE_USE_DEFAULT_IF_NOT_AVAILABLE = false;
+
+		MockHttpServletRequest mockHttpServletRequest =
+			new MockHttpServletRequest();
+
+		mockHttpServletRequest.setPathInfo(StringPool.SLASH);
+		mockHttpServletRequest.setServletPath(
+			StringPool.SLASH + Locale.CANADA_FRENCH.toLanguageTag());
+
+		I18nServlet.I18nData actualI18nData = _i18nServlet.getI18nData(
+			mockHttpServletRequest);
+
+		I18nServlet.I18nData expectedI18nData = getI18nData(
+			Locale.CANADA_FRENCH);
+
+		Assert.assertEquals(expectedI18nData, actualI18nData);
+	}
+
+	@Test
 	public void testI18nNotUseDefaultExistentLocale() throws Exception {
 		PropsValues.LOCALE_USE_DEFAULT_IF_NOT_AVAILABLE = false;
 
@@ -266,6 +286,7 @@ public class I18nServletTest {
 		throws Exception {
 
 		Locale actualDefaultLocale = _getDefaultLocale(group);
+
 		Locale actualFirstLocale = _getFirstLocale(
 			group, expectedFirstLocale.getLanguage());
 
@@ -311,9 +332,8 @@ public class I18nServletTest {
 		if (group != null) {
 			return PortalUtil.getSiteDefaultLocale(group);
 		}
-		else {
-			return LocaleUtil.getDefault();
-		}
+
+		return LocaleUtil.getDefault();
 	}
 
 	private Locale _getFirstLocale(Group group, String language)
@@ -322,9 +342,8 @@ public class I18nServletTest {
 		if (group != null) {
 			return LanguageUtil.getLocale(group.getGroupId(), language);
 		}
-		else {
-			return LanguageUtil.getLocale(language);
-		}
+
+		return LanguageUtil.getLocale(language);
 	}
 
 	private I18nServlet.I18nData _getI18nData(Group group, String path)

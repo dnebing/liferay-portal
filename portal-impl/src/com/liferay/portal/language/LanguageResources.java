@@ -95,6 +95,7 @@ public class LanguageResources {
 
 		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 			String key = (String)entry.getKey();
+
 			String value = (String)entry.getValue();
 
 			value = fixValue(value);
@@ -119,9 +120,8 @@ public class LanguageResources {
 		if (value == null) {
 			return getMessage(getSuperLocale(locale), key);
 		}
-		else {
-			return value;
-		}
+
+		return value;
 	}
 
 	public static ResourceBundle getResourceBundle(Locale locale) {

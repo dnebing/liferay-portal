@@ -191,6 +191,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 		int start, int end,
 		OrderByComparator<LayoutPageTemplateCollection> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -214,8 +216,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (LayoutPageTemplateCollection layoutPageTemplateCollection : list) {
-					if (!Objects.equals(uuid,
-								layoutPageTemplateCollection.getUuid())) {
+					if (!uuid.equals(layoutPageTemplateCollection.getUuid())) {
 						list = null;
 
 						break;
@@ -239,10 +240,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -427,6 +425,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 		long layoutPageTemplateCollectionId, String uuid,
 		OrderByComparator<LayoutPageTemplateCollection> orderByComparator)
 		throws NoSuchPageTemplateCollectionException {
+		uuid = Objects.toString(uuid, "");
+
 		LayoutPageTemplateCollection layoutPageTemplateCollection = findByPrimaryKey(layoutPageTemplateCollectionId);
 
 		Session session = null;
@@ -474,10 +474,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -597,6 +594,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -610,10 +609,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -730,6 +726,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	@Override
 	public LayoutPageTemplateCollection fetchByUUID_G(String uuid,
 		long groupId, boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -755,10 +753,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -843,6 +838,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -856,10 +853,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -1007,6 +1001,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 		long companyId, int start, int end,
 		OrderByComparator<LayoutPageTemplateCollection> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1034,8 +1030,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (LayoutPageTemplateCollection layoutPageTemplateCollection : list) {
-					if (!Objects.equals(uuid,
-								layoutPageTemplateCollection.getUuid()) ||
+					if (!uuid.equals(layoutPageTemplateCollection.getUuid()) ||
 							(companyId != layoutPageTemplateCollection.getCompanyId())) {
 						list = null;
 
@@ -1060,10 +1055,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1267,6 +1259,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 		long layoutPageTemplateCollectionId, String uuid, long companyId,
 		OrderByComparator<LayoutPageTemplateCollection> orderByComparator)
 		throws NoSuchPageTemplateCollectionException {
+		uuid = Objects.toString(uuid, "");
+
 		LayoutPageTemplateCollection layoutPageTemplateCollection = findByPrimaryKey(layoutPageTemplateCollectionId);
 
 		Session session = null;
@@ -1317,10 +1311,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1446,6 +1437,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1459,10 +1452,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2469,6 +2459,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	@Override
 	public LayoutPageTemplateCollection fetchByG_N(long groupId, String name,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		Object[] finderArgs = new Object[] { groupId, name };
 
 		Object result = null;
@@ -2496,10 +2488,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -2582,6 +2571,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	 */
 	@Override
 	public int countByG_N(long groupId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_G_N;
 
 		Object[] finderArgs = new Object[] { groupId, name };
@@ -2597,10 +2588,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_N_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_N_NAME_3);
 			}
 			else {
@@ -2737,6 +2725,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 		String name, int start, int end,
 		OrderByComparator<LayoutPageTemplateCollection> orderByComparator,
 		boolean retrieveFromCache) {
+		name = Objects.toString(name, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2781,10 +2771,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_LIKEN_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_LIKEN_NAME_3);
 			}
 			else {
@@ -2986,6 +2973,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 		long layoutPageTemplateCollectionId, long groupId, String name,
 		OrderByComparator<LayoutPageTemplateCollection> orderByComparator)
 		throws NoSuchPageTemplateCollectionException {
+		name = Objects.toString(name, "");
+
 		LayoutPageTemplateCollection layoutPageTemplateCollection = findByPrimaryKey(layoutPageTemplateCollectionId);
 
 		Session session = null;
@@ -3038,10 +3027,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_G_LIKEN_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_G_LIKEN_NAME_3);
 		}
 		else {
@@ -3197,6 +3183,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 			return findByG_LikeN(groupId, name, start, end, orderByComparator);
 		}
 
+		name = Objects.toString(name, "");
+
 		StringBundler query = null;
 
 		if (orderByComparator != null) {
@@ -3218,10 +3206,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_G_LIKEN_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_G_LIKEN_NAME_3);
 		}
 		else {
@@ -3312,6 +3297,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 				groupId, name, orderByComparator);
 		}
 
+		name = Objects.toString(name, "");
+
 		LayoutPageTemplateCollection layoutPageTemplateCollection = findByPrimaryKey(layoutPageTemplateCollectionId);
 
 		Session session = null;
@@ -3369,10 +3356,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_G_LIKEN_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_G_LIKEN_NAME_3);
 		}
 		else {
@@ -3528,6 +3512,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	 */
 	@Override
 	public int countByG_LikeN(long groupId, String name) {
+		name = Objects.toString(name, "");
+
 		FinderPath finderPath = FINDER_PATH_WITH_PAGINATION_COUNT_BY_G_LIKEN;
 
 		Object[] finderArgs = new Object[] { groupId, name };
@@ -3543,10 +3529,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 			boolean bindName = false;
 
-			if (name == null) {
-				query.append(_FINDER_COLUMN_G_LIKEN_NAME_1);
-			}
-			else if (name.equals("")) {
+			if (name.isEmpty()) {
 				query.append(_FINDER_COLUMN_G_LIKEN_NAME_3);
 			}
 			else {
@@ -3602,6 +3585,8 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 			return countByG_LikeN(groupId, name);
 		}
 
+		name = Objects.toString(name, "");
+
 		StringBundler query = new StringBundler(3);
 
 		query.append(_FILTER_SQL_COUNT_LAYOUTPAGETEMPLATECOLLECTION_WHERE);
@@ -3610,10 +3595,7 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 		boolean bindName = false;
 
-		if (name == null) {
-			query.append(_FINDER_COLUMN_G_LIKEN_NAME_1);
-		}
-		else if (name.equals("")) {
+		if (name.isEmpty()) {
 			query.append(_FINDER_COLUMN_G_LIKEN_NAME_3);
 		}
 		else {
@@ -3663,6 +3645,9 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 
 	public LayoutPageTemplateCollectionPersistenceImpl() {
 		setModelClass(LayoutPageTemplateCollection.class);
+
+		setModelImplClass(LayoutPageTemplateCollectionImpl.class);
+		setEntityCacheEnabled(LayoutPageTemplateCollectionModelImpl.ENTITY_CACHE_ENABLED);
 
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
@@ -4189,56 +4174,6 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	/**
 	 * Returns the layout page template collection with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the layout page template collection
-	 * @return the layout page template collection, or <code>null</code> if a layout page template collection with the primary key could not be found
-	 */
-	@Override
-	public LayoutPageTemplateCollection fetchByPrimaryKey(
-		Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(LayoutPageTemplateCollectionModelImpl.ENTITY_CACHE_ENABLED,
-				LayoutPageTemplateCollectionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		LayoutPageTemplateCollection layoutPageTemplateCollection = (LayoutPageTemplateCollection)serializable;
-
-		if (layoutPageTemplateCollection == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				layoutPageTemplateCollection = (LayoutPageTemplateCollection)session.get(LayoutPageTemplateCollectionImpl.class,
-						primaryKey);
-
-				if (layoutPageTemplateCollection != null) {
-					cacheResult(layoutPageTemplateCollection);
-				}
-				else {
-					entityCache.putResult(LayoutPageTemplateCollectionModelImpl.ENTITY_CACHE_ENABLED,
-						LayoutPageTemplateCollectionImpl.class, primaryKey,
-						nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(LayoutPageTemplateCollectionModelImpl.ENTITY_CACHE_ENABLED,
-					LayoutPageTemplateCollectionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return layoutPageTemplateCollection;
-	}
-
-	/**
-	 * Returns the layout page template collection with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param layoutPageTemplateCollectionId the primary key of the layout page template collection
 	 * @return the layout page template collection, or <code>null</code> if a layout page template collection with the primary key could not be found
 	 */
@@ -4539,6 +4474,11 @@ public class LayoutPageTemplateCollectionPersistenceImpl
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

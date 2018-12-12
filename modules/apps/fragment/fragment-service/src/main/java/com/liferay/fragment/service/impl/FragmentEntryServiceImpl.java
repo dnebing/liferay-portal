@@ -37,6 +37,21 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 
 	@Override
 	public FragmentEntry addFragmentEntry(
+			long groupId, long fragmentCollectionId, String name, int type,
+			int status, ServiceContext serviceContext)
+		throws PortalException {
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId,
+			FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES);
+
+		return fragmentEntryLocalService.addFragmentEntry(
+			getUserId(), groupId, fragmentCollectionId, name, type, status,
+			serviceContext);
+	}
+
+	@Override
+	public FragmentEntry addFragmentEntry(
 			long groupId, long fragmentCollectionId, String name, int status,
 			ServiceContext serviceContext)
 		throws PortalException {
@@ -48,6 +63,21 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 		return fragmentEntryLocalService.addFragmentEntry(
 			getUserId(), groupId, fragmentCollectionId, name, status,
 			serviceContext);
+	}
+
+	@Override
+	public FragmentEntry addFragmentEntry(
+			long groupId, long fragmentCollectionId, String fragmentEntryKey,
+			String name, int type, int status, ServiceContext serviceContext)
+		throws PortalException {
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId,
+			FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES);
+
+		return fragmentEntryLocalService.addFragmentEntry(
+			getUserId(), groupId, fragmentCollectionId, fragmentEntryKey, name,
+			type, status, serviceContext);
 	}
 
 	@Override
@@ -68,6 +98,22 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 	@Override
 	public FragmentEntry addFragmentEntry(
 			long groupId, long fragmentCollectionId, String name, String css,
+			String html, String js, int type, int status,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId,
+			FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES);
+
+		return fragmentEntryLocalService.addFragmentEntry(
+			getUserId(), groupId, fragmentCollectionId, name, css, html, js,
+			type, status, serviceContext);
+	}
+
+	@Override
+	public FragmentEntry addFragmentEntry(
+			long groupId, long fragmentCollectionId, String name, String css,
 			String html, String js, int status, ServiceContext serviceContext)
 		throws PortalException {
 
@@ -78,6 +124,22 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 		return fragmentEntryLocalService.addFragmentEntry(
 			getUserId(), groupId, fragmentCollectionId, name, css, html, js,
 			status, serviceContext);
+	}
+
+	@Override
+	public FragmentEntry addFragmentEntry(
+			long groupId, long fragmentCollectionId, String fragmentEntryKey,
+			String name, String css, String html, String js, int type,
+			int status, ServiceContext serviceContext)
+		throws PortalException {
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId,
+			FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES);
+
+		return fragmentEntryLocalService.addFragmentEntry(
+			getUserId(), groupId, fragmentCollectionId, fragmentEntryKey, name,
+			css, html, js, type, status, serviceContext);
 	}
 
 	@Override
@@ -177,6 +239,14 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 	}
 
 	@Override
+	public int getFragmentCollectionsCountByType(
+		long groupId, long fragmentCollectionId, int type) {
+
+		return fragmentEntryPersistence.countByG_FCI_T(
+			groupId, fragmentCollectionId, type);
+	}
+
+	@Override
 	public List<FragmentEntry> getFragmentEntries(long fragmentCollectionId) {
 		return fragmentEntryLocalService.getFragmentEntries(
 			fragmentCollectionId);
@@ -241,6 +311,15 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 	}
 
 	@Override
+	public List<FragmentEntry> getFragmentEntriesByType(
+		long groupId, long fragmentCollectionId, int type, int start, int end,
+		OrderByComparator<FragmentEntry> orderByComparator) {
+
+		return fragmentEntryPersistence.findByG_FCI_T(
+			groupId, fragmentCollectionId, type, start, end, orderByComparator);
+	}
+
+	@Override
 	public String[] getTempFileNames(long groupId, String folderName)
 		throws PortalException {
 
@@ -250,6 +329,22 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 
 		return fragmentEntryLocalService.getTempFileNames(
 			getUserId(), groupId, folderName);
+	}
+
+	@Override
+	public FragmentEntry moveFragmentEntry(
+			long fragmentEntryId, long fragmentCollectionId)
+		throws PortalException {
+
+		FragmentEntry fragmentEntry =
+			fragmentEntryLocalService.getFragmentEntry(fragmentEntryId);
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), fragmentEntry.getGroupId(),
+			FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES);
+
+		return fragmentEntryLocalService.moveFragmentEntry(
+			fragmentEntryId, fragmentCollectionId);
 	}
 
 	@Override

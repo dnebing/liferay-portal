@@ -25,7 +25,7 @@
 		}
 
 		.alloy-editor-container .alloy-editor-wrapper {
-			padding-top: 0px;
+			padding-top: 0;
 		}
 
 		.alloy-editor-switch {
@@ -50,18 +50,27 @@
 		}
 	}
 
-	.journal-article-preview {
-		padding: 0 20px;
+	.form-builder {
+		.nav-tabs + .tab-content .tab-pane {
+			padding: 2rem 1rem;
+		}
+
+		.property-builder-fields-container .property-builder-field {
+			width: 33%;
+		}
 	}
 
-	.lfr-description-column, .lfr-title-column {
-		max-width: 150px;
-		min-width: 150px;
+	.journal-article-preview {
+		padding: 0 20px;
 	}
 
 	.metadata .lfr-ddm-field-group {
 		margin-bottom: 20px;
 		margin-top: 0;
 		padding: 0;
+	}
+
+	.structure-restrictions .lfr-workflow-column .form-group {
+		margin-bottom: 0;
 	}
 }

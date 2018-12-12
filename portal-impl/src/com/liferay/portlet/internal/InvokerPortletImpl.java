@@ -33,18 +33,17 @@ import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.PluginContextListener;
 import com.liferay.portal.kernel.servlet.PortletServlet;
-import com.liferay.portal.kernel.util.ClassLoaderUtil;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.tools.deploy.PortletDeployer;
 import com.liferay.portlet.InvokerPortletResponse;
 import com.liferay.portlet.InvokerPortletUtil;
-import com.liferay.portlet.StrutsPortlet;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -96,38 +95,16 @@ import org.apache.commons.lang.time.StopWatch;
 public class InvokerPortletImpl
 	implements InvokerFilterContainer, InvokerPortlet {
 
-	/**
-	 * @deprecated As of Judson (7.1.x), replaced by {@link
-	 *             #InvokerPortletImpl(com.liferay.portal.kernel.model.Portlet,
-	 *             Portlet, PortletConfig, PortletContext,
-	 *             InvokerFilterContainer, boolean, boolean, boolean, boolean,
-	 *             boolean)}
-	 */
-	@Deprecated
 	public InvokerPortletImpl(
 		com.liferay.portal.kernel.model.Portlet portletModel, Portlet portlet,
 		PortletConfig portletConfig, PortletContext portletContext,
 		InvokerFilterContainer invokerFilterContainer, boolean checkAuthToken,
-		boolean facesPortlet, boolean strutsPortlet,
-		boolean strutsBridgePortlet) {
+		boolean facesPortlet, boolean headerPortlet) {
 
 		_initialize(
 			portletModel, portlet, portletConfig, portletContext,
-			invokerFilterContainer, checkAuthToken, facesPortlet, false,
-			strutsPortlet, strutsBridgePortlet);
-	}
-
-	public InvokerPortletImpl(
-		com.liferay.portal.kernel.model.Portlet portletModel, Portlet portlet,
-		PortletConfig portletConfig, PortletContext portletContext,
-		InvokerFilterContainer invokerFilterContainer, boolean checkAuthToken,
-		boolean facesPortlet, boolean headerPortlet, boolean strutsPortlet,
-		boolean strutsBridgePortlet) {
-
-		_initialize(
-			portletModel, portlet, portletConfig, portletContext,
-			invokerFilterContainer, checkAuthToken, facesPortlet, headerPortlet,
-			strutsPortlet, strutsBridgePortlet);
+			invokerFilterContainer, checkAuthToken, facesPortlet,
+			headerPortlet);
 	}
 
 	public InvokerPortletImpl(
@@ -150,16 +127,9 @@ public class InvokerPortletImpl
 
 		boolean headerPortlet = PortletTypeUtil.isHeaderPortlet(portlet);
 
-		boolean strutsPortlet = ClassUtil.isSubclass(
-			portletClass, StrutsPortlet.class);
-
-		boolean strutsBridgePortlet = ClassUtil.isSubclass(
-			portletClass, "org.apache.portals.bridges.struts.StrutsPortlet");
-
 		_initialize(
 			portletModel, portlet, null, portletContext, invokerFilterContainer,
-			checkAuthToken, facesPortlet, headerPortlet, strutsPortlet,
-			strutsBridgePortlet);
+			checkAuthToken, facesPortlet, headerPortlet);
 	}
 
 	@Override
@@ -172,12 +142,13 @@ public class InvokerPortletImpl
 			return;
 		}
 
-		ClassLoader contextClassLoader =
-			ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
 		try {
 			if (_portletClassLoader != null) {
-				ClassLoaderUtil.setContextClassLoader(_portletClassLoader);
+				currentThread.setContextClassLoader(_portletClassLoader);
 			}
 
 			Closeable closeable = (Closeable)_invokerFilterContainer;
@@ -191,7 +162,7 @@ public class InvokerPortletImpl
 		}
 		finally {
 			if (_portletClassLoader != null) {
-				ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+				currentThread.setContextClassLoader(contextClassLoader);
 			}
 		}
 	}
@@ -228,7 +199,7 @@ public class InvokerPortletImpl
 				PluginContextListener.PLUGIN_CLASS_LOADER);
 
 		if (classLoader == null) {
-			classLoader = ClassLoaderUtil.getPortalClassLoader();
+			classLoader = PortalClassLoaderUtil.getClassLoader();
 		}
 
 		return classLoader;
@@ -263,21 +234,22 @@ public class InvokerPortletImpl
 	public void init(PortletConfig portletConfig) throws PortletException {
 		_liferayPortletConfig = (LiferayPortletConfig)portletConfig;
 
-		ClassLoader contextClassLoader =
-			ClassLoaderUtil.getContextClassLoader();
+		Thread currentThread = Thread.currentThread();
+
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
 		_portletClassLoader = getPortletClassLoader();
 
 		try {
 			if (_portletClassLoader != null) {
-				ClassLoaderUtil.setContextClassLoader(_portletClassLoader);
+				currentThread.setContextClassLoader(_portletClassLoader);
 			}
 
 			_portlet.init(portletConfig);
 		}
 		finally {
 			if (_portletClassLoader != null) {
-				ClassLoaderUtil.setContextClassLoader(contextClassLoader);
+				currentThread.setContextClassLoader(contextClassLoader);
 			}
 		}
 	}
@@ -297,14 +269,22 @@ public class InvokerPortletImpl
 		return _headerPortlet;
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public boolean isStrutsBridgePortlet() {
-		return _strutsBridgePortlet;
+		return false;
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public boolean isStrutsPortlet() {
-		return _strutsPortlet;
+		return false;
 	}
 
 	@Override
@@ -757,8 +737,7 @@ public class InvokerPortletImpl
 		com.liferay.portal.kernel.model.Portlet portletModel, Portlet portlet,
 		PortletConfig portletConfig, PortletContext portletContext,
 		InvokerFilterContainer invokerFilterContainer, boolean checkAuthToken,
-		boolean facesPortlet, boolean headerPortlet, boolean strutsPortlet,
-		boolean strutsBridgePortlet) {
+		boolean facesPortlet, boolean headerPortlet) {
 
 		_portletModel = portletModel;
 		_portlet = portlet;
@@ -766,8 +745,6 @@ public class InvokerPortletImpl
 		_checkAuthToken = checkAuthToken;
 		_facesPortlet = facesPortlet;
 		_headerPortlet = headerPortlet;
-		_strutsPortlet = strutsPortlet;
-		_strutsBridgePortlet = strutsBridgePortlet;
 
 		_expCache = portletModel.getExpCache();
 		_liferayPortletConfig = (LiferayPortletConfig)portletConfig;
@@ -801,7 +778,5 @@ public class InvokerPortletImpl
 	private ClassLoader _portletClassLoader;
 	private String _portletId;
 	private com.liferay.portal.kernel.model.Portlet _portletModel;
-	private boolean _strutsBridgePortlet;
-	private boolean _strutsPortlet;
 
 }

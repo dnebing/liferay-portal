@@ -14,16 +14,14 @@
 
 package com.liferay.portal.spring.aop;
 
-import com.liferay.petra.reflect.AnnotationLocator;
+import com.liferay.petra.lang.HashUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -34,114 +32,69 @@ import org.aopalliance.intercept.MethodInvocation;
 public abstract class AnnotationChainableMethodAdvice<T extends Annotation>
 	extends ChainableMethodAdvice {
 
-	public AnnotationChainableMethodAdvice() {
-		_nullAnnotation = getNullAnnotation();
-
-		_annotationClass = _nullAnnotation.annotationType();
+	public AnnotationChainableMethodAdvice(Class<T> annotationClass) {
+		_annotationClass = Objects.requireNonNull(annotationClass);
 	}
 
 	public Class<? extends Annotation> getAnnotationClass() {
 		return _annotationClass;
 	}
 
-	public abstract T getNullAnnotation();
+	@Override
+	public boolean isEnabled(Class<?> targetClass, Method method) {
+		T annotation = serviceBeanAopCacheManager.findAnnotation(
+			targetClass, method, _annotationClass);
 
-	protected T findAnnotation(MethodInvocation methodInvocation) {
-		Annotation annotation = ServiceBeanAopCacheManager.getAnnotation(
-			methodInvocation, _annotationClass, _nullAnnotation);
-
-		if (annotation != null) {
-			return (T)annotation;
+		if (annotation == null) {
+			return false;
 		}
 
-		Method method = methodInvocation.getMethod();
+		_annotations.put(new CacheKey(targetClass, method), annotation);
 
-		ServiceBeanMethodInvocation serviceBeanMethodInvocation =
-			(ServiceBeanMethodInvocation)methodInvocation;
-
-		Class<?> targetClass = serviceBeanMethodInvocation.getTargetClass();
-
-		List<Annotation> annotations = AnnotationLocator.locate(
-			method, targetClass);
-
-		Iterator<Annotation> iterator = annotations.iterator();
-
-		while (iterator.hasNext()) {
-			Annotation curAnnotation = iterator.next();
-
-			if (!serviceBeanAopCacheManager.isRegisteredAnnotationClass(
-					curAnnotation.annotationType())) {
-
-				iterator.remove();
-			}
-		}
-
-		ServiceBeanAopCacheManager.putAnnotations(
-			methodInvocation,
-			annotations.toArray(new Annotation[annotations.size()]));
-
-		Set<Class<? extends Annotation>> annotationClasses = new HashSet<>();
-
-		annotation = _nullAnnotation;
-
-		for (Annotation curAnnotation : annotations) {
-			Class<? extends Annotation> annotationClass =
-				curAnnotation.annotationType();
-
-			if (annotationClass == _annotationClass) {
-				annotation = curAnnotation;
-			}
-
-			annotationClasses.add(annotationClass);
-		}
-
-		Map<Class<? extends Annotation>, AnnotationChainableMethodAdvice<?>[]>
-			annotationChainableMethodAdvices =
-				serviceBeanAopCacheManager.
-					getRegisteredAnnotationChainableMethodAdvices();
-
-		for (Map.Entry
-				<Class<? extends Annotation>,
-					AnnotationChainableMethodAdvice<?>[]> entry :
-						annotationChainableMethodAdvices.entrySet()) {
-
-			Class<? extends Annotation> annotationClass = entry.getKey();
-			AnnotationChainableMethodAdvice<?>[]
-				annotationChainableMethodAdvicesArray = entry.getValue();
-
-			if (annotationClasses.contains(annotationClass) ||
-				(annotationChainableMethodAdvicesArray == null)) {
-
-				continue;
-			}
-
-			for (AnnotationChainableMethodAdvice<?>
-					annotationChainableMethodAdvice :
-						annotationChainableMethodAdvicesArray) {
-
-				serviceBeanAopCacheManager.removeMethodInterceptor(
-					methodInvocation, annotationChainableMethodAdvice);
-			}
-		}
-
-		return (T)annotation;
+		return true;
 	}
 
-	@Override
-	protected void setServiceBeanAopCacheManager(
-		ServiceBeanAopCacheManager serviceBeanAopCacheManager) {
+	protected T findAnnotation(MethodInvocation methodInvocation) {
+		Object target = methodInvocation.getThis();
 
-		if (this.serviceBeanAopCacheManager != null) {
-			return;
-		}
-
-		this.serviceBeanAopCacheManager = serviceBeanAopCacheManager;
-
-		serviceBeanAopCacheManager.registerAnnotationChainableMethodAdvice(
-			_annotationClass, this);
+		return _annotations.get(
+			new CacheKey(target.getClass(), methodInvocation.getMethod()));
 	}
 
 	private final Class<? extends Annotation> _annotationClass;
-	private final T _nullAnnotation;
+	private final ConcurrentMap<CacheKey, T> _annotations =
+		new ConcurrentHashMap<>();
+
+	private static class CacheKey {
+
+		@Override
+		public boolean equals(Object obj) {
+			CacheKey cacheKey = (CacheKey)obj;
+
+			if (Objects.equals(_targetClass, cacheKey._targetClass) &&
+				Objects.equals(_method, cacheKey._method)) {
+
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = HashUtil.hash(0, _targetClass);
+
+			return HashUtil.hash(hash, _method);
+		}
+
+		private CacheKey(Class<?> targetClass, Method method) {
+			_targetClass = targetClass;
+			_method = method;
+		}
+
+		private final Method _method;
+		private final Class<?> _targetClass;
+
+	}
 
 }

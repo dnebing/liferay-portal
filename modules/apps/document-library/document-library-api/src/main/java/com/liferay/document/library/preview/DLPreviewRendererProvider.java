@@ -19,13 +19,38 @@ import com.liferay.portal.kernel.repository.model.FileVersion;
 import java.util.Optional;
 
 /**
+ * Renders file previews in conjunction with {@link DLPreviewRenderer}.
+ *
+ * <p>
+ * Implementations must specify at least one value for the OSGi property {@code
+ * content.type}, and can be called only for those supported content types. For
+ * example, a {@code DLPreviewRendererProvider} that can provide previews for
+ * PDF files would have the content type settings {@code
+ * content.type=application/pdf} and {@code content.type=application/x-pdf}.
+ * </p>
+ *
  * @author Alejandro Tardín
  */
 public interface DLPreviewRendererProvider {
 
+	/**
+	 * Returns the DL preview renderer responsible for rendering the file
+	 * preview. If no such provider exists, the default preview is rendered.
+	 *
+	 * @param  fileVersion the file version to preview
+	 * @return the optional DL preview renderer
+	 */
 	public Optional<DLPreviewRenderer> getPreviewDLPreviewRendererOptional(
 		FileVersion fileVersion);
 
+	/**
+	 * Returns the DL preview renderer responsible for rendering the file
+	 * thumbnail in the card view. If no such provider exists, the default
+	 * thumbnail is rendered.
+	 *
+	 * @param  fileVersion the file version to preview
+	 * @return the optional DL preview renderer
+	 */
 	public Optional<DLPreviewRenderer> getThumbnailDLPreviewRendererOptional(
 		FileVersion fileVersion);
 

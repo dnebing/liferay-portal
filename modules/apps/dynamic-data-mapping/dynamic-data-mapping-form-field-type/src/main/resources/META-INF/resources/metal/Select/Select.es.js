@@ -2,7 +2,9 @@ import './SelectRegister.soy.js';
 import 'clay-icon';
 import 'dynamic-data-mapping-form-field-type/metal/FieldBase/index.es';
 import {Config} from 'metal-state';
+import {EventHandler} from 'metal-events';
 import Component from 'metal-component';
+import dom from 'metal-dom';
 import Soy from 'metal-soy';
 import templates from './Select.soy.js';
 
@@ -16,7 +18,7 @@ class Select extends Component {
 		 * @type {?bool}
 		 */
 
-		editable: Config.bool().value(false),
+		readOnly: Config.bool().value(false),
 
 		/**
 		 * @default undefined
@@ -25,7 +27,7 @@ class Select extends Component {
 		 * @type {?(string|undefined)}
 		 */
 
-		helpText: Config.string(),
+		tip: Config.string(),
 
 		/**
 		 * @default undefined
@@ -36,6 +38,36 @@ class Select extends Component {
 
 		id: Config.string(),
 
+		key: Config.string(),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof Text
+		 * @type {?(string|undefined)}
+		 */
+
+		fieldName: Config.string(),
+
+		fixedOptions: Config.arrayOf(
+			Config.shapeOf(
+				{
+					dataType: Config.string(),
+					name: Config.string(),
+					options: Config.arrayOf(
+						Config.shapeOf(
+							{
+								label: Config.string(),
+								value: Config.string()
+							}
+						)
+					),
+					type: Config.string(),
+					value: Config.string()
+				}
+			)
+		).value([]),
+
 		/**
 		 * @default undefined
 		 * @instance
@@ -43,7 +75,7 @@ class Select extends Component {
 		 * @type {?array<object>}
 		 */
 
-		items: Config.arrayOf(
+		options: Config.arrayOf(
 			Config.shapeOf(
 				{
 					active: Config.bool().value(false),
@@ -56,16 +88,7 @@ class Select extends Component {
 					value: Config.string()
 				}
 			)
-		).value(
-			[
-				{
-					value: 'Option 1'
-				},
-				{
-					value: 'Option 2'
-				}
-			]
-		),
+		).value([]),
 
 		/**
 		 * @default undefined
@@ -92,7 +115,7 @@ class Select extends Component {
 		 * @type {?string}
 		 */
 
-		placeholder: Config.string().value('Choose an Option'),
+		placeholder: Config.string(),
 
 		/**
 		 * @default undefined
@@ -101,7 +124,7 @@ class Select extends Component {
 		 * @type {?string}
 		 */
 
-		predefinedValue: Config.string(),
+		predefinedValue: Config.array(),
 
 		/**
 		 * @default false
@@ -111,6 +134,15 @@ class Select extends Component {
 		 */
 
 		required: Config.bool().value(false),
+
+		/**
+		 * @default undefined
+		 * @instance
+		 * @memberof FieldBase
+		 * @type {?(bool|undefined)}
+		 */
+
+		repeatable: Config.bool(),
 
 		/**
 		 * @default false
@@ -131,39 +163,107 @@ class Select extends Component {
 		spritemap: Config.string(),
 
 		/**
+		 * @default {}
+		 * @instance
+		 * @memberof Select
+		 * @type {object}
+		 */
+
+		strings: Config.object().value(
+			{
+				chooseAnOption: Liferay.Language.get('choose-an-option')
+			}
+		),
+
+		/**
 		 * @default undefined
 		 * @instance
 		 * @memberof Select
 		 * @type {?(string|undefined)}
 		 */
 
-		value: Config.string(),
-
-		key: Config.string()
+		value: Config.array()
 	};
 
+	attached() {
+		this._eventHandler = new EventHandler();
+
+		this._eventHandler.add(
+			dom.on(document, 'click', this._handleDocumentClicked.bind(this))
+		);
+	}
+
+	disposeInternal() {
+		super.disposeInternal();
+
+		this._eventHandler.removeAllListeners();
+	}
+
+	prepareStateForRender(state) {
+		const {predefinedValue, value} = state;
+		let newValue = value;
+
+		if (typeof (newValue) === 'string') {
+			newValue = [value];
+		}
+
+		const selectedValue = newValue && newValue.length ? newValue[0] : '';
+
+		const selectedLabel = this._getSelectedLabel(selectedValue);
+
+		return {
+			...state,
+			predefinedValue: predefinedValue && predefinedValue.length ? predefinedValue[0] : '',
+			selectedLabel,
+			value: selectedValue
+		};
+	}
+
+	_getSelectedLabel(selectedValue) {
+		const {fixedOptions, options, placeholder} = this;
+		let selectedOption = options.find(option => option.value === selectedValue);
+
+		if (!selectedOption) {
+			selectedOption = fixedOptions.find(option => option.value === selectedValue);
+		}
+
+		return selectedOption ? selectedOption.label : placeholder;
+	}
+
+	_handleDocumentClicked({target}) {
+		if (!this.element.contains(target)) {
+			this.setState({open: false});
+		}
+	}
+
 	_handleItemClicked(event) {
-		const {key} = this;
+		const value = [event.target.dataset.optionValue];
 
 		this.setState(
 			{
-				predefinedValue: event.target.innerText,
-				value: event.target.innerText
+				open: !this.open,
+				value
 			}
 		);
 
 		this.emit(
 			'fieldEdited',
 			{
-				key,
+				fieldInstance: this,
 				originalEvent: event,
-				value: event.target.innerText
+				value
 			}
 		);
 	}
 
 	_handleClick() {
-		this.setState({open: !this.open});
+		if (!this.readOnly) {
+			this.setState(
+				{
+					open: !this.open
+				}
+			);
+		}
 	}
 }
 

@@ -55,7 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Eudaldo Alonso
  */
-@Component
+@Component(service = ExportArticleHelper.class)
 public class ExportArticleHelperImpl implements ExportArticleHelper {
 
 	@Override
@@ -68,18 +68,19 @@ public class ExportArticleHelperImpl implements ExportArticleHelper {
 			return;
 		}
 
-		long groupId = ParamUtil.getLong(portletRequest, "groupId");
-		String articleId = ParamUtil.getString(portletRequest, "articleId");
-
-		String languageId = LanguageUtil.getLanguageId(portletRequest);
-		PortletRequestModel portletRequestModel = new PortletRequestModel(
-			portletRequest, portletResponse);
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
 		HttpServletRequest request = _portal.getHttpServletRequest(
 			portletRequest);
 		HttpServletResponse response = _portal.getHttpServletResponse(
 			portletResponse);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long groupId = ParamUtil.getLong(portletRequest, "groupId");
+		String articleId = ParamUtil.getString(portletRequest, "articleId");
+		String languageId = LanguageUtil.getLanguageId(portletRequest);
+		PortletRequestModel portletRequestModel = new PortletRequestModel(
+			portletRequest, portletResponse);
 
 		JournalArticle article = _journalArticleLocalService.fetchLatestArticle(
 			groupId, articleId, WorkflowConstants.STATUS_APPROVED);

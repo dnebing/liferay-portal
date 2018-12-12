@@ -16,6 +16,7 @@ package com.liferay.portal.spring.transaction;
 
 import org.aopalliance.intercept.MethodInvocation;
 
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.CallbackPreferringPlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
@@ -26,6 +27,12 @@ import org.springframework.transaction.support.TransactionCallback;
 public class CounterCallbackPreferringTransactionExecutor
 	extends CallbackPreferringTransactionExecutor {
 
+	public CounterCallbackPreferringTransactionExecutor(
+		PlatformTransactionManager platformTransactionManager) {
+
+		super(platformTransactionManager);
+	}
+
 	@Override
 	protected TransactionCallback<Object> createTransactionCallback(
 		CallbackPreferringPlatformTransactionManager
@@ -35,22 +42,6 @@ public class CounterCallbackPreferringTransactionExecutor
 
 		return new CounterCallbackPreferringTransactionCallback(
 			transactionAttributeAdapter, methodInvocation);
-	}
-
-	/**
-	 * @deprecated As of Judson (7.1.x), replaced by {@link
-	 *             #createTransactionCallback(
-	 *             CallbackPreferringPlatformTransactionManager,
-	 *             TransactionAttributeAdapter, MethodInvocation)}
-	 */
-	@Deprecated
-	@Override
-	protected TransactionCallback<Object> createTransactionCallback(
-		TransactionAttributeAdapter transactionAttributeAdapter,
-		MethodInvocation methodInvocation) {
-
-		return createTransactionCallback(
-			null, transactionAttributeAdapter, methodInvocation);
 	}
 
 	private static class CounterCallbackPreferringTransactionCallback

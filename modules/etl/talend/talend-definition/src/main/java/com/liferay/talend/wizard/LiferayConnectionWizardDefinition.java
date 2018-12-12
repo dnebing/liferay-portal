@@ -61,13 +61,12 @@ public class LiferayConnectionWizardDefinition
 			return "LiferayWizard_icon_16x16.png";
 		}
 		else if (definitionImageType ==
-					 DefinitionImageType.WIZARD_BANNER_75X66) {
+					DefinitionImageType.WIZARD_BANNER_75X66) {
 
 			return "LiferayWizard_banner_75x66.png";
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	@Override
@@ -87,9 +86,8 @@ public class LiferayConnectionWizardDefinition
 		else if (wizardImageType == WizardImageType.WIZARD_BANNER_75X66) {
 			return getImagePath(DefinitionImageType.WIZARD_BANNER_75X66);
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	/**

@@ -62,9 +62,22 @@ public class GitRemote {
 		return _username;
 	}
 
+	@Override
 	public String toString() {
 		return JenkinsResultsParserUtil.combine(
 			getName(), " (", getRemoteURL(), ")");
+	}
+
+	protected GitRemote(
+		GitWorkingDirectory gitWorkingDirectory, String name,
+		String remoteURL) {
+
+		_gitWorkingDirectory = gitWorkingDirectory;
+		_fetchRemoteURL = remoteURL;
+		_name = name;
+		_pushRemoteURL = remoteURL;
+
+		parseRemoteURL();
 	}
 
 	protected GitRemote(
@@ -125,6 +138,10 @@ public class GitRemote {
 		_name = name;
 		_pushRemoteURL = pushRemoteURL;
 
+		parseRemoteURL();
+	}
+
+	protected void parseRemoteURL() {
 		Matcher remoteURLMatcher = _remoteURLMultiPattern.matches(
 			_fetchRemoteURL);
 
@@ -151,11 +168,11 @@ public class GitRemote {
 			"/(?<gitRepositoryName>[^\\.^\\s]+)(\\.git)?+\\s*");
 
 	private final String _fetchRemoteURL;
-	private final String _gitRepositoryName;
+	private String _gitRepositoryName;
 	private final GitWorkingDirectory _gitWorkingDirectory;
-	private final String _hostname;
+	private String _hostname;
 	private final String _name;
 	private final String _pushRemoteURL;
-	private final String _username;
+	private String _username;
 
 }

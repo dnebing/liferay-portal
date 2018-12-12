@@ -97,9 +97,10 @@ public class JournalFeedReferencesExportImportContentProcessor
 
 		try {
 			String feedId = MapUtil.getString(map, "feedId");
-			long groupId = MapUtil.getLong(map, "groupId");
 
 			if (Validator.isNotNull(feedId)) {
+				long groupId = MapUtil.getLong(map, "groupId");
+
 				journalFeed = _journalFeedLocalService.getFeed(groupId, feedId);
 			}
 		}
@@ -125,8 +126,6 @@ public class JournalFeedReferencesExportImportContentProcessor
 			return null;
 		}
 
-		Map<String, String> map = new HashMap<>();
-
 		String journalFeedReference = content.substring(
 			beginPos + _JOURNAL_FEED_FRIENDLY_URL.length(), endPos);
 
@@ -135,6 +134,8 @@ public class JournalFeedReferencesExportImportContentProcessor
 		if (pathArray.length < 2) {
 			return null;
 		}
+
+		Map<String, String> map = new HashMap<>();
 
 		map.put("endPos", String.valueOf(endPos));
 		map.put("feedId", pathArray[1]);
@@ -280,10 +281,9 @@ public class JournalFeedReferencesExportImportContentProcessor
 				path = referenceDataElement.attributeValue("path");
 			}
 
-			long groupId = GetterUtil.getLong(
-				referenceElement.attributeValue("group-id"));
-
 			if (Validator.isNull(path)) {
+				long groupId = GetterUtil.getLong(
+					referenceElement.attributeValue("group-id"));
 				String className = referenceElement.attributeValue(
 					"class-name");
 
@@ -385,8 +385,8 @@ public class JournalFeedReferencesExportImportContentProcessor
 			if (journalFeed == null) {
 				ExportImportContentValidationException eicve =
 					new ExportImportContentValidationException(
-						JournalFeedReferencesExportImportContentProcessor.
-							class.getName(),
+						JournalFeedReferencesExportImportContentProcessor.class.
+							getName(),
 						new NoSuchFeedException());
 
 				eicve.setStagedModelClassName(JournalFeed.class.getName());

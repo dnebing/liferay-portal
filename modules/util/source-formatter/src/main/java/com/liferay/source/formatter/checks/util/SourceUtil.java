@@ -15,7 +15,6 @@
 package com.liferay.source.formatter.checks.util;
 
 import com.liferay.petra.string.CharPool;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -37,6 +36,22 @@ import org.dom4j.io.SAXReader;
  * @author Hugo Huijser
  */
 public class SourceUtil {
+
+	public static boolean containsUnquoted(String s, String text) {
+		int x = -1;
+
+		while (true) {
+			x = s.indexOf(text, x + 1);
+
+			if (x == -1) {
+				return false;
+			}
+
+			if (!ToolsUtil.isInsideQuotes(s, x)) {
+				return true;
+			}
+		}
+	}
 
 	public static String getAbsolutePath(File file) {
 		return getAbsolutePath(file.toPath());
@@ -69,46 +84,47 @@ public class SourceUtil {
 		return sb.toString();
 	}
 
-	public static int getLevel(String s) {
-		return getLevel(
-			s, new String[] {StringPool.OPEN_PARENTHESIS},
-			new String[] {StringPool.CLOSE_PARENTHESIS}, 0);
-	}
+	public static String getLine(String content, int lineNumber) {
+		int nextLineStartPos = getLineStartPos(content, lineNumber);
 
-	public static int getLevel(
-		String s, String increaseLevelString, String decreaseLevelString) {
-
-		return getLevel(
-			s, new String[] {increaseLevelString},
-			new String[] {decreaseLevelString}, 0);
-	}
-
-	public static int getLevel(
-		String s, String[] increaseLevelStrings,
-		String[] decreaseLevelStrings) {
-
-		return getLevel(s, increaseLevelStrings, decreaseLevelStrings, 0);
-	}
-
-	public static int getLevel(
-		String s, String[] increaseLevelStrings, String[] decreaseLevelStrings,
-		int startLevel) {
-
-		int level = startLevel;
-
-		for (String increaseLevelString : increaseLevelStrings) {
-			level = _adjustLevel(level, s, increaseLevelString, 1);
+		if (nextLineStartPos == -1) {
+			return null;
 		}
 
-		for (String decreaseLevelString : decreaseLevelStrings) {
-			level = _adjustLevel(level, s, decreaseLevelString, -1);
+		int nextLineEndPos = content.indexOf(
+			CharPool.NEW_LINE, nextLineStartPos);
+
+		if (nextLineEndPos == -1) {
+			return content.substring(nextLineStartPos);
 		}
 
-		return level;
+		return content.substring(nextLineStartPos, nextLineEndPos);
 	}
 
 	public static int getLineNumber(String content, int pos) {
 		return StringUtil.count(content, 0, pos, CharPool.NEW_LINE) + 1;
+	}
+
+	public static int getLineStartPos(String content, int lineNumber) {
+		if (lineNumber <= 0) {
+			return -1;
+		}
+
+		if (lineNumber == 1) {
+			return 0;
+		}
+
+		int x = 0;
+
+		for (int i = 1; i < lineNumber; i++) {
+			x = content.indexOf(CharPool.NEW_LINE, x + 1);
+
+			if (x == -1) {
+				return x;
+			}
+		}
+
+		return x + 1;
 	}
 
 	public static String getTitleCase(String s, String[] exceptions) {
@@ -166,6 +182,17 @@ public class SourceUtil {
 		return sb.toString();
 	}
 
+	public static boolean isXML(String content) {
+		try {
+			readXML(content);
+
+			return true;
+		}
+		catch (DocumentException de) {
+			return false;
+		}
+	}
+
 	public static Document readXML(File file) throws DocumentException {
 		SAXReader saxReader = SAXReaderFactory.getSAXReader(null, false, false);
 
@@ -178,41 +205,11 @@ public class SourceUtil {
 		return saxReader.read(new UnsyncStringReader(content));
 	}
 
-	private static int _adjustLevel(
-		int level, String text, String s, int diff) {
-
-		String[] lines = StringUtil.splitLines(text);
-
-		forLoop:
-		for (String line : lines) {
-			line = StringUtil.trim(line);
-
-			if (line.startsWith("//") || line.startsWith("*")) {
-				continue;
-			}
-
-			int x = -1;
-
-			while (true) {
-				x = line.indexOf(s, x + 1);
-
-				if (x == -1) {
-					continue forLoop;
-				}
-
-				if (!ToolsUtil.isInsideQuotes(line, x)) {
-					level += diff;
-				}
-			}
-		}
-
-		return level;
-	}
-
 	private static final String[] _ARTICLES = {"a", "an", "the"};
 
-	private static final String[] _CONJUNCTIONS =
-		{"and", "but", "for", "nor", "or", "yet"};
+	private static final String[] _CONJUNCTIONS = {
+		"and", "but", "for", "nor", "or", "yet"
+	};
 
 	private static final String[] _PREPOSITIONS = {
 		"a", "abaft", "aboard", "about", "above", "absent", "across", "afore",

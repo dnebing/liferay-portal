@@ -688,6 +688,8 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 	@Override
 	public DDMFormInstanceVersion fetchByF_V(long formInstanceId,
 		String version, boolean retrieveFromCache) {
+		version = Objects.toString(version, "");
+
 		Object[] finderArgs = new Object[] { formInstanceId, version };
 
 		Object result = null;
@@ -715,10 +717,7 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_F_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_F_V_VERSION_3);
 			}
 			else {
@@ -801,6 +800,8 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 	 */
 	@Override
 	public int countByF_V(long formInstanceId, String version) {
+		version = Objects.toString(version, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_F_V;
 
 		Object[] finderArgs = new Object[] { formInstanceId, version };
@@ -816,10 +817,7 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 
 			boolean bindVersion = false;
 
-			if (version == null) {
-				query.append(_FINDER_COLUMN_F_V_VERSION_1);
-			}
-			else if (version.equals("")) {
+			if (version.isEmpty()) {
 				query.append(_FINDER_COLUMN_F_V_VERSION_3);
 			}
 			else {
@@ -1420,6 +1418,9 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 	public DDMFormInstanceVersionPersistenceImpl() {
 		setModelClass(DDMFormInstanceVersion.class);
 
+		setModelImplClass(DDMFormInstanceVersionImpl.class);
+		setEntityCacheEnabled(DDMFormInstanceVersionModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -1841,54 +1842,6 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 	/**
 	 * Returns the ddm form instance version with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the ddm form instance version
-	 * @return the ddm form instance version, or <code>null</code> if a ddm form instance version with the primary key could not be found
-	 */
-	@Override
-	public DDMFormInstanceVersion fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(DDMFormInstanceVersionModelImpl.ENTITY_CACHE_ENABLED,
-				DDMFormInstanceVersionImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		DDMFormInstanceVersion ddmFormInstanceVersion = (DDMFormInstanceVersion)serializable;
-
-		if (ddmFormInstanceVersion == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				ddmFormInstanceVersion = (DDMFormInstanceVersion)session.get(DDMFormInstanceVersionImpl.class,
-						primaryKey);
-
-				if (ddmFormInstanceVersion != null) {
-					cacheResult(ddmFormInstanceVersion);
-				}
-				else {
-					entityCache.putResult(DDMFormInstanceVersionModelImpl.ENTITY_CACHE_ENABLED,
-						DDMFormInstanceVersionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(DDMFormInstanceVersionModelImpl.ENTITY_CACHE_ENABLED,
-					DDMFormInstanceVersionImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return ddmFormInstanceVersion;
-	}
-
-	/**
-	 * Returns the ddm form instance version with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param formInstanceVersionId the primary key of the ddm form instance version
 	 * @return the ddm form instance version, or <code>null</code> if a ddm form instance version with the primary key could not be found
 	 */
@@ -2186,6 +2139,11 @@ public class DDMFormInstanceVersionPersistenceImpl extends BasePersistenceImpl<D
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

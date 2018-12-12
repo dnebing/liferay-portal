@@ -9,6 +9,9 @@
 			<property name="enabled" value="false" />
 		</check>
 	</source-processor>
+	<source-processor name="BNDRunSourceProcessor">
+		<check name="BNDRunInstructionsOrderCheck" />
+	</source-processor>
 	<source-processor name="BNDSourceProcessor">
 		<check name="BNDBundleCheck" />
 		<check name="BNDCapabilityCheck" />
@@ -86,8 +89,10 @@
 		<check name="GradleExportedPackageDependenciesCheck" />
 		<check name="GradleImportsCheck" />
 		<check name="GradleIndentationCheck" />
+		<check name="GradleJavaVersionCheck" />
 		<check name="GradlePropertiesCheck" />
 		<check name="GradleProvidedDependenciesCheck" />
+		<check name="GradleTaskCreationCheck" />
 		<check name="GradleTestDependencyVersionCheck">
 			<property name="allowedDependencyNames" value="com.liferay.arquillian.arquillian-container-liferay" />
 			<property name="allowedDependencyNames" value="com.liferay.arquillian.arquillian-deployment-generator-bnd" />
@@ -119,6 +124,11 @@
 		<check name="JavaBooleanUsageCheck" />
 		<check name="JavaCollatorUtilCheck" />
 		<check name="JavaCombineLinesCheck" />
+		<check name="JavaComponentAnnotationsCheck">
+			<property name="checkMismatchedServiceAttribute" value="false" />
+			<property name="checkSelfRegistration" value="false" />
+			<property name="enabled" value="false" />
+		</check>
 		<check name="JavaConfigurationAdminCheck" />
 		<check name="JavaConfigurationCategoryCheck" />
 		<check name="JavaConstructorParametersCheck" />
@@ -128,6 +138,9 @@
 		</check>
 		<check name="JavaDiamondOperatorCheck" />
 		<check name="JavaDeserializationSecurityCheck" />
+		<check name="JavaElseStatementCheck">
+			<property name="enabled" value="false" />
+		</check>
 		<check name="JavaEmptyLineAfterSuperCallCheck" />
 		<check name="JavaEmptyLinesCheck" />
 		<check name="JavaExceptionCheck" />
@@ -141,6 +154,7 @@
 		<check name="JavaIndexableCheck" />
 		<check name="JavaInnerClassImportsCheck">
 			<property name="enabled" value="false" />
+			<property name="upperCasePackageNames" value="com.microsoft.webservices.SharePoint.QueryService" />
 		</check>
 		<check name="JavaInterfaceCheck" />
 		<check name="JavaIOExceptionCheck" />
@@ -150,7 +164,7 @@
 		<check name="JavaLineBreakCheck" />
 		<check name="JavaLocalSensitiveComparisonCheck" />
 		<check name="JavaLongLinesCheck" />
-		<check name="JavaMetaOCDIdCheck" />
+		<check name="JavaMetaAnnotationsCheck" />
 		<check name="JavaModifiedServiceMethodCheck" />
 		<check name="JavaPackagePathCheck" />
 		<check name="JavaParameterAnnotationsCheck" />
@@ -161,6 +175,7 @@
 		<check name="JavaSeeAnnotationCheck" />
 		<check name="JavaServiceImplCheck" />
 		<check name="JavaSignatureStylingCheck" />
+		<check name="JavaSpringFrameworkAnnotationsCheck" />
 		<check name="JavaStaticBlockCheck" />
 		<check name="JavaStaticImportsCheck" />
 		<check name="JavaStaticVariableDependencyCheck">
@@ -217,6 +232,9 @@
 
 		<!-- Portal checks -->
 
+		<check name="JavaAnonymousInnerClassCheck">
+			<property name="enabled" value="false" />
+		</check>
 		<check name="JavaAPISignatureCheck">
 			<property name="enabled" value="false" />
 			<property name="illegalAPIParameterTypes" value="HttpServletRequest" />
@@ -241,6 +259,7 @@
 		</check>
 		<check name="JavaMultiPlusConcatCheck" />
 		<check name="JavaProviderTypeAnnotationCheck" />
+		<check name="JavaReleaseInfoCheck" />
 		<check name="JavaServiceObjectCheck" />
 		<check name="JavaServiceUtilCheck" />
 		<check name="JavaStringBundlerInitialCapacityCheck" />
@@ -326,6 +345,9 @@
 		<check name="SubstringCheck" />
 	</source-processor>
 	<source-processor name="JSSourceProcessor">
+		<check name="JSLodashDependencyCheck">
+			<property name="enabled" value="false" />
+		</check>
 		<check name="JSStylingCheck" />
 		<check name="JSWhitespaceCheck" />
 
@@ -336,6 +358,7 @@
 	<source-processor name="LFRBuildSourceProcessor">
 		<check name="LFRBuildContentCheck">
 			<property name="nonemptyMarkerFileNames" value=".lfrbuild-lowest-major-version" />
+			<property name="nonemptyMarkerFileNames" value=".lfrbuild-packageinfo" />
 		</check>
 		<check name="LFRBuildReadmeCheck" />
 	</source-processor>
@@ -344,10 +367,15 @@
 		<check name="MarkdownStylingCheck" />
 		<check name="WhitespaceCheck">
 			<property name="allowLeadingSpaces" value="true" />
+			<property name="allowTrailingDoubleSpace" value="true" />
 		</check>
 	</source-processor>
 	<source-processor name="PackageinfoSourceProcessor">
 		<check name="PackageinfoBNDExportPackageCheck" />
+		<check name="WhitespaceCheck" />
+	</source-processor>
+	<source-processor name="PoshiSourceProcessor">
+		<check name="PoshiIndentationCheck" />
 		<check name="WhitespaceCheck" />
 	</source-processor>
 	<source-processor name="PropertiesSourceProcessor">
@@ -366,6 +394,7 @@
 		<check name="PropertiesLiferayPluginPackageFileCheck" />
 		<check name="PropertiesLiferayPluginPackageLiferayVersionsCheck" />
 		<check name="PropertiesLongLinesCheck" />
+		<check name="PropertiesPortalEnvironmentVariablesCheck" />
 		<check name="PropertiesPortalFileCheck" />
 		<check name="PropertiesPortletFileCheck" />
 		<check name="PropertiesSourceFormatterContentCheck" />
@@ -410,6 +439,7 @@
 		<check name="XMLLookAndFeelCompatibilityVersionCheck" />
 		<check name="XMLLookAndFeelFileCheck" />
 		<check name="XMLModelHintsFileCheck" />
+		<check name="XMLPomFileCheck" />
 		<check name="XMLPortletFileCheck" />
 		<check name="XMLPortletPreferencesFileCheck" />
 		<check name="XMLPoshiFileCheck" />

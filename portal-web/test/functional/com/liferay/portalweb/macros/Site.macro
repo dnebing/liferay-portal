@@ -326,6 +326,42 @@
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
+	<command name="assignSiteRoleToUserGroup">
+		<var name="key_userGroupName" value="${userGroupName}" />
+
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="User Groups" />
+		</execute>
+
+		<execute macro="LexiconEntry#changeDisplayStyle">
+			<var name="displayStyle" value="table" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="UserGroups#USER_GROUP_TABLE_NAME" value1="${userGroupName}" />
+
+		<execute function="Click" locator1="SiteMembershipsUserGroups#USER_GROUP_TABLE_ACTIONS" />
+
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Assign Site Roles">
+			<var name="key_menuItem" value="Assign Site Roles" />
+		</execute>
+
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+
+		<execute macro="LexiconEntry#changeDisplayStyle">
+			<var name="displayStyle" value="cards" />
+		</execute>
+
+		<execute function="Check" locator1="Card#SPECIFIC_CHECKBOX">
+			<var name="key_cardText" value="${roleName}" />
+		</execute>
+
+		<execute function="SelectFrameTop" />
+
+		<execute macro="Button#clickDone" />
+
+		<execute macro="Alert#viewSuccessMessage" />
+	</command>
+
 	<command name="assignUserAsMemberCP">
 		<var name="key_cardText" value="${userScreenName}" />
 
@@ -357,8 +393,6 @@
 	</command>
 
 	<command name="assignUserGroupAsMemberCP">
-		<var name="key_cardText" value="${userGroupName}" />
-
 		<execute macro="Navigator#gotoNavItem">
 			<var name="navItem" value="User Groups" />
 		</execute>
@@ -369,9 +403,9 @@
 
 		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
-		<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${userGroupName}" />
-
-		<execute function="Check" locator1="Card#SPECIFIC_CHECKBOX" />
+		<execute macro="LexiconEntry#selectEntry">
+			<var name="rowEntry" value="${userGroupName}" />
+		</execute>
 
 		<execute function="SelectFrameTop" />
 
@@ -460,9 +494,9 @@
 			<isset var="currentSiteLanguages" />
 			<then>
 				<while>
-					<condition function="IsElementPresent" locator1="SiteSettingsDisplaySettings#AVAILABLE_LANGUAGES_CURRENT_PRESENT" />
+					<condition function="IsElementPresent" locator1="LanguageConfiguration#LANGUAGES_CURRENT_SELECT" />
 					<then>
-						<execute function="Click" locator1="SiteSettingsDisplaySettings#AVAILABLE_LANGUAGES_CURRENT_PRESENT" />
+						<execute function="Click" locator1="LanguageConfiguration#LANGUAGES_CURRENT_SELECT" />
 
 						<execute function="Click" locator1="SiteSettingsDisplaySettings#MOVE_CURRENT_TO_AVAILABLE_BUTTON" />
 					</then>
@@ -471,11 +505,11 @@
 				<for list="${currentSiteLanguages}" param="currentSiteLanguage">
 					<var name="currentSiteLanguage" value="${currentSiteLanguage}" />
 
-					<execute function="Select" locator1="SiteSettingsDisplaySettings#AVAILABLE_LANGUAGES_AVAILABLE_SELECT" value1="${currentSiteLanguage}" />
+					<execute function="Select" locator1="LanguageConfiguration#LANGUAGES_AVAILABLE" value1="${currentSiteLanguage}" />
 
 					<execute function="Click" locator1="SiteSettingsDisplaySettings#MOVE_AVAILABLE_TO_CURRENT_BUTTON" />
 
-					<execute function="AssertTextEquals#assertPartialText" locator1="SiteSettingsDisplaySettings#AVAILABLE_LANGUAGES_CURRENT_SELECT" value1="${currentSiteLanguage}" />
+					<execute function="AssertTextEquals#assertPartialText" locator1="LanguageConfiguration#LANGUAGES_CURRENT" value1="${currentSiteLanguage}" />
 				</for>
 			</then>
 		</if>
@@ -485,7 +519,7 @@
 			<then>
 				<var name="defaultSiteLanguage" value="${defaultSiteLanguage}" />
 
-				<execute function="Select" locator1="SiteSettingsDisplaySettings#DEFAULT_LANGUAGE_SELECT" value1="${defaultSiteLanguage}" />
+				<execute function="Select" locator1="Select#DEFAULT_LANGUAGE" value1="${defaultSiteLanguage}" />
 			</then>
 		</if>
 
@@ -531,7 +565,7 @@
 			<var name="menuItem" value="Deactivate" />
 		</execute>
 
-		<execute function="Confirm" value1="Are you sure you want to deactivate this?" />
+		<execute function="AssertConfirm" value1="Are you sure you want to deactivate this?" />
 
 		<if>
 			<equals arg1="${successMessage}" arg2="true" />
@@ -563,7 +597,7 @@
 			<var name="menuItem" value="Delete" />
 		</execute>
 
-		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<execute function="AssertConfirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute macro="Alert#viewSuccessMessage" />
 
@@ -580,7 +614,7 @@
 
 		<execute function="Uncheck#uncheckToggleSwitchNoErrorNoAssert" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
 
-		<execute function="Confirm" value1="Disabling the Recycle Bin prevents the restoring of content that has been moved to the Recycle Bin." />
+		<execute function="AssertConfirm" value1="Disabling the Recycle Bin prevents the restoring of content that has been moved to the Recycle Bin." />
 
 		<execute function="AssertNotChecked#assertNotCheckedNotVisible" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
 
@@ -638,14 +672,6 @@
 		<execute macro="PortletEntry#save" />
 	</command>
 
-	<command name="enableRecycleBinCP">
-		<execute function="AssertClick" locator1="NavListItem#RECYCLE_BIN" value1="Recycle Bin" />
-
-		<execute function="Check" locator1="Checkbox#ENABLE_RECYCLE_BIN" />
-
-		<execute macro="PortletEntry#save" />
-	</command>
-
 	<command name="getSiteId">
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Configuration" />
@@ -655,7 +681,7 @@
 
 		<execute function="AssertElementPresent" locator1="SitesEditSite#SITE_ID" />
 
-		<var method="selenium#getElementValue(SitesEditSite#SITE_ID)" name="siteId" />
+		<var method="selenium#getElementValue('SitesEditSite#SITE_ID')" name="siteId" />
 
 		<return value="${siteId}" />
 	</command>
@@ -664,6 +690,29 @@
 		<execute function="AssertClick" locator1="ListGroupItem#ITEM_NAME_LINK" value1="${siteName}">
 			<var name="key_itemName" value="${siteName}" />
 		</execute>
+	</command>
+
+	<command name="importSiteFromTempFolder">
+		<execute function="AssertClick" locator1="Button#SELECT_FILE" value1="Select File" />
+
+		<execute function="SikuliClick" locator1="OS#FILE_DIALOG_BOX_TYPE_FILE_NAME_ICON_PNG" />
+
+		<execute macro="TestCase#getDownloadedTempFileName">
+			<return name="siteLARFileName" />
+			<var name="fileNamePattern" value="Public_Pages-*.lar" />
+		</execute>
+
+		<execute function="SikuliUploadTempFile" locator1="OS#FILE_DIALOG_BOX_FILE_NAME_FIELD_PNG" value1="${siteLARFileName}" />
+
+		<execute macro="Button#click">
+			<var name="button" value="Continue" />
+		</execute>
+
+		<execute macro="Button#click">
+			<var name="button" value="Import" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="SitePagesImport#CURRENT_AND_PREVIOUS_STATUS_1" value1="Successful" />
 	</command>
 
 	<command name="inactivateCP">
@@ -851,6 +900,24 @@
 		<execute macro="PortletEntry#save" />
 	</command>
 
+	<command name="openSiteMembershipsAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/${siteURLKey}/~/control_panel/manage/-/site_memberships" />
+		</execute>
+	</command>
+
+	<command name="openSitesAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/control_panel/manage/-/sites" />
+		</execute>
+	</command>
+
+	<command name="openSiteSettingsAdmin">
+		<execute macro="Navigator#openWithAppendToBaseURL">
+			<var name="urlAppend" value="group/${siteURLKey}/~/control_panel/manage/-/site/settings" />
+		</execute>
+	</command>
+
 	<command name="removeMemberCP">
 		<var name="key_cardText" value="${userScreenName}" />
 
@@ -875,7 +942,7 @@
 			<var name="rowEntry" value="${userScreenName}" />
 		</execute>
 
-		<execute function="Confirm#waitForConfirmation" value1="Are you sure you want to delete this? It will be deleted immediately." />
+		<execute function="AssertConfirm#waitForConfirmation" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
@@ -895,7 +962,7 @@
 			<var name="displayStyle" value="table" />
 		</execute>
 
-		<execute function="AssertTextEquals" locator1="SiteMembershipsUserGroups#USER_GROUP_TABLE_NAME" value1="${userGroupName}" />
+		<execute function="AssertTextEquals" locator1="UserGroups#USER_GROUP_TABLE_NAME" value1="${userGroupName}" />
 
 		<execute macro="LexiconEntry#openEntryMenu">
 			<var name="rowEntry" value="${userGroupName}" />
@@ -970,12 +1037,8 @@
 				<execute function="AssertElementPresent" locator1="Message#EMPTY_INFO" />
 			</then>
 			<else>
-				<execute function="AssertElementPresent" locator1="Card#GENERIC_LARGE_TEXT" />
-
-				<var method="StringUtil#unquote('${searchValue}')" name="cardText" />
-
-				<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${cardText}">
-					<var name="key_cardText" value="${cardText}" />
+				<execute macro="LexiconEntry#viewEntryName">
+					<var method="StringUtil#unquote('${searchValue}')" name="rowEntry" />
 				</execute>
 			</else>
 		</if>
@@ -1058,7 +1121,7 @@
 
 				<execute function="ClickNoError" locator1="Icon#DELETE" value1="Delete" />
 
-				<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+				<execute function="AssertConfirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
 
 				<execute macro="Alert#viewSuccessMessage" />
 			</then>
@@ -1143,13 +1206,13 @@
 		<for list="${currentSiteLanguages}" param="currentSiteLanguage">
 			<var name="currentSiteLanguage" value="${currentSiteLanguage}" />
 
-			<execute function="AssertTextEquals#assertPartialText" locator1="SiteSettingsDisplaySettings#AVAILABLE_LANGUAGES_CURRENT_SELECT" value1="${currentSiteLanguage}" />
+			<execute function="AssertTextEquals#assertPartialText" locator1="LanguageConfiguration#LANGUAGES_CURRENT" value1="${currentSiteLanguage}" />
 		</for>
 
 		<for list="${availableSiteLanguages}" param="availableSiteLanguage">
 			<var name="availableSiteLanguage" value="${availableSiteLanguage}" />
 
-			<execute function="AssertTextEquals#assertPartialText" locator1="SiteSettingsDisplaySettings#AVAILABLE_LANGUAGES_AVAILABLE_SELECT" value1="${availableSiteLanguage}" />
+			<execute function="AssertTextEquals#assertPartialText" locator1="LanguageConfiguration#LANGUAGES_AVAILABLE" value1="${availableSiteLanguage}" />
 		</for>
 
 		<if>
@@ -1157,14 +1220,9 @@
 			<then>
 				<var name="defaultSiteLanguage" value="${defaultSiteLanguage}" />
 
-				<execute function="Select" locator1="SiteSettingsDisplaySettings#DEFAULT_LANGUAGE_SELECT" value1="${defaultSiteLanguage}" />
+				<execute function="Select" locator1="Select#DEFAULT_LANGUAGE" value1="${defaultSiteLanguage}" />
 			</then>
 		</if>
-	</command>
-
-	<command name="viewDefaultThemePG">
-		<execute function="AssertElementNotPresent" locator1="Home#DARK_THEME" />
-		<execute function="AssertElementPresent" locator1="Home#DEFAULT_THEME" />
 	</command>
 
 	<command name="viewGlobalLandingDefault">
@@ -1237,8 +1295,8 @@
 			<var name="navItem" value="User Groups" />
 		</execute>
 
-		<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${userGroupName}">
-			<var name="key_cardText" value="${userGroupName}" />
+		<execute function="AssertTextEquals" locator1="SiteMemberships#USER_GROUPS_TABLE_NAME" value1="${userGroupName}">
+			<var name="key_userGroupName" value="${userGroupName}" />
 		</execute>
 	</command>
 
@@ -1353,19 +1411,6 @@
 		<execute function="AssertLocation" value1="${sitePageURL}" />
 	</command>
 
-	<command name="viewSiteHierarchyInBreadcrumbPG">
-		<if>
-			<isset var="breadcrumbListVisible" />
-			<then>
-				<for list="${breadcrumbListVisible}" param="breadcrumbName">
-					<var name="key_breadcrumbName" value="${breadcrumbName}" />
-
-					<execute function="AssertTextEquals" locator1="SitesDirectory#BREADCRUMB" value1="${breadcrumbName}" />
-				</for>
-			</then>
-		</if>
-	</command>
-
 	<command name="viewSiteMembershipsRequest">
 		<execute function="Click" locator1="Icon#INFO" />
 
@@ -1382,14 +1427,6 @@
 		<execute function="AssertTextEquals" locator1="SiteMembershipsViewMembershipRequests#USER_COMMENTS" value1="Please allow me to join the Restricted Site." />
 	</command>
 
-	<command name="viewSiteNotClonedFromSiteTemplateCP">
-		<var name="key_siteTemplateName" value="${siteTemplateName}" />
-
-		<execute function="AssertClick" locator1="SitesEditSite#MENU_BASIC_INFORMATION_SITE_TEMPLATE" value1="Site Template" />
-
-		<execute function="AssertTextEquals#assertPartialText" locator1="SiteSettingsSiteTemplate#SITE_CLONED_FROM_TEMPLATE_MESSAGE" value1="Site Template" />
-	</command>
-
 	<command name="viewSiteRoleViaSiteMembershipsCP">
 		<execute function="AssertTextEquals" locator1="Card#SPECIFIC_LARGE_TEXT" value1="${resourceName}">
 			<var name="key_cardText" value="${resourceName}" />
@@ -1397,6 +1434,16 @@
 
 		<execute function="AssertTextEquals" locator1="Card#SPECIFIC_SMALL_TEXT" value1="${roleTitle}">
 			<var name="key_cardText" value="${resourceName}" />
+		</execute>
+	</command>
+
+	<command name="viewUserGroupSiteRoleViaSiteMembershipsCP">
+		<execute function="AssertTextEquals" locator1="SiteMemberships#USER_GROUPS_TABLE_NAME" value1="${resourceName}">
+			<var name="key_userGroupName" value="${resourceName}" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="SiteMemberships#USER_GROUPS_TABLE_SITE_ROLES" value1="${roleTitle}">
+			<var name="key_siteRoleName" value="${roleTitle}" />
 		</execute>
 	</command>
 

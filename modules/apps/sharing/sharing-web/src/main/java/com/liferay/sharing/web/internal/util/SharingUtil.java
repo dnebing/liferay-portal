@@ -14,31 +14,25 @@
 
 package com.liferay.sharing.web.internal.util;
 
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
-import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.service.ClassNameLocalService;
-import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
-import com.liferay.sharing.constants.SharingEntryActionKey;
-import com.liferay.sharing.security.permission.SharingPermissionChecker;
+import com.liferay.sharing.model.SharingEntry;
+import com.liferay.sharing.security.permission.SharingEntryAction;
+import com.liferay.sharing.security.permission.SharingPermission;
+import com.liferay.sharing.service.SharingEntryLocalService;
 import com.liferay.sharing.web.internal.display.SharingEntryPermissionDisplay;
+import com.liferay.sharing.web.internal.display.SharingEntryPermissionDisplayAction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -47,96 +41,62 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = SharingUtil.class)
 public class SharingUtil {
 
+	public SharingEntryPermissionDisplayAction
+		getSharingEntryPermissionDisplayActionKey(SharingEntry sharingEntry) {
+
+		if (sharingEntry.hasSharingPermission(SharingEntryAction.UPDATE)) {
+			return SharingEntryPermissionDisplayAction.UPDATE;
+		}
+
+		if (sharingEntry.hasSharingPermission(
+				SharingEntryAction.ADD_DISCUSSION)) {
+
+			return SharingEntryPermissionDisplayAction.COMMENTS;
+		}
+
+		if (sharingEntry.hasSharingPermission(SharingEntryAction.VIEW)) {
+			return SharingEntryPermissionDisplayAction.VIEW;
+		}
+
+		return null;
+	}
+
 	public List<SharingEntryPermissionDisplay>
 		getSharingEntryPermissionDisplays(
 			PermissionChecker permissionChecker, long classNameId, long classPK,
 			long groupId, Locale locale) {
 
-		List<SharingEntryActionKey> sharingEntryActionKeys = new ArrayList<>();
+		List<SharingEntryAction> sharingEntryActions = new ArrayList<>();
 
-		SharingPermissionChecker sharingPermissionChecker =
-			_serviceTrackerMap.getService(classNameId);
+		for (SharingEntryAction sharingEntryAction :
+				SharingEntryAction.values()) {
 
-		if (sharingPermissionChecker == null) {
-			return Collections.emptyList();
-		}
+			try {
+				if (_sharingPermission.contains(
+						permissionChecker, classNameId, classPK, groupId,
+						Collections.singletonList(sharingEntryAction))) {
 
-		try {
-			if (sharingPermissionChecker.hasPermission(
-					permissionChecker, classPK, groupId,
-					Arrays.asList(SharingEntryActionKey.VIEW))) {
-
-				sharingEntryActionKeys.add(SharingEntryActionKey.VIEW);
+					sharingEntryActions.add(sharingEntryAction);
+				}
 			}
-		}
-		catch (PortalException pe) {
-			_log.error(pe, pe);
-		}
-
-		try {
-			if (sharingPermissionChecker.hasPermission(
-					permissionChecker, classPK, groupId,
-					Arrays.asList(SharingEntryActionKey.UPDATE))) {
-
-				sharingEntryActionKeys.add(SharingEntryActionKey.UPDATE);
+			catch (PortalException pe) {
+				_log.error(pe, pe);
 			}
-		}
-		catch (PortalException pe) {
-			_log.error(pe, pe);
-		}
-
-		try {
-			if (sharingPermissionChecker.hasPermission(
-					permissionChecker, classPK, groupId,
-					Arrays.asList(SharingEntryActionKey.ADD_DISCUSSION))) {
-
-				sharingEntryActionKeys.add(
-					SharingEntryActionKey.ADD_DISCUSSION);
-			}
-		}
-		catch (PortalException pe) {
-			_log.error(pe, pe);
 		}
 
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			"content.Language", locale, getClass());
+			locale, SharingUtil.class);
 
 		return SharingEntryPermissionDisplay.getSharingEntryPermissionDisplays(
-			sharingEntryActionKeys, resourceBundle);
-	}
-
-	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
-	public void setModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
-	}
-
-	@Activate
-	protected void activate(BundleContext bundleContext) {
-		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
-			bundleContext, SharingPermissionChecker.class,
-			"(model.class.name=*)",
-			(serviceReference, emitter) -> {
-				emitter.emit(
-					_classNameLocalService.getClassNameId(
-						(String)serviceReference.getProperty(
-							"model.class.name")));
-			});
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		_serviceTrackerMap.close();
+			sharingEntryActions, resourceBundle);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(SharingUtil.class);
 
 	@Reference
-	private ClassNameLocalService _classNameLocalService;
+	private SharingEntryLocalService _sharingEntryLocalService;
 
-	@Reference(target = "(bundle.symbolic.name=com.liferay.sharing.web)")
-	private ResourceBundleLoader _resourceBundleLoader;
-
-	private ServiceTrackerMap<Long, SharingPermissionChecker>
-		_serviceTrackerMap;
+	@Reference
+	private SharingPermission _sharingPermission;
 
 }

@@ -38,6 +38,7 @@
 	</tear-down>
 
 	<command name="ApproveInDMFolderCustomWorkflow" priority="5">
+		<property name="portal.release" value="false" />
 		<property name="testray.component.names" value="Training" />
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -63,7 +64,9 @@
 			<var name="orgName" value="Space Program Academy of Continuing Education" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -203,8 +206,6 @@
 
 			<execute macro="Navigator#openURL" />
 
-			<execute macro="Navigator#openURL" />
-
 			<execute macro="ProductMenu#gotoPortlet">
 				<var name="category" value="My Account" />
 				<var name="panel" value="User" />
@@ -297,7 +298,9 @@
 		</execute>
 
 		<for list="1,2,3" param="entryCount">
-			<execute macro="ProductMenu#gotoSitesContent">
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="Content" />
+				<var name="panel" value="Site Administration" />
 				<var name="portlet" value="Documents and Media" />
 			</execute>
 
@@ -357,7 +360,6 @@
 		<description message="This is a use case for LPS-60870." />
 
 		<property name="custom.properties" value="dl.file.entry.drafts.enabled=true" />
-		<property name="portal.subrepo" value="false" />
 		<property name="testray.component.names" value="Training" />
 
 		<execute macro="Navigator#openURL" />

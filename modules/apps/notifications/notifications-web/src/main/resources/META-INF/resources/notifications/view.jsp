@@ -75,6 +75,7 @@ navigationURL.setParameter(SearchContainer.DEFAULT_CUR_PARAM, "0");
 	filterDropdownItems="<%= notificationsManagementToolbarDisplayContext.getFilterDropdownItems() %>"
 	itemsTotal="<%= notificationsSearchContainer.getTotal() %>"
 	searchContainerId="<%= searchContainerId %>"
+	selectable="<%= actionRequired ? false : true %>"
 	showCreationMenu="<%= false %>"
 	showInfoButton="<%= false %>"
 	showSearch="<%= false %>"
@@ -86,7 +87,7 @@ navigationURL.setParameter(SearchContainer.DEFAULT_CUR_PARAM, "0");
 	<aui:form action="<%= currentURL %>" method="get" name="fm">
 		<div class="user-notifications">
 			<liferay-ui:search-container
-				rowChecker="<%= new UserNotificationEventRowChecker(renderResponse) %>"
+				rowChecker="<%= actionRequired ? null : new UserNotificationEventRowChecker(renderResponse) %>"
 				searchContainer="<%= notificationsSearchContainer %>"
 			>
 				<liferay-ui:search-container-row
@@ -213,7 +214,7 @@ navigationURL.setParameter(SearchContainer.DEFAULT_CUR_PARAM, "0");
 			notice = new Liferay.Notice(
 				{
 					closeText: false,
-					content: '<liferay-ui:message key="an-unexpected-error-occurred" /><button class="close" type="button">&times;</button>',
+					content: '<liferay-ui:message key="an-unexpected-error-occurred" /><button aria-label="' + Liferay.Language.get("close") + '" class="close" type="button">&times;</button>',
 					timeout: 5000,
 					toggleText: false,
 					type: 'warning',

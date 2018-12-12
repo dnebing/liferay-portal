@@ -397,15 +397,14 @@ public class SubscriptionSender implements Serializable {
 		_localizedContext.put(key, value);
 	}
 
-	public <T extends Serializable & Function<Locale, String>>
-		void setLocalizedContextAttribute(String key, T function) {
+	public <T extends Serializable & Function<Locale, String>> void
+		setLocalizedContextAttribute(String key, T function) {
 
 		setLocalizedContextAttribute(key, function, true);
 	}
 
-	public <T extends Serializable & Function<Locale, String>>
-		void setLocalizedContextAttribute(
-			String key, T function, boolean escape) {
+	public <T extends Serializable & Function<Locale, String>> void
+		setLocalizedContextAttribute(String key, T function, boolean escape) {
 
 		setLocalizedContextAttribute(
 			key, new EscapableLocalizableFunction(function, escape));
@@ -1013,10 +1012,10 @@ public class SubscriptionSender implements Serializable {
 
 		objectInputStream.defaultReadObject();
 
-		String servletContextName = objectInputStream.readUTF();
+		String contextName = objectInputStream.readUTF();
 
-		if (!servletContextName.isEmpty()) {
-			_classLoader = ClassLoaderPool.getClassLoader(servletContextName);
+		if (!contextName.equals(StringPool.IS_NULL)) {
+			_classLoader = ClassLoaderPool.getClassLoader(contextName);
 		}
 	}
 
@@ -1025,13 +1024,13 @@ public class SubscriptionSender implements Serializable {
 
 		objectOutputStream.defaultWriteObject();
 
-		String servletContextName = StringPool.BLANK;
+		String contextName = StringPool.IS_NULL;
 
 		if (_classLoader != null) {
-			servletContextName = ClassLoaderPool.getContextName(_classLoader);
+			contextName = ClassLoaderPool.getContextName(_classLoader);
 		}
 
-		objectOutputStream.writeUTF(servletContextName);
+		objectOutputStream.writeUTF(contextName);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

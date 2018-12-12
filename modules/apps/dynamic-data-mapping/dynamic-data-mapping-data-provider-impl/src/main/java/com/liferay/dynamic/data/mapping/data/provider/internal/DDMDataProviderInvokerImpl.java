@@ -40,9 +40,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Marcellus Tavares
  */
-@Component(immediate = true)
+@Component(immediate = true, service = DDMDataProviderInvoker.class)
 public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 
+	@Override
 	public DDMDataProviderResponse invoke(
 		DDMDataProviderRequest ddmDataProviderRequest) {
 
@@ -78,13 +79,13 @@ public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 					DDMDataProviderResponseStatus.COMMAND_EXCEPTION);
 			}
 			else if (failureType ==
-						 HystrixRuntimeException.FailureType.SHORTCIRCUIT) {
+						HystrixRuntimeException.FailureType.SHORTCIRCUIT) {
 
 				builder = builder.withStatus(
 					DDMDataProviderResponseStatus.SHORT_CIRCUIT);
 			}
 			else if (failureType ==
-						 HystrixRuntimeException.FailureType.TIMEOUT) {
+						HystrixRuntimeException.FailureType.TIMEOUT) {
 
 				builder = builder.withStatus(
 					DDMDataProviderResponseStatus.TIMEOUT);
@@ -110,7 +111,7 @@ public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 			ddmDataProviderRequest.getDDMDataProviderId();
 
 		Optional<DDMDataProviderInstance> ddmDataProviderInstanceOptional =
-			fetchDDMDataProviderInstance(ddmDataProviderId);
+			fetchDDMDataProviderInstanceOptional(ddmDataProviderId);
 
 		DDMDataProvider ddmDataProvider = getDDMDataProvider(
 			ddmDataProviderId, ddmDataProviderInstanceOptional);
@@ -140,8 +141,9 @@ public class DDMDataProviderInvokerImpl implements DDMDataProviderInvoker {
 		return ddmDataProviderInvokeCommand.execute();
 	}
 
-	protected Optional<DDMDataProviderInstance> fetchDDMDataProviderInstance(
-			String ddmDataProviderInstanceId)
+	protected Optional<DDMDataProviderInstance>
+			fetchDDMDataProviderInstanceOptional(
+				String ddmDataProviderInstanceId)
 		throws PortalException {
 
 		DDMDataProviderInstance ddmDataProviderInstance =

@@ -17,13 +17,13 @@ package com.liferay.apio.architect.test.util.internal.writer;
 import static com.liferay.apio.architect.test.util.writer.MockWriterUtil.getRequestInfo;
 
 import com.liferay.apio.architect.documentation.contributor.CustomDocumentation;
-import com.liferay.apio.architect.impl.documentation.Documentation;
-import com.liferay.apio.architect.impl.documentation.contributor.CustomDocumentationImpl;
-import com.liferay.apio.architect.impl.message.json.DocumentationMessageMapper;
-import com.liferay.apio.architect.impl.routes.CollectionRoutesImpl;
-import com.liferay.apio.architect.impl.routes.ItemRoutesImpl;
-import com.liferay.apio.architect.impl.routes.NestedCollectionRoutesImpl;
-import com.liferay.apio.architect.impl.writer.DocumentationWriter;
+import com.liferay.apio.architect.internal.documentation.Documentation;
+import com.liferay.apio.architect.internal.documentation.contributor.CustomDocumentationImpl;
+import com.liferay.apio.architect.internal.message.json.DocumentationMessageMapper;
+import com.liferay.apio.architect.internal.routes.CollectionRoutesImpl;
+import com.liferay.apio.architect.internal.routes.ItemRoutesImpl;
+import com.liferay.apio.architect.internal.routes.NestedCollectionRoutesImpl;
+import com.liferay.apio.architect.internal.writer.DocumentationWriter;
 import com.liferay.apio.architect.representor.Representor;
 import com.liferay.apio.architect.routes.CollectionRoutes;
 import com.liferay.apio.architect.routes.ItemRoutes;
@@ -58,10 +58,10 @@ public class MockDocumentationWriter {
 
 		CollectionRoutes.Builder<String, Object> collectionBuilder =
 			new CollectionRoutesImpl.BuilderImpl<>(
-				"name", null,
+				"name", __ -> null,
 				__ -> {
 				},
-				__ -> null, __ -> null);
+				__ -> null, __ -> null, __ -> Optional.empty());
 
 		CustomDocumentation.Builder customDocumentationBuilder =
 			new CustomDocumentationImpl.BuilderImpl();
@@ -72,10 +72,10 @@ public class MockDocumentationWriter {
 			"root/retrieve", __ -> "retrieve description");
 
 		ItemRoutes.Builder itemBuilder = new ItemRoutesImpl.BuilderImpl<>(
-			"name", null,
+			"name", __ -> null,
 			__ -> {
 			},
-			__ -> null, __ -> Optional.empty());
+			__ -> null, __ -> Optional.empty(), __ -> Optional.empty());
 
 		NestedCollectionRoutes.Builder nestedBuilder =
 			new NestedCollectionRoutesImpl.BuilderImpl<>(
@@ -106,6 +106,7 @@ public class MockDocumentationWriter {
 			() -> Optional.of(() -> "Entrypoint"), () -> root,
 			() -> Collections.singletonMap("root", collectionRoutes),
 			() -> Collections.singletonMap("root", itemRoutes),
+			() -> Collections.singletonMap("root", nestedCollectionRoutes),
 			() -> Collections.singletonMap("root", nestedCollectionRoutes),
 			() -> customDocumentation);
 

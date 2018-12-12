@@ -467,12 +467,12 @@ public class HtmlBBCodeTranslatorImpl implements BBCodeTranslator {
 				bbCodeItem.getAttribute());
 
 			while (matcher.find()) {
-				String listStyle = null;
-
 				String attributeName = matcher.group(1);
 				String attributeValue = matcher.group(2);
 
 				if (Objects.equals(attributeName, "type")) {
+					String listStyle = null;
+
 					if (_orderedListStyles.get(attributeValue) != null) {
 						listStyle = _orderedListStyles.get(attributeValue);
 
@@ -514,9 +514,9 @@ public class HtmlBBCodeTranslatorImpl implements BBCodeTranslator {
 		List<BBCodeItem> bbCodeItems, Stack<String> tags, IntegerWrapper marker,
 		String data) {
 
-		BBCodeItem bbCodeItem = null;
-
 		if ((marker.getValue() + 1) < bbCodeItems.size()) {
+			BBCodeItem bbCodeItem = null;
+
 			if (data.matches("\\A\r?\n\\z")) {
 				bbCodeItem = bbCodeItems.get(marker.getValue() + 1);
 
@@ -748,28 +748,30 @@ public class HtmlBBCodeTranslatorImpl implements BBCodeTranslator {
 	private static final Log _log = LogFactoryUtil.getLog(
 		HtmlBBCodeTranslatorImpl.class);
 
-	private final Pattern _attributesPattern = Pattern.compile(
+	private static final Pattern _attributesPattern = Pattern.compile(
 		"\\s*([^=]+)\\s*=\\s*\"([^\"]+)\"\\s*");
-	private final Map<String, String> _bbCodeCharacters;
-	private final BBCodeParser _bbCodeParser = new BBCodeParser();
-	private final Pattern _bbCodePattern = Pattern.compile("[]&<>'\"`\\[()]");
-	private final Pattern _colorPattern = Pattern.compile(
+	private static final Pattern _bbCodePattern = Pattern.compile(
+		"[]&<>'\"`\\[()]");
+	private static final Pattern _colorPattern = Pattern.compile(
 		"^(:?aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|purple" +
 			"|red|silver|teal|white|yellow|#(?:[0-9a-f]{3})?[0-9a-f]{3})$",
 		Pattern.CASE_INSENSITIVE);
+	private static final Pattern _imagePattern = Pattern.compile(
+		"^(?:https?://|/)[-;/?:@&=+$,_.!~*'()%0-9a-z]{1,2048}$",
+		Pattern.CASE_INSENSITIVE);
+	private static final Pattern _urlPattern = Pattern.compile(
+		"^[-;/?:@&=+$,_.!~*'()%\\p{Digit}\\p{L}#]{1,2048}$",
+		Pattern.CASE_INSENSITIVE);
+
+	private final Map<String, String> _bbCodeCharacters;
+	private final BBCodeParser _bbCodeParser = new BBCodeParser();
 	private final String[] _emoticonDescriptions =
 		new String[_EMOTICONS.length];
 	private final String[] _emoticonFiles = new String[_EMOTICONS.length];
 	private final String[] _emoticonSymbols = new String[_EMOTICONS.length];
 	private final Map<String, Integer> _excludeNewLineTypes;
 	private final Set<String> _imageAttributes;
-	private final Pattern _imagePattern = Pattern.compile(
-		"^(?:https?://|/)[-;/?:@&=+$,_.!~*'()%0-9a-z]{1,2048}$",
-		Pattern.CASE_INSENSITIVE);
 	private final Map<String, String> _orderedListStyles;
 	private final Map<String, String> _unorderedListStyles;
-	private final Pattern _urlPattern = Pattern.compile(
-		"^[-;/?:@&=+$,_.!~*'()%\\p{Digit}\\p{L}#]{1,2048}$",
-		Pattern.CASE_INSENSITIVE);
 
 }

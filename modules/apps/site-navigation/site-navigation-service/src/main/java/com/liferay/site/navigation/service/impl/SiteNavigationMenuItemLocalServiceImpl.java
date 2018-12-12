@@ -17,8 +17,12 @@ package com.liferay.site.navigation.service.impl;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ModelHintsUtil;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.site.navigation.exception.InvalidSiteNavigationMenuItemOrderException;
 import com.liferay.site.navigation.exception.InvalidSiteNavigationMenuItemTypeException;
@@ -108,15 +112,15 @@ public class SiteNavigationMenuItemLocalServiceImpl
 		SiteNavigationMenuItem siteNavigationMenuItem =
 			getSiteNavigationMenuItem(siteNavigationMenuItemId);
 
-		long parentSiteNavigationMenuItemId =
-			siteNavigationMenuItem.getParentSiteNavigationMenuItemId();
-
 		List<SiteNavigationMenuItem> siteNavigationMenuItems =
 			getSiteNavigationMenuItems(
 				siteNavigationMenuItem.getSiteNavigationMenuId(),
 				siteNavigationMenuItemId);
 
 		if (!siteNavigationMenuItems.isEmpty()) {
+			long parentSiteNavigationMenuItemId =
+				siteNavigationMenuItem.getParentSiteNavigationMenuItemId();
+
 			List<SiteNavigationMenuItem> siblingsSiteNavigationMenuItems =
 				getSiteNavigationMenuItems(
 					siteNavigationMenuItem.getSiteNavigationMenuId(),
@@ -153,8 +157,17 @@ public class SiteNavigationMenuItemLocalServiceImpl
 				childSiteNavigationMenuItem);
 		}
 
-		return siteNavigationMenuItemPersistence.remove(
-			siteNavigationMenuItemId);
+		return siteNavigationMenuItemLocalService.deleteSiteNavigationMenuItem(
+			siteNavigationMenuItem);
+	}
+
+	@Indexable(type = IndexableType.DELETE)
+	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
+	public SiteNavigationMenuItem deleteSiteNavigationMenuItem(
+		SiteNavigationMenuItem siteNavigationMenuItem) {
+
+		return siteNavigationMenuItemPersistence.remove(siteNavigationMenuItem);
 	}
 
 	@Override
@@ -190,6 +203,12 @@ public class SiteNavigationMenuItemLocalServiceImpl
 			siteNavigationMenuId, parentSiteNavigationMenuItemId,
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			new SiteNavigationMenuItemOrderComparator());
+	}
+
+	@Override
+	public int getSiteNavigationMenuItemsCount(long siteNavigationMenuId) {
+		return siteNavigationMenuItemPersistence.countBySiteNavigationMenuId(
+			siteNavigationMenuId);
 	}
 
 	@Override

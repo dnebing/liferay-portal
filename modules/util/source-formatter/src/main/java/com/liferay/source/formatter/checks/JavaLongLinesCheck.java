@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.tools.ToolsUtil;
 import com.liferay.source.formatter.checks.util.JavaSourceUtil;
+import com.liferay.source.formatter.checks.util.SourceUtil;
 
 import java.io.IOException;
 
@@ -50,6 +51,7 @@ public class JavaLongLinesCheck extends BaseFileCheck {
 				lineNumber++;
 
 				if (line.startsWith("import ") || line.startsWith("package ") ||
+					line.startsWith(StringPool.SPACE) ||
 					line.matches("\\s*\\*.*") ||
 					(fileName.endsWith("Table.java") &&
 					 (line.contains("final String TABLE_") ||
@@ -190,11 +192,7 @@ public class JavaLongLinesCheck extends BaseFileCheck {
 	private String _getTruncateLongLinesContent(
 		String content, String line, String trimmedLine, int lineNumber) {
 
-		String indent = StringPool.BLANK;
-
-		for (int i = 0; i < getLeadingTabCount(line); i++) {
-			indent += StringPool.TAB;
-		}
+		String indent = SourceUtil.getIndent(line);
 
 		if (trimmedLine.matches("\\w+\\.\\w+[,);]*")) {
 			int x = line.indexOf(StringPool.PERIOD);
@@ -229,7 +227,7 @@ public class JavaLongLinesCheck extends BaseFileCheck {
 							"\n", firstLine, "\n", secondLine, "\n"));
 				}
 				else if (Validator.isNotNull(
-							 getLine(content, lineNumber + 1))) {
+							getLine(content, lineNumber + 1))) {
 
 					return StringUtil.replace(
 						content, "\n" + line + "\n",
@@ -373,6 +371,52 @@ public class JavaLongLinesCheck extends BaseFileCheck {
 			}
 		}
 
+		Matcher matcher = _annotationPattern2.matcher(trimmedLine);
+
+		if (matcher.find() && (getLevel(line) == 0)) {
+			StringBundler sb = new StringBundler();
+
+			sb.append(indent);
+			sb.append(matcher.group(1));
+			sb.append("\n");
+
+			int x = -1;
+
+			int y = matcher.end(1) - 1;
+
+			while (true) {
+				x = trimmedLine.indexOf(StringPool.COMMA, x + 1);
+
+				if (x == -1) {
+					sb.append(indent);
+					sb.append("\t");
+					sb.append(
+						trimmedLine.substring(y + 1, trimmedLine.length() - 1));
+					sb.append("\n");
+					sb.append(indent);
+					sb.append(")");
+
+					break;
+				}
+
+				if (ToolsUtil.isInsideQuotes(trimmedLine, x) ||
+					(getLevel(trimmedLine.substring(0, x), "{", "}") != 0)) {
+
+					continue;
+				}
+
+				sb.append(indent);
+				sb.append("\t");
+				sb.append(trimmedLine.substring(y + 1, x + 1));
+				sb.append("\n");
+
+				y = x + 1;
+			}
+
+			return StringUtil.replace(
+				content, "\n" + line + "\n", "\n" + sb.toString() + "\n");
+		}
+
 		int i = _getIfClauseLineBreakPos(line);
 
 		if (i == -1) {
@@ -409,7 +453,7 @@ public class JavaLongLinesCheck extends BaseFileCheck {
 			}
 		}
 
-		Matcher matcher = _annotationPattern.matcher(content);
+		Matcher matcher = _annotationPattern1.matcher(content);
 
 		while (matcher.find()) {
 			x = matcher.end();
@@ -439,7 +483,9 @@ public class JavaLongLinesCheck extends BaseFileCheck {
 
 	private static final String _LINE_LENGTH_EXCLUDES = "line.length.excludes";
 
-	private final Pattern _annotationPattern = Pattern.compile(
+	private static final Pattern _annotationPattern1 = Pattern.compile(
 		"\n\t*@(.+)\\(\n");
+	private static final Pattern _annotationPattern2 = Pattern.compile(
+		"^(@\\w+\\().*\\)");
 
 }

@@ -182,6 +182,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	public List<FriendlyURLEntry> findByUuid(String uuid, int start, int end,
 		OrderByComparator<FriendlyURLEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -205,7 +207,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FriendlyURLEntry friendlyURLEntry : list) {
-					if (!Objects.equals(uuid, friendlyURLEntry.getUuid())) {
+					if (!uuid.equals(friendlyURLEntry.getUuid())) {
 						list = null;
 
 						break;
@@ -229,10 +231,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -415,6 +414,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	public FriendlyURLEntry[] findByUuid_PrevAndNext(long friendlyURLEntryId,
 		String uuid, OrderByComparator<FriendlyURLEntry> orderByComparator)
 		throws NoSuchFriendlyURLEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		FriendlyURLEntry friendlyURLEntry = findByPrimaryKey(friendlyURLEntryId);
 
 		Session session = null;
@@ -460,10 +461,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -583,6 +581,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	 */
 	@Override
 	public int countByUuid(String uuid) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID;
 
 		Object[] finderArgs = new Object[] { uuid };
@@ -596,10 +596,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -714,6 +711,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	@Override
 	public FriendlyURLEntry fetchByUUID_G(String uuid, long groupId,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
 		Object result = null;
@@ -739,10 +738,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -826,6 +822,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	 */
 	@Override
 	public int countByUUID_G(String uuid, long groupId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_G;
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
@@ -839,10 +837,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -987,6 +982,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 		int start, int end,
 		OrderByComparator<FriendlyURLEntry> orderByComparator,
 		boolean retrieveFromCache) {
+		uuid = Objects.toString(uuid, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1014,7 +1011,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (FriendlyURLEntry friendlyURLEntry : list) {
-					if (!Objects.equals(uuid, friendlyURLEntry.getUuid()) ||
+					if (!uuid.equals(friendlyURLEntry.getUuid()) ||
 							(companyId != friendlyURLEntry.getCompanyId())) {
 						list = null;
 
@@ -1039,10 +1036,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1242,6 +1236,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 		long friendlyURLEntryId, String uuid, long companyId,
 		OrderByComparator<FriendlyURLEntry> orderByComparator)
 		throws NoSuchFriendlyURLEntryException {
+		uuid = Objects.toString(uuid, "");
+
 		FriendlyURLEntry friendlyURLEntry = findByPrimaryKey(friendlyURLEntryId);
 
 		Session session = null;
@@ -1287,10 +1283,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 		boolean bindUuid = false;
 
-		if (uuid == null) {
-			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-		}
-		else if (uuid.equals("")) {
+		if (uuid.isEmpty()) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1416,6 +1409,8 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	 */
 	@Override
 	public int countByUuid_C(String uuid, long companyId) {
+		uuid = Objects.toString(uuid, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_UUID_C;
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
@@ -1429,10 +1424,7 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 
 			boolean bindUuid = false;
 
-			if (uuid == null) {
-				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
-			}
-			else if (uuid.equals("")) {
+			if (uuid.isEmpty()) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2069,6 +2061,9 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	public FriendlyURLEntryPersistenceImpl() {
 		setModelClass(FriendlyURLEntry.class);
 
+		setModelImplClass(FriendlyURLEntryImpl.class);
+		setEntityCacheEnabled(FriendlyURLEntryModelImpl.ENTITY_CACHE_ENABLED);
+
 		try {
 			Field field = BasePersistenceImpl.class.getDeclaredField(
 					"_dbColumnNames");
@@ -2543,54 +2538,6 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	/**
 	 * Returns the friendly url entry with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the friendly url entry
-	 * @return the friendly url entry, or <code>null</code> if a friendly url entry with the primary key could not be found
-	 */
-	@Override
-	public FriendlyURLEntry fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(FriendlyURLEntryModelImpl.ENTITY_CACHE_ENABLED,
-				FriendlyURLEntryImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		FriendlyURLEntry friendlyURLEntry = (FriendlyURLEntry)serializable;
-
-		if (friendlyURLEntry == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				friendlyURLEntry = (FriendlyURLEntry)session.get(FriendlyURLEntryImpl.class,
-						primaryKey);
-
-				if (friendlyURLEntry != null) {
-					cacheResult(friendlyURLEntry);
-				}
-				else {
-					entityCache.putResult(FriendlyURLEntryModelImpl.ENTITY_CACHE_ENABLED,
-						FriendlyURLEntryImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(FriendlyURLEntryModelImpl.ENTITY_CACHE_ENABLED,
-					FriendlyURLEntryImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return friendlyURLEntry;
-	}
-
-	/**
-	 * Returns the friendly url entry with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param friendlyURLEntryId the primary key of the friendly url entry
 	 * @return the friendly url entry, or <code>null</code> if a friendly url entry with the primary key could not be found
 	 */
@@ -2887,6 +2834,11 @@ public class FriendlyURLEntryPersistenceImpl extends BasePersistenceImpl<Friendl
 	@Override
 	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

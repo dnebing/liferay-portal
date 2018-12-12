@@ -2296,6 +2296,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		String assigneeClassName, int start, int end,
 		OrderByComparator<KaleoTaskAssignmentInstance> orderByComparator,
 		boolean retrieveFromCache) {
+		assigneeClassName = Objects.toString(assigneeClassName, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2323,7 +2325,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance : list) {
-					if (!Objects.equals(assigneeClassName,
+					if (!assigneeClassName.equals(
 								kaleoTaskAssignmentInstance.getAssigneeClassName())) {
 						list = null;
 
@@ -2348,10 +2350,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			boolean bindAssigneeClassName = false;
 
-			if (assigneeClassName == null) {
-				query.append(_FINDER_COLUMN_ASSIGNEECLASSNAME_ASSIGNEECLASSNAME_1);
-			}
-			else if (assigneeClassName.equals("")) {
+			if (assigneeClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_ASSIGNEECLASSNAME_ASSIGNEECLASSNAME_3);
 			}
 			else {
@@ -2540,6 +2539,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		long kaleoTaskAssignmentInstanceId, String assigneeClassName,
 		OrderByComparator<KaleoTaskAssignmentInstance> orderByComparator)
 		throws NoSuchTaskAssignmentInstanceException {
+		assigneeClassName = Objects.toString(assigneeClassName, "");
+
 		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = findByPrimaryKey(kaleoTaskAssignmentInstanceId);
 
 		Session session = null;
@@ -2590,10 +2591,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 		boolean bindAssigneeClassName = false;
 
-		if (assigneeClassName == null) {
-			query.append(_FINDER_COLUMN_ASSIGNEECLASSNAME_ASSIGNEECLASSNAME_1);
-		}
-		else if (assigneeClassName.equals("")) {
+		if (assigneeClassName.isEmpty()) {
 			query.append(_FINDER_COLUMN_ASSIGNEECLASSNAME_ASSIGNEECLASSNAME_3);
 		}
 		else {
@@ -2713,6 +2711,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	 */
 	@Override
 	public int countByassigneeClassName(String assigneeClassName) {
+		assigneeClassName = Objects.toString(assigneeClassName, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_ASSIGNEECLASSNAME;
 
 		Object[] finderArgs = new Object[] { assigneeClassName };
@@ -2726,10 +2726,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			boolean bindAssigneeClassName = false;
 
-			if (assigneeClassName == null) {
-				query.append(_FINDER_COLUMN_ASSIGNEECLASSNAME_ASSIGNEECLASSNAME_1);
-			}
-			else if (assigneeClassName.equals("")) {
+			if (assigneeClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_ASSIGNEECLASSNAME_ASSIGNEECLASSNAME_3);
 			}
 			else {
@@ -3435,6 +3432,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		String assigneeClassName, long assigneeClassPK, int start, int end,
 		OrderByComparator<KaleoTaskAssignmentInstance> orderByComparator,
 		boolean retrieveFromCache) {
+		assigneeClassName = Objects.toString(assigneeClassName, "");
+
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3462,7 +3461,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			if ((list != null) && !list.isEmpty()) {
 				for (KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance : list) {
-					if (!Objects.equals(assigneeClassName,
+					if (!assigneeClassName.equals(
 								kaleoTaskAssignmentInstance.getAssigneeClassName()) ||
 							(assigneeClassPK != kaleoTaskAssignmentInstance.getAssigneeClassPK())) {
 						list = null;
@@ -3488,10 +3487,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			boolean bindAssigneeClassName = false;
 
-			if (assigneeClassName == null) {
-				query.append(_FINDER_COLUMN_ACN_ACPK_ASSIGNEECLASSNAME_1);
-			}
-			else if (assigneeClassName.equals("")) {
+			if (assigneeClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_ACN_ACPK_ASSIGNEECLASSNAME_3);
 			}
 			else {
@@ -3696,6 +3692,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		long assigneeClassPK,
 		OrderByComparator<KaleoTaskAssignmentInstance> orderByComparator)
 		throws NoSuchTaskAssignmentInstanceException {
+		assigneeClassName = Objects.toString(assigneeClassName, "");
+
 		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = findByPrimaryKey(kaleoTaskAssignmentInstanceId);
 
 		Session session = null;
@@ -3746,10 +3744,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 		boolean bindAssigneeClassName = false;
 
-		if (assigneeClassName == null) {
-			query.append(_FINDER_COLUMN_ACN_ACPK_ASSIGNEECLASSNAME_1);
-		}
-		else if (assigneeClassName.equals("")) {
+		if (assigneeClassName.isEmpty()) {
 			query.append(_FINDER_COLUMN_ACN_ACPK_ASSIGNEECLASSNAME_3);
 		}
 		else {
@@ -3876,6 +3871,8 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	 */
 	@Override
 	public int countByACN_ACPK(String assigneeClassName, long assigneeClassPK) {
+		assigneeClassName = Objects.toString(assigneeClassName, "");
+
 		FinderPath finderPath = FINDER_PATH_COUNT_BY_ACN_ACPK;
 
 		Object[] finderArgs = new Object[] { assigneeClassName, assigneeClassPK };
@@ -3889,10 +3886,7 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 			boolean bindAssigneeClassName = false;
 
-			if (assigneeClassName == null) {
-				query.append(_FINDER_COLUMN_ACN_ACPK_ASSIGNEECLASSNAME_1);
-			}
-			else if (assigneeClassName.equals("")) {
+			if (assigneeClassName.isEmpty()) {
 				query.append(_FINDER_COLUMN_ACN_ACPK_ASSIGNEECLASSNAME_3);
 			}
 			else {
@@ -3944,6 +3938,9 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 
 	public KaleoTaskAssignmentInstancePersistenceImpl() {
 		setModelClass(KaleoTaskAssignmentInstance.class);
+
+		setModelImplClass(KaleoTaskAssignmentInstanceImpl.class);
+		setEntityCacheEnabled(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED);
 	}
 
 	/**
@@ -4474,56 +4471,6 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 	/**
 	 * Returns the kaleo task assignment instance with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the kaleo task assignment instance
-	 * @return the kaleo task assignment instance, or <code>null</code> if a kaleo task assignment instance with the primary key could not be found
-	 */
-	@Override
-	public KaleoTaskAssignmentInstance fetchByPrimaryKey(
-		Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
-				KaleoTaskAssignmentInstanceImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		KaleoTaskAssignmentInstance kaleoTaskAssignmentInstance = (KaleoTaskAssignmentInstance)serializable;
-
-		if (kaleoTaskAssignmentInstance == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				kaleoTaskAssignmentInstance = (KaleoTaskAssignmentInstance)session.get(KaleoTaskAssignmentInstanceImpl.class,
-						primaryKey);
-
-				if (kaleoTaskAssignmentInstance != null) {
-					cacheResult(kaleoTaskAssignmentInstance);
-				}
-				else {
-					entityCache.putResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
-						KaleoTaskAssignmentInstanceImpl.class, primaryKey,
-						nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(KaleoTaskAssignmentInstanceModelImpl.ENTITY_CACHE_ENABLED,
-					KaleoTaskAssignmentInstanceImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return kaleoTaskAssignmentInstance;
-	}
-
-	/**
-	 * Returns the kaleo task assignment instance with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param kaleoTaskAssignmentInstanceId the primary key of the kaleo task assignment instance
 	 * @return the kaleo task assignment instance, or <code>null</code> if a kaleo task assignment instance with the primary key could not be found
 	 */
@@ -4818,6 +4765,11 @@ public class KaleoTaskAssignmentInstancePersistenceImpl
 		}
 
 		return count.intValue();
+	}
+
+	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
 	}
 
 	@Override

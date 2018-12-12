@@ -14,7 +14,9 @@
 
 package com.liferay.oauth2.provider.service.impl;
 
+import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.store.Store;
 import com.liferay.oauth2.provider.constants.GrantType;
 import com.liferay.oauth2.provider.constants.OAuth2ProviderConstants;
 import com.liferay.oauth2.provider.exception.DuplicateOAuth2ApplicationClientIdException;
@@ -44,8 +46,10 @@ import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Repository;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
+import com.liferay.portal.kernel.repository.RepositoryFactory;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.HttpUtil;
@@ -54,6 +58,7 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.awt.image.RenderedImage;
 
@@ -152,6 +157,7 @@ public class OAuth2ApplicationLocalServiceImpl
 		return oAuth2ApplicationPersistence.update(oAuth2Application);
 	}
 
+	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 
@@ -395,9 +401,8 @@ public class OAuth2ApplicationLocalServiceImpl
 
 			return oAuth2ApplicationPersistence.update(oAuth2Application);
 		}
-		else {
-			return oAuth2Application;
-		}
+
+		return oAuth2Application;
 	}
 
 	protected void validate(
@@ -423,18 +428,16 @@ public class OAuth2ApplicationLocalServiceImpl
 		if (!Validator.isBlank(clientSecret)) {
 			for (GrantType grantType : allowedGrantTypesList) {
 				if (!grantType.isSupportsConfidentialClients()) {
-					throw new
-						OAuth2ApplicationClientGrantTypeException(
-							grantType.name());
+					throw new OAuth2ApplicationClientGrantTypeException(
+						grantType.name());
 				}
 			}
 		}
 		else {
 			for (GrantType grantType : allowedGrantTypesList) {
 				if (!grantType.isSupportsPublicClients()) {
-					throw new
-						OAuth2ApplicationClientGrantTypeException(
-							grantType.name());
+					throw new OAuth2ApplicationClientGrantTypeException(
+						grantType.name());
 				}
 			}
 		}
@@ -585,5 +588,20 @@ public class OAuth2ApplicationLocalServiceImpl
 			"xmlrpc.beep", "xmlrpc.beeps", "xmpp", "xri", "ymsgr", "z39.50",
 			"z39.50r", "z39.50s"
 		});
+
+	@ServiceReference(
+		filterString = "(indexer.class.name=com.liferay.document.library.kernel.model.DLFileEntry)",
+		type = Indexer.class
+	)
+	private Indexer<DLFileEntry> _indexer;
+
+	@ServiceReference(
+		filterString = "(class.name=com.liferay.portal.repository.portletrepository.PortletRepository)",
+		type = RepositoryFactory.class
+	)
+	private RepositoryFactory _repositoryFactory;
+
+	@ServiceReference(filterString = "(current.store=true)", type = Store.class)
+	private Store _store;
 
 }

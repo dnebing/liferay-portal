@@ -34,12 +34,12 @@
 	<td>//div[contains(@class,'process-summary-section')]//div[contains(.,'Pages Option:')]</td>
 	<td></td>
 </tr>
-<!--STAGING-->
 <tr>
-	<td>STAGING_NEW_PUBLICATION_PROCESS_NAVIGATION</td>
-	<td>//ul[contains(@class,'nav-tabs')]/li/a[contains(.,'New Publication Process')]</td>
+	<td></td>
+	<td></td>
 	<td></td>
 </tr>
+<!--STAGING-->
 <tr>
 	<td>STAGING_CONTENT_COUNT</td>
 	<td>//span[contains(@class,'badge-info')]</td>
@@ -51,13 +51,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>STAGING_STATUS</td>
-	<td>xpath=(//h6[contains(text(),'Successful')])[1]</td>
+	<td>STAGING_STATUS_PORTLET</td>
+	<td>//h5[contains(text(),'Successful')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>STAGING_STATUS_PORTLET</td>
-	<td>//h5[contains(text(),'Successful')]</td>
+	<td>STAGING_PUBLISH_PAGE_FIRST_MESSAGE</td>
+	<td>//div[@class='portlet-body']/div[2]</td>
 	<td></td>
 </tr>
 <tr>
@@ -70,20 +70,15 @@
 	<td>//a/span[contains(.,'Copy from Live')]</td>
 	<td></td>
 </tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
 <!--PG-->
 <tr>
 	<td>LIVE_BUTTON</td>
 	<td>//a[contains(@value,'live')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>LIVE_VIEW</td>
-	<td>//body[contains(@class,'live-view')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>STAGING_BUTTON</td>
-	<td>//a[contains(@value,'staging')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -132,11 +127,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>VARIATIONS_SELECTOR_DROPDOWN</td>
-	<td>//select[contains(@id,'variationsSelector')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>NOT_STAGED_ASSET_MESSAGE</td>
 	<td>//div[contains(@class,'lfr-portlet-message-staging-alert')]</td>
 	<td></td>
@@ -175,6 +165,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>HISTORY_VERSION_2</td>
+	<td>xpath=(//a[contains(@class,'layout-revision')])[2]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>HISTORY_VERSION_ANCHOR</td>
 	<td>//a[contains(@class,'layout-revision')]</td>
 	<td></td>
@@ -190,11 +185,6 @@
 	<td></td>
 </tr>
 <!--LIVE_MENU-->
-<tr>
-	<td>LIVE_MENU_SITE</td>
-	<td>//span[@class='staging-live-group-name']</td>
-	<td></td>
-</tr>
 <tr>
 	<td>LIVE_MENU_MESSAGE</td>
 	<td>//span[@class='last-publication-branch']</td>
@@ -214,11 +204,6 @@
 <tr>
 	<td>STAGING_MENU_SUBMIT_FOR_PUBLICATION</td>
 	<td>//a[contains(@id,'submitLink') and contains(.,'Submit for Publication')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>STAGING_MENU_SUBMIT_FOR_PUBLICATION_DISABLED</td>
-	<td>//span[contains(@class,'label') and contains(@class,'label-submit')]/span[contains(.,'Submit for Publication')]</td>
 	<td></td>
 </tr>
 <tr>

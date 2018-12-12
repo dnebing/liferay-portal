@@ -14,33 +14,21 @@
 
 package com.liferay.talend.properties;
 
-import com.liferay.talend.utils.StringUtils;
-
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.talend.daikon.properties.property.StringProperty;
-
 /**
  * @author Zoltán Takács
  */
-public class WebSiteProperty extends StringProperty {
+public class WebSiteProperty extends BaseContextAwareStringProperty {
 
 	public WebSiteProperty(String name) {
 		super(name);
 	}
 
-	public String getHost() {
-		return _host;
-	}
-
 	public String getWebSiteURL() {
-		if (_host == null) {
-			throw new IllegalArgumentException("Host is not set");
-		}
-
-		UriBuilder uriBuilder = UriBuilder.fromPath(_host);
+		UriBuilder uriBuilder = UriBuilder.fromPath(getHost());
 
 		URI webSiteURI = uriBuilder.path(
 			"p"
@@ -54,11 +42,5 @@ public class WebSiteProperty extends StringProperty {
 
 		return webSiteURI.toString();
 	}
-
-	public void setHost(String host) {
-		_host = StringUtils.removeQuotes(host);
-	}
-
-	private String _host;
 
 }

@@ -153,6 +153,7 @@ public class ExpandoPortlet extends MVCPortlet {
 			actionRequest, "resourcePrimKey");
 
 		String name = ParamUtil.getString(actionRequest, "name");
+
 		int type = ParamUtil.getInteger(actionRequest, "type");
 
 		Serializable defaultValue = getValue(
@@ -183,7 +184,7 @@ public class ExpandoPortlet extends MVCPortlet {
 			include("/edit_expando.jsp", renderRequest, renderResponse);
 		}
 		else if (SessionErrors.contains(
-					 renderRequest, NoSuchColumnException.class.getName()) ||
+					renderRequest, NoSuchColumnException.class.getName()) ||
 				 SessionErrors.contains(
 					 renderRequest, PrincipalException.getNestedClasses())) {
 

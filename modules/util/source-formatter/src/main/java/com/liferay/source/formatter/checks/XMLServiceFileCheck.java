@@ -113,14 +113,14 @@ public class XMLServiceFileCheck extends BaseFileCheck {
 
 		List<String> columnNames = new ArrayList<>();
 
-		Pattern pattern = Pattern.compile(
-			"create table " + entityName + "_? \\(\n([\\s\\S]*?)\n\\);");
-
 		String tablesContent = _getTablesContent(fileName, absolutePath);
 
 		if (tablesContent == null) {
 			return columnNames;
 		}
+
+		Pattern pattern = Pattern.compile(
+			"create table " + entityName + "_? \\(\n([\\s\\S]*?)\n\\);");
 
 		Matcher matcher = pattern.matcher(tablesContent);
 
@@ -284,13 +284,14 @@ public class XMLServiceFileCheck extends BaseFileCheck {
 
 			String strippedFinderName1 = finderName1.substring(
 				startsWithWeight);
-			String strippedFinderName2 = finderName2.substring(
-				startsWithWeight);
 
 			if (strippedFinderName1.startsWith("Gt") ||
 				strippedFinderName1.startsWith("Like") ||
 				strippedFinderName1.startsWith("Lt") ||
 				strippedFinderName1.startsWith("Not")) {
+
+				String strippedFinderName2 = finderName2.substring(
+					startsWithWeight);
 
 				if (!strippedFinderName2.startsWith("Gt") &&
 					!strippedFinderName2.startsWith("Like") &&
@@ -299,9 +300,8 @@ public class XMLServiceFileCheck extends BaseFileCheck {
 
 					return 1;
 				}
-				else {
-					return strippedFinderName1.compareTo(strippedFinderName2);
-				}
+
+				return strippedFinderName1.compareTo(strippedFinderName2);
 			}
 
 			return 0;

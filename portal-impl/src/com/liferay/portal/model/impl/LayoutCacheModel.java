@@ -16,12 +16,12 @@ package com.liferay.portal.model.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.string.StringBundler;
 
 import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.MVCCModel;
-import com.liferay.portal.kernel.util.HashUtil;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class LayoutCacheModel implements CacheModel<Layout>, Externalizable,
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(61);
+		StringBundler sb = new StringBundler(67);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -99,6 +99,12 @@ public class LayoutCacheModel implements CacheModel<Layout>, Externalizable,
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
+		sb.append(", parentPlid=");
+		sb.append(parentPlid);
+		sb.append(", leftPlid=");
+		sb.append(leftPlid);
+		sb.append(", rightPlid=");
+		sb.append(rightPlid);
 		sb.append(", privateLayout=");
 		sb.append(privateLayout);
 		sb.append(", layoutId=");
@@ -185,6 +191,9 @@ public class LayoutCacheModel implements CacheModel<Layout>, Externalizable,
 			layoutImpl.setModifiedDate(new Date(modifiedDate));
 		}
 
+		layoutImpl.setParentPlid(parentPlid);
+		layoutImpl.setLeftPlid(leftPlid);
+		layoutImpl.setRightPlid(rightPlid);
 		layoutImpl.setPrivateLayout(privateLayout);
 		layoutImpl.setLayoutId(layoutId);
 		layoutImpl.setParentLayoutId(parentLayoutId);
@@ -316,6 +325,12 @@ public class LayoutCacheModel implements CacheModel<Layout>, Externalizable,
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
 
+		parentPlid = objectInput.readLong();
+
+		leftPlid = objectInput.readLong();
+
+		rightPlid = objectInput.readLong();
+
 		privateLayout = objectInput.readBoolean();
 
 		layoutId = objectInput.readLong();
@@ -374,6 +389,12 @@ public class LayoutCacheModel implements CacheModel<Layout>, Externalizable,
 
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
+
+		objectOutput.writeLong(parentPlid);
+
+		objectOutput.writeLong(leftPlid);
+
+		objectOutput.writeLong(rightPlid);
 
 		objectOutput.writeBoolean(privateLayout);
 
@@ -492,6 +513,9 @@ public class LayoutCacheModel implements CacheModel<Layout>, Externalizable,
 	public String userName;
 	public long createDate;
 	public long modifiedDate;
+	public long parentPlid;
+	public long leftPlid;
+	public long rightPlid;
 	public boolean privateLayout;
 	public long layoutId;
 	public long parentLayoutId;

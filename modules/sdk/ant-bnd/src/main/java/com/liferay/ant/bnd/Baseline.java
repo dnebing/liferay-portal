@@ -35,11 +35,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
@@ -52,8 +54,6 @@ import java.util.Set;
 public abstract class Baseline {
 
 	public boolean execute() throws Exception {
-		boolean match = true;
-
 		_headerPrinted = false;
 		_printWriter = null;
 
@@ -96,7 +96,7 @@ public abstract class Baseline {
 
 		try {
 			if (oldJar == null) {
-				return match;
+				return true;
 			}
 
 			aQute.bnd.differ.Baseline baseline = new aQute.bnd.differ.Baseline(
@@ -114,7 +114,7 @@ public abstract class Baseline {
 				newJar, oldJar, new Instructions(packageFilter));
 
 			if (infos.isEmpty()) {
-				return match;
+				return true;
 			}
 
 			BundleInfo bundleInfo = baseline.getBundleInfo();
@@ -135,13 +135,6 @@ public abstract class Baseline {
 				bundleInfo.mismatch = true;
 			}
 
-			if (bundleInfo.mismatch) {
-				match = false;
-
-				updateBundleVersion(
-					bundleInfo.newerVersion, bundleInfo.suggestedVersion);
-			}
-
 			Info[] infosArray = infos.toArray(new Info[infos.size()]);
 
 			Arrays.sort(
@@ -155,11 +148,13 @@ public abstract class Baseline {
 
 				});
 
-			doHeader(bundleInfo);
+			Set<String> ignoredPackageNames = new HashSet<>();
+			Set<String> mismatchPackageNames = new HashSet<>();
+			boolean warning = false;
 
 			for (Info info : infosArray) {
 				if (info.mismatch) {
-					match = false;
+					mismatchPackageNames.add(info.packageName);
 				}
 
 				Diff packageDiff = info.packageDiff;
@@ -187,28 +182,28 @@ public abstract class Baseline {
 
 				if (suggestedVersion != null) {
 					if (newerVersion.compareTo(suggestedVersion) > 0) {
-						match = false;
+						mismatchPackageNames.add(info.packageName);
 
-						warnings = "EXCESSIVE VERSION INCREASE";
+						warnings = _WARNING_EXCESSIVE_VERSION_INCREASE;
 					}
 					else if (newerVersion.compareTo(suggestedVersion) < 0) {
-						warnings = "VERSION INCREASE REQUIRED";
+						warnings = _WARNING_VERSION_INCREASE_REQUIRED;
 					}
 				}
 
 				if (delta == Delta.REMOVED) {
-					warnings = "PACKAGE REMOVED";
+					warnings = _WARNING_PACKAGE_REMOVED;
 				}
 				else if (delta == Delta.UNCHANGED) {
 					boolean newVersionSuggested = false;
 
 					if (suggestedVersion.compareTo(newerVersion) > 0) {
-						warnings = "VERSION INCREASE SUGGESTED";
+						warnings = _WARNING_VERSION_INCREASE_SUGGESTED;
 
 						newVersionSuggested = true;
 					}
 					else if (suggestedVersion.compareTo(newerVersion) < 0) {
-						warnings = "EXCESSIVE VERSION INCREASE";
+						warnings = _WARNING_EXCESSIVE_VERSION_INCREASE;
 
 						newVersionSuggested = true;
 					}
@@ -218,15 +213,22 @@ public abstract class Baseline {
 					}
 				}
 
+				if (isIgnoredWarnings(newJar, info, delta, warnings)) {
+					ignoredPackageNames.add(info.packageName);
+
+					continue;
+				}
+
 				boolean correctPackageInfo = generatePackageInfo(
 					newJar, info, delta);
 
 				if (!correctPackageInfo) {
 					if (delta == Delta.ADDED) {
-						warnings = "PACKAGE ADDED, MISSING PACKAGEINFO";
+						warnings = _WARNING_PACKAGE_ADDED_MISSING_PACKAGEINFO;
 					}
 					else if (delta == Delta.REMOVED) {
-						warnings = "PACKAGE REMOVED, UNNECESSARY PACKAGEINFO";
+						warnings =
+							_WARNING_PACKAGE_REMOVED_UNNECESSARY_PACKAGEINFO;
 					}
 				}
 
@@ -243,7 +245,34 @@ public abstract class Baseline {
 				if (_reportDiff && (delta != Delta.REMOVED)) {
 					doPackageDiff(packageDiff);
 				}
+
+				warning = true;
 			}
+
+			if (!warning) {
+				if (!mismatchPackageNames.isEmpty() &&
+					ignoredPackageNames.containsAll(mismatchPackageNames)) {
+
+					return true;
+				}
+
+				if (mismatchPackageNames.isEmpty() && !bundleInfo.mismatch) {
+					return true;
+				}
+			}
+
+			if (bundleInfo.mismatch) {
+				Version newVersion = bundleInfo.suggestedVersion;
+				Version oldVersion = bundleInfo.newerVersion;
+
+				updateBundleVersion(oldVersion, newVersion);
+
+				reportBundleVersion(bundleInfo);
+			}
+
+			reportMode();
+
+			return false;
 		}
 		finally {
 			log(baselineProcessor);
@@ -259,8 +288,6 @@ public abstract class Baseline {
 				_printWriter.close();
 			}
 		}
-
-		return match;
 	}
 
 	public Properties getProperties() {
@@ -387,35 +414,6 @@ public abstract class Baseline {
 		sb.deleteCharAt(sb.length() - 1);
 	}
 
-	protected void doHeader(BundleInfo bundleInfo) throws IOException {
-		if (!bundleInfo.mismatch) {
-			return;
-		}
-
-		String output = "[Baseline Report] Mode: ";
-
-		if (_reportDiff) {
-			output += "diff";
-		}
-		else {
-			output += "standard";
-		}
-
-		if (_logFile != null) {
-			output += " (persisted)";
-		}
-
-		log(output);
-
-		output =
-			"[Baseline Warning] Bundle Version Change Recommended: " +
-				bundleInfo.suggestedVersion;
-
-		log(output);
-
-		persistLog(output);
-	}
-
 	protected void doInfo(BundleInfo bundleInfo, Info info, String warnings)
 		throws IOException {
 
@@ -460,6 +458,12 @@ public abstract class Baseline {
 			"=", "==================================================",
 			"==========", "==========", "==========", "==========",
 			"==========", "==========");
+	}
+
+	protected String encodeWarnings(String warnings) {
+		String encodedWarnings = warnings.replace(",", "");
+
+		return encodedWarnings.replace(' ', '-');
 	}
 
 	protected boolean generatePackageInfo(Jar jar, Info info, Delta delta)
@@ -596,6 +600,79 @@ public abstract class Baseline {
 		return false;
 	}
 
+	protected boolean isIgnoredWarnings(
+			Jar jar, Info info, Delta delta, String warnings)
+		throws Exception {
+
+		boolean allWarnings = true;
+		String dir = info.packageName.replace('.', '/');
+		Set<String> lines = new HashSet<>();
+
+		while (true) {
+			Resource resource = jar.getResource(dir + "/.lfrbuild-packageinfo");
+
+			if (resource != null) {
+				String content = IO.collect(resource.openInputStream());
+
+				try (BufferedReader bufferedReader = new BufferedReader(
+						new StringReader(content.trim()))) {
+
+					String line = null;
+
+					while ((line = bufferedReader.readLine()) != null) {
+						String s = line.trim();
+
+						if (s.endsWith("-RECURSIVE")) {
+							int endIndex = s.length() - 10;
+
+							lines.add(s.substring(0, endIndex));
+						}
+						else if (allWarnings) {
+							lines.add(s);
+						}
+					}
+				}
+			}
+
+			allWarnings = false;
+
+			int index = dir.lastIndexOf('/');
+
+			if ((index == -1) && dir.isEmpty()) {
+				break;
+			}
+
+			if (index == -1) {
+				dir = "";
+			}
+			else {
+				dir = dir.substring(0, index);
+			}
+		}
+
+		if (lines.contains(encodeWarnings(warnings))) {
+			return true;
+		}
+
+		if (delta == Delta.ADDED) {
+			String s = _WARNING_PACKAGE_ADDED_MISSING_PACKAGEINFO;
+
+			if (lines.contains(encodeWarnings(s))) {
+				return true;
+			}
+		}
+
+		if (delta == Delta.REMOVED) {
+			String s = _WARNING_PACKAGE_REMOVED_UNNECESSARY_PACKAGEINFO;
+
+			if (lines.contains(encodeWarnings(s))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	protected abstract void log(Reporter reporter);
 
 	protected abstract void log(String output);
@@ -614,6 +691,18 @@ public abstract class Baseline {
 		_printWriter.println(output);
 	}
 
+	protected void reportBundleVersion(BundleInfo bundleInfo)
+		throws IOException {
+
+		String output =
+			"[Baseline Warning] Bundle Version Change Recommended: " +
+				bundleInfo.suggestedVersion;
+
+		log(output);
+
+		persistLog(output);
+	}
+
 	protected void reportLog(
 			String string1, String string2, String string3, String string4,
 			String string5, String string6, String string7, String string8)
@@ -626,6 +715,23 @@ public abstract class Baseline {
 		log(output);
 
 		persistLog(output);
+	}
+
+	protected void reportMode() {
+		String output = "[Baseline Report] Mode: ";
+
+		if (_reportDiff) {
+			output += "diff";
+		}
+		else {
+			output += "standard";
+		}
+
+		if (_logFile != null) {
+			output += " (persisted)";
+		}
+
+		log(output);
 	}
 
 	protected void updateBundleVersion(Version oldVersion, Version newVersion)
@@ -643,6 +749,24 @@ public abstract class Baseline {
 
 		IO.store(content, _bndFile);
 	}
+
+	private static final String _WARNING_EXCESSIVE_VERSION_INCREASE =
+		"EXCESSIVE VERSION INCREASE";
+
+	private static final String _WARNING_PACKAGE_ADDED_MISSING_PACKAGEINFO =
+		"PACKAGE ADDED, MISSING PACKAGEINFO";
+
+	private static final String _WARNING_PACKAGE_REMOVED = "PACKAGE REMOVED";
+
+	private static final String
+		_WARNING_PACKAGE_REMOVED_UNNECESSARY_PACKAGEINFO =
+			"PACKAGE REMOVED, UNNECESSARY PACKAGEINFO";
+
+	private static final String _WARNING_VERSION_INCREASE_REQUIRED =
+		"VERSION INCREASE REQUIRED";
+
+	private static final String _WARNING_VERSION_INCREASE_SUGGESTED =
+		"VERSION INCREASE SUGGESTED";
 
 	private File _bndFile;
 	private boolean _forceCalculatedVersion;

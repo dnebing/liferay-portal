@@ -84,25 +84,6 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 				<c:when test="<%= fileEntry != null %>">
 
 					<%
-					FileVersion latestFileVersion = fileEntry.getFileVersion();
-
-					if ((user.getUserId() == fileEntry.getUserId()) || permissionChecker.isContentReviewer(user.getCompanyId(), scopeGroupId) || DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.UPDATE)) {
-						latestFileVersion = fileEntry.getLatestFileVersion();
-					}
-
-					DLViewFileVersionDisplayContext dlViewFileVersionDisplayContext = null;
-
-					if (fileShortcut == null) {
-						dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, fileEntry.getFileVersion());
-
-						row.setPrimaryKey(String.valueOf(fileEntry.getFileEntryId()));
-					}
-					else {
-						dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, fileShortcut);
-
-						row.setPrimaryKey(String.valueOf(fileShortcut.getFileShortcutId()));
-					}
-
 					boolean draggable = false;
 
 					if (DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.DELETE) || DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.UPDATE)) {
@@ -119,10 +100,32 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 					Map<String, Object> rowData = new HashMap<String, Object>();
 
+					rowData.put("actions", String.join(StringPool.COMMA, dlAdminManagementToolbarDisplayContext.getAvailableActionDropdownItems(fileEntry)));
 					rowData.put("draggable", draggable);
 					rowData.put("title", fileEntry.getTitle());
 
 					row.setData(rowData);
+
+					DLViewFileVersionDisplayContext dlViewFileVersionDisplayContext = null;
+
+					if (fileShortcut == null) {
+						dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, fileEntry.getFileVersion());
+
+						row.setPrimaryKey(String.valueOf(fileEntry.getFileEntryId()));
+					}
+					else {
+						dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, fileShortcut);
+
+						row.setPrimaryKey(String.valueOf(fileShortcut.getFileShortcutId()));
+					}
+
+					FileVersion latestFileVersion = fileEntry.getFileVersion();
+
+					if ((user.getUserId() == fileEntry.getUserId()) || permissionChecker.isContentReviewer(user.getCompanyId(), scopeGroupId) || DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.UPDATE)) {
+						latestFileVersion = fileEntry.getLatestFileVersion();
+					}
+
+					latestFileVersion = latestFileVersion.toEscapedModel();
 
 					String thumbnailSrc = DLUtil.getThumbnailSrc(fileEntry, latestFileVersion, themeDisplay);
 					%>
@@ -250,28 +253,24 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 								%>
 
 								<liferay-ui:search-container-column-text
-									cssClass="table-cell-content"
+									cssClass="table-cell-expand table-cell-minw-200 table-title"
 									name="title"
 								>
 									<aui:a href="<%= rowURL.toString() %>"><%= latestFileVersion.getTitle() %></aui:a>
 
 									<c:if test="<%= fileEntry.hasLock() || fileEntry.isCheckedOut() %>">
-										<span>
-											<aui:icon cssClass="icon-monospaced" image="lock" markupView="lexicon" message="locked" />
-										</span>
+										<aui:icon cssClass="inline-item inline-item-after" image="lock" markupView="lexicon" message="locked" />
 									</c:if>
 
 									<c:if test="<%= fileShortcut != null %>">
-										<span>
-											<aui:icon cssClass="icon-monospaced" image="shortcut" markupView="lexicon" message="shortcut" />
-										</span>
+										<aui:icon cssClass="inline-item inline-item-after" image="shortcut" markupView="lexicon" message="shortcut" />
 									</c:if>
 								</liferay-ui:search-container-column-text>
 							</c:if>
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "description") %>'>
 								<liferay-ui:search-container-column-text
-									cssClass="table-cell-content"
+									cssClass="table-cell-expand table-cell-minw-200"
 									name="description"
 									value="<%= StringUtil.shorten(fileEntry.getDescription(), 100) %>"
 								/>
@@ -288,12 +287,14 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 										%>
 
 										<liferay-ui:search-container-column-text
+											cssClass="table-cell-expand-smaller table-cell-minw-150"
 											name="document-type"
 											value="<%= HtmlUtil.escape(dlFileEntryType.getName(locale)) %>"
 										/>
 									</c:when>
 									<c:otherwise>
 										<liferay-ui:search-container-column-text
+											cssClass="table-cell-expand-smaller table-cell-minw-150"
 											name="document-type"
 											value="--"
 										/>
@@ -303,6 +304,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "size") %>'>
 								<liferay-ui:search-container-column-text
+									cssClass="table-cell-expand-smallest"
 									name="size"
 									value="<%= TextFormatter.formatStorageSize(latestFileVersion.getSize(), locale) %>"
 								/>
@@ -310,6 +312,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "status") %>'>
 								<liferay-ui:search-container-column-status
+									cssClass="table-cell-expand-smallest"
 									name="status"
 									status="<%= latestFileVersion.getStatus() %>"
 								/>
@@ -317,6 +320,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "downloads") %>'>
 								<liferay-ui:search-container-column-text
+									cssClass="table-cell-expand-smallest"
 									name="downloads"
 									value="<%= String.valueOf(fileEntry.getReadCount()) %>"
 								/>
@@ -324,6 +328,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "create-date") %>'>
 								<liferay-ui:search-container-column-date
+									cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 									name="create-date"
 									value="<%= fileEntry.getCreateDate() %>"
 								/>
@@ -331,6 +336,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "modified-date") %>'>
 								<liferay-ui:search-container-column-date
+									cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 									name="modified-date"
 									value="<%= latestFileVersion.getModifiedDate() %>"
 								/>
@@ -351,8 +357,6 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 						dlSearchContainer.setRowChecker(entriesChecker);
 					}
 
-					Map<String, Object> rowData = new HashMap<String, Object>();
-
 					boolean draggable = false;
 
 					if (DLFolderPermission.contains(permissionChecker, curFolder, ActionKeys.DELETE) || DLFolderPermission.contains(permissionChecker, curFolder, ActionKeys.UPDATE)) {
@@ -363,8 +367,10 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 						}
 					}
 
-					rowData.put("draggable", draggable);
+					Map<String, Object> rowData = new HashMap<String, Object>();
 
+					rowData.put("actions", String.join(StringPool.COMMA, dlAdminManagementToolbarDisplayContext.getAvailableActionDropdownItems(curFolder)));
+					rowData.put("draggable", draggable);
 					rowData.put("folder", true);
 					rowData.put("folder-id", curFolder.getFolderId());
 					rowData.put("title", curFolder.getName());
@@ -433,16 +439,16 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 								%>
 
 								<liferay-ui:search-container-column-text
-									cssClass="table-cell-content"
+									cssClass="table-cell-expand table-cell-minw-200 table-title"
 									href="<%= rowURL %>"
 									name="title"
-									value="<%= curFolder.getName() %>"
+									value="<%= HtmlUtil.escape(curFolder.getName()) %>"
 								/>
 							</c:if>
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "description") %>'>
 								<liferay-ui:search-container-column-text
-									cssClass="table-cell-content"
+									cssClass="table-cell-expand table-cell-minw-200"
 									name="description"
 									value="<%= StringUtil.shorten(curFolder.getDescription(), 100) %>"
 								/>
@@ -450,6 +456,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "document-type") %>'>
 								<liferay-ui:search-container-column-text
+									cssClass="table-cell-expand-smaller"
 									name="document-type"
 									value="--"
 								/>
@@ -457,6 +464,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "size") %>'>
 								<liferay-ui:search-container-column-text
+									cssClass="table-cell-expand-smallest"
 									name="size"
 									value="--"
 								/>
@@ -464,6 +472,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "status") %>'>
 								<liferay-ui:search-container-column-text
+									cssClass="table-cell-expand-smallest"
 									name="status"
 									value="--"
 								/>
@@ -471,6 +480,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "downloads") %>'>
 								<liferay-ui:search-container-column-text
+									cssClass="table-cell-expand-smallest"
 									name="downloads"
 									value="--"
 								/>
@@ -478,6 +488,7 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "create-date") %>'>
 								<liferay-ui:search-container-column-date
+									cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 									name="create-date"
 									value="<%= curFolder.getCreateDate() %>"
 								/>
@@ -485,8 +496,9 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 
 							<c:if test='<%= ArrayUtil.contains(entryColumns, "modified-date") %>'>
 								<liferay-ui:search-container-column-date
+									cssClass="table-cell-expand-smallest table-cell-ws-nowrap"
 									name="modified-date"
-									value="<%= curFolder.getModifiedDate() %>"
+									value="<%= curFolder.getLastPostDate() %>"
 								/>
 							</c:if>
 
@@ -514,7 +526,6 @@ if (portletTitleBasedNavigation && (folderId != DLFolderConstants.DEFAULT_PARENT
 request.setAttribute("edit_file_entry.jsp-checkedOut", true);
 %>
 
-<liferay-util:include page="/document_library/version_details.jsp" servletContext="<%= application %>" />
-
-<%!
-%>
+<c:if test="<%= dlAdminDisplayContext.isVersioningStrategyOverridable() %>">
+	<liferay-util:include page="/document_library/version_details.jsp" servletContext="<%= application %>" />
+</c:if>

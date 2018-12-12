@@ -143,9 +143,8 @@ public class MembershipRequestLocalServiceImpl
 		if (membershipRequests.isEmpty()) {
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
 	@Override
@@ -334,7 +333,7 @@ public class MembershipRequestLocalServiceImpl
 			statusKey = "approved";
 		}
 		else if (membershipRequest.getStatusId() ==
-					 MembershipRequestConstants.STATUS_DENIED) {
+					MembershipRequestConstants.STATUS_DENIED) {
 
 			statusKey = "denied";
 		}

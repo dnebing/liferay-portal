@@ -14,67 +14,59 @@
 
 package com.liferay.portal.dao.jdbc.aop;
 
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.jdbc.aop.DynamicDataSourceTargetSource;
 import com.liferay.portal.kernel.dao.jdbc.aop.MasterDataSource;
 import com.liferay.portal.kernel.dao.jdbc.aop.Operation;
-import com.liferay.portal.spring.aop.ChainableMethodAdvice;
+import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
 import com.liferay.portal.spring.aop.ServiceBeanAopCacheManager;
+import com.liferay.portal.spring.transaction.TransactionInterceptor;
 
 import java.lang.reflect.Method;
 
 import org.aopalliance.intercept.MethodInvocation;
 
 import org.springframework.transaction.interceptor.TransactionAttribute;
-import org.springframework.transaction.interceptor.TransactionAttributeSource;
 
 /**
  * @author Shuyang Zhou
  * @author László Csontos
  */
-public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
+public class DynamicDataSourceAdvice
+	extends AnnotationChainableMethodAdvice<MasterDataSource> {
+
+	public DynamicDataSourceAdvice() {
+		super(MasterDataSource.class);
+	}
 
 	@Override
 	public Object before(MethodInvocation methodInvocation) throws Throwable {
 		Operation operation = Operation.WRITE;
 
-		Object targetBean = methodInvocation.getThis();
+		MasterDataSource masterDataSource = findAnnotation(methodInvocation);
 
-		Class<?> targetClass = targetBean.getClass();
-
-		Method targetMethod = methodInvocation.getMethod();
-
-		MasterDataSource masterDataSource =
-			ServiceBeanAopCacheManager.getAnnotation(
-				methodInvocation, MasterDataSource.class,
-				_nullMasterDataSource);
-
-		if (masterDataSource == _nullMasterDataSource) {
+		if (masterDataSource == null) {
 			TransactionAttribute transactionAttribute =
-				_transactionAttributeSource.getTransactionAttribute(
-					targetMethod, targetClass);
+				_transactionInterceptor.getTransactionAttribute(
+					methodInvocation);
 
-			if ((transactionAttribute != null) &&
-				transactionAttribute.isReadOnly()) {
-
+			if (transactionAttribute.isReadOnly()) {
 				operation = Operation.READ;
 			}
 		}
 
-		_dynamicDataSourceTargetSource.setOperation(operation);
-
-		String targetClassName = targetClass.getName();
-
-		_dynamicDataSourceTargetSource.pushMethod(
-			targetClassName.concat(StringPool.PERIOD).concat(
-				targetMethod.getName()));
+		_dynamicDataSourceTargetSource.pushOperation(operation);
 
 		return null;
 	}
 
 	@Override
 	public void duringFinally(MethodInvocation methodInvocation) {
-		_dynamicDataSourceTargetSource.popMethod();
+		_dynamicDataSourceTargetSource.popOperation();
+	}
+
+	@Override
+	public boolean isEnabled(Class<?> targetClass, Method method) {
+		return _transactionInterceptor.isEnabled(targetClass, method);
 	}
 
 	public void setDynamicDataSourceTargetSource(
@@ -83,37 +75,31 @@ public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
 		_dynamicDataSourceTargetSource = dynamicDataSourceTargetSource;
 	}
 
-	public void setTransactionAttributeSource(
-		TransactionAttributeSource transactionAttributeSource) {
+	public void setTransactionInterceptor(
+		TransactionInterceptor transactionInterceptor) {
 
-		_transactionAttributeSource = transactionAttributeSource;
+		_transactionInterceptor = transactionInterceptor;
+	}
+
+	@Override
+	protected MasterDataSource findAnnotation(
+		MethodInvocation methodInvocation) {
+
+		Object target = methodInvocation.getThis();
+
+		return serviceBeanAopCacheManager.findAnnotation(
+			target.getClass(), methodInvocation.getMethod(),
+			MasterDataSource.class);
 	}
 
 	@Override
 	protected void setServiceBeanAopCacheManager(
 		ServiceBeanAopCacheManager serviceBeanAopCacheManager) {
 
-		if (this.serviceBeanAopCacheManager != null) {
-			return;
-		}
-
-		this.serviceBeanAopCacheManager = serviceBeanAopCacheManager;
-
-		serviceBeanAopCacheManager.registerAnnotationChainableMethodAdvice(
-			MasterDataSource.class, null);
+		super.setServiceBeanAopCacheManager(serviceBeanAopCacheManager);
 	}
 
-	private static final MasterDataSource _nullMasterDataSource =
-		new MasterDataSource() {
-
-			@Override
-			public Class<? extends MasterDataSource> annotationType() {
-				return MasterDataSource.class;
-			}
-
-		};
-
 	private DynamicDataSourceTargetSource _dynamicDataSourceTargetSource;
-	private TransactionAttributeSource _transactionAttributeSource;
+	private TransactionInterceptor _transactionInterceptor;
 
 }

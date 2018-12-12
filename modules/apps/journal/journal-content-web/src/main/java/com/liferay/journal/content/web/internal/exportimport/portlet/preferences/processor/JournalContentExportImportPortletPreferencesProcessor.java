@@ -134,6 +134,14 @@ public class JournalContentExportImportPortletPreferencesProcessor
 
 		Group group = _groupLocalService.fetchGroup(articleGroupId);
 
+		if (group == null) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("No group found with group ID " + articleGroupId);
+			}
+
+			return portletPreferences;
+		}
+
 		if (ExportImportThreadLocal.isStagingInProcess() &&
 			!group.isStagedPortlet(JournalPortletKeys.JOURNAL)) {
 
@@ -294,9 +302,17 @@ public class JournalContentExportImportPortletPreferencesProcessor
 		portletDataContext.setScopeGroupId(groupId);
 
 		try {
-			if (Validator.isNotNull(articleId)) {
-				Group importedArticleGroup = _groupLocalService.getGroup(
+			if (Validator.isNotNull(articleId) && (groupId != 0)) {
+				Group importedArticleGroup = _groupLocalService.fetchGroup(
 					groupId);
+
+				if (importedArticleGroup == null) {
+					if (_log.isDebugEnabled()) {
+						_log.debug("No group found with group ID " + groupId);
+					}
+
+					return portletPreferences;
+				}
 
 				if (!ExportImportThreadLocal.isStagingInProcess() ||
 					importedArticleGroup.isStagedPortlet(

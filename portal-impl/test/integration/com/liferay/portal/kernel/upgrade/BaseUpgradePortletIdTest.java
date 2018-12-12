@@ -236,6 +236,7 @@ public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 
 		for (String[] renamePortletIds : renamePortletIdsArray) {
 			String oldPortletId = renamePortletIds[0];
+
 			String newPortletId = renamePortletIds[1];
 
 			String newRootPortletId = PortletIdCodec.decodePortletName(
@@ -361,8 +362,9 @@ public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 
 	private static final String _INSTANCE_ID = "_INSTANCE_LhZwzy867qfr";
 
-	private static final String[] _PORTLET_IDS =
-		{"47", com.liferay.portlet.util.test.PortletKeys.TEST};
+	private static final String[] _PORTLET_IDS = {
+		"47", com.liferay.portlet.util.test.PortletKeys.TEST
+	};
 
 	private static final List<Portlet> _portlets = new ArrayList<>();
 

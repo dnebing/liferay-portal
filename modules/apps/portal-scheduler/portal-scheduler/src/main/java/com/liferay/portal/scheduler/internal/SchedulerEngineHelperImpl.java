@@ -251,8 +251,9 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 				int monthlyDay = ParamUtil.getInteger(
 					portletRequest, "monthlyDay1");
 
-				DayAndPosition[] dayPos =
-					{new DayAndPosition(monthlyDay, monthlyPos)};
+				DayAndPosition[] dayPos = {
+					new DayAndPosition(monthlyDay, monthlyPos)
+				};
 
 				recurrence.setByDay(dayPos);
 
@@ -287,8 +288,9 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 				int yearlyMonth = ParamUtil.getInteger(
 					portletRequest, "yearlyMonth1");
 
-				DayAndPosition[] dayPos =
-					{new DayAndPosition(yearlyDay, yearlyPos)};
+				DayAndPosition[] dayPos = {
+					new DayAndPosition(yearlyDay, yearlyPos)
+				};
 
 				recurrence.setByDay(dayPos);
 
@@ -317,9 +319,8 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 
 			return (Date)message.get(SchedulerEngine.END_TIME);
 		}
-		else {
-			return jobState.getTriggerDate(SchedulerEngine.END_TIME);
-		}
+
+		return jobState.getTriggerDate(SchedulerEngine.END_TIME);
 	}
 
 	@Override
@@ -350,9 +351,8 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 
 			return (Date)message.get(SchedulerEngine.FINAL_FIRE_TIME);
 		}
-		else {
-			return jobState.getTriggerDate(SchedulerEngine.FINAL_FIRE_TIME);
-		}
+
+		return jobState.getTriggerDate(SchedulerEngine.FINAL_FIRE_TIME);
 	}
 
 	@Override
@@ -433,9 +433,8 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 
 			return (Date)message.get(SchedulerEngine.NEXT_FIRE_TIME);
 		}
-		else {
-			return jobState.getTriggerDate(SchedulerEngine.NEXT_FIRE_TIME);
-		}
+
+		return jobState.getTriggerDate(SchedulerEngine.NEXT_FIRE_TIME);
 	}
 
 	@Override
@@ -466,9 +465,8 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 
 			return (Date)message.get(SchedulerEngine.PREVIOUS_FIRE_TIME);
 		}
-		else {
-			return jobState.getTriggerDate(SchedulerEngine.PREVIOUS_FIRE_TIME);
-		}
+
+		return jobState.getTriggerDate(SchedulerEngine.PREVIOUS_FIRE_TIME);
 	}
 
 	@Override
@@ -530,9 +528,8 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 
 			return (Date)message.get(SchedulerEngine.START_TIME);
 		}
-		else {
-			return jobState.getTriggerDate(SchedulerEngine.START_TIME);
-		}
+
+		return jobState.getTriggerDate(SchedulerEngine.START_TIME);
 	}
 
 	@Override
@@ -943,13 +940,13 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 			SchedulerEntry schedulerEntry =
 				schedulerEventMessageListener.getSchedulerEntry();
 
-			StorageType storageType = StorageType.MEMORY_CLUSTERED;
-
 			if ((schedulerEntry == null) ||
 				(schedulerEntry.getTrigger() == null)) {
 
 				return null;
 			}
+
+			StorageType storageType = StorageType.MEMORY_CLUSTERED;
 
 			if (schedulerEntry instanceof StorageTypeAware) {
 				StorageTypeAware storageTypeAware =
@@ -1070,14 +1067,14 @@ public class SchedulerEngineHelperImpl implements SchedulerEngineHelper {
 
 			bundleContext.ungetService(serviceReference);
 
-			StorageType storageType = StorageType.MEMORY_CLUSTERED;
-
 			SchedulerEntry schedulerEntry =
 				schedulerEntryMessageListener.getSchedulerEntry();
 
 			if (schedulerEntry == null) {
 				return;
 			}
+
+			StorageType storageType = StorageType.MEMORY_CLUSTERED;
 
 			if (schedulerEntry instanceof StorageTypeAware) {
 				StorageTypeAware storageTypeAware =

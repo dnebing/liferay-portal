@@ -77,12 +77,13 @@ public class UpgradeWorkflowContext extends UpgradeProcess {
 			JSONSerializer jsonSerializer = getJSONSerializer();
 
 			while (rs.next()) {
-				long fieldValue = rs.getLong(fieldName);
 				String workflowContextJSON = rs.getString("workflowContext");
 
 				if (Validator.isNull(workflowContextJSON)) {
 					continue;
 				}
+
+				long fieldValue = rs.getLong(fieldName);
 
 				workflowContextJSON =
 					_workflowContextUpgradeHelper.renamePortalClassNames(
@@ -237,8 +238,9 @@ public class UpgradeWorkflowContext extends UpgradeProcess {
 
 		private static final Class<?>[] _JSON_CLASSES = {JSONObject.class};
 
-		private static final Class<?>[] _SERIALIZABLE_CLASSES =
-			{PortletPreferencesIds.class};
+		private static final Class<?>[] _SERIALIZABLE_CLASSES = {
+			PortletPreferencesIds.class
+		};
 
 	}
 

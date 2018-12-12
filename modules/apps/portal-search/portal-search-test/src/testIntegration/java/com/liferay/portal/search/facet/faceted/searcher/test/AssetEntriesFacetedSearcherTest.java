@@ -18,6 +18,9 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.test.util.search.JournalArticleBlueprint;
+import com.liferay.journal.test.util.search.JournalArticleContent;
+import com.liferay.journal.test.util.search.JournalArticleTitle;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
@@ -34,9 +37,6 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.facet.Facet;
 import com.liferay.portal.search.facet.type.AssetEntriesFacetFactory;
-import com.liferay.portal.search.test.journal.util.JournalArticleBlueprint;
-import com.liferay.portal.search.test.journal.util.JournalArticleContent;
-import com.liferay.portal.search.test.journal.util.JournalArticleTitle;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -90,7 +90,7 @@ public class AssetEntriesFacetedSearcherTest
 
 		Hits hits = search(searchContext);
 
-		assertEntryClassNames(_entryClassNames, hits, keyword, facet);
+		assertEntryClassNames(_entryClassNames, hits, facet, searchContext);
 
 		assertFrequencies(
 			facet.getFieldName(), searchContext, toMap(_entryClassNames));
@@ -113,8 +113,8 @@ public class AssetEntriesFacetedSearcherTest
 		Hits hits = search(searchContext);
 
 		assertEntryClassNames(
-			Arrays.asList(JournalArticle.class.getName()), hits, keyword,
-			facet);
+			Arrays.asList(JournalArticle.class.getName()), hits, facet,
+			searchContext);
 
 		assertFrequencies(
 			facet.getFieldName(), searchContext, toMap(_entryClassNames));
@@ -162,10 +162,12 @@ public class AssetEntriesFacetedSearcherTest
 	}
 
 	protected void assertEntryClassNames(
-		List<String> entryclassnames, Hits hits, String keyword, Facet facet) {
+		List<String> entryclassnames, Hits hits, Facet facet,
+		SearchContext searchContext) {
 
 		DocumentsAssert.assertValuesIgnoreRelevance(
-			keyword, hits.getDocs(), facet.getFieldName(), entryclassnames);
+			(String)searchContext.getAttribute("queryString"), hits.getDocs(),
+			facet.getFieldName(), entryclassnames);
 	}
 
 	protected Facet createFacet(SearchContext searchContext) {
