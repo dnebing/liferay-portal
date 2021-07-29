@@ -26,6 +26,8 @@ import com.liferay.fragment.model.FragmentEntry;
 import com.liferay.fragment.service.FragmentCollectionLocalService;
 import com.liferay.fragment.service.FragmentEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -199,6 +201,9 @@ public class FragmentEntryStagedModelDataHandler
 		return _stagedModelRepository;
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		FragmentEntryStagedModelDataHandler.class);
+
 	@Reference(target = "(content.processor.type=DLReferences)")
 	private ExportImportContentProcessor<String>
 		_dlReferencesExportImportContentProcessor;
@@ -214,5 +219,6 @@ public class FragmentEntryStagedModelDataHandler
 		unbind = "-"
 	)
 	private StagedModelRepository<FragmentEntry> _stagedModelRepository;
+
 
 }
