@@ -14,7 +14,6 @@
 
 package com.liferay.portal.security.password.encryptor.internal;
 
-import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.exception.PwdEncryptorException;
 import com.liferay.portal.kernel.io.BigEndianCodec;
 import com.liferay.portal.kernel.security.SecureRandomUtil;
@@ -28,10 +27,6 @@ import java.nio.ByteBuffer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -68,11 +63,18 @@ public class PBKDF2PasswordEncryptor
 
 			byte[] saltBytes = pbkdf2EncryptionConfiguration.getSaltBytes();
 
-			PKCS5S2ParametersGenerator generator = new PKCS5S2ParametersGenerator();
+			PKCS5S2ParametersGenerator generator =
+				new PKCS5S2ParametersGenerator();
 
-			generator.init(plainTextPassword.getBytes(), saltBytes, pbkdf2EncryptionConfiguration.getRounds());
+			generator.init(
+				plainTextPassword.getBytes(), saltBytes,
+				pbkdf2EncryptionConfiguration.getRounds());
 
-			byte[] secretKeyBytes = ((KeyParameter) generator.generateDerivedMacParameters(pbkdf2EncryptionConfiguration.getKeySize())).getKey();
+			KeyParameter keyParameter =
+				(KeyParameter)generator.generateDerivedMacParameters(
+					pbkdf2EncryptionConfiguration.getKeySize());
+
+			byte[] secretKeyBytes = keyParameter.getKey();
 
 			ByteBuffer byteBuffer = ByteBuffer.allocate(
 				(2 * 4) + saltBytes.length + secretKeyBytes.length);
