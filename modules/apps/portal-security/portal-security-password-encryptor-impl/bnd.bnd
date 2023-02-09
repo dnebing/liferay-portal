@@ -2,7 +2,4 @@ Bundle-Name: Liferay Portal Security Password Encryptor Implementation
 Bundle-SymbolicName: com.liferay.portal.security.password.encryptor.impl
 Bundle-Version: 1.0.5
 
-# BouncyCastle is a multi-jvm-compatible library, but that means when BND is processing
-# it, it could throw these errors and fail the build.
-# This line basically sets up bnd so it ignores this error
 -fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=ignore
