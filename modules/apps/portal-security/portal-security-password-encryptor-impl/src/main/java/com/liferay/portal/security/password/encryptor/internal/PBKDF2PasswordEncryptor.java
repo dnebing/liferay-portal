@@ -68,25 +68,11 @@ public class PBKDF2PasswordEncryptor
 
 			byte[] saltBytes = pbkdf2EncryptionConfiguration.getSaltBytes();
 
-			PBEKeySpec pbeKeySpec = new PBEKeySpec(
-				plainTextPassword.toCharArray(), saltBytes,
-				pbkdf2EncryptionConfiguration.getRounds(),
-				pbkdf2EncryptionConfiguration.getKeySize());
+			PKCS5S2ParametersGenerator generator = new PKCS5S2ParametersGenerator();
 
-			String algorithmName = algorithm;
+			generator.init(plainTextPassword.getBytes(), saltBytes, pbkdf2EncryptionConfiguration.getRounds());
 
-			int index = algorithm.indexOf(CharPool.SLASH);
-
-			if (index > -1) {
-				algorithmName = algorithm.substring(0, index);
-			}
-
-			SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(
-				algorithmName);
-
-			SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
-
-			byte[] secretKeyBytes = secretKey.getEncoded();
+			byte[] secretKeyBytes = ((KeyParameter) generator.generateDerivedMacParameters(pbkdf2EncryptionConfiguration.getKeySize())).getKey();
 
 			ByteBuffer byteBuffer = ByteBuffer.allocate(
 				(2 * 4) + saltBytes.length + secretKeyBytes.length);
