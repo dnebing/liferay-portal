@@ -97,7 +97,7 @@ public class PBKDF2PasswordEncryptor
 
 	private static final int _SALT_BYTES_LENGTH = 8;
 
-	private static final Pattern _pattern = Pattern.compile(
+	private static final Pattern _PATTERN = Pattern.compile(
 		"^.*/?([0-9]+)?/([0-9]+)$");
 
 	private static class PBKDF2EncryptionConfiguration {
@@ -106,7 +106,7 @@ public class PBKDF2PasswordEncryptor
 			throws PwdEncryptorException {
 
 			if (Validator.isNull(encryptedPassword)) {
-				Matcher matcher = _pattern.matcher(algorithm);
+				Matcher matcher = _PATTERN.matcher(algorithm);
 
 				if (matcher.matches()) {
 					_keySize = GetterUtil.getInteger(

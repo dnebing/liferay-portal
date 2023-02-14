@@ -1,0 +1,4 @@
+com/liferay/portal/security/password/encryptor/internal/PBKDF2PasswordEncryptor._PATTERN:SAFE
+com/liferay/portal/security/password/encryptor/internal/SSHAPasswordEncryptor.encrypt(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;:SAFE
+com/liferay/portal/security/password/encryptor/internal/PBKDF2PasswordEncryptor$PBKDF2EncryptionConfiguration.<init>()V:SAFE
+com/liferay/portal/security/password/encryptor/internal/PBKDF2PasswordEncryptor.<init>()V:SAFE
