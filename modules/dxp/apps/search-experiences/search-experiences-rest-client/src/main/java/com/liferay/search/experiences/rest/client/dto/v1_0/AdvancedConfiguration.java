@@ -25,6 +25,27 @@ public class AdvancedConfiguration implements Cloneable, Serializable {
 		return AdvancedConfigurationSerDes.toDTO(json);
 	}
 
+	public Boolean getReturnAssetEntry() {
+		return returnAssetEntry;
+	}
+
+	public void setReturnAssetEntry(Boolean returnAssetEntry) {
+		this.returnAssetEntry = returnAssetEntry;
+	}
+
+	public void setReturnAssetEntry(
+		UnsafeSupplier<Boolean, Exception> returnAssetEntryUnsafeSupplier) {
+
+		try {
+			returnAssetEntry = returnAssetEntryUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Boolean returnAssetEntry;
+
 	public Source getSource() {
 		return source;
 	}

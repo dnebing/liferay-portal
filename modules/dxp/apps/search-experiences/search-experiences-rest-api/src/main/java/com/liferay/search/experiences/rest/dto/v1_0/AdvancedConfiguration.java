@@ -51,6 +51,34 @@ public class AdvancedConfiguration implements Serializable {
 	}
 
 	@Schema
+	public Boolean getReturnAssetEntry() {
+		return returnAssetEntry;
+	}
+
+	public void setReturnAssetEntry(Boolean returnAssetEntry) {
+		this.returnAssetEntry = returnAssetEntry;
+	}
+
+	@JsonIgnore
+	public void setReturnAssetEntry(
+		UnsafeSupplier<Boolean, Exception> returnAssetEntryUnsafeSupplier) {
+
+		try {
+			returnAssetEntry = returnAssetEntryUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Boolean returnAssetEntry;
+
+	@Schema
 	@Valid
 	public Source getSource() {
 		return source;
@@ -106,6 +134,16 @@ public class AdvancedConfiguration implements Serializable {
 		StringBundler sb = new StringBundler();
 
 		sb.append("{");
+
+		if (returnAssetEntry != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"returnAssetEntry\": ");
+
+			sb.append(returnAssetEntry);
+		}
 
 		if (source != null) {
 			if (sb.length() > 1) {

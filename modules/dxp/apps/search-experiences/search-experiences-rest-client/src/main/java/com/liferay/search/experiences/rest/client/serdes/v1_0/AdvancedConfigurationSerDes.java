@@ -46,6 +46,16 @@ public class AdvancedConfigurationSerDes {
 
 		sb.append("{");
 
+		if (advancedConfiguration.getReturnAssetEntry() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"returnAssetEntry\": ");
+
+			sb.append(advancedConfiguration.getReturnAssetEntry());
+		}
+
 		if (advancedConfiguration.getSource() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -77,6 +87,15 @@ public class AdvancedConfigurationSerDes {
 
 		Map<String, String> map = new TreeMap<>();
 
+		if (advancedConfiguration.getReturnAssetEntry() == null) {
+			map.put("returnAssetEntry", null);
+		}
+		else {
+			map.put(
+				"returnAssetEntry",
+				String.valueOf(advancedConfiguration.getReturnAssetEntry()));
+		}
+
 		if (advancedConfiguration.getSource() == null) {
 			map.put("source", null);
 		}
@@ -106,7 +125,13 @@ public class AdvancedConfigurationSerDes {
 			AdvancedConfiguration advancedConfiguration,
 			String jsonParserFieldName, Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "source")) {
+			if (Objects.equals(jsonParserFieldName, "returnAssetEntry")) {
+				if (jsonParserFieldValue != null) {
+					advancedConfiguration.setReturnAssetEntry(
+						(Boolean)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "source")) {
 				if (jsonParserFieldValue != null) {
 					advancedConfiguration.setSource(
 						SourceSerDes.toDTO((String)jsonParserFieldValue));
