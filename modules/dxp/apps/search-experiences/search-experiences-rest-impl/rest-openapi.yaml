@@ -86,6 +86,8 @@ components:
             properties:
                 advancedConfiguration:
                     properties:
+                        returnAssetEntry:
+                            type: boolean
                         source:
                             properties:
                                 excludes:
