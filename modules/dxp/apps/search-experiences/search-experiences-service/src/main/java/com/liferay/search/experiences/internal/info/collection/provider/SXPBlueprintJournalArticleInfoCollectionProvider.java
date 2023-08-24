@@ -78,7 +78,7 @@ public class SXPBlueprintJournalArticleInfoCollectionProvider
 
 			for (AssetEntry assetEntry : assetEntries) {
 				if (assetEntry.getClassName().equals(JournalArticle.class.getName())) {
-					journalArticles.add(_journalArticleService.getArticle(assetEntry.getClassPK()));
+					journalArticles.add(_journalArticleService.getLatestArticle(assetEntry.getClassPK()));
 				}
 			}
 
