@@ -7,8 +7,13 @@ package com.liferay.search.experiences.service.impl;
 
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.info.collection.provider.InfoCollectionProvider;
+import com.liferay.journal.service.JournalArticleService;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.SystemEventConstants;
@@ -27,6 +32,7 @@ import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.search.experiences.exception.SXPBlueprintTitleException;
 import com.liferay.search.experiences.internal.info.collection.provider.SXPBlueprintInfoCollectionProvider;
+import com.liferay.search.experiences.internal.info.collection.provider.SXPBlueprintJournalArticleInfoCollectionProvider;
 import com.liferay.search.experiences.model.SXPBlueprint;
 import com.liferay.search.experiences.service.base.SXPBlueprintLocalServiceBaseImpl;
 import com.liferay.search.experiences.validator.SXPBlueprintValidator;
@@ -228,18 +234,71 @@ public class SXPBlueprintLocalServiceImpl
 	private void _registerCollectionProvider(SXPBlueprint sxpBlueprint) {
 		_unregisterCollectionProvider(sxpBlueprint);
 
+		InfoCollectionProvider<?> infoCollectionProvider = null;
+		String itemClassName = null;
+
+		try {
+			JSONObject configuration = JSONFactoryUtil.createJSONObject(
+				sxpBlueprint.getConfigurationJSON());
+
+			if ((configuration != null) && (configuration.has("advancedConfiguration"))) {
+				JSONObject advancedConfiguration =
+					configuration.getJSONObject("advancedConfiguration");
+
+				if ((advancedConfiguration != null) && ( !advancedConfiguration.getBoolean("returnAssetEntry", true))) {
+					// configuration flag indicates we should return the typed object...
+
+					JSONObject generalConfiguration = configuration.getJSONObject("generalConfiguration");
+
+					if ((generalConfiguration != null) && (generalConfiguration.has("searchableAssetTypes"))) {
+						// there are searchable asset types...
+						JSONArray searchableAssetTypes = generalConfiguration.getJSONArray("searchableAssetTypes");
+
+						// we can only do this if we have a single searchable asset type
+						if (searchableAssetTypes.length() == 1) {
+							String searchableAssetType =
+								searchableAssetTypes.getString(0);
+
+							// this is where we can now handle returning types
+							// other than the AssetEntry...
+							switch (searchableAssetType) {
+								case "com.liferay.journal.model.JournalArticle":
+									itemClassName = "com.liferay.journal.model.JournalArticle";
+									infoCollectionProvider = new SXPBlueprintJournalArticleInfoCollectionProvider(_assetHelper,
+										_journalArticleService, _searcher, _searchRequestBuilderFactory, sxpBlueprint);
+									break;
+
+									// and of course we could handle other types
+									// here by following the same pattern.
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (JSONException e) {
+			// ignored, will use the default
+		}
+
+		// if we didn't set a collection provider, use the default AssetEntry one.
+		if (infoCollectionProvider == null) {
+			infoCollectionProvider = new SXPBlueprintInfoCollectionProvider(
+				_assetHelper, _searcher, _searchRequestBuilderFactory,
+				sxpBlueprint);
+			itemClassName = "com.liferay.asset.kernel.model.AssetEntry";
+		}
+
+		// now handle the service registration...
 		ServiceRegistration<InfoCollectionProvider>
 			infoCollectionProviderServiceRegistration =
 				_bundleContext.registerService(
 					InfoCollectionProvider.class,
-					new SXPBlueprintInfoCollectionProvider(
-						_assetHelper, _searcher, _searchRequestBuilderFactory,
-						sxpBlueprint),
+					infoCollectionProvider,
 					HashMapDictionaryBuilder.<String, Object>put(
 						"company.id", sxpBlueprint.getCompanyId()
 					).put(
 						"item.class.name",
-						"com.liferay.asset.kernel.model.AssetEntry"
+						itemClassName
 					).build());
 
 		_serviceRegistrations.put(
@@ -275,6 +334,9 @@ public class SXPBlueprintLocalServiceImpl
 
 	@Reference
 	private AssetHelper _assetHelper;
+
+	@Reference
+	private JournalArticleService _journalArticleService;
 
 	private BundleContext _bundleContext;
 
