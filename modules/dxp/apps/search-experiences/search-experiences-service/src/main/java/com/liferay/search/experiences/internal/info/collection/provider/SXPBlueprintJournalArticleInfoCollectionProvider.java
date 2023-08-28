@@ -19,6 +19,7 @@ import com.liferay.info.pagination.Pagination;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -63,24 +64,7 @@ public class SXPBlueprintJournalArticleInfoCollectionProvider
 		CollectionQuery collectionQuery) {
 
 		try {
-			Pagination pagination = collectionQuery.getPagination();
-
-			SearchRequestBuilder searchRequestBuilder =
-				_getSearchRequestBuilder(collectionQuery, pagination);
-
-			SearchResponse searchResponse = _searcher.search(
-				searchRequestBuilder.build());
-
-			List<AssetEntry> assetEntries = _assetHelper.getAssetEntries(searchResponse.getSearchHits());
-
-			// now we need to convert the list of asset entries into a list of journal articles
-			List<JournalArticle> journalArticles = new ArrayList<>();
-
-			for (AssetEntry assetEntry : assetEntries) {
-				if (assetEntry.getClassName().equals(JournalArticle.class.getName())) {
-					journalArticles.add(_journalArticleService.getLatestArticle(assetEntry.getClassPK()));
-				}
-			}
+			List<JournalArticle> journalArticles = getJournalArticles(collectionQuery);
 
 			return InfoPage.of(journalArticles);
 		}
@@ -92,8 +76,66 @@ public class SXPBlueprintJournalArticleInfoCollectionProvider
 			Collections.emptyList(), collectionQuery.getPagination(), 0);
 	}
 
+	protected List<JournalArticle> getJournalArticles(CollectionQuery collectionQuery)
+		throws PortalException {
+		Pagination pagination = collectionQuery.getPagination();
+
+		SearchRequestBuilder searchRequestBuilder =
+			_getSearchRequestBuilder(collectionQuery, pagination);
+
+		SearchResponse searchResponse = _searcher.search(
+			searchRequestBuilder.build());
+
+		List<AssetEntry> assetEntries = _assetHelper.getAssetEntries(searchResponse.getSearchHits());
+
+		// now we need to convert the list of asset entries into a list of journal articles
+		List<JournalArticle> journalArticles = new ArrayList<>();
+
+		for (AssetEntry assetEntry : assetEntries) {
+			if (assetEntry.getClassName().equals(JournalArticle.class.getName())) {
+				journalArticles.add(_journalArticleService.getLatestArticle(assetEntry.getClassPK()));
+			}
+		}
+
+		return journalArticles;
+	}
+
 	@Override
 	public String getFormVariationKey() {
+		// instead of this, we want to try and return the structure id for our given type
+		long structureId = 0; // 0 means not set
+
+		// start by getting a collection query instance
+		CollectionQuery collectionQuery = new CollectionQuery();
+
+		collectionQuery.setPagination(
+			Pagination.of(
+				10, 0));
+
+		try {
+			// now we should be able to get a list
+			List<JournalArticle> articles = getJournalArticles(collectionQuery);
+
+			// now we can iterate through the articles
+			for (JournalArticle article : articles) {
+				if (structureId == 0) {
+					structureId = article.getDDMStructureId();
+				}
+				else if (structureId != article.getDDMStructureId()) {
+					structureId = -1;
+
+					break;
+				}
+			}
+		} catch (PortalException e) {
+			// ignored, will just use what we found so far.
+		}
+
+		if (structureId > 0) {
+			return String.valueOf(structureId);
+		}
+
+		// a 0 (no structures) or -1 (not same structure), return default value.
 		return _sxpBlueprint.getExternalReferenceCode();
 	}
 
