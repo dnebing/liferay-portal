@@ -12,6 +12,7 @@ import com.liferay.info.item.InfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.layout.display.page.BaseLayoutDisplayPageProvider;
 import com.liferay.layout.display.page.LayoutDisplayPageObjectProvider;
+import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
@@ -113,6 +114,12 @@ public class ObjectEntryLayoutDisplayPageProvider
 				userId = PrincipalThreadLocal.getUserId();
 			}
 
+			String scopeKey = null;
+
+			if (StringUtil.equals(_objectDefinition.getScope(), ObjectDefinitionConstants.SCOPE_SITE)) {
+				scopeKey = String.valueOf(serviceContext.getScopeGroupId());
+			}
+
 			com.liferay.object.rest.dto.v1_0.ObjectEntry objectEntry =
 				_objectEntryManager.getObjectEntry(
 					serviceContext.getCompanyId(),
@@ -121,7 +128,7 @@ public class ObjectEntryLayoutDisplayPageProvider
 						serviceContext.getLocale(), null,
 						_userLocalService.fetchUser(userId)),
 					ercInfoItemIdentifier.getExternalReferenceCode(),
-					_objectDefinition, null);
+					_objectDefinition, scopeKey);
 
 			if (objectEntry != null) {
 				return new ObjectEntryLayoutDisplayPageObjectProvider(
