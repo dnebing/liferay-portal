@@ -116,7 +116,10 @@ public class ObjectEntryLayoutDisplayPageProvider
 
 			String scopeKey = null;
 
-			if (StringUtil.equals(_objectDefinition.getScope(), ObjectDefinitionConstants.SCOPE_SITE)) {
+			if (StringUtil.equals(
+					_objectDefinition.getScope(),
+					ObjectDefinitionConstants.SCOPE_SITE)) {
+
 				scopeKey = String.valueOf(serviceContext.getScopeGroupId());
 			}
 
